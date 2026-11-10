@@ -47,11 +47,20 @@
       letter-spacing: .15em;
       text-transform: uppercase;
     }
-    h1 { margin: 0; font-size: clamp(2rem, 5.2vw, 4.8rem); line-height: 1.02; letter-spacing: -.045em; }
+    h1 { margin: 0; text-align: center; font-size: clamp(2rem, 5.2vw, 4.8rem); line-height: 1.02; letter-spacing: -.045em; }
     .description { margin: 1.1rem 0 0; color: var(--muted); }
-    .gallery { display: grid; gap: clamp(12px, 2vw, 28px); }
-    .shot { display: block; cursor: zoom-in; background: #101010; }
+    .gallery { display: grid; justify-items: center; gap: clamp(12px, 2vw, 28px); }
+    .shot {
+      position: relative;
+      display: block;
+      width: min(100%, 90vw, calc(90dvh * 16 / 9));
+      cursor: zoom-in;
+      background: #101010;
+    }
     .shot img { width: 100%; height: auto; display: block; }
+    .shot .shot-comparison { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+    .shot.compare-right .shot-comparison { opacity: 1; }
+    .shot.viewer-return-focus:focus-visible { outline: none; }
     .site-footer { padding-block: 2.5rem; color: var(--muted); font-size: .875rem; }
     dialog {
       position: fixed;
@@ -329,6 +338,9 @@
     let comparison;
     let compareRight = false;
     let openingPointer;
+    let pointerOpened = false;
+    let fullscreenActive = false;
+    let keepViewerOpen = false;
 
     function fitImage() {
       stage.classList.remove('native');
@@ -373,8 +385,12 @@
       if (original.src !== source) original.src = source;
     }
 
+    function canCompare(event) {
+      return (event.pointerType === 'mouse' || event.pointerType === 'pen') && !event.buttons;
+    }
+
     function compareAtPointer(event) {
-      if (!comparison || (event.pointerType !== 'mouse' && event.pointerType !== 'pen') || event.buttons) return;
+      if (!comparison || !canCompare(event)) return;
       if (openingPointer && event.screenX === openingPointer.x && event.screenY === openingPointer.y) return;
       openingPointer = null;
       const rect = original.getBoundingClientRect();
@@ -395,12 +411,47 @@
       showStatus('This image could not be loaded.');
     });
 
+    function setupGalleryComparison(shot) {
+      let alternate;
+      let overRight = false;
+
+      function renderComparison() {
+        shot.classList.toggle('compare-right', overRight && Boolean(alternate?.naturalWidth));
+      }
+
+      shot.addEventListener('pointermove', event => {
+        if (!canCompare(event)) return;
+        const rect = shot.getBoundingClientRect();
+        overRight = event.clientX >= rect.left + rect.width / 2;
+        if (overRight && !alternate) {
+          alternate = new Image();
+          alternate.className = 'shot-comparison';
+          alternate.alt = '';
+          alternate.setAttribute('aria-hidden', 'true');
+          alternate.draggable = false;
+          alternate.addEventListener('load', renderComparison, { once: true });
+          alternate.src = shot.dataset.compareSrc;
+          shot.append(alternate);
+        }
+        renderComparison();
+      });
+
+      shot.addEventListener('pointerleave', () => {
+        overRight = false;
+        renderComparison();
+      });
+    }
+
+    document.querySelectorAll('.shot[data-compare-src]').forEach(setupGalleryComparison);
+
     if (typeof viewer.showModal === 'function') {
       shots.forEach((shot, index) => {
         shot.addEventListener('click', event => {
           if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
           event.preventDefault();
           opener = shot;
+          pointerOpened = event.detail > 0;
+          shot.classList.remove('compare-right');
           openingPointer = { x: event.screenX, y: event.screenY };
           showImage(index);
           viewer.showModal();
@@ -483,17 +534,24 @@
         if (enabled) await frame.requestFullscreen();
         else await document.exitFullscreen();
       } catch (error) {
+        if (!enabled) keepViewerOpen = false;
         console.warn('Fullscreen request failed', error);
         if (reportError) showStatus('Fullscreen is unavailable here. Try your browser’s fullscreen shortcut.');
       }
     }
 
     fullscreen.addEventListener('click', () => {
-      void setFullscreen(document.fullscreenElement !== frame, true);
+      keepViewerOpen = document.fullscreenElement === frame;
+      void setFullscreen(!keepViewerOpen, true);
     });
     document.addEventListener('fullscreenchange', () => {
       const isFullscreen = document.fullscreenElement === frame;
       fullscreen.textContent = isFullscreen ? 'Exit fullscreen' : 'Fullscreen';
+      if (fullscreenActive && !isFullscreen) {
+        if (viewer.open && !keepViewerOpen) viewer.close();
+        keepViewerOpen = false;
+      }
+      fullscreenActive = isFullscreen;
       if (isFullscreen && !viewer.open) void setFullscreen(false);
     });
 
@@ -502,7 +560,14 @@
       comparison = null;
       original.removeAttribute('src');
       fitImage();
-      opener?.focus({ preventScroll: true });
+      if (opener) {
+        const shot = opener;
+        if (pointerOpened) {
+          shot.classList.add('viewer-return-focus');
+          shot.addEventListener('blur', () => shot.classList.remove('viewer-return-focus'), { once: true });
+        }
+        shot.focus({ preventScroll: true });
+      }
     });
   </script>
 </body>
