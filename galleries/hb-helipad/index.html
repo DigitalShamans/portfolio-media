@@ -49,11 +49,16 @@
     }
     h1 { margin: 0; text-align: center; font-size: clamp(2rem, 5.2vw, 4.8rem); line-height: 1.02; letter-spacing: -.045em; }
     .description { margin: 1.1rem 0 0; color: var(--muted); }
-    .gallery { display: grid; justify-items: center; gap: clamp(12px, 2vw, 28px); }
+    .gallery {
+      display: grid;
+      width: max(100%, var(--shot-width, 0px));
+      justify-items: center;
+      gap: clamp(12px, 2vw, 28px);
+    }
     .shot {
       position: relative;
       display: block;
-      width: min(100%, 90vw, calc(90dvh * 16 / 9));
+      width: min(100%, var(--shot-width, min(90vw, calc(90dvh * 16 / 9))));
       cursor: default;
       background: #101010;
     }
@@ -199,6 +204,21 @@
   <script src="../gallery-data.js"></script>
   <script>
     const gallery = document.querySelector('.gallery');
+
+    // Desktop browser zoom changes viewport CSS pixels and devicePixelRatio together.
+    // Keep the default fit in unzoomed CSS pixels so browser zoom scales the shots.
+    const desktop = window.matchMedia('(pointer: fine)').matches;
+    const initialPageScale = desktop && window.outerWidth > 0 ? window.outerWidth / window.innerWidth : 1;
+    const unzoomedDpr = window.devicePixelRatio / initialPageScale;
+
+    function fitGallery() {
+      const pageScale = window.devicePixelRatio / unzoomedDpr;
+      const fitWidth = Math.min(window.innerWidth, window.innerHeight * 16 / 9);
+      gallery.style.setProperty('--shot-width', (0.9 * fitWidth * pageScale) + 'px');
+    }
+
+    fitGallery();
+    window.addEventListener('resize', fitGallery);
     const galleryStatus = document.querySelector('#gallery-status');
     const shots = [];
     const viewer = document.querySelector('#viewer');
