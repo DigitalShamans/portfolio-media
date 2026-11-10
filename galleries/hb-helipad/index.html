@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Digital Shamans' environment art for the Hard Bullet Helipad arena. Explore the gallery in 4K.">
+  <title>Hard Bullet – Helipad | Digital Shamans</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --background: #191919;
+      --text: #f2f2f2;
+      --muted: #b4b4b4;
+      --accent: #e18842;
+      --border: #383838;
+      font: 16px/1.55 system-ui, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: var(--background); color: var(--text); }
+    body:has(dialog[open]) { overflow: hidden; }
+    a { color: inherit; }
+    a:focus-visible, button:focus-visible, .stage:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+    .shell { width: min(1440px, calc(100% - clamp(32px, 8vw, 140px))); margin-inline: auto; }
+    .site-header { border-bottom: 1px solid var(--border); }
+    .site-header .shell {
+      min-height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .5rem 1rem;
+      padding-block: .75rem;
+    }
+    .wordmark { font-weight: 700; letter-spacing: .02em; }
+    .back { color: var(--muted); text-underline-offset: .25em; }
+    .back:hover { color: var(--text); }
+    .intro { padding-block: clamp(32px, 6vw, 86px) clamp(28px, 4vw, 54px); }
+    .eyebrow {
+      margin: 0 0 .65rem;
+      color: var(--accent);
+      font-size: .76rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+    h1 { margin: 0; font-size: clamp(2rem, 5.2vw, 4.8rem); line-height: 1.02; letter-spacing: -.045em; }
+    .description { margin: 1.1rem 0 0; max-width: 64ch; color: var(--muted); }
+    .gallery { display: grid; gap: clamp(12px, 2vw, 28px); }
+    .shot { display: block; cursor: zoom-in; background: #101010; }
+    .shot img { width: 100%; height: auto; display: block; }
+    .site-footer { padding-block: 2.5rem; color: var(--muted); font-size: .875rem; }
+    dialog {
+      position: fixed;
+      inset: 0;
+      margin: 0;
+      border: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
+      overflow: hidden;
+      background: #000;
+      color: var(--text);
+    }
+    .viewer-frame { position: absolute; inset: 0; background: #000; }
+    .stage { position: absolute; inset: 0; overflow: auto; }
+    .stage img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      user-select: none;
+    }
+    .stage.native { cursor: grab; }
+    .stage.native.dragging { cursor: grabbing; }
+    .stage.native img {
+      width: var(--native-width);
+      height: var(--native-height);
+      margin-inline: auto;
+    }
+    .viewer-bar {
+      position: absolute;
+      top: max(.55rem, env(safe-area-inset-top));
+      left: max(.55rem, env(safe-area-inset-left));
+      right: max(.55rem, env(safe-area-inset-right));
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: .5rem;
+      pointer-events: none;
+    }
+    .viewer-group { display: flex; align-items: center; flex-wrap: wrap; gap: .35rem; }
+    .viewer-group > * { pointer-events: auto; }
+    .viewer-bar button, .counter {
+      margin: 0;
+      min-height: 42px;
+      border: 1px solid #555;
+      border-radius: .35rem;
+      padding: .35rem .7rem;
+      background: rgba(16, 16, 16, .94);
+      color: var(--text);
+      font: inherit;
+      font-size: .875rem;
+    }
+    .viewer-bar button { min-width: 42px; cursor: pointer; }
+    .viewer-bar button:hover:not(:disabled) { background: #333; }
+    .viewer-bar button:disabled { opacity: .45; cursor: default; }
+    .counter { display: inline-flex; align-items: center; font-variant-numeric: tabular-nums; }
+    .status {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      max-width: calc(100% - 2rem);
+      transform: translateX(-50%);
+      margin: 0;
+      padding: .45rem .75rem;
+      border-radius: .35rem;
+      background: #181818;
+    }
+    @media (max-width: 460px) {
+      .viewer-group { gap: .2rem; }
+      .viewer-bar button, .counter { padding-inline: .45rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell">
+      <span class="wordmark">Digital Shamans</span>
+      <a class="back" href="https://digitalshamans.co.uk/">Back to portfolio</a>
+    </div>
+  </header>
+
+  <main class="shell">
+    <header class="intro">
+      <p class="eyebrow">Environment art · Meta Quest 3</p>
+      <h1>Hard Bullet – Helipad</h1>
+      <p class="description">Digital Shamans created the environment art for this Hard Bullet arena, working from GexagonVR’s level design and greybox. Our work covered set dressing, asset creation and integration, baked lighting, and optimisation.</p>
+    </header>
+    <section class="gallery" aria-label="Helipad screenshots">
+      <a class="shot" href="HelipadArena_01_4k.jpg" aria-label="Open Helipad screenshot 1 in 4K">
+        <img src="HelipadArena_01_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 1" width="3840" height="2160" fetchpriority="high" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_02_4k.jpg" aria-label="Open Helipad screenshot 2 in 4K">
+        <img src="HelipadArena_02_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 2" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_03_4k.jpg" aria-label="Open Helipad screenshot 3 in 4K">
+        <img src="HelipadArena_03_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 3" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_04_4k.jpg" aria-label="Open Helipad screenshot 4 in 4K">
+        <img src="HelipadArena_04_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 4" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_05_4k.jpg" aria-label="Open Helipad screenshot 5 in 4K">
+        <img src="HelipadArena_05_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 5" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_06_4k.jpg" aria-label="Open Helipad screenshot 6 in 4K">
+        <img src="HelipadArena_06_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 6" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_08_4k.jpg" aria-label="Open Helipad screenshot 7 in 4K">
+        <img src="HelipadArena_08_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 7" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_09_4k.jpg" aria-label="Open Helipad screenshot 8 in 4K">
+        <img src="HelipadArena_09_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 8" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_10_4k.jpg" aria-label="Open Helipad screenshot 9 in 4K">
+        <img src="HelipadArena_10_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 9" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_11_4k.jpg" aria-label="Open Helipad screenshot 10 in 4K">
+        <img src="HelipadArena_11_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 10" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_12_4k.jpg" aria-label="Open Helipad screenshot 11 in 4K">
+        <img src="HelipadArena_12_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 11" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_13_4k.jpg" aria-label="Open Helipad screenshot 12 in 4K">
+        <img src="HelipadArena_13_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 12" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_14_4k.jpg" aria-label="Open Helipad screenshot 13 in 4K">
+        <img src="HelipadArena_14_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 13" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_15_4k.jpg" aria-label="Open Helipad screenshot 14 in 4K">
+        <img src="HelipadArena_15_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 14" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_16_4k.jpg" aria-label="Open Helipad screenshot 15 in 4K">
+        <img src="HelipadArena_16_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 15" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_17_4k.jpg" aria-label="Open Helipad screenshot 16 in 4K">
+        <img src="HelipadArena_17_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 16" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_18_4k.jpg" aria-label="Open Helipad screenshot 17 in 4K">
+        <img src="HelipadArena_18_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 17" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_19_4k.jpg" aria-label="Open Helipad screenshot 18 in 4K">
+        <img src="HelipadArena_19_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 18" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_20_4k.jpg" aria-label="Open Helipad screenshot 19 in 4K">
+        <img src="HelipadArena_20_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 19" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_21_4k.jpg" aria-label="Open Helipad screenshot 20 in 4K">
+        <img src="HelipadArena_21_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 20" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_22_4k.jpg" aria-label="Open Helipad screenshot 21 in 4K">
+        <img src="HelipadArena_22_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 21" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_23_4k.jpg" aria-label="Open Helipad screenshot 22 in 4K">
+        <img src="HelipadArena_23_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 22" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_24_4k.jpg" aria-label="Open Helipad screenshot 23 in 4K">
+        <img src="HelipadArena_24_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 23" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_25_4k.jpg" aria-label="Open Helipad screenshot 24 in 4K">
+        <img src="HelipadArena_25_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 24" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_27_4k.jpg" aria-label="Open Helipad screenshot 25 in 4K">
+        <img src="HelipadArena_27_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 25" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_28_4k.jpg" aria-label="Open Helipad screenshot 26 in 4K">
+        <img src="HelipadArena_28_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 26" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_29_4k.jpg" aria-label="Open Helipad screenshot 27 in 4K">
+        <img src="HelipadArena_29_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 27" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_30_4k.jpg" aria-label="Open Helipad screenshot 28 in 4K">
+        <img src="HelipadArena_30_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 28" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_31_4k.jpg" aria-label="Open Helipad screenshot 29 in 4K">
+        <img src="HelipadArena_31_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 29" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_32_4k.jpg" aria-label="Open Helipad screenshot 30 in 4K">
+        <img src="HelipadArena_32_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 30" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_33_4k.jpg" aria-label="Open Helipad screenshot 31 in 4K">
+        <img src="HelipadArena_33_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 31" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_34_4k.jpg" aria-label="Open Helipad screenshot 32 in 4K">
+        <img src="HelipadArena_34_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 32" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_35_4k.jpg" aria-label="Open Helipad screenshot 33 in 4K">
+        <img src="HelipadArena_35_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 33" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_36_4k.jpg" aria-label="Open Helipad screenshot 34 in 4K">
+        <img src="HelipadArena_36_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 34" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_37_4k.jpg" aria-label="Open Helipad screenshot 35 in 4K">
+        <img src="HelipadArena_37_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 35" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_38_4k.jpg" aria-label="Open Helipad screenshot 36 in 4K">
+        <img src="HelipadArena_38_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 36" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_39_4k.jpg" aria-label="Open Helipad screenshot 37 in 4K">
+        <img src="HelipadArena_39_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 37" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_40_4k.jpg" aria-label="Open Helipad screenshot 38 in 4K">
+        <img src="HelipadArena_40_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 38" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_41_4k.jpg" aria-label="Open Helipad screenshot 39 in 4K">
+        <img src="HelipadArena_41_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 39" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_42_4k.jpg" aria-label="Open Helipad screenshot 40 in 4K">
+        <img src="HelipadArena_42_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 40" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+      <a class="shot" href="HelipadArena_43_4k.jpg" aria-label="Open Helipad screenshot 41 in 4K">
+        <img src="HelipadArena_43_4k.jpg" alt="Hard Bullet Helipad arena, screenshot 41" width="3840" height="2160" loading="lazy" decoding="async">
+      </a>
+    </section>
+    <footer class="site-footer"><a class="back" href="https://digitalshamans.co.uk/">Back to portfolio</a></footer>
+  </main>
+
+  <dialog id="viewer" aria-label="4K image viewer">
+    <div id="viewer-frame" class="viewer-frame">
+      <div id="stage" class="stage" tabindex="0" aria-label="Image viewing area">
+        <img id="original" alt="" draggable="false">
+      </div>
+      <div class="viewer-bar">
+        <div class="viewer-group">
+          <button id="previous" type="button" aria-label="Previous image">←</button>
+          <output id="counter" class="counter" aria-live="polite"></output>
+          <button id="next" type="button" aria-label="Next image">→</button>
+        </div>
+        <div class="viewer-group">
+          <button id="zoom" type="button" disabled>100%</button>
+          <button id="fullscreen" type="button" hidden>Fullscreen</button>
+          <button id="close" type="button" autofocus>Close</button>
+        </div>
+      </div>
+      <p id="status" class="status" role="status" hidden></p>
+    </div>
+  </dialog>
+
+  <script>
+    const shots = Array.from(document.querySelectorAll('.shot'));
+    const viewer = document.querySelector('#viewer');
+    const frame = document.querySelector('#viewer-frame');
+    const stage = document.querySelector('#stage');
+    const original = document.querySelector('#original');
+    const previous = document.querySelector('#previous');
+    const next = document.querySelector('#next');
+    const counter = document.querySelector('#counter');
+    const zoom = document.querySelector('#zoom');
+    const fullscreen = document.querySelector('#fullscreen');
+    const close = document.querySelector('#close');
+    const status = document.querySelector('#status');
+    let current = 0;
+    let opener;
+    let drag;
+
+    function fitImage() {
+      stage.classList.remove('native');
+      stage.scrollTo(0, 0);
+      zoom.textContent = '100%';
+    }
+
+    function showStatus(message) {
+      status.textContent = message;
+      status.hidden = !message;
+    }
+
+    function showImage(index) {
+      current = index;
+      fitImage();
+      zoom.disabled = true;
+      previous.disabled = index === 0;
+      next.disabled = index === shots.length - 1;
+      counter.textContent = (index + 1) + ' / ' + shots.length;
+      original.alt = shots[index].querySelector('img').alt;
+      showStatus('Loading 4K image…');
+      original.src = shots[index].href;
+      if (original.complete && original.naturalWidth) imageLoaded();
+    }
+
+    function imageLoaded() {
+      zoom.disabled = false;
+      showStatus('');
+    }
+
+    original.addEventListener('load', imageLoaded);
+    original.addEventListener('error', () => {
+      zoom.disabled = true;
+      showStatus('This image could not be loaded.');
+    });
+
+    if (typeof viewer.showModal === 'function') {
+      shots.forEach((shot, index) => {
+        shot.addEventListener('click', event => {
+          if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+          event.preventDefault();
+          opener = shot;
+          showImage(index);
+          viewer.showModal();
+        });
+      });
+    }
+
+    function step(amount) {
+      const index = current + amount;
+      if (index >= 0 && index < shots.length) showImage(index);
+    }
+
+    previous.addEventListener('click', () => step(-1));
+    next.addEventListener('click', () => step(1));
+    close.addEventListener('click', () => viewer.close());
+
+    viewer.addEventListener('keydown', event => {
+      if (stage.classList.contains('native') && event.target === stage) return;
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        event.preventDefault();
+        step(event.key === 'ArrowLeft' ? -1 : 1);
+      }
+    });
+
+    zoom.addEventListener('click', () => {
+      if (stage.classList.contains('native')) {
+        fitImage();
+        return;
+      }
+      const scale = window.devicePixelRatio || 1;
+      stage.style.setProperty('--native-width', (original.naturalWidth / scale) + 'px');
+      stage.style.setProperty('--native-height', (original.naturalHeight / scale) + 'px');
+      stage.classList.add('native');
+      stage.scrollTo((stage.scrollWidth - stage.clientWidth) / 2, (stage.scrollHeight - stage.clientHeight) / 2);
+      zoom.textContent = 'Fit';
+      stage.focus();
+    });
+
+    stage.addEventListener('pointerdown', event => {
+      if (event.pointerType !== 'mouse' || event.button !== 0 || !stage.classList.contains('native')) return;
+      event.preventDefault();
+      stage.focus();
+      drag = { x: event.clientX, y: event.clientY, left: stage.scrollLeft, top: stage.scrollTop };
+      stage.setPointerCapture(event.pointerId);
+      stage.classList.add('dragging');
+    });
+
+    stage.addEventListener('pointermove', event => {
+      if (drag) stage.scrollTo(drag.left + drag.x - event.clientX, drag.top + drag.y - event.clientY);
+    });
+
+    stage.addEventListener('lostpointercapture', () => {
+      drag = null;
+      stage.classList.remove('dragging');
+    });
+
+    fullscreen.hidden = !document.fullscreenEnabled || !frame.requestFullscreen;
+    fullscreen.addEventListener('click', async () => {
+      try {
+        if (document.fullscreenElement === frame) await document.exitFullscreen();
+        else await frame.requestFullscreen();
+      } catch (error) {
+        console.warn('Fullscreen request failed', error);
+        showStatus('Fullscreen is unavailable here. Try your browser’s fullscreen shortcut.');
+      }
+    });
+    document.addEventListener('fullscreenchange', () => {
+      fullscreen.textContent = document.fullscreenElement === frame ? 'Exit fullscreen' : 'Fullscreen';
+    });
+
+    viewer.addEventListener('close', () => {
+      if (document.fullscreenElement === frame) document.exitFullscreen().catch(() => {});
+      original.removeAttribute('src');
+      fitImage();
+      opener?.focus({ preventScroll: true });
+    });
+  </script>
+</body>
+</html>
