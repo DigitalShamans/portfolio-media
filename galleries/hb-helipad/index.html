@@ -38,27 +38,21 @@
     .wordmark { font-weight: 700; letter-spacing: .02em; }
     .back { color: var(--muted); text-underline-offset: .25em; }
     .back:hover { color: var(--text); }
-    .intro { padding-block: clamp(32px, 6vw, 86px) clamp(28px, 4vw, 54px); }
-    .eyebrow {
-      margin: 0 0 .65rem;
-      color: var(--accent);
-      font-size: .76rem;
-      font-weight: 700;
-      letter-spacing: .15em;
-      text-transform: uppercase;
+    .gallery-content {
+      width: var(--shot-width, min(100%, 90vw, calc(90dvh * 16 / 9)));
+      margin-inline: auto;
     }
+    .intro { padding-block: clamp(16px, 2vw, 32px) clamp(28px, 4vw, 54px); }
     h1 { margin: 0; text-align: center; font-size: clamp(2rem, 5.2vw, 4.8rem); line-height: 1.02; letter-spacing: -.045em; }
     .description { margin: 1.1rem 0 0; color: var(--muted); }
     .gallery {
       display: grid;
-      width: max(100%, var(--shot-width, 0px));
-      justify-items: center;
+      grid-template-columns: minmax(0, 1fr);
       gap: clamp(12px, 2vw, 28px);
     }
     .shot {
       position: relative;
       display: block;
-      width: min(100%, var(--shot-width, min(90vw, calc(90dvh * 16 / 9))));
       cursor: default;
       background: #101010;
     }
@@ -166,13 +160,14 @@
   </header>
 
   <main class="shell">
-    <header class="intro">
-      <p class="eyebrow">Environment art · Meta Quest 3</p>
-      <h1>Hard Bullet - Helipad</h1>
-      <p class="description">Digital Shamans created the environment art for this Hard Bullet arena, working from GexagonVR’s level design and greybox. Our work covered set dressing, asset creation and integration, baked lighting, and optimisation.</p>
-    </header>
-    <p id="gallery-status" role="status">Loading gallery…</p>
-    <section class="gallery" aria-label="Helipad screenshots"></section>
+    <div class="gallery-content">
+      <header class="intro">
+        <h1>Hard Bullet - Helipad</h1>
+        <p class="description">Digital Shamans created the environment art for this Hard Bullet arena, working from GexagonVR’s level design and greybox. Our work covered set dressing, asset creation and integration, baked lighting, and optimisation.</p>
+      </header>
+      <p id="gallery-status" role="status">Loading gallery…</p>
+      <section class="gallery" aria-label="Helipad screenshots"></section>
+    </div>
     <footer class="site-footer"><a class="back" href="https://digitalshamans.co.uk/">Back to portfolio</a></footer>
   </main>
 
@@ -203,6 +198,7 @@
 
   <script src="../gallery-data.js"></script>
   <script>
+    const galleryContent = document.querySelector('.gallery-content');
     const gallery = document.querySelector('.gallery');
 
     // Desktop browser zoom changes viewport CSS pixels and devicePixelRatio together.
@@ -214,7 +210,7 @@
     function fitGallery() {
       const pageScale = window.devicePixelRatio / unzoomedDpr;
       const fitWidth = Math.min(window.innerWidth, window.innerHeight * 16 / 9);
-      gallery.style.setProperty('--shot-width', (0.9 * fitWidth * pageScale) + 'px');
+      galleryContent.style.setProperty('--shot-width', (0.9 * fitWidth * pageScale) + 'px');
     }
 
     fitGallery();
@@ -262,8 +258,7 @@
       compareRight = false;
       fitImage();
       zoom.disabled = true;
-      previous.disabled = previousSide.disabled = index === 0;
-      next.disabled = nextSide.disabled = index === shots.length - 1;
+      previous.disabled = previousSide.disabled = next.disabled = nextSide.disabled = shots.length < 2;
       counter.textContent = (index + 1) + ' / ' + shots.length;
       original.alt = shots[index].querySelector('img').alt;
       showStatus('Loading 4K image…');
@@ -395,8 +390,8 @@
     }
 
     function step(amount) {
-      const index = current + amount;
-      if (index >= 0 && index < shots.length) showImage(index);
+      if (shots.length < 2) return;
+      showImage((current + amount + shots.length) % shots.length);
     }
 
     for (const button of [previous, previousSide]) button.addEventListener('click', () => step(-1));
