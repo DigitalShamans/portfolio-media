@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
   <meta name="description" content="Digital Shamans' environment art for the Hard Bullet Helipad arena. Explore the gallery in 4K.">
-  <title>Hard Bullet – Helipad | Digital Shamans</title>
+  <title>Hard Bullet - Helipad | Digital Shamans</title>
   <style>
     :root {
       color-scheme: dark;
@@ -24,7 +24,7 @@
       outline: 2px solid var(--accent);
       outline-offset: 3px;
     }
-    .shell { width: min(1440px, calc(100% - clamp(32px, 8vw, 140px))); margin-inline: auto; }
+    .shell { width: calc(100% - clamp(32px, 4vw, 144px)); margin-inline: auto; }
     .site-header { border-bottom: 1px solid var(--border); }
     .site-header .shell {
       min-height: 66px;
@@ -48,7 +48,7 @@
       text-transform: uppercase;
     }
     h1 { margin: 0; font-size: clamp(2rem, 5.2vw, 4.8rem); line-height: 1.02; letter-spacing: -.045em; }
-    .description { margin: 1.1rem 0 0; max-width: 64ch; color: var(--muted); }
+    .description { margin: 1.1rem 0 0; color: var(--muted); }
     .gallery { display: grid; gap: clamp(12px, 2vw, 28px); }
     .shot { display: block; cursor: zoom-in; background: #101010; }
     .shot img { width: 100%; height: auto; display: block; }
@@ -68,7 +68,7 @@
       color: var(--text);
     }
     .viewer-frame { position: absolute; inset: 0; background: #000; }
-    .stage { position: absolute; inset: 0; overflow: auto; }
+    .stage { position: absolute; inset: 0; overflow: auto; cursor: zoom-out; }
     .stage img {
       display: block;
       width: 100%;
@@ -97,7 +97,20 @@
     }
     .viewer-group { display: flex; align-items: center; flex-wrap: wrap; gap: .35rem; }
     .viewer-group > * { pointer-events: auto; }
-    .viewer-bar button, .counter {
+    .viewer-arrows {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(100%, calc(100dvh * 16 / 9));
+      transform: translate(-50%, -50%);
+      display: flex;
+      justify-content: space-between;
+      padding-inline: clamp(.5rem, 1.2vw, 1.5rem);
+      pointer-events: none;
+    }
+    .stage.native + .viewer-arrows { width: 100%; }
+    .viewer-arrows button { pointer-events: auto; }
+    .viewer-bar button, .viewer-arrows button, .counter {
       margin: 0;
       min-height: 42px;
       border: 1px solid #555;
@@ -108,9 +121,10 @@
       font: inherit;
       font-size: .875rem;
     }
-    .viewer-bar button { min-width: 42px; cursor: pointer; }
-    .viewer-bar button:hover:not(:disabled) { background: #333; }
-    .viewer-bar button:disabled { opacity: .45; cursor: default; }
+    .viewer-bar button, .viewer-arrows button { min-width: 42px; cursor: pointer; }
+    .viewer-bar button:hover:not(:disabled), .viewer-arrows button:hover:not(:disabled) { background: #333; }
+    .viewer-bar button:disabled, .viewer-arrows button:disabled { opacity: .45; cursor: default; }
+    .viewer-arrows button { width: 48px; height: 48px; padding: 0; font-size: 1.4rem; }
     .counter { display: inline-flex; align-items: center; font-variant-numeric: tabular-nums; }
     .status {
       position: absolute;
@@ -140,7 +154,7 @@
   <main class="shell">
     <header class="intro">
       <p class="eyebrow">Environment art · Meta Quest 3</p>
-      <h1>Hard Bullet – Helipad</h1>
+      <h1>Hard Bullet - Helipad</h1>
       <p class="description">Digital Shamans created the environment art for this Hard Bullet arena, working from GexagonVR’s level design and greybox. Our work covered set dressing, asset creation and integration, baked lighting, and optimisation.</p>
     </header>
     <section class="gallery" aria-label="Helipad screenshots">
@@ -276,6 +290,10 @@
       <div id="stage" class="stage" tabindex="0" aria-label="Image viewing area">
         <img id="original" alt="" draggable="false">
       </div>
+      <div class="viewer-arrows" role="group" aria-label="Side navigation">
+        <button id="previous-side" type="button" aria-label="Previous image (left)">←</button>
+        <button id="next-side" type="button" aria-label="Next image (right)">→</button>
+      </div>
       <div class="viewer-bar">
         <div class="viewer-group">
           <button id="previous" type="button" aria-label="Previous image">←</button>
@@ -300,6 +318,8 @@
     const original = document.querySelector('#original');
     const previous = document.querySelector('#previous');
     const next = document.querySelector('#next');
+    const previousSide = document.querySelector('#previous-side');
+    const nextSide = document.querySelector('#next-side');
     const counter = document.querySelector('#counter');
     const zoom = document.querySelector('#zoom');
     const fullscreen = document.querySelector('#fullscreen');
@@ -308,6 +328,7 @@
     let current = 0;
     let opener;
     let drag;
+    let didDrag = false;
 
     function fitImage() {
       stage.classList.remove('native');
@@ -324,8 +345,8 @@
       current = index;
       fitImage();
       zoom.disabled = true;
-      previous.disabled = index === 0;
-      next.disabled = index === shots.length - 1;
+      previous.disabled = previousSide.disabled = index === 0;
+      next.disabled = nextSide.disabled = index === shots.length - 1;
       counter.textContent = (index + 1) + ' / ' + shots.length;
       original.alt = shots[index].querySelector('img').alt;
       showStatus('Loading 4K image…');
@@ -361,8 +382,8 @@
       if (index >= 0 && index < shots.length) showImage(index);
     }
 
-    previous.addEventListener('click', () => step(-1));
-    next.addEventListener('click', () => step(1));
+    for (const button of [previous, previousSide]) button.addEventListener('click', () => step(-1));
+    for (const button of [next, nextSide]) button.addEventListener('click', () => step(1));
     close.addEventListener('click', () => viewer.close());
 
     viewer.addEventListener('keydown', event => {
@@ -387,7 +408,13 @@
       stage.focus();
     });
 
+    stage.addEventListener('click', () => {
+      if (!didDrag) viewer.close();
+      didDrag = false;
+    });
+
     stage.addEventListener('pointerdown', event => {
+      didDrag = false;
       if (event.pointerType !== 'mouse' || event.button !== 0 || !stage.classList.contains('native')) return;
       event.preventDefault();
       stage.focus();
@@ -397,7 +424,11 @@
     });
 
     stage.addEventListener('pointermove', event => {
-      if (drag) stage.scrollTo(drag.left + drag.x - event.clientX, drag.top + drag.y - event.clientY);
+      if (!drag) return;
+      const dx = drag.x - event.clientX;
+      const dy = drag.y - event.clientY;
+      if (Math.hypot(dx, dy) > 5) didDrag = true;
+      if (didDrag) stage.scrollTo(drag.left + dx, drag.top + dy);
     });
 
     stage.addEventListener('lostpointercapture', () => {
