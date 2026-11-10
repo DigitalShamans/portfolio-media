@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Digital Shamans Gallery Editor</title>
+  <style>
+    :root { color-scheme: dark; font: 16px/1.5 system-ui, sans-serif; color: #f2f2f2; background: #191919; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; padding: 28px clamp(16px, 5vw, 48px) 48px; max-width: 1100px; }
+    h1 { margin: 0; font-size: clamp(1.6rem, 5vw, 2.5rem); }
+    h2 { margin: 0 0 .25rem; font-size: 1.1rem; overflow-wrap: anywhere; }
+    p { margin: .35rem 0; }
+    .muted { color: #bbb; }
+    .toolbar { position: sticky; top: 0; z-index: 1; background: #191919; padding: 16px 0; }
+    .actions, .tile-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+    button { color: inherit; background: #292929; border: 1px solid #515151; border-radius: 6px; font: inherit; padding: 7px 12px; cursor: pointer; }
+    button.primary { background: #b85717; border-color: #d16d27; color: white; }
+    button:disabled { opacity: .45; cursor: default; }
+    button:hover:not(:disabled) { filter: brightness(1.2); }
+    :focus-visible { outline: 2px solid #eb9a56; outline-offset: 3px; }
+    #status { min-height: 1.5rem; margin-top: .65rem; }
+    #status.error { color: #ffae9d; }
+    #tiles { list-style: none; padding: 0; margin: 12px 0 0; }
+    .tile { display: grid; grid-template-columns: 34px 42px 1fr auto; gap: 8px; align-items: center; border: 1px solid #3b3b3b; border-radius: 7px; padding: 9px; margin-bottom: 6px; background: #222; }
+    .tile.drop-before { box-shadow: 0 -3px #eb9a56; }
+    .tile.drop-after { box-shadow: 0 3px #eb9a56; }
+    .grip { cursor: grab; text-align: center; color: #bbb; font-size: 1.4rem; }
+    .position { color: #bbb; text-align: center; font-variant-numeric: tabular-nums; }
+    .assets { display: flex; gap: 10px 18px; flex-wrap: wrap; min-width: 0; }
+    .asset { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .asset img { width: 104px; aspect-ratio: 16 / 9; object-fit: contain; background: #101010; border-radius: 4px; }
+    .asset span { overflow-wrap: anywhere; }
+    .asset small { display: block; color: #bbb; }
+    .tile-actions button { padding: 4px 8px; }
+    .selection { display: inline-flex; align-items: center; gap: 4px; color: #f3a567; }
+    .selection input { width: 18px; height: 18px; margin: 0; accent-color: #c96310; }
+    .selection-rank { min-width: 1ch; }
+    @media (max-width: 700px) {
+      .tile { grid-template-columns: 24px 28px 1fr; }
+      .tile-actions { grid-column: 3; }
+      .asset img { width: 78px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Gallery Editor</h1>
+    <p class="muted">Digital Shamans portfolio</p>
+  </header>
+  <div class="toolbar">
+    <div class="actions">
+      <button id="open" type="button">Open gallery folder</button>
+      <button id="save" type="button" class="primary" disabled>Save gallery.json</button>
+      <button id="download" type="button" disabled>Download gallery.json</button>
+      <button id="merge" type="button" disabled>Merge selected</button>
+    </div>
+    <p id="status" role="status">Choose a gallery folder containing your images and gallery.json.</p>
+    <input id="folder-input" type="file" webkitdirectory multiple hidden>
+  </div>
+  <main id="workspace" hidden>
+    <h2 id="folder-name"></h2>
+    <p class="muted">Drag the handles or use ↑ and ↓ to reorder. Tick two images in order and click <strong>Merge selected</strong>. The first is the primary and the second is its hover alternate.</p>
+    <ol id="tiles" aria-label="Gallery order"></ol>
+  </main>
+  <script src="../galleries/gallery-data.js"></script>
+  <script>
+    'use strict';
+
+    const filename = 'gallery.json';
+    const openButton = document.querySelector('#open');
+    const saveButton = document.querySelector('#save');
+    const downloadButton = document.querySelector('#download');
+    const mergeButton = document.querySelector('#merge');
+    const input = document.querySelector('#folder-input');
+    const workspace = document.querySelector('#workspace');
+    const folderName = document.querySelector('#folder-name');
+    const list = document.querySelector('#tiles');
+    const status = document.querySelector('#status');
+    const selected = new Set();
+    const previews = new Map();
+    let directory;
+    let files = new Map();
+    let entries = [];
+    let sourceText = null;
+    let dirty = false;
+    let busy = false;
+    let dragged;
+    let dropTarget;
+
+    function message(text, error = false) {
+      status.textContent = text;
+      status.classList.toggle('error', error);
+    }
+
+    function controls() {
+      openButton.disabled = busy;
+      saveButton.disabled = busy || !directory || !dirty;
+      downloadButton.disabled = busy || !entries.length;
+      mergeButton.disabled = busy || selected.size !== 2;
+      list.inert = busy;
+    }
+
+    function preview(name) {
+      if (!previews.has(name)) previews.set(name, URL.createObjectURL(files.get(name)));
+      return previews.get(name);
+    }
+
+    function makeAsset(name, role) {
+      const asset = document.createElement('div');
+      asset.className = 'asset';
+      const image = document.createElement('img');
+      image.alt = '';
+      image.src = preview(name);
+      image.loading = 'lazy';
+      image.draggable = false;
+      const text = document.createElement('span');
+      if (role) {
+        const label = document.createElement('small');
+        label.textContent = role;
+        text.append(label);
+      }
+      text.append(name);
+      asset.append(image, text);
+      return asset;
+    }
+
+    function button(text, label, action, disabled = false) {
+      const control = document.createElement('button');
+      control.type = 'button';
+      control.textContent = text;
+      control.setAttribute('aria-label', label);
+      control.disabled = disabled;
+      control.addEventListener('click', action);
+      return control;
+    }
+
+    function markChanged(text) {
+      dirty = true;
+      render();
+      message(text + ' Save gallery.json to keep the changes.');
+    }
+
+    function move(entry, index) {
+      const previous = entries.indexOf(entry);
+      if (index === previous) return;
+      entries.splice(previous, 1);
+      entries.splice(index, 0, entry);
+      markChanged('Order updated.');
+    }
+
+    function clearDrop() {
+      dropTarget?.classList.remove('drop-before', 'drop-after');
+      dropTarget = null;
+    }
+
+    function insertAfterPointer(tile, event) {
+      const rect = tile.getBoundingClientRect();
+      return event.clientY > rect.top + rect.height / 2;
+    }
+
+    function render() {
+      const selectionOrder = [...selected];
+      list.replaceChildren(...entries.map((entry, index) => {
+        const tile = document.createElement('li');
+        tile.className = 'tile';
+
+        const grip = document.createElement('span');
+        grip.className = 'grip';
+        grip.textContent = '⠿';
+        grip.title = 'Drag to reorder';
+        grip.draggable = true;
+        grip.addEventListener('dragstart', event => {
+          dragged = entry;
+          event.dataTransfer.effectAllowed = 'move';
+          event.dataTransfer.setData('text/plain', entry.image);
+        });
+        grip.addEventListener('dragend', () => {
+          dragged = null;
+          clearDrop();
+        });
+        tile.addEventListener('dragover', event => {
+          if (!dragged || dragged === entry) return;
+          event.preventDefault();
+          event.dataTransfer.dropEffect = 'move';
+          clearDrop();
+          dropTarget = tile;
+          tile.classList.add(insertAfterPointer(tile, event) ? 'drop-after' : 'drop-before');
+        });
+        tile.addEventListener('dragleave', event => {
+          if (dropTarget === tile && !tile.contains(event.relatedTarget)) clearDrop();
+        });
+        tile.addEventListener('drop', event => {
+          if (!dragged) return;
+          event.preventDefault();
+          const source = entries.indexOf(dragged);
+          const target = index + Number(insertAfterPointer(tile, event));
+          const moving = dragged;
+          dragged = null;
+          clearDrop();
+          move(moving, target - Number(source < target));
+        });
+
+        const position = document.createElement('span');
+        position.className = 'position';
+        position.textContent = String(index + 1);
+        const assets = document.createElement('div');
+        assets.className = 'assets';
+        assets.append(makeAsset(entry.image, entry.compare ? 'Primary · left' : ''));
+        const actions = document.createElement('div');
+        actions.className = 'tile-actions';
+        if (entry.compare) {
+          assets.append(makeAsset(entry.compare, 'Alternate · right'));
+          actions.append(button('Unmerge', 'Unmerge ' + entry.image, () => {
+            entries.splice(index + 1, 0, { image: entry.compare });
+            delete entry.compare;
+            markChanged('Images separated.');
+          }));
+        } else {
+          const label = document.createElement('label');
+          label.className = 'selection';
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.setAttribute('aria-label', 'Select ' + entry.image);
+          const rank = selectionOrder.indexOf(entry.image);
+          checkbox.checked = rank !== -1;
+          const ordinal = document.createElement('span');
+          ordinal.className = 'selection-rank';
+          ordinal.textContent = rank === -1 ? '' : String(rank + 1);
+          checkbox.addEventListener('change', () => {
+            if (checkbox.checked && selected.size === 2) {
+              checkbox.checked = false;
+              message('Uncheck an image before selecting another.', true);
+              return;
+            }
+            if (checkbox.checked) selected.add(entry.image);
+            else selected.delete(entry.image);
+            render();
+            list.children[index].querySelector('input').focus({ preventScroll: true });
+          });
+          label.append(checkbox, ordinal);
+          actions.append(label);
+        }
+        actions.append(
+          button('↑', 'Move ' + entry.image + ' up', () => {
+            move(entry, index - 1);
+            list.children[index - 1].querySelector('button[aria-label$=" up"]:enabled, button[aria-label$=" down"]:enabled').focus({ preventScroll: true });
+          }, index === 0),
+          button('↓', 'Move ' + entry.image + ' down', () => {
+            move(entry, index + 1);
+            list.children[index + 1].querySelector('button[aria-label$=" down"]:enabled, button[aria-label$=" up"]:enabled').focus({ preventScroll: true });
+          }, index === entries.length - 1)
+        );
+        tile.append(grip, position, assets, actions);
+        return tile;
+      }));
+      controls();
+    }
+
+    async function readManifest(handle) {
+      try {
+        const file = await handle.getFileHandle(filename);
+        return (await file.getFile()).text();
+      } catch (error) {
+        if (error.name === 'NotFoundError') return null;
+        throw error;
+      }
+    }
+
+    async function loadFiles(imageFiles, manifest, handle, name) {
+      const found = new Map(imageFiles.filter(file => GalleryData.isImageName(file.name)).map(file => [file.name, file]));
+      if (!found.size) throw new Error('This folder has no supported images.');
+      const order = manifest === null
+        ? [...found.keys()].sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).map(image => ({ image }))
+        : GalleryData.parse(manifest, found);
+
+      for (const url of previews.values()) URL.revokeObjectURL(url);
+      previews.clear();
+      selected.clear();
+      files = found;
+      entries = order;
+      directory = handle;
+      sourceText = manifest;
+      dirty = manifest === null;
+      folderName.textContent = name;
+      workspace.hidden = false;
+      render();
+      const mode = handle ? 'Save changes here, then commit in Fork.' : 'Download gallery.json and copy it into this gallery folder.';
+      message(entries.length + ' tiles loaded. ' + mode);
+    }
+
+    async function run(action) {
+      busy = true;
+      controls();
+      try {
+        await action();
+      } catch (error) {
+        if (error.name !== 'AbortError') message(error.message, true);
+      } finally {
+        busy = false;
+        controls();
+      }
+    }
+
+    openButton.addEventListener('click', () => {
+      if (dirty && !window.confirm('Discard unsaved changes and open another folder?')) return;
+      if (!window.showDirectoryPicker) {
+        input.click();
+        return;
+      }
+      void run(async () => {
+        let handle;
+        try {
+          handle = await window.showDirectoryPicker({ mode: 'readwrite' });
+        } catch (error) {
+          if (error.name !== 'AbortError') input.click();
+          return;
+        }
+        const images = [];
+        for await (const entry of handle.values()) {
+          if (entry.kind === 'file' && GalleryData.isImageName(entry.name)) images.push(entry.getFile());
+        }
+        const [imageFiles, manifest] = await Promise.all([Promise.all(images), readManifest(handle)]);
+        await loadFiles(imageFiles, manifest, handle, handle.name);
+      });
+    });
+
+    input.addEventListener('change', () => {
+      const picked = [...input.files];
+      input.value = '';
+      if (!picked.length) return;
+      void run(async () => {
+        const name = picked[0].webkitRelativePath.split('/')[0];
+        const topLevel = picked.filter(file => file.webkitRelativePath.split('/').length === 2);
+        const manifest = topLevel.find(file => file.name === filename);
+        await loadFiles(topLevel, manifest ? await manifest.text() : null, null, name);
+      });
+    });
+
+    async function dimensions(name) {
+      const image = new Image();
+      image.src = preview(name);
+      await image.decode();
+      return [image.naturalWidth, image.naturalHeight];
+    }
+
+    mergeButton.addEventListener('click', () => {
+      void run(async () => {
+        const [primaryName, alternateName] = selected;
+        const primary = entries.find(entry => entry.image === primaryName);
+        const alternate = entries.find(entry => entry.image === alternateName);
+        const [primarySize, alternateSize] = await Promise.all([dimensions(primaryName), dimensions(alternateName)]);
+        if (primarySize[0] !== alternateSize[0] || primarySize[1] !== alternateSize[1]) {
+          throw new Error('Comparison images need matching dimensions.');
+        }
+        primary.compare = alternate.image;
+        entries.splice(entries.indexOf(alternate), 1);
+        selected.clear();
+        markChanged('Comparison merged.');
+      });
+    });
+
+    function orderText() {
+      return JSON.stringify(entries, null, 2) + '\n';
+    }
+
+    saveButton.addEventListener('click', () => {
+      void run(async () => {
+        if (await readManifest(directory) !== sourceText) {
+          throw new Error('gallery.json changed outside the editor. Reopen the folder before saving.');
+        }
+        const text = orderText();
+        const file = await directory.getFileHandle(filename, { create: true });
+        const writer = await file.createWritable();
+        try {
+          await writer.write(text);
+          await writer.close();
+        } catch (error) {
+          await writer.abort().catch(() => {});
+          throw error;
+        }
+        sourceText = text;
+        dirty = false;
+        message('Saved gallery.json. Commit and push it in Fork to publish.');
+      });
+    });
+
+    downloadButton.addEventListener('click', () => {
+      const url = URL.createObjectURL(new Blob([orderText()], { type: 'application/json' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      message('Downloaded gallery.json. Copy it into the gallery folder before committing.');
+    });
+
+    window.addEventListener('beforeunload', event => {
+      if (dirty) event.preventDefault();
+    });
+  </script>
+</body>
+</html>
