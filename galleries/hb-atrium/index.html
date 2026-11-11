@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Digital Shamans' environment art for the Atrium in Hard Bullet. Explore the gallery in 4K.">
+  <title>Hard Bullet - Atrium | Digital Shamans</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --background: #191919;
+      --text: #f2f2f2;
+      --muted: #b4b4b4;
+      --accent: #e18842;
+      --border: #383838;
+      font: 16px/1.55 system-ui, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: var(--background); color: var(--text); }
+    body:has(dialog[open]) { overflow: hidden; }
+    a { color: inherit; }
+    a:focus-visible, button:focus-visible, .stage:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+    .shell { width: calc(100% - clamp(32px, 4vw, 144px)); margin-inline: auto; }
+    .site-header { border-bottom: 1px solid var(--border); }
+    .site-header .shell {
+      min-height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .5rem 1rem;
+      padding-block: .75rem;
+    }
+    .wordmark { font-weight: 700; letter-spacing: .02em; }
+    .back { color: var(--muted); text-underline-offset: .25em; }
+    .back:hover { color: var(--text); }
+    .gallery-content {
+      width: var(--shot-width, min(100%, 90vw, calc(90dvh * 16 / 9)));
+      margin-inline: auto;
+    }
+    .intro { padding-block: clamp(16px, 2vw, 32px) clamp(28px, 4vw, 54px); }
+    h1 { margin: 0; text-align: center; font-size: clamp(2rem, 5.2vw, 4.8rem); line-height: 1.02; letter-spacing: -.045em; }
+    .description { margin: 1.1rem 0 0; color: var(--muted); }
+    .gallery {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: clamp(12px, 2vw, 28px);
+    }
+    .shot {
+      position: relative;
+      display: block;
+      cursor: default;
+      background: #101010;
+    }
+    .shot img { width: 100%; height: auto; display: block; }
+    .shot .shot-comparison { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+    .shot.compare-right .shot-comparison { opacity: 1; }
+    .shot.viewer-return-focus:focus-visible { outline: none; }
+    .site-footer { padding-block: 2.5rem; color: var(--muted); font-size: .875rem; }
+    dialog {
+      position: fixed;
+      inset: 0;
+      margin: 0;
+      border: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
+      overflow: hidden;
+      background: #000;
+      color: var(--text);
+    }
+    .viewer-frame { position: absolute; inset: 0; background: #000; }
+    .stage { position: absolute; inset: 0; overflow: auto; cursor: default; }
+    .stage img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      user-select: none;
+    }
+    .stage.native { cursor: grab; }
+    .stage.native.dragging { cursor: grabbing; }
+    .stage.native img {
+      width: var(--native-width);
+      height: var(--native-height);
+      margin-inline: auto;
+    }
+    .viewer-bar {
+      position: absolute;
+      top: max(.55rem, env(safe-area-inset-top));
+      left: max(.55rem, env(safe-area-inset-left));
+      right: max(.55rem, env(safe-area-inset-right));
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: .5rem;
+      pointer-events: none;
+    }
+    .viewer-group { display: flex; align-items: center; flex-wrap: wrap; gap: .35rem; }
+    .viewer-group > * { pointer-events: auto; }
+    .viewer-arrows {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(100%, calc(100dvh * 16 / 9));
+      transform: translate(-50%, -50%);
+      display: flex;
+      justify-content: space-between;
+      padding-inline: clamp(.5rem, 1.2vw, 1.5rem);
+      pointer-events: none;
+    }
+    .stage.native + .viewer-arrows { width: 100%; }
+    .viewer-arrows button { pointer-events: auto; }
+    .viewer-bar button, .viewer-arrows button, .counter {
+      margin: 0;
+      min-height: 42px;
+      border: 1px solid #555;
+      border-radius: .35rem;
+      padding: .35rem .7rem;
+      background: rgba(16, 16, 16, .94);
+      color: var(--text);
+      font: inherit;
+      font-size: .875rem;
+    }
+    .viewer-bar button, .viewer-arrows button { min-width: 42px; cursor: pointer; }
+    .viewer-bar button:hover:not(:disabled), .viewer-arrows button:hover:not(:disabled) { background: #333; }
+    .viewer-bar button:disabled, .viewer-arrows button:disabled { opacity: .45; cursor: default; }
+    .viewer-arrows button { width: 48px; height: 48px; padding: 0; font-size: 1.4rem; }
+    .counter { display: inline-flex; align-items: center; font-variant-numeric: tabular-nums; }
+    .status {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      max-width: calc(100% - 2rem);
+      transform: translateX(-50%);
+      margin: 0;
+      padding: .45rem .75rem;
+      border-radius: .35rem;
+      background: #181818;
+    }
+    @media (max-width: 460px) {
+      .viewer-group { gap: .2rem; }
+      .viewer-bar button, .counter { padding-inline: .45rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell">
+      <span class="wordmark">Digital Shamans</span>
+      <a class="back" href="https://digitalshamans.co.uk/">Back to portfolio</a>
+    </div>
+  </header>
+
+  <main class="shell">
+    <div class="gallery-content">
+      <header class="intro">
+        <h1>Hard Bullet - Atrium</h1>
+        <p class="description">Environment art by Digital Shamans for the Atrium in Hard Bullet.</p>
+      </header>
+      <p id="gallery-status" role="status">Loading gallery…</p>
+      <section class="gallery" aria-label="Atrium screenshots"></section>
+    </div>
+    <footer class="site-footer"><a class="back" href="https://digitalshamans.co.uk/">Back to portfolio</a></footer>
+  </main>
+
+  <dialog id="viewer" aria-label="4K image viewer">
+    <div id="viewer-frame" class="viewer-frame">
+      <div id="stage" class="stage" tabindex="0" aria-label="Image viewing area">
+        <img id="original" alt="" draggable="false">
+      </div>
+      <div class="viewer-arrows" role="group" aria-label="Side navigation">
+        <button id="previous-side" type="button" aria-label="Previous image (left)">←</button>
+        <button id="next-side" type="button" aria-label="Next image (right)">→</button>
+      </div>
+      <div class="viewer-bar">
+        <div class="viewer-group">
+          <button id="previous" type="button" aria-label="Previous image">←</button>
+          <output id="counter" class="counter" aria-live="polite"></output>
+          <button id="next" type="button" aria-label="Next image">→</button>
+        </div>
+        <div class="viewer-group">
+          <button id="zoom" type="button" disabled>100%</button>
+          <button id="fullscreen" type="button" hidden>Fullscreen</button>
+          <button id="close" type="button" autofocus>Close</button>
+        </div>
+      </div>
+      <p id="status" class="status" role="status" hidden></p>
+    </div>
+  </dialog>
+
+  <script src="../gallery-data.js"></script>
+  <script>
+    const galleryContent = document.querySelector('.gallery-content');
+    const gallery = document.querySelector('.gallery');
+
+    // Desktop browser zoom changes viewport CSS pixels and devicePixelRatio together.
+    // Keep the default fit in unzoomed CSS pixels so browser zoom scales the shots.
+    const desktop = window.matchMedia('(pointer: fine)').matches;
+    const initialPageScale = desktop && window.outerWidth > 0 ? window.outerWidth / window.innerWidth : 1;
+    const unzoomedDpr = window.devicePixelRatio / initialPageScale;
+
+    function fitGallery() {
+      const pageScale = window.devicePixelRatio / unzoomedDpr;
+      const fitWidth = Math.min(window.innerWidth, window.innerHeight * 16 / 9);
+      galleryContent.style.setProperty('--shot-width', (0.9 * fitWidth * pageScale) + 'px');
+    }
+
+    fitGallery();
+    window.addEventListener('resize', fitGallery);
+    const galleryStatus = document.querySelector('#gallery-status');
+    const shots = [];
+    const viewer = document.querySelector('#viewer');
+    const frame = document.querySelector('#viewer-frame');
+    const stage = document.querySelector('#stage');
+    const original = document.querySelector('#original');
+    const previous = document.querySelector('#previous');
+    const next = document.querySelector('#next');
+    const previousSide = document.querySelector('#previous-side');
+    const nextSide = document.querySelector('#next-side');
+    const counter = document.querySelector('#counter');
+    const zoom = document.querySelector('#zoom');
+    const fullscreen = document.querySelector('#fullscreen');
+    const close = document.querySelector('#close');
+    const status = document.querySelector('#status');
+    let current = 0;
+    let opener;
+    let drag;
+    let didDrag = false;
+    let comparison;
+    let compareRight = false;
+    let openingPointer;
+    let pointerOpened = false;
+    let fullscreenActive = false;
+    let keepViewerOpen = false;
+
+    function fitImage() {
+      stage.classList.remove('native');
+      stage.scrollTo(0, 0);
+      zoom.textContent = '100%';
+    }
+
+    function showStatus(message) {
+      status.textContent = message;
+      status.hidden = !message;
+    }
+
+    function showImage(index) {
+      current = index;
+      comparison = null;
+      compareRight = false;
+      fitImage();
+      zoom.disabled = true;
+      previous.disabled = previousSide.disabled = next.disabled = nextSide.disabled = shots.length < 2;
+      counter.textContent = (index + 1) + ' / ' + shots.length;
+      original.alt = shots[index].querySelector('img').alt;
+      showStatus('Loading 4K image…');
+      original.src = shots[index].href;
+      if (original.complete && original.naturalWidth) imageLoaded();
+    }
+
+    function imageLoaded() {
+      zoom.disabled = false;
+      showStatus('');
+      const compareSource = shots[current].dataset.compareSrc;
+      if (compareSource && !comparison) {
+        comparison = new Image();
+        comparison.addEventListener('load', updateComparison, { once: true });
+        comparison.src = compareSource;
+      }
+    }
+
+    function updateComparison() {
+      if (!viewer.open || !comparison?.naturalWidth) return;
+      const source = compareRight ? comparison.src : shots[current].href;
+      if (original.src !== source) original.src = source;
+    }
+
+    function canCompare(event) {
+      return (event.pointerType === 'mouse' || event.pointerType === 'pen') && !event.buttons;
+    }
+
+    function compareAtPointer(event) {
+      if (!comparison || !canCompare(event)) return;
+      if (openingPointer && event.screenX === openingPointer.x && event.screenY === openingPointer.y) return;
+      openingPointer = null;
+      const rect = original.getBoundingClientRect();
+      const ratio = original.naturalWidth / original.naturalHeight;
+      const native = stage.classList.contains('native');
+      const width = native ? rect.width : Math.min(rect.width, rect.height * ratio);
+      const height = native ? rect.height : width / ratio;
+      const left = rect.left + (rect.width - width) / 2;
+      const top = rect.top + (rect.height - height) / 2;
+      compareRight = event.clientX >= left + width / 2 && event.clientX < left + width &&
+        event.clientY >= top && event.clientY < top + height;
+      updateComparison();
+    }
+
+    original.addEventListener('load', imageLoaded);
+    original.addEventListener('error', () => {
+      zoom.disabled = true;
+      showStatus('This image could not be loaded.');
+    });
+
+    function setupGalleryComparison(shot) {
+      let alternate;
+      let overRight = false;
+
+      function renderComparison() {
+        shot.classList.toggle('compare-right', overRight && Boolean(alternate?.naturalWidth));
+      }
+
+      shot.addEventListener('pointermove', event => {
+        if (!canCompare(event)) return;
+        const rect = shot.getBoundingClientRect();
+        overRight = event.clientX >= rect.left + rect.width / 2;
+        if (overRight && !alternate) {
+          alternate = new Image();
+          alternate.className = 'shot-comparison';
+          alternate.alt = '';
+          alternate.setAttribute('aria-hidden', 'true');
+          alternate.draggable = false;
+          alternate.addEventListener('load', renderComparison, { once: true });
+          alternate.src = shot.dataset.compareSrc;
+          shot.append(alternate);
+        }
+        renderComparison();
+      });
+
+      shot.addEventListener('pointerleave', () => {
+        overRight = false;
+        renderComparison();
+      });
+    }
+
+    function createShot(entry, index) {
+      const label = 'Atrium screenshot ' + (index + 1);
+      const shot = document.createElement('a');
+      shot.className = 'shot';
+      shot.href = encodeURIComponent(entry.image);
+      shot.setAttribute('aria-label', 'Open ' + label + ' in 4K');
+      const image = document.createElement('img');
+      image.alt = 'Hard Bullet ' + label;
+      image.width = 3840;
+      image.height = 2160;
+      image.decoding = 'async';
+      if (index === 0) image.fetchPriority = 'high';
+      else image.loading = 'lazy';
+      image.src = shot.href;
+      shot.append(image);
+      if (entry.compare) {
+        shot.dataset.compareSrc = encodeURIComponent(entry.compare);
+        setupGalleryComparison(shot);
+      }
+      if (typeof viewer.showModal === 'function') {
+        shot.addEventListener('click', event => {
+          if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+          event.preventDefault();
+          opener = shot;
+          pointerOpened = event.detail > 0;
+          shot.classList.remove('compare-right');
+          openingPointer = { x: event.screenX, y: event.screenY };
+          showImage(index);
+          viewer.showModal();
+          void setFullscreen(true);
+        });
+      }
+      return shot;
+    }
+
+    async function loadGallery() {
+      try {
+        const response = await fetch('gallery.json');
+        if (!response.ok) throw new Error('Gallery order unavailable.');
+        const entries = GalleryData.parse(await response.text());
+        shots.push(...entries.map(createShot));
+        gallery.append(...shots);
+        galleryStatus.hidden = true;
+      } catch (error) {
+        console.error('Gallery could not be loaded', error);
+        galleryStatus.textContent = 'The gallery could not be loaded. Please refresh to try again.';
+      }
+    }
+
+    function step(amount) {
+      if (shots.length < 2) return;
+      showImage((current + amount + shots.length) % shots.length);
+    }
+
+    for (const button of [previous, previousSide]) button.addEventListener('click', () => step(-1));
+    for (const button of [next, nextSide]) button.addEventListener('click', () => step(1));
+    close.addEventListener('click', () => viewer.close());
+
+    viewer.addEventListener('keydown', event => {
+      if (stage.classList.contains('native') && event.target === stage) return;
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        event.preventDefault();
+        step(event.key === 'ArrowLeft' ? -1 : 1);
+      }
+    });
+
+    zoom.addEventListener('click', () => {
+      if (stage.classList.contains('native')) {
+        fitImage();
+        return;
+      }
+      const scale = window.devicePixelRatio || 1;
+      stage.style.setProperty('--native-width', (original.naturalWidth / scale) + 'px');
+      stage.style.setProperty('--native-height', (original.naturalHeight / scale) + 'px');
+      stage.classList.add('native');
+      stage.scrollTo((stage.scrollWidth - stage.clientWidth) / 2, (stage.scrollHeight - stage.clientHeight) / 2);
+      zoom.textContent = 'Fit';
+      stage.focus();
+    });
+
+    stage.addEventListener('click', () => {
+      if (!didDrag) viewer.close();
+      didDrag = false;
+    });
+
+    stage.addEventListener('pointerdown', event => {
+      didDrag = false;
+      if (event.pointerType !== 'mouse' || event.button !== 0 || !stage.classList.contains('native')) return;
+      event.preventDefault();
+      stage.focus();
+      drag = { x: event.clientX, y: event.clientY, left: stage.scrollLeft, top: stage.scrollTop };
+      stage.setPointerCapture(event.pointerId);
+      stage.classList.add('dragging');
+    });
+
+    stage.addEventListener('pointermove', event => {
+      if (!drag) {
+        compareAtPointer(event);
+        return;
+      }
+      const dx = drag.x - event.clientX;
+      const dy = drag.y - event.clientY;
+      if (Math.hypot(dx, dy) > 5) didDrag = true;
+      if (didDrag) stage.scrollTo(drag.left + dx, drag.top + dy);
+    });
+
+    stage.addEventListener('lostpointercapture', () => {
+      drag = null;
+      stage.classList.remove('dragging');
+    });
+
+    stage.addEventListener('pointerleave', () => {
+      compareRight = false;
+      updateComparison();
+    });
+
+    fullscreen.hidden = !document.fullscreenEnabled || !frame.requestFullscreen;
+    async function setFullscreen(enabled, reportError = false) {
+      if (fullscreen.hidden) return;
+      try {
+        if (enabled) await frame.requestFullscreen();
+        else await document.exitFullscreen();
+      } catch (error) {
+        if (!enabled) keepViewerOpen = false;
+        console.warn('Fullscreen request failed', error);
+        if (reportError) showStatus('Fullscreen is unavailable here. Try your browser’s fullscreen shortcut.');
+      }
+    }
+
+    fullscreen.addEventListener('click', () => {
+      keepViewerOpen = document.fullscreenElement === frame;
+      void setFullscreen(!keepViewerOpen, true);
+    });
+    document.addEventListener('fullscreenchange', () => {
+      const isFullscreen = document.fullscreenElement === frame;
+      fullscreen.textContent = isFullscreen ? 'Exit fullscreen' : 'Fullscreen';
+      if (fullscreenActive && !isFullscreen) {
+        if (viewer.open && !keepViewerOpen) viewer.close();
+        keepViewerOpen = false;
+      }
+      fullscreenActive = isFullscreen;
+      if (isFullscreen && !viewer.open) void setFullscreen(false);
+    });
+
+    viewer.addEventListener('close', () => {
+      if (document.fullscreenElement === frame) void setFullscreen(false);
+      comparison = null;
+      original.removeAttribute('src');
+      fitImage();
+      if (opener) {
+        const shot = opener;
+        if (pointerOpened) {
+          shot.classList.add('viewer-return-focus');
+          shot.addEventListener('blur', () => shot.classList.remove('viewer-return-focus'), { once: true });
+        }
+        shot.focus({ preventScroll: true });
+      }
+    });
+
+    void loadGallery();
+  </script>
+</body>
+</html>
