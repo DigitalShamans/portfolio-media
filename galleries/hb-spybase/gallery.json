@@ -1,0 +1,64 @@
+[
+  {
+    "image": "SpyBase_01.jpg",
+    "compare": "SpyBase_01_Wireframe.jpg"
+  },
+  {
+    "image": "SpyBase_03.jpg",
+    "compare": "SpyBase_03_Wireframe.jpg"
+  },
+  {
+    "image": "SpyBase_04.jpg",
+    "compare": "SpyBase_04_Wireframe.jpg"
+  },
+  {
+    "image": "SpyBase_05.jpg",
+    "compare": "SpyBase_05_Wireframe.jpg"
+  },
+  {
+    "image": "SpyBase_08.jpg",
+    "compare": "SpyBase_08_Wireframe.jpg"
+  },
+  {
+    "image": "SpyBase_WindTunnels_Colliders_01.jpg"
+  },
+  {
+    "image": "SpyBase_32a.jpg"
+  },
+  {
+    "image": "SpyBase_35aa.jpg",
+    "compare": "SpyBase_34a.jpg"
+  },
+  {
+    "image": "SpyBase_106b_WIP.jpg",
+    "compare": "SpyBase_105a_WIP.jpg"
+  },
+  {
+    "image": "SpyBase_107a_WIP.jpg"
+  },
+  {
+    "image": "SpyBase_106a_WIP.jpg"
+  },
+  {
+    "image": "SpyBase_100a_WIP.jpg",
+    "compare": "SpyBase_111a_WIP.jpg"
+  },
+  {
+    "image": "SpyBase_108a_WIP.jpg"
+  },
+  {
+    "image": "SpyBase_112a_WIP.jpg"
+  },
+  {
+    "image": "SpyBase_115a_WIP.jpg",
+    "compare": "SpyBase_114a_WIP.jpg"
+  },
+  {
+    "image": "SpyBase_103a_WIP.jpg",
+    "compare": "SpyBase_102a_WIP.jpg"
+  },
+  {
+    "image": "SpyBase_101a_WIP.jpg",
+    "compare": "SpyBase_104a_WIP.jpg"
+  }
+]
