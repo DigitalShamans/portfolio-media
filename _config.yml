@@ -1,0 +1,8 @@
+# Publish the gallery and project media without the shared source assets.
+exclude:
+  - branding
+  - marketing
+  - galleries_PNG
+  - gallery_PNG
+  - '**/*.[pP][sS][dD]'
+  - '**/*.[pP][sS][bB]'
