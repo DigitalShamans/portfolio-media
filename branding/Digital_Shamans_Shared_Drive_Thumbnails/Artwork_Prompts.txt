@@ -1,0 +1,38 @@
+Digital Shamans Shared Drive Thumbnails — v3
+Artwork was edited with the built-in image generation tool.
+Exact Google Drive theme export: 1280 x 144 PNG; centered artwork; no embedded titles.
+
+Common artwork edit prompt:
+Edit the reference artwork into ONE standalone square app icon for a Google Drive shared drive. Preserve the existing polished sculptural 3D illustration, recognizable subject, metallic materials, electric cyan-blue rim light on the left and violet-purple rim light on the right, on a deep navy background. Remove ALL title text, letters, typographic neon lines, and the original left-art/right-title composition. Recompose the illustration centrally as a compact, clearly recognizable emblem; simplify tiny details as needed to remain legible at 56 px. Square 1024 x 1024 composition. Keep the ENTIRE subject and important glow inside a circle of diameter 800 pixels centered on the canvas (at least 112 px clear padding); no part may be clipped. Uniform near-black navy #080f20 in all four corners and along the canvas edges; subtle local blue-purple glow only behind the centered subject. No border, no enclosing ring, no logo, no watermark, no captions. This is an icon artwork master; do not draw a banner, UI, thumbnail sheet, or multiple variants. Subject to preserve and recompose: 
+
+Subjects appended for each artwork:
+Starters Briefing: a dark blue folder with white paper, a small compass prominently in front, and a warm illuminated open doorway behind; group these as a single compact onboarding emblem.
+
+AI: the friendly white and dark metallic robot head with cyan oval eyes and a smiling mouth, simplified circuitry and a luminous chip at the top, preserving the welcoming expression.
+
+Production: the game environment diorama transitioning from blue grid blockout on one side to a stone castle tower on the other, with a sculpting tool in front; retain the castle and blockout contrast as the readable core.
+
+Finance: a prominent gold-and-silver pound coin with the £ symbol, two compact coin stacks behind, and a dark bookkeeping ledger base; preserve the pound symbol as part of the coin design, with no title text.
+
+Legal: balanced golden justice scales and a dark wood-and-gold judge's gavel grouped compactly, shorten the gavel handle if required to keep the full emblem within the safe circle.
+
+IT-Security: the silver laptop displaying a blue metallic security shield with a padlock in front, simplified circuit traces; angle and recompose so both laptop and shield form one compact centered emblem.
+
+HR-Recruitment: a compact stack of three candidate CV cards with simple person silhouettes, one magnifying glass in front and a blue check badge; reduce microdetails and keep all objects within the safe circle.
+
+Branding: the wooden artist palette with thick cyan-blue, violet-purple, and warm yellow paint, and one dark pencil laid diagonally; omit the separate paper base if it makes the symbol too wide.
+
+Project-Management: the dark desktop ring-bound calendar with three connected blue, purple, and green task bars and a green circular checkmark; square compact calendar proportions and clear readable task flow.
+
+Social-Community: a compact circle of friendly stylized people talking around one prominent white speech bubble with three dots, preserve the welcoming group and blue-purple lighting, minimize individual facial microdetail for icon readability.
+
+Outsource: two friendly professionals facing one another in a handshake; the clasped hands and two upper torsos and heads form a compact rounded emblem, preserve the original two characters and suit colors, no cropped heads or arms.
+
+Operations: a large metallic gear behind three connected blue checkmarked task modules, a short simplified control-panel base; compact and bold with the gear and checks easy to recognize.
+
+Marketing-Networking: a white-and-blue megaphone with three small connected profile badges, arranged compactly and centrally; preserve the original metallic 3D style, no text.
+
+Library of Resources: one prominent open illustrated reference book with a few neatly layered folders and photo cards behind it, preserve the mountain and foliage sample imagery but reduce the count of tiny cards for readability.
+
+Gexagon: the silver and black VR headset inside the blue-purple hexagonal frame, preserve the reference headset and hexagon without adding any brand text.
+
