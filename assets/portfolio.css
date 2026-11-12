@@ -87,9 +87,17 @@
 .full-portfolio .portfolio-heading { margin-block-end: .75rem; }
 
 .portfolio-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: clamp(.5rem, 1.65vw, 1.25rem);
+  --portfolio-columns: 5;
+  --portfolio-gap: clamp(.5rem, 1.65vw, 1.25rem);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--portfolio-gap);
+}
+
+.portfolio-grid > li {
+  flex: 0 0 calc((100% - (var(--portfolio-columns) - 1) * var(--portfolio-gap)) / var(--portfolio-columns));
+  min-inline-size: 0;
 }
 
 .portfolio-card {
@@ -122,13 +130,13 @@
 }
 
 @media (max-width: 900px) {
-  .portfolio-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .portfolio-grid { --portfolio-columns: 4; }
 }
 
 @media (max-width: 620px) {
-  .portfolio-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .portfolio-grid { --portfolio-columns: 3; }
 }
 
 @media (max-width: 400px) {
-  .portfolio-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .portfolio-grid { --portfolio-columns: 2; }
 }
