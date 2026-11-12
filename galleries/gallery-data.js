@@ -30,9 +30,8 @@ const GalleryData = (() => {
         throw new Error('Each gallery entry must contain an image filename.');
       }
       const additional = entry.additionalImages ?? [];
-      if (!Array.isArray(additional) || additional.length > 3 ||
-          (additional.length > 0 && entry.compare === undefined)) {
-        throw new Error('A gallery group needs one to five images in order.');
+      if (!Array.isArray(additional) || (additional.length > 0 && entry.compare === undefined)) {
+        throw new Error('List additional images in order after the primary and comparison images.');
       }
       for (const name of images(entry)) {
         if (!isImageName(name)) throw new Error('Use image filenames from this gallery folder.');
