@@ -8,20 +8,16 @@
   letter-spacing: -.035em;
 }
 
-.portfolio-description {
-  margin: .25rem 0 .625rem;
-  color: var(--muted);
-}
+#recent-work { container-type: inline-size; }
 
 .recent-galleries {
-  --banner-height: clamp(66px, calc((100svh - 236px) / 6), 16rem);
   --banner-gap: 4px;
-  block-size: calc(6 * var(--banner-height) + 5 * var(--banner-gap));
+  max-block-size: calc(120cqi + 5 * var(--banner-gap));
   overflow-y: auto;
-  scrollbar-gutter: stable;
-  scrollbar-width: thin;
-  scrollbar-color: #828282 #292929;
+  scrollbar-width: none;
 }
+
+.recent-galleries::-webkit-scrollbar { display: none; }
 
 .recent-gallery-list,
 .portfolio-grid {
@@ -30,54 +26,34 @@
   padding: 0;
 }
 
-.recent-gallery-list { display: grid; gap: var(--banner-gap); }
+.recent-gallery-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--banner-gap);
+}
 
 .recent-gallery {
   position: relative;
   display: block;
-  height: var(--banner-height);
-  overflow: hidden;
-  isolation: isolate;
   background: #080808;
   text-decoration: none;
 }
 
 .recent-gallery img {
-  position: absolute;
-  inset: 0;
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 22%;
-}
-
-.recent-gallery::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent 12%, rgb(0 0 0 / .38) 23%, transparent 49%);
-  pointer-events: none;
-}
-
-.recent-gallery__label {
-  position: absolute;
-  z-index: 1;
-  inset-block-start: 50%;
-  inset-inline-start: 21%;
-  transform: translateY(-50%);
-  display: grid;
-  justify-items: start;
-  gap: .125rem;
-  font-size: clamp(.95rem, 1.5vw, 1.2rem);
-  font-weight: 700;
-  line-height: 1.2;
-  text-shadow: 0 1px 4px #000, 0 1px 10px #000;
+  height: auto;
 }
 
 .recent-gallery__locked {
+  position: absolute;
+  inset-inline-start: .75rem;
+  inset-block-end: .75rem;
   display: flex;
   align-items: center;
   gap: .4rem;
+  padding: .25rem .5rem;
+  background: rgb(0 0 0 / .85);
   font-size: .6875rem;
   font-weight: 600;
 }
@@ -140,14 +116,15 @@
   font-size: .8125rem;
 }
 
+@media (min-width: 120.062em) {
+  .portfolio-page .site-shell { width: min(calc(100% - 1.875rem), 125rem); }
+}
+
 @media (max-width: 900px) {
   .portfolio-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
 @media (max-width: 620px) {
-  .recent-galleries { --banner-height: clamp(56px, 19vw, 86px); }
-  .recent-gallery img { object-position: center; }
-  .recent-gallery__label { inset-inline-start: 23%; }
   .portfolio-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
