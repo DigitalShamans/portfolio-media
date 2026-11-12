@@ -1,13 +1,23 @@
-<header class="site-header">
+<header class="site-header{% if page.portfolio == 'personal' %} site-header--personal{% endif %}">
   <div class="site-shell site-header__inner">
-    <a class="site-brand" href="{{ '/' | relative_url }}">
-      <img src="{{ '/assets/digital-shamans-logo.png' | relative_url }}" width="792" height="281" alt="Digital Shamans">
-    </a>
-    <nav class="site-nav" aria-label="Main navigation">
-      <a href="{{ '/' | relative_url }}"{% unless page.url == '/resume/' %} aria-current="true"{% endunless %}>Portfolio</a>
-      <a href="{{ '/resume/' | relative_url }}"{% if page.url == '/resume/' %} aria-current="page"{% endif %}>About Us</a>
-      <a href="https://tally.so/r/3Ey0V4">Contact</a>
-      <a href="https://www.digitalshamans.co.uk/blog">Jobs</a>
-    </nav>
+    {% if page.portfolio == 'personal' %}
+      {% assign personal_header = site.data.personal_portfolio %}
+      <a class="site-brand site-brand--personal" href="{{ personal_header.home | relative_url }}">{{ personal_header.name | escape }}</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="{{ personal_header.home | relative_url }}" aria-current="true">Portfolio</a>
+        <a href="{{ personal_header.about | escape }}">About / CV</a>
+        <a href="{{ personal_header.contact | escape }}">Contact</a>
+      </nav>
+    {% else %}
+      <a class="site-brand" href="{{ '/' | relative_url }}">
+        <img src="{{ '/assets/digital-shamans-logo.png' | relative_url }}" width="792" height="281" alt="Digital Shamans">
+      </a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="{{ '/' | relative_url }}"{% unless page.url == '/resume/' %} aria-current="true"{% endunless %}>Portfolio</a>
+        <a href="{{ '/resume/' | relative_url }}"{% if page.url == '/resume/' %} aria-current="page"{% endif %}>About Us</a>
+        <a href="https://tally.so/r/3Ey0V4">Contact</a>
+        <a href="https://www.digitalshamans.co.uk/blog">Jobs</a>
+      </nav>
+    {% endif %}
   </div>
 </header>

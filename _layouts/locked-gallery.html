@@ -1,0 +1,163 @@
+{% if page.portfolio == 'personal' %}
+  {% assign portfolio_name = site.data.personal_portfolio.name %}
+  {% assign portfolio_url = site.data.personal_portfolio.home %}
+{% else %}
+  {% assign portfolio_name = 'Digital Shamans' %}
+  {% assign portfolio_url = '/' %}
+{% endif %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Environment art by Digital Shamans for Hard Bullet.">
+  <title>Hard Bullet - RZ Start | {{ portfolio_name | escape }}</title>
+  {% if page.portfolio == 'personal' %}
+    <base href="{{ '/galleries/hb-rzstart/' | relative_url }}">
+  {% else %}
+    {% include site-favicon.html %}
+  {% endif %}
+  <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=6">
+  <link rel="stylesheet" href="../gallery.css?v=5">
+  <style>
+    .gallery-access { max-width: 34rem; padding-block: 2rem; }
+    .gallery-access h1 { font-size: clamp(.9rem, 2.5vw, 1.5rem); }
+    .gallery-access form { display: grid; gap: .7rem; max-width: 24rem; margin-inline: auto; }
+    .gallery-access input, .gallery-access button {
+      width: 100%;
+      min-height: 44px;
+      padding: .5rem .8rem;
+      border: 1px solid var(--border);
+      border-radius: .35rem;
+      font: inherit;
+    }
+    .gallery-access input { background: #101010; color: var(--text); }
+    .gallery-access button { background: var(--accent); color: #191919; font-weight: 700; cursor: pointer; }
+    .gallery-access button:disabled { opacity: .5; cursor: default; }
+    .gallery-access p { min-height: 1.55em; margin: 0; color: var(--muted); }
+  </style>
+</head>
+<body>
+  {% include site-header.html %}
+
+  <main id="gallery-access" class="shell gallery-access">
+    <header class="intro">
+      <h1>Hard Bullet - RZ Start</h1>
+    </header>
+    <form id="gallery-access-form" method="post">
+      <label for="gallery-password">Gallery password</label>
+      <input id="gallery-password" type="password" autocomplete="current-password" aria-describedby="access-message" required>
+      <button type="submit" disabled>Unlock gallery</button>
+      <p id="access-message" role="status"></p>
+    </form>
+    <noscript><p>Enable JavaScript to unlock the gallery.</p></noscript>
+  </main>
+
+  <script type="module">
+    const salt = decodeBase64('gc2eOsbPIKBDd7RgQVvjeA==');
+    const nonce = decodeBase64('d5E/teRqRRx2Kn+c');
+    const encryptedGallery = decodeBase64(`
+      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
+    `);
+    const form = document.querySelector('#gallery-access-form');
+    const password = document.querySelector('#gallery-password');
+    const submit = form.querySelector('button');
+    const message = document.querySelector('#access-message');
+
+    function decodeBase64(value) {
+      return Uint8Array.from(atob(value), character => character.charCodeAt(0));
+    }
+
+    async function decryptGallery(value) {
+      const material = await crypto.subtle.importKey(
+        'raw', new TextEncoder().encode(value), 'PBKDF2', false, ['deriveKey'],
+      );
+      const key = await crypto.subtle.deriveKey(
+        { name: 'PBKDF2', hash: 'SHA-256', salt, iterations: 600000 },
+        material,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['decrypt'],
+      );
+      const decoded = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: nonce }, key, encryptedGallery);
+      return new TextDecoder().decode(decoded);
+    }
+
+    function loadScript(source) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = source;
+        script.addEventListener('load', resolve, { once: true });
+        script.addEventListener('error', reject, { once: true });
+        document.body.append(script);
+      });
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (submit.disabled) return;
+      submit.disabled = true;
+      message.textContent = 'Checking password…';
+
+      let markup;
+      try {
+        markup = await decryptGallery(password.value);
+      } catch (error) {
+        message.textContent = error.name === 'OperationError'
+          ? 'Incorrect password.'
+          : 'The gallery could not be unlocked. Please reload to try again.';
+        submit.disabled = false;
+        password.focus();
+        password.select();
+        return;
+      }
+
+      password.value = '';
+      const template = document.createElement('template');
+      template.innerHTML = markup;
+      template.content.querySelector('.site-footer .back')?.setAttribute('href', {{ portfolio_url | relative_url | append: '#recent-work' | jsonify }});
+      document.querySelector('#gallery-access').replaceWith(template.content);
+      try {
+        await loadScript('../gallery-data.js?v=3');
+        await loadScript('../gallery-viewer.js?v=2');
+      } catch {
+        document.querySelector('#gallery-status').textContent =
+          'The gallery could not be loaded. Please reload to try again.';
+      }
+    });
+
+    if (globalThis.crypto?.subtle) {
+      submit.disabled = false;
+    } else {
+      message.textContent = 'Open this gallery in a browser with Web Crypto support.';
+    }
+  </script>
+</body>
+</html>
