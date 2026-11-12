@@ -4,11 +4,6 @@
   min-block-size: 100vh;
 }
 
-.about-page .site-nav a[aria-current="page"] {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-}
-
 .about-main { flex: 1; }
 
 .about-content {

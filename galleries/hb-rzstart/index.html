@@ -10,8 +10,8 @@ layout: none
   <meta name="description" content="Environment art by Digital Shamans for Hard Bullet.">
   <title>Hard Bullet - RZ Start | Digital Shamans</title>
   {% include site-favicon.html %}
-  <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=4">
-  <link rel="stylesheet" href="../gallery.css?v=4">
+  <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=5">
+  <link rel="stylesheet" href="../gallery.css?v=5">
   <style>
     .gallery-access { max-width: 34rem; padding-block: 2rem; }
     .gallery-access h1 { font-size: clamp(.9rem, 2.5vw, 1.5rem); }
@@ -138,7 +138,7 @@ layout: none
       document.querySelector('#gallery-access').replaceWith(template.content);
       try {
         await loadScript('../gallery-data.js?v=3');
-        await loadScript('../gallery-viewer.js');
+        await loadScript('../gallery-viewer.js?v=2');
       } catch {
         document.querySelector('#gallery-status').textContent =
           'The gallery could not be loaded. Please reload to try again.';

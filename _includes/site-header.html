@@ -4,8 +4,7 @@
       <img src="{{ '/assets/digital-shamans-logo.png' | relative_url }}" width="792" height="281" alt="Digital Shamans">
     </a>
     <nav class="site-nav" aria-label="Main navigation">
-      <a{% unless page.url == '/resume/' %} class="site-nav__recent"{% endunless %} href="{{ '/' | relative_url }}#recent-work">Recent Work</a>
-      <a class="site-nav__full" href="{{ '/' | relative_url }}#full-portfolio">Full Portfolio</a>
+      <a href="{{ '/' | relative_url }}"{% unless page.url == '/resume/' %} aria-current="true"{% endunless %}>Portfolio</a>
       <a href="{{ '/resume/' | relative_url }}"{% if page.url == '/resume/' %} aria-current="page"{% endif %}>About Us</a>
       <a href="https://tally.so/r/3Ey0V4">Contact</a>
       <a href="https://www.digitalshamans.co.uk/blog">Jobs</a>
