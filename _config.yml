@@ -6,3 +6,9 @@ exclude:
   - gallery_PNG
   - '**/*.[pP][sS][dD]'
   - '**/*.[pP][sS][bB]'
+
+plugins:
+  - jekyll-redirect-from
+
+redirect_from:
+  json: false
