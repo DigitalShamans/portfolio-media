@@ -27,12 +27,25 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
 }
 
 .site-header__inner {
+  position: relative;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: .25rem 1.5rem;
   padding-block: calc(.375rem + 3px) .375rem;
   padding-inline: clamp(0px, calc(50vw - 400px), 100px);
+}
+
+.site-header__inner::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  inline-size: min(100%, 1890px);
+  block-size: 5px;
+  margin-inline: auto;
+  background: url("AccentLine_Orange.png") center / 100% 100% no-repeat;
+  pointer-events: none;
 }
 
 .site-brand { flex: none; }
@@ -43,6 +56,8 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
 }
 
 .site-nav {
+  position: relative;
+  inset-block-end: 3px;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
