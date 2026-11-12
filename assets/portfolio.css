@@ -79,7 +79,8 @@
   border-radius: 4px 4px 0 0;
 }
 
-.recent-gallery:hover img { filter: brightness(1.14); }
+.recent-gallery-filter { position: absolute; }
+.recent-gallery:hover img { filter: url("#recent-gallery-highlight"); }
 .recent-gallery:focus-visible { outline-offset: -3px; }
 
 .full-portfolio { margin-block-start: clamp(1.25rem, 3vw, 2rem); }
