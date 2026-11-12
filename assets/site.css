@@ -28,10 +28,11 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
 
 .site-header__inner {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   gap: .25rem 1.5rem;
-  padding-block: .375rem;
+  padding-block: calc(.375rem + 3px) .375rem;
+  padding-inline: clamp(0px, calc(50vw - 400px), 100px);
 }
 
 .site-brand { flex: none; }
@@ -75,7 +76,11 @@ body:has(#full-portfolio:target) .site-nav__full {
 }
 
 @media (max-width: 620px) {
-  .site-header__inner { flex-direction: column; gap: .25rem; }
+  .site-header__inner {
+    flex-direction: column;
+    align-items: center;
+    gap: .25rem;
+  }
   .site-nav { justify-content: center; }
 }
 
