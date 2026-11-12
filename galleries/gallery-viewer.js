@@ -39,6 +39,7 @@ let drag;
 let didDrag = false;
 let comparisons = [];
 let comparisonIndex = 0;
+let viewerIndicator;
 let openingPointer;
 let pointerOpened = false;
 let fullscreenActive = false;
@@ -48,6 +49,7 @@ function fitImage() {
   stage.classList.remove('native');
   stage.scrollTo(0, 0);
   zoom.textContent = '100%';
+  positionViewerIndicator();
 }
 
 function showStatus(message) {
@@ -56,16 +58,23 @@ function showStatus(message) {
 }
 
 function showImage(index) {
+  const { image, sources } = shots[index];
   current = index;
   comparisons = [];
   comparisonIndex = 0;
+  viewerIndicator?.remove();
+  viewerIndicator = sources.length > 1 ? createComparisonIndicator(sources.length) : null;
+  if (viewerIndicator) {
+    viewerIndicator.hidden = true;
+    frame.append(viewerIndicator);
+  }
   fitImage();
   zoom.disabled = true;
   previous.disabled = previousSide.disabled = next.disabled = nextSide.disabled = shots.length < 2;
   counter.textContent = (index + 1) + ' / ' + shots.length;
-  original.alt = shots[index].image.alt;
+  original.alt = image.alt;
   showStatus('Loading 4K image…');
-  original.src = shots[index].sources[0];
+  original.src = sources[0];
   if (original.complete && original.naturalWidth) imageLoaded();
 }
 
@@ -73,6 +82,12 @@ function imageLoaded() {
   zoom.disabled = false;
   showStatus('');
   const { sources } = shots[current];
+  if (viewerIndicator) {
+    const displayed = sources.indexOf(original.currentSrc || original.src);
+    setActiveSegment(viewerIndicator, Math.max(0, displayed));
+    viewerIndicator.hidden = false;
+    positionViewerIndicator();
+  }
   if (sources.length === 1 || comparisons.length) return;
   comparisons = sources.slice(1).map(source => {
     const image = new Image();
@@ -97,17 +112,31 @@ function comparisonAt(x, left, width, count) {
   return Math.min(count - 1, Math.max(0, Math.floor((x - left) * count / width)));
 }
 
-function compareAtPointer(event) {
-  if (!comparisons.length || !canCompare(event)) return;
-  if (openingPointer && event.screenX === openingPointer.x && event.screenY === openingPointer.y) return;
-  openingPointer = null;
+function viewerImageBounds() {
   const rect = original.getBoundingClientRect();
   const ratio = original.naturalWidth / original.naturalHeight;
-  const native = stage.classList.contains('native');
-  const width = native ? rect.width : Math.min(rect.width, rect.height * ratio);
-  const height = native ? rect.height : width / ratio;
-  const left = rect.left + (rect.width - width) / 2;
-  const top = rect.top + (rect.height - height) / 2;
+  const width = Math.min(rect.width, rect.height * ratio);
+  const height = width / ratio;
+  return { left: rect.left + (rect.width - width) / 2, top: rect.top + (rect.height - height) / 2, width, height };
+}
+
+function positionViewerIndicator() {
+  if (!viewerIndicator || viewerIndicator.hidden || !original.naturalWidth) return;
+  const { left, top, width, height } = viewerImageBounds();
+  const frameRect = frame.getBoundingClientRect();
+  viewerIndicator.style.left = (left - frameRect.left) + 'px';
+  viewerIndicator.style.width = width + 'px';
+  viewerIndicator.style.setProperty('--comparison-bottom', (top + height - frameRect.top) + 'px');
+}
+
+new ResizeObserver(positionViewerIndicator).observe(stage);
+stage.addEventListener('scroll', positionViewerIndicator, { passive: true });
+
+function compareAtPointer(event) {
+  if (!comparisons.length || !original.naturalWidth || !canCompare(event)) return;
+  if (openingPointer && event.screenX === openingPointer.x && event.screenY === openingPointer.y) return;
+  openingPointer = null;
+  const { left, top, width, height } = viewerImageBounds();
   const inside = event.clientX >= left && event.clientX < left + width &&
     event.clientY >= top && event.clientY < top + height;
   comparisonIndex = inside ? comparisonAt(event.clientX, left, width, comparisons.length + 1) : 0;
@@ -117,17 +146,40 @@ function compareAtPointer(event) {
 original.addEventListener('load', imageLoaded);
 original.addEventListener('error', () => {
   zoom.disabled = true;
+  if (viewerIndicator) viewerIndicator.hidden = true;
   showStatus('This image could not be loaded.');
 });
 
+function createComparisonIndicator(count) {
+  const indicator = document.createElement('span');
+  indicator.className = 'comparison-indicator';
+  indicator.setAttribute('aria-hidden', 'true');
+  for (let index = 0; index < count; index++) indicator.append(document.createElement('span'));
+  setActiveSegment(indicator, 0);
+  return indicator;
+}
+
+function setActiveSegment(indicator, index) {
+  indicator.querySelector('.is-active')?.classList.remove('is-active');
+  indicator.children[index].classList.add('is-active');
+}
+
 function setupGalleryComparison(link, sources) {
+  const indicator = createComparisonIndicator(sources.length);
+  link.append(indicator);
   const alternates = [];
   let active = 0;
+
+  function showAlternate(index) {
+    alternates[index].classList.add('is-visible');
+    setActiveSegment(indicator, index);
+  }
 
   function select(index) {
     if (index === active) return;
     alternates[active]?.classList.remove('is-visible');
     active = index;
+    setActiveSegment(indicator, 0);
     if (index === 0) return;
 
     let alternate = alternates[index];
@@ -138,13 +190,13 @@ function setupGalleryComparison(link, sources) {
       alternate.setAttribute('aria-hidden', 'true');
       alternate.draggable = false;
       alternate.addEventListener('load', () => {
-        alternate.classList.toggle('is-visible', active === index);
+        if (active === index) showAlternate(index);
       }, { once: true });
       alternates[index] = alternate;
       alternate.src = sources[index];
       link.append(alternate);
     }
-    if (alternate.naturalWidth) alternate.classList.add('is-visible');
+    if (alternate.naturalWidth) showAlternate(index);
   }
 
   link.addEventListener('pointermove', event => {
@@ -233,6 +285,7 @@ zoom.addEventListener('click', () => {
   stage.classList.add('native');
   stage.scrollTo((stage.scrollWidth - stage.clientWidth) / 2, (stage.scrollHeight - stage.clientHeight) / 2);
   zoom.textContent = 'Fit';
+  positionViewerIndicator();
   stage.focus();
 });
 
@@ -303,6 +356,8 @@ document.addEventListener('fullscreenchange', () => {
 viewer.addEventListener('close', () => {
   if (document.fullscreenElement === frame) void setFullscreen(false);
   comparisons = [];
+  viewerIndicator?.remove();
+  viewerIndicator = null;
   original.removeAttribute('src');
   fitImage();
   if (opener) {

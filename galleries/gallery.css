@@ -51,6 +51,32 @@ h1 { margin: 0; text-align: center; font-size: clamp(1rem, 2.6vw, 2.4rem); line-
   pointer-events: none;
 }
 .shot .shot-comparison.is-visible { opacity: 1; }
+.comparison-indicator {
+  --indicator-height: clamp(6px, .62vw, 13px);
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  block-size: var(--indicator-height);
+  pointer-events: none;
+}
+.comparison-indicator[hidden] { display: none; }
+.shot > .comparison-indicator { inset-inline: 0; inset-block-end: 0; }
+.viewer-frame > .comparison-indicator {
+  inset-block-start: calc(var(--comparison-bottom) - var(--indicator-height));
+}
+.comparison-indicator > span {
+  position: relative;
+  flex: 1 1 0;
+  min-inline-size: 0;
+}
+.comparison-indicator > span::before {
+  content: "";
+  position: absolute;
+  inset: 0 min(4px, .2vw, 10%) 1px;
+  background: #3b3b3b;
+  box-shadow: inset 0 0 0 1px #666, 0 0 0 1px #151515;
+}
+.comparison-indicator > .is-active::before { background: #fff; }
 .shot.viewer-return-focus:focus-visible { outline: none; }
 .site-footer { padding-block: 2.5rem; color: var(--muted); font-size: .875rem; }
 dialog {
@@ -67,7 +93,7 @@ dialog {
   background: #000;
   color: var(--text);
 }
-.viewer-frame { position: absolute; inset: 0; background: #000; }
+.viewer-frame { position: absolute; inset: 0; overflow: hidden; background: #000; }
 .stage { position: absolute; inset: 0; overflow: auto; cursor: default; }
 .stage img {
   display: block;

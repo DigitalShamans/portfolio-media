@@ -76,8 +76,7 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
 }
 
 .site-nav a:hover,
-body:not(:has(#full-portfolio:target)) .site-nav__recent,
-body:has(#full-portfolio:target) .site-nav__full {
+.site-nav a[aria-current] {
   color: var(--accent);
   border-bottom-color: var(--accent);
 }
