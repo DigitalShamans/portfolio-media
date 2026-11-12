@@ -1,3 +1,6 @@
+---
+layout: none
+---
 <!doctype html>
 <html lang="en">
 <head>
@@ -6,15 +9,11 @@
   <meta name="color-scheme" content="dark">
   <meta name="description" content="Environment art by Digital Shamans for Hard Bullet.">
   <title>Hard Bullet - Bar &amp; Church | Digital Shamans</title>
-  <link rel="stylesheet" href="../gallery.css">
+  <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}">
+  <link rel="stylesheet" href="../gallery.css?v=3">
 </head>
 <body>
-  <header class="site-header">
-    <div class="shell">
-      <span class="wordmark">Digital Shamans</span>
-      <a class="back" href="https://digitalshamans.co.uk/">Back to portfolio</a>
-    </div>
-  </header>
+  {% include site-header.html %}
 
   <main class="shell">
     <div class="gallery-content">
@@ -25,7 +24,7 @@
       <p id="gallery-status" role="status">Loading gallery…</p>
       <section class="gallery" aria-label="Bar &amp; Church screenshots"></section>
     </div>
-    <footer class="site-footer"><a class="back" href="https://digitalshamans.co.uk/">Back to portfolio</a></footer>
+    <footer class="site-footer"><a class="back" href="{{ '/' | relative_url }}#recent-work">Back to portfolio</a></footer>
   </main>
 
   <dialog id="viewer" aria-label="4K image viewer">
