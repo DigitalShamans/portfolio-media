@@ -1,4 +1,4 @@
-.portfolio-page { background: #151515; }
+.portfolio-page { background: #000; }
 .portfolio-main { padding-block: clamp(.625rem, 1vw, .875rem) 2.5rem; }
 
 .portfolio-heading {
@@ -14,7 +14,7 @@
 }
 
 .recent-galleries {
-  --banner-height: clamp(66px, calc((100svh - 236px) / 6), 110px);
+  --banner-height: clamp(66px, calc((100svh - 236px) / 6), 16rem);
   --banner-gap: 4px;
   block-size: calc(6 * var(--banner-height) + 5 * var(--banner-gap));
   overflow-y: auto;

@@ -17,12 +17,12 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
 }
 
 .site-shell {
-  width: min(1120px, calc(100% - clamp(24px, 6vw, 96px)));
+  width: min(calc(100% - 1.875rem), 76.25rem);
   margin-inline: auto;
 }
 
 .site-header {
-  background: #111;
+  background: #0f0f0f;
   border-bottom: 1px solid #2c2c2c;
 }
 
@@ -64,6 +64,14 @@ body:not(:has(#full-portfolio:target)) .site-nav__recent,
 body:has(#full-portfolio:target) .site-nav__full {
   color: var(--accent);
   border-bottom-color: var(--accent);
+}
+
+@media (min-width: 90em) {
+  .site-shell { width: min(100%, 78.125rem); }
+}
+
+@media (min-width: 120.062em) {
+  .site-shell { width: min(100%, 100rem); }
 }
 
 @media (max-width: 620px) {
