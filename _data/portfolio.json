@@ -1,13 +1,13 @@
 {
   "recent": [
-    { "title": "Egypt", "folder": "hb-egypt", "banner": "hb_egypt_header_920.jpg" },
-    { "title": "Helipad", "folder": "hb-helipad", "banner": "hb_helipad_03_header_920.jpg" },
-    { "title": "Airplanes", "folder": "hb-airplanes", "banner": "hb_airplanes_header_920.jpg" },
-    { "title": "Bar & Church", "folder": "hb-barchurch", "banner": "hb_barchurch_header_920.jpg" },
-    { "title": "Harbor", "folder": "hb-harbor", "banner": "hb_harbor_header_920.jpg" },
-    { "title": "Atrium", "folder": "hb-atrium", "banner": "hb_atrium_header_920.jpg" },
-    { "title": "Spy Base", "folder": "hb-spybase", "banner": "hb_spybase_header_920.jpg" },
-    { "title": "RZ Start", "folder": "hb-rzstart", "banner": "hb_rzstart_header_920.jpg", "locked": true }
+    { "title": "Egypt", "folder": "hb-egypt", "banner": "hb_egypt_header_400.jpg" },
+    { "title": "Helipad", "folder": "hb-helipad", "banner": "hb_helipad_03_header_400.jpg" },
+    { "title": "Airplanes", "folder": "hb-airplanes", "banner": "hb_airplanes_header_400.jpg" },
+    { "title": "Bar & Church", "folder": "hb-barchurch", "banner": "hb_barchurch_header_400.jpg" },
+    { "title": "Harbor", "folder": "hb-harbor", "banner": "hb_harbor_header_400.jpg" },
+    { "title": "Atrium", "folder": "hb-atrium", "banner": "hb_atrium_header_400.jpg" },
+    { "title": "Spy Base", "folder": "hb-spybase", "banner": "hb_spybase_header_400.jpg" },
+    { "title": "RZ Start", "folder": "hb-rzstart", "banner": "hb_rzstart_header_400.jpg", "locked": true }
   ],
   "full": [
     {
