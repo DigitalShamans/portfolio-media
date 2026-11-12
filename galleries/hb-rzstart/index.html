@@ -1,3 +1,6 @@
+---
+layout: none
+---
 <!doctype html>
 <html lang="en">
 <head>
@@ -6,7 +9,8 @@
   <meta name="color-scheme" content="dark">
   <meta name="description" content="Environment art by Digital Shamans for Hard Bullet.">
   <title>Hard Bullet - RZ Start | Digital Shamans</title>
-  <link rel="stylesheet" href="../gallery.css">
+  <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}">
+  <link rel="stylesheet" href="../gallery.css?v=3">
   <style>
     .gallery-access { max-width: 34rem; padding-block: 2rem; }
     .gallery-access h1 { font-size: clamp(.9rem, 2.5vw, 1.5rem); }
@@ -26,12 +30,7 @@
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="shell">
-      <span class="wordmark">Digital Shamans</span>
-      <a class="back" href="https://digitalshamans.co.uk/">Back to portfolio</a>
-    </div>
-  </header>
+  {% include site-header.html %}
 
   <main id="gallery-access" class="shell gallery-access">
     <header class="intro">
@@ -134,6 +133,7 @@
       password.value = '';
       const template = document.createElement('template');
       template.innerHTML = markup;
+      template.content.querySelector('.site-footer .back')?.setAttribute('href', '../../#recent-work');
       document.querySelector('#gallery-access').replaceWith(template.content);
       try {
         await loadScript('../gallery-data.js?v=2');

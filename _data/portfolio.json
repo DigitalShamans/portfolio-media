@@ -1,0 +1,99 @@
+{
+  "recent": [
+    { "title": "Egypt", "folder": "hb-egypt", "banner": "hb_egypt_header_920.jpg" },
+    { "title": "Helipad", "folder": "hb-helipad", "banner": "hb_helipad_03_header_920.jpg" },
+    { "title": "Airplanes", "folder": "hb-airplanes", "banner": "hb_egypt_header_920.jpg" },
+    { "title": "Bar & Church", "folder": "hb-barchurch", "banner": "hb_barchurch_header_920.jpg" },
+    { "title": "Harbor", "folder": "hb-harbor", "banner": "hb_harbor_header_920.jpg" },
+    { "title": "Atrium", "folder": "hb-atrium", "banner": "hb_atrium_header_920.jpg" },
+    { "title": "Spy Base", "folder": "hb-spybase", "banner": "hb_spybase_header_920.jpg" },
+    { "title": "RZ Start", "folder": "hb-rzstart", "banner": "hb_rzstart_header_920.jpg", "locked": true }
+  ],
+  "full": [
+    {
+      "title": "Hard Bullet - Helipad",
+      "id": "Y8PgeV",
+      "cover": "https://cdna.artstation.com/p/assets/covers/images/103/941/634/smaller_square/digital-shamans-digital-shamans-hardbullet-helipx.jpg?1794302195"
+    },
+    {
+      "title": "Hard Bullet - Atrium",
+      "id": "6L9BLx",
+      "cover": "https://cdna.artstation.com/p/assets/covers/images/099/020/636/smaller_square/digital-shamans-digital-shamans-hardbullet-atrium.jpg?1778703098"
+    },
+    {
+      "title": "Hard Bullet - Club Church",
+      "id": "x3lqY1",
+      "cover": "https://cdnb.artstation.com/p/assets/covers/images/099/020/199/smaller_square/digital-shamans-digital-shamans-hardbullet-ckubchurch.jpg?1778702336"
+    },
+    {
+      "title": "Hard Bullet - Harbor Arena",
+      "id": "gRYoJP",
+      "cover": "https://cdnb.artstation.com/p/assets/covers/images/099/019/499/smaller_square/digital-shamans-digital-shamans-hardbullet-harbor.jpg?1778701072"
+    },
+    {
+      "title": "Phantom: Covert Ops",
+      "id": "A9VRrq",
+      "cover": "https://cdna.artstation.com/p/assets/covers/images/036/593/094/smaller_square/digital-shamans-digital-shamans-phantom-ps.jpg?1618084191"
+    },
+    {
+      "title": "Props",
+      "id": "ba253a",
+      "cover": "https://cdna.artstation.com/p/assets/covers/images/042/369/392/smaller_square/digital-shamans-digital-shamans-props3-ps.jpg?1634306514"
+    },
+    {
+      "title": "Sniper Elite 4 - Environment Art",
+      "id": "gJYL2Z",
+      "cover": "https://cdnb.artstation.com/p/assets/covers/images/036/593/163/smaller_square/digital-shamans-digital-shamans-sniper-elite-4-ps.jpg?1618084306"
+    },
+    {
+      "title": "Vehicles - Aircrafts",
+      "id": "w8LJ5g",
+      "cover": "https://cdna.artstation.com/p/assets/covers/images/036/593/134/smaller_square/digital-shamans-digital-shamans-vehicles-ps.jpg?1618084266"
+    },
+    {
+      "title": "Battlezone VR",
+      "id": "9mb0zW",
+      "cover": "https://cdnb.artstation.com/p/assets/covers/images/036/594/707/smaller_square/digital-shamans-digital-shamans-battlezone-ps-purple3.jpg?1618087901"
+    },
+    {
+      "title": "Carve Snowboarding VR - Concept Art Design",
+      "id": "d8Zm23",
+      "cover": "https://cdnb.artstation.com/p/assets/covers/images/040/924/319/smaller_square/digital-shamans-digital-shamans-carve-snowboarding-conceptart-ps-2.jpg?1630273550"
+    },
+    {
+      "title": "Concept Art",
+      "id": "48bED2",
+      "cover": "https://cdna.artstation.com/p/assets/covers/images/042/369/426/smaller_square/digital-shamans-digital-shamans-survisland-conceptart2-ps.jpg?1634306549"
+    },
+    {
+      "title": "Strange Brigade - Environment Art",
+      "id": "Vd5Vg5",
+      "cover": "https://cdna.artstation.com/p/assets/covers/images/042/370/574/smaller_square/digital-shamans-digital-shamans-strange-brigade3-ps.jpg?1634308729"
+    },
+    {
+      "title": "Ancient Weapons",
+      "id": "4bWXz2",
+      "cover": "https://cdnb.artstation.com/p/assets/covers/images/042/369/517/smaller_square/digital-shamans-digital-shamans-ancient-weapons3-ps.jpg?1634306699"
+    },
+    {
+      "title": "Firearms",
+      "id": "58QBOJ",
+      "cover": "https://cdnb.artstation.com/p/assets/covers/images/042/369/559/smaller_square/digital-shamans-digital-shamans-firearms3-ps.jpg?1634306782"
+    },
+    {
+      "title": "Vegetation",
+      "id": "kDEvad",
+      "cover": "https://cdna.artstation.com/p/assets/covers/images/040/924/162/smaller_square/digital-shamans-digital-shamans-vegetation-ps3.jpg?1630273194"
+    },
+    {
+      "title": "TBA #2022",
+      "id": "Krlb0x",
+      "cover": "https://cdna.artstation.com/p/assets/covers/images/040/924/192/large/digital-shamans-digital-shamans-tba-03-ps.jpg?1630273269"
+    },
+    {
+      "title": "TBA #2022",
+      "id": "v2e6WA",
+      "cover": "https://cdnb.artstation.com/p/assets/covers/images/040/924/179/large/digital-shamans-digital-shamans-tba-05-ps.jpg?1630273238"
+    }
+  ]
+}

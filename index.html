@@ -1,0 +1,58 @@
+---
+layout: none
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Recent environment art and the full Digital Shamans game art portfolio.">
+  <title>Portfolio | Digital Shamans</title>
+  <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/portfolio.css' | relative_url }}">
+</head>
+<body class="portfolio-page">
+  {% include site-header.html %}
+  <main class="site-shell portfolio-main">
+    <section id="recent-work" aria-labelledby="recent-title">
+      <h1 id="recent-title" class="portfolio-heading">Recent Work</h1>
+      <p class="portfolio-description">Selected work from the past 12 months</p>
+      <div class="recent-galleries" role="region" aria-labelledby="recent-title" tabindex="0">
+        <ul class="recent-gallery-list">
+          {% for gallery in site.data.portfolio.recent %}
+            {% assign gallery_url = '/galleries/' | append: gallery.folder | append: '/' %}
+            {% assign banner_url = '/projects/' | append: gallery.folder | append: '/' | append: gallery.banner %}
+            <li>
+              <a class="recent-gallery" href="{{ gallery_url | relative_url }}">
+                <img src="{{ banner_url | relative_url }}" width="3840" height="920" alt="" decoding="async"{% if forloop.index > 6 %} loading="lazy"{% endif %}>
+                <span class="recent-gallery__label">
+                  {{ gallery.title | escape }}
+                  {% if gallery.locked %}
+                    <span class="recent-gallery__locked"><span class="lock-icon" aria-hidden="true"></span>Password required</span>
+                  {% endif %}
+                </span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+    <section id="full-portfolio" class="full-portfolio" aria-labelledby="portfolio-title">
+      <h2 id="portfolio-title" class="portfolio-heading">Full Portfolio</h2>
+      <ul class="portfolio-grid">
+        {% for project in site.data.portfolio.full %}
+          <li>
+            <a class="portfolio-card" href="https://www.digitalshamans.co.uk/projects/{{ project.id }}">
+              <img src="{{ project.cover | escape }}" width="400" height="400" loading="lazy" decoding="async" alt="{{ project.title | escape }}">
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  </main>
+  <footer class="portfolio-footer">
+    <div class="site-shell">© {{ site.time | date: "%Y" }} Digital Shamans Ltd.</div>
+  </footer>
+</body>
+</html>
