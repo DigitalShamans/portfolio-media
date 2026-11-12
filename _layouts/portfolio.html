@@ -1,0 +1,78 @@
+{% if page.portfolio == 'personal' %}
+  {% assign portfolio = site.data.personal_portfolio %}
+  {% assign portfolio_name = portfolio.name %}
+  {% assign portfolio_description = 'Environment art portfolio of ' | append: portfolio_name | append: '.' %}
+  {% assign gallery_prefix = portfolio.home | append: 'galleries/' %}
+  {% assign copyright = portfolio.name %}
+{% else %}
+  {% assign portfolio = site.data.portfolio %}
+  {% assign portfolio_name = 'Digital Shamans' %}
+  {% assign portfolio_description = 'Recent environment art and the full Digital Shamans game art portfolio.' %}
+  {% assign gallery_prefix = '/galleries/' %}
+  {% assign copyright = 'Digital Shamans Ltd.' %}
+{% endif %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="{{ portfolio_description | escape }}">
+  <title>Portfolio | {{ portfolio_name | escape }}</title>
+  {% unless page.portfolio == 'personal' %}{% include site-favicon.html %}{% endunless %}
+  <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=6">
+  <link rel="stylesheet" href="{{ '/assets/portfolio.css' | relative_url }}?v=5">
+</head>
+<body class="portfolio-page">
+  {% include site-header.html %}
+  <main class="site-shell portfolio-main">
+    <section id="recent-work" aria-label="Recent Work">
+      <!-- Evenly spaced samples of a spline through the Photoshop RGB points (0, 0), (45, 48), (191, 205), (255, 255). -->
+      {% assign hover_curve = '0 0.06584 0.1324 0.20036 0.27006 0.34088 0.41207 0.48286 0.55253 0.6203 0.68544 0.74718 0.80479 0.85785 0.90725 0.95424 1' %}
+      <svg class="recent-gallery-filter" width="0" height="0" aria-hidden="true" focusable="false">
+        <defs>
+          <filter id="recent-gallery-highlight" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+            <feComponentTransfer>
+              <feFuncR type="table" tableValues="{{ hover_curve }}" />
+              <feFuncG type="table" tableValues="{{ hover_curve }}" />
+              <feFuncB type="table" tableValues="{{ hover_curve }}" />
+            </feComponentTransfer>
+          </filter>
+        </defs>
+      </svg>
+      <div class="recent-galleries" role="region" aria-label="Gallery banners" tabindex="0">
+        <ul class="recent-gallery-list">
+          {% for gallery in site.data.portfolio.recent %}
+            {% assign gallery_url = gallery_prefix | append: gallery.folder | append: '/' %}
+            {% assign banner_url = '/projects/' | append: gallery.folder | append: '/' | append: gallery.banner %}
+            <li>
+              <a class="recent-gallery" href="{{ gallery_url | relative_url }}">
+                <img src="{{ banner_url | relative_url }}" width="2000" height="400" alt="{{ gallery.title | escape }}" decoding="async"{% if forloop.index > 6 %} loading="lazy"{% endif %}>
+                {% if gallery.locked %}
+                  <span class="recent-gallery__locked"><span class="lock-icon" aria-hidden="true"></span>Password required</span>
+                {% endif %}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+    <section id="full-portfolio" class="full-portfolio" aria-labelledby="portfolio-title">
+      <h1 id="portfolio-title" class="portfolio-heading">Full Portfolio</h1>
+      <ul class="portfolio-grid">
+        {% for project in portfolio.full %}
+          <li>
+            {% assign studio_project_url = 'https://www.artstation.com/artwork/' | append: project.id %}
+            <a class="portfolio-card" href="{{ project.url | default: studio_project_url | escape }}">
+              <img src="{{ project.cover | escape }}" width="400" height="400" loading="lazy" decoding="async" alt="{{ project.title | escape }}">
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  </main>
+  <footer class="portfolio-footer">
+    <div class="site-shell">© {{ site.time | date: "%Y" }} {{ copyright | escape }}</div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,72 @@
+{% if page.portfolio == 'personal' %}
+  {% assign portfolio_name = site.data.personal_portfolio.name %}
+  {% assign portfolio_url = site.data.personal_portfolio.home %}
+  {% assign gallery_path = '/galleries/' | append: page.gallery | append: '/' %}
+  {% assign gallery_page = site.pages | where: 'url', gallery_path | first %}
+  {% assign gallery_label = gallery_page.gallery_title | remove_first: 'Hard Bullet - ' | append: ' screenshots' %}
+{% else %}
+  {% assign portfolio_name = 'Digital Shamans' %}
+  {% assign portfolio_url = '/' %}
+  {% assign gallery_page = page %}
+  {% assign gallery_label = page.gallery_label %}
+{% endif %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="{{ gallery_page.gallery_description | escape }}">
+  <title>{{ gallery_page.gallery_title | escape }} | {{ portfolio_name | escape }}</title>
+  {% if page.portfolio == 'personal' %}
+    <base href="{{ gallery_path | relative_url }}">
+  {% else %}
+    {% include site-favicon.html %}
+  {% endif %}
+  <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=6">
+  <link rel="stylesheet" href="../gallery.css?v=5">
+</head>
+<body>
+  {% include site-header.html %}
+
+  <main class="shell">
+    <div class="gallery-content">
+      <header class="intro">
+        <h1>{{ gallery_page.gallery_title | escape }}</h1>
+        <p class="description">{{ gallery_page.gallery_intro | escape }}</p>
+      </header>
+      <p id="gallery-status" role="status">Loading gallery…</p>
+      <section class="gallery" aria-label="{{ gallery_label | escape }}"></section>
+    </div>
+    <footer class="site-footer"><a class="back" href="{{ portfolio_url | relative_url }}#recent-work">Back to portfolio</a></footer>
+  </main>
+
+  <dialog id="viewer" aria-label="4K image viewer">
+    <div id="viewer-frame" class="viewer-frame">
+      <div id="stage" class="stage" tabindex="0" aria-label="Image viewing area">
+        <img id="original" alt="" draggable="false">
+      </div>
+      <div class="viewer-arrows" role="group" aria-label="Side navigation">
+        <button id="previous-side" type="button" aria-label="Previous image (left)">←</button>
+        <button id="next-side" type="button" aria-label="Next image (right)">→</button>
+      </div>
+      <div class="viewer-bar">
+        <div class="viewer-group">
+          <button id="previous" type="button" aria-label="Previous image">←</button>
+          <output id="counter" class="counter" aria-live="polite"></output>
+          <button id="next" type="button" aria-label="Next image">→</button>
+        </div>
+        <div class="viewer-group">
+          <button id="zoom" type="button" disabled>100%</button>
+          <button id="fullscreen" type="button" hidden>Fullscreen</button>
+          <button id="close" type="button" autofocus>Close</button>
+        </div>
+      </div>
+      <p id="status" class="status" role="status" hidden></p>
+    </div>
+  </dialog>
+
+  <script src="../gallery-data.js?v=3"></script>
+  <script src="../gallery-viewer.js?v=2"></script>
+</body>
+</html>
