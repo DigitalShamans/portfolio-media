@@ -137,7 +137,7 @@ layout: none
       template.content.querySelector('.site-footer .back')?.setAttribute('href', '../../#recent-work');
       document.querySelector('#gallery-access').replaceWith(template.content);
       try {
-        await loadScript('../gallery-data.js?v=2');
+        await loadScript('../gallery-data.js?v=3');
         await loadScript('../gallery-viewer.js');
       } catch {
         document.querySelector('#gallery-status').textContent =

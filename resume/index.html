@@ -1,0 +1,64 @@
+---
+layout: none
+permalink: /resume/
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="About Digital Shamans, a game art outsourcing studio creating concept art, environments and game-ready 3D assets.">
+  <title>About Us | Digital Shamans</title>
+  {% include site-favicon.html %}
+  <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=4">
+  <link rel="stylesheet" href="{{ '/assets/portfolio.css' | relative_url }}?v=5">
+  <link rel="stylesheet" href="{{ '/assets/about.css' | relative_url }}">
+</head>
+<body class="portfolio-page about-page">
+  {% include site-header.html %}
+  <main class="site-shell about-main">
+    <article class="about-content" aria-labelledby="about-title">
+      <div class="about-intro">
+        <h1 id="about-title">About Us</h1>
+        <p class="about-location">London, United Kingdom</p>
+        <p>Digital Shamans is a game art outsourcing studio. Our team of game developers and freelance artists works alongside studios to raise the visual quality of their games and help meet production targets.</p>
+        <p>We develop concept art, environments and game-ready 3D assets, and help integrate and optimise them in-engine. Our work spans PC, console, mobile and VR.</p>
+        <p class="about-motto">Nothing done well is insignificant.</p>
+        <ul class="about-links">
+          <li><a href="mailto:contact@digitalshamans.co.uk">contact@digitalshamans.co.uk</a></li>
+          <li><a href="https://digital_shamans.artstation.com/resume">Studio profile and presentation on ArtStation</a></li>
+        </ul>
+      </div>
+      <div class="about-details">
+        <section aria-labelledby="about-services">
+          <h2 id="about-services">Services</h2>
+          <ul>
+            <li>Art direction</li>
+            <li>Concept design</li>
+            <li>Environment design</li>
+            <li>Game art development</li>
+            <li>Look development</li>
+          </ul>
+        </section>
+        <section aria-labelledby="about-software">
+          <h2 id="about-software">Software</h2>
+          <ul>
+            <li>Maya</li>
+            <li>Unreal Engine</li>
+            <li>Unity</li>
+            <li>Substance 3D Painter</li>
+            <li>Substance 3D Designer</li>
+            <li>Houdini</li>
+            <li>ZBrush</li>
+            <li>3ds Max</li>
+          </ul>
+        </section>
+      </div>
+    </article>
+  </main>
+  <footer class="portfolio-footer">
+    <div class="site-shell">© {{ site.time | date: "%Y" }} Digital Shamans Ltd.</div>
+  </footer>
+</body>
+</html>
