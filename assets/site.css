@@ -105,11 +105,10 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
 
 .site-header--personal .site-header__inner {
   min-block-size: clamp(4.25rem, 6.7vw, 6.75rem);
-  align-items: center;
-  padding-block: .625rem .875rem;
 }
 
 .site-brand--personal {
+  align-self: center;
   color: var(--text);
   font-size: clamp(1.5rem, 3vw, 2.55rem);
   font-weight: 720;
