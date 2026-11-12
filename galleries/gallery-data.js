@@ -7,6 +7,12 @@ const GalleryData = (() => {
       /\.(jpe?g|png|webp|avif|gif)$/i.test(name);
   }
 
+  function images(entry) {
+    const names = [entry.image];
+    if (entry.compare !== undefined) names.push(entry.compare);
+    return names.concat(entry.additionalImages ?? []);
+  }
+
   function parse(text, availableFiles) {
     let entries;
     try {
@@ -23,7 +29,12 @@ const GalleryData = (() => {
       if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
         throw new Error('Each gallery entry must contain an image filename.');
       }
-      for (const name of entry.compare === undefined ? [entry.image] : [entry.image, entry.compare]) {
+      const additional = entry.additionalImages ?? [];
+      if (!Array.isArray(additional) || additional.length > 3 ||
+          (additional.length > 0 && entry.compare === undefined)) {
+        throw new Error('A gallery group needs one to five images in order.');
+      }
+      for (const name of images(entry)) {
         if (!isImageName(name)) throw new Error('Use image filenames from this gallery folder.');
         if (used.has(name)) throw new Error('Image appears more than once: ' + name);
         if (availableFiles && !availableFiles.has(name)) throw new Error('Missing gallery image: ' + name);
@@ -33,5 +44,5 @@ const GalleryData = (() => {
     return entries;
   }
 
-  return { isImageName, parse };
+  return { isImageName, images, parse };
 })();
