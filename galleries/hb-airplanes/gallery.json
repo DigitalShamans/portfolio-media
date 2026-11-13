@@ -1,115 +1,226 @@
 [
   {
-    "image": "SandboxLab_Airplanes_4k_A_01.jpg"
-  },
-  {
-    "image": "SandboxLab_Airplanes_4k_A_04.jpg",
-    "compare": "SandboxLab_Airplanes_4k_A_05.jpg",
+    "image": "SandboxLab_Airplanes_4k_A_01.jpg",
+    "compare": "SandboxLab_Airplanes_4k_A_01_Wireframe.jpg",
     "additionalImages": [
-      "SandboxLab_Airplanes_4k_A_03.jpg"
+      "SandboxLab_Airplanes_4k_A_01_Checker.jpg"
     ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_A_06.jpg"
+    "image": "SandboxLab_Airplanes_4k_A_04.jpg",
+    "compare": "SandboxLab_Airplanes_4k_A_04_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_A_04_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_A_07.jpg"
+    "image": "SandboxLab_Airplanes_4k_A_06.jpg",
+    "compare": "SandboxLab_Airplanes_4k_A_06_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_A_06_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_A_08.jpg"
+    "image": "SandboxLab_Airplanes_4k_A_07.jpg",
+    "compare": "SandboxLab_Airplanes_4k_A_07_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_A_07_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_A_10.jpg"
+    "image": "SandboxLab_Airplanes_4k_A_08.jpg",
+    "compare": "SandboxLab_Airplanes_4k_A_08_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_A_08_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_A_09.jpg"
+    "image": "SandboxLab_Airplanes_4k_A_10.jpg",
+    "compare": "SandboxLab_Airplanes_4k_A_10_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_A_10_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_A_14.jpg"
+    "image": "SandboxLab_Airplanes_4k_A_14.jpg",
+    "compare": "SandboxLab_Airplanes_4k_A_14_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_A_14_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_A_15.jpg"
+    "image": "SandboxLab_Airplanes_4k_A_13.jpg",
+    "compare": "SandboxLab_Airplanes_4k_A_13_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_A_13_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_A_13.jpg"
+    "image": "SandboxLab_Airplanes_4k_A_16.jpg",
+    "compare": "SandboxLab_Airplanes_4k_A_16_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_A_16_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_A_16.jpg"
+    "image": "SandboxLab_Airplanes_4k_A_18.jpg",
+    "compare": "SandboxLab_Airplanes_4k_A_18_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_A_18_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_A_17.jpg"
+    "image": "SandboxLab_Airplanes_4k_A_19.jpg",
+    "compare": "SandboxLab_Airplanes_4k_A_19_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_A_19_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_A_18.jpg"
+    "image": "SandboxLab_Airplanes_4k_A_21.jpg",
+    "compare": "SandboxLab_Airplanes_4k_A_21_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_A_21_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_A_19.jpg"
+    "image": "SandboxLab_Airplanes_4k_A_20.jpg",
+    "compare": "SandboxLab_Airplanes_4k_A_20_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_A_20_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_A_21.jpg"
+    "image": "SandboxLab_Airplanes_4k_A_22.jpg",
+    "compare": "SandboxLab_Airplanes_4k_A_22_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_A_22_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_A_20.jpg"
+    "image": "SandboxLab_Airplanes_4k_B_10.jpg",
+    "compare": "SandboxLab_Airplanes_4k_B_10_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_10_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_A_22.jpg"
+    "image": "SandboxLab_Airplanes_4k_B_13.jpg",
+    "compare": "SandboxLab_Airplanes_4k_B_13_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_13_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_B_10.jpg"
+    "image": "SandboxLab_Airplanes_4k_B_04.jpg",
+    "compare": "SandboxLab_Airplanes_4k_B_04_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_04_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_B_13.jpg"
+    "image": "SandboxLab_Airplanes_4k_B_05.jpg",
+    "compare": "SandboxLab_Airplanes_4k_B_05_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_05_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_B_04.jpg"
+    "image": "SandboxLab_Airplanes_4k_B_01.jpg",
+    "compare": "SandboxLab_Airplanes_4k_B_01_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_01_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_B_01.jpg"
+    "image": "SandboxLab_Airplanes_4k_B_02.jpg",
+    "compare": "SandboxLab_Airplanes_4k_B_02_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_02_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_B_02.jpg"
+    "image": "SandboxLab_Airplanes_4k_B_03.jpg",
+    "compare": "SandboxLab_Airplanes_4k_B_03_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_03_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_B_03.jpg"
+    "image": "SandboxLab_Airplanes_4k_B_07.jpg",
+    "compare": "SandboxLab_Airplanes_4k_B_07_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_07_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_B_05.jpg"
+    "image": "SandboxLab_Airplanes_4k_B_08.jpg",
+    "compare": "SandboxLab_Airplanes_4k_B_08_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_08_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_B_07.jpg"
+    "image": "SandboxLab_Airplanes_4k_B_06.jpg",
+    "compare": "SandboxLab_Airplanes_4k_B_06_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_06_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_B_06.jpg"
+    "image": "SandboxLab_Airplanes_4k_B_15.jpg",
+    "compare": "SandboxLab_Airplanes_4k_B_15_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_15_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_B_08.jpg"
+    "image": "SandboxLab_Airplanes_4k_B_16.jpg",
+    "compare": "SandboxLab_Airplanes_4k_B_16_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_16_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_B_09.jpg"
+    "image": "SandboxLab_Airplanes_4k_B_17.jpg",
+    "compare": "SandboxLab_Airplanes_4k_B_17_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_17_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_B_15.jpg"
-  },
-  {
-    "image": "SandboxLab_Airplanes_4k_B_16.jpg"
-  },
-  {
-    "image": "SandboxLab_Airplanes_4k_B_11.jpg"
-  },
-  {
-    "image": "SandboxLab_Airplanes_4k_B_14.jpg"
-  },
-  {
-    "image": "SandboxLab_Airplanes_4k_B_17.jpg"
-  },
-  {
-    "image": "SandboxLab_Airplanes_4k_B_18.jpg"
+    "image": "SandboxLab_Airplanes_4k_B_18.jpg",
+    "compare": "SandboxLab_Airplanes_4k_B_18_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_18_Checker.jpg"
+    ]
   },
   {
     "image": "SandboxLab_Airplanes_4k_B_19.jpg",
-    "compare": "SandboxLab_Airplanes_4k_B_22.jpg"
+    "compare": "SandboxLab_Airplanes_4k_B_19_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_19_Checker.jpg"
+    ]
   },
   {
-    "image": "SandboxLab_Airplanes_4k_B_20.jpg"
+    "image": "SandboxLab_Airplanes_4k_B_20.jpg",
+    "compare": "SandboxLab_Airplanes_4k_B_20_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_20_Checker.jpg"
+    ]
+  },
+  {
+    "image": "SandboxLab_Airplanes_4k_B_22.jpg",
+    "compare": "SandboxLab_Airplanes_4k_B_22_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_22_Checker.jpg"
+    ]
+  },
+  {
+    "image": "SandboxLab_Airplanes_4k_B_21.jpg",
+    "compare": "SandboxLab_Airplanes_4k_B_21_Wireframe.jpg",
+    "additionalImages": [
+      "SandboxLab_Airplanes_4k_B_21_Checker.jpg"
+    ]
   }
 ]
