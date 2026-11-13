@@ -1,103 +1,254 @@
 [
   {
     "image": "HB_Start_03.jpg",
-    "compare": "HB_Start_02.jpg"
+    "compare": "HB_Start_03_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Start_03_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_A_02.jpg"
+    "image": "HB_Egypt_Room_A_02.jpg",
+    "compare": "HB_Egypt_Room_A_02_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_A_02_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_A_01.jpg"
+    "image": "HB_Egypt_Room_A_01.jpg",
+    "compare": "HB_Egypt_Room_A_01_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_A_01_Checker.jpg"
+    ]
   },
   {
     "image": "HB_Egypt_Room_A_03.jpg",
-    "compare": "HB_Egypt_Room_A_04.jpg"
+    "compare": "HB_Egypt_Room_A_03_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_A_03_Checker.jpg"
+    ]
+  },
+  {
+    "image": "HB_Egypt_Room_A_04.jpg",
+    "compare": "HB_Egypt_Room_A_04_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_A_04_Checker.jpg"
+    ]
   },
   {
     "image": "HB_Egypt_Passage_A_02.jpg",
-    "compare": "HB_Egypt_Passage_A_01.jpg"
+    "compare": "HB_Egypt_Passage_A_02_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Passage_A_02_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Passage_A_03.jpg"
+    "image": "HB_Egypt_Passage_A_03.jpg",
+    "compare": "HB_Egypt_Passage_A_03_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Passage_A_03_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Passage_A_04.jpg"
+    "image": "HB_Egypt_Passage_A_04.jpg",
+    "compare": "HB_Egypt_Passage_A_04_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Passage_A_04_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_B_01.jpg"
+    "image": "HB_Egypt_Room_B_01.jpg",
+    "compare": "HB_Egypt_Room_B_01_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_B_01_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_B_02.jpg"
+    "image": "HB_Egypt_Room_B_02.jpg",
+    "compare": "HB_Egypt_Room_B_02_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_B_02_Checker.jpg"
+    ]
   },
   {
     "image": "HB_Egypt_Room_B_04.jpg",
-    "compare": "HB_Egypt_Room_B_03.jpg"
+    "compare": "HB_Egypt_Room_B_04_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_B_04_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Passage_B_01.jpg"
+    "image": "HB_Egypt_Room_B_03.jpg",
+    "compare": "HB_Egypt_Room_B_03_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_B_03_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Passage_B_03.jpg"
+    "image": "HB_Egypt_Passage_B_01.jpg",
+    "compare": "HB_Egypt_Passage_B_01_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Passage_B_01_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Passage_B_02.jpg"
+    "image": "HB_Egypt_Passage_B_03.jpg",
+    "compare": "HB_Egypt_Passage_B_03_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Passage_B_03_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Passage_B_05.jpg"
+    "image": "HB_Egypt_Passage_B_02.jpg",
+    "compare": "HB_Egypt_Passage_B_02_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Passage_B_02_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Passage_B_04.jpg"
+    "image": "HB_Egypt_Passage_B_05.jpg",
+    "compare": "HB_Egypt_Passage_B_05_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Passage_B_05_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_C_01.jpg"
+    "image": "HB_Egypt_Passage_B_04.jpg",
+    "compare": "HB_Egypt_Passage_B_04_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Passage_B_04_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_C_02.jpg"
+    "image": "HB_Egypt_Room_C_01.jpg",
+    "compare": "HB_Egypt_Room_C_01_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_C_01_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_C_03.jpg"
+    "image": "HB_Egypt_Room_C_02.jpg",
+    "compare": "HB_Egypt_Room_C_02_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_C_02_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_D_01.jpg"
+    "image": "HB_Egypt_Room_C_03.jpg",
+    "compare": "HB_Egypt_Room_C_03_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_C_03_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_D_02.jpg"
+    "image": "HB_Egypt_Room_D_01.jpg",
+    "compare": "HB_Egypt_Room_D_01_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_D_01_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_D_03.jpg"
+    "image": "HB_Egypt_Room_D_02.jpg",
+    "compare": "HB_Egypt_Room_D_02_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_D_02_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Passage_C_01.jpg"
+    "image": "HB_Egypt_Room_D_03.jpg",
+    "compare": "HB_Egypt_Room_D_03_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_D_03_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_E_02.jpg"
+    "image": "HB_Egypt_Passage_C_01.jpg",
+    "compare": "HB_Egypt_Passage_C_01_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Passage_C_01_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_E_06.jpg"
+    "image": "HB_Egypt_Room_E_02.jpg",
+    "compare": "HB_Egypt_Room_E_02_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_E_02_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_E_09.jpg"
+    "image": "HB_Egypt_Room_E_06.jpg",
+    "compare": "HB_Egypt_Room_E_06_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_E_06_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_E_03.jpg"
+    "image": "HB_Egypt_Room_E_09.jpg",
+    "compare": "HB_Egypt_Room_E_09_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_E_09_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_E_04.jpg"
+    "image": "HB_Egypt_Room_E_03.jpg",
+    "compare": "HB_Egypt_Room_E_03_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_E_03_Checker.jpg"
+    ]
+  },
+  {
+    "image": "HB_Egypt_Room_E_04.jpg",
+    "compare": "HB_Egypt_Room_E_04_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_E_04_Checker.jpg"
+    ]
   },
   {
     "image": "HB_Egypt_Room_E_05.jpg",
-    "compare": "HB_Egypt_Room_E_08.jpg"
+    "compare": "HB_Egypt_Room_E_05_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_E_05_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_E_07.jpg"
+    "image": "HB_Egypt_Room_E_08.jpg",
+    "compare": "HB_Egypt_Room_E_08_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_E_08_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_E_11.jpg"
+    "image": "HB_Egypt_Room_E_07.jpg",
+    "compare": "HB_Egypt_Room_E_07_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_E_07_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_Egypt_Room_E_12.jpg"
+    "image": "HB_Egypt_Room_E_11.jpg",
+    "compare": "HB_Egypt_Room_E_11_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_E_11_Checker.jpg"
+    ]
   },
   {
-    "image": "HB_End_01.jpg"
+    "image": "HB_Egypt_Room_E_12.jpg",
+    "compare": "HB_Egypt_Room_E_12_Wireframe.jpg",
+    "additionalImages": [
+      "HB_Egypt_Room_E_12_Checker.jpg"
+    ]
+  },
+  {
+    "image": "HB_Start_01.jpg",
+    "compare": "HB_Start_01_Checker.jpg",
+    "additionalImages": [
+      "HB_Start_01_Wireframe.jpg"
+    ]
+  },
+  {
+    "image": "HB_End_01.jpg",
+    "compare": "HB_End_01_Wireframe.jpg",
+    "additionalImages": [
+      "HB_End_01_Checker.jpg"
+    ]
   }
 ]
