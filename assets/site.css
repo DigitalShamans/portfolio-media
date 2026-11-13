@@ -6,7 +6,10 @@
   --accent: #e18842;
   --border: #383838;
   font: 16px/1.55 system-ui, sans-serif;
+  scrollbar-gutter: stable;
 }
+
+:root:has(dialog[open]) { scrollbar-gutter: auto; }
 
 *, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; background: var(--background); color: var(--text); }
@@ -86,7 +89,7 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
 }
 
 @media (min-width: 120.062em) {
-  .site-shell { width: min(100%, 100rem); }
+  .site-shell { width: min(calc(100% - 1.875rem), 125rem); }
 }
 
 @media (max-width: 620px) {
