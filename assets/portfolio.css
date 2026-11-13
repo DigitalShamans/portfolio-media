@@ -125,10 +125,6 @@
   font-size: .8125rem;
 }
 
-@media (min-width: 120.062em) {
-  .portfolio-page .site-shell { width: min(calc(100% - 1.875rem), 125rem); }
-}
-
 @media (max-width: 900px) {
   .portfolio-grid { --portfolio-columns: 4; }
 }
