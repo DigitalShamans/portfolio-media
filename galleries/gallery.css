@@ -42,6 +42,15 @@ h1 { margin: 0; text-align: center; font-size: clamp(1rem, 2.6vw, 2.4rem); line-
   background: #101010;
 }
 .shot img { width: 100%; height: auto; display: block; }
+@media (any-hover: hover) and (any-pointer: fine) {
+  .gallery:not([data-desktop-scroll="classic"]) .shot {
+    aspect-ratio: 16 / 9;
+  }
+  .gallery:not([data-desktop-scroll="classic"]) .shot > img:first-child {
+    height: 100%;
+    object-fit: contain;
+  }
+}
 .shot .shot-comparison {
   position: absolute;
   inset: 0;
