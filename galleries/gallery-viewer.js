@@ -41,6 +41,7 @@ let didDrag = false;
 let comparisons = [];
 let comparisonIndex = 0;
 let selectedComparison = 0;
+let displayedComparison = 0;
 let viewerIndicator;
 let openingPointer;
 let pointerOpened = false;
@@ -65,6 +66,7 @@ function showImage(index) {
   comparisons = [];
   comparisonIndex = 0;
   selectedComparison = 0;
+  displayedComparison = 0;
   stage.classList.toggle('has-comparison', sources.length > 1);
   viewerIndicator?.remove();
   viewerIndicator = sources.length > 1 ? createComparisonIndicator(sources.length, selectViewerComparison) : null;
@@ -88,7 +90,8 @@ function imageLoaded() {
   const { sources } = shots[current];
   if (viewerIndicator) {
     const displayed = sources.indexOf(original.currentSrc || original.src);
-    setActiveSegment(viewerIndicator, Math.max(0, displayed));
+    displayedComparison = Math.max(0, displayed);
+    setActiveSegment(viewerIndicator, displayedComparison);
     viewerIndicator.hidden = false;
     positionViewerIndicator();
   }
@@ -303,7 +306,7 @@ function setupGalleryComparison(entry, link, sources) {
   setupComparisonTouch(link, () => ({
     bounds: link.getBoundingClientRect(),
     count: sources.length,
-    index: selected,
+    index: displayed,
     select
   }));
 
@@ -438,7 +441,7 @@ setupComparisonTouch(stage, event => {
   if (!comparisons.length || !original.naturalWidth || stage.classList.contains('native')) return;
   const bounds = viewerImageBounds();
   if (!isInsideImage(event, bounds)) return;
-  return { bounds, count: comparisons.length + 1, index: selectedComparison, select: selectViewerComparison };
+  return { bounds, count: comparisons.length + 1, index: displayedComparison, select: selectViewerComparison };
 });
 
 fullscreen.hidden = !document.fullscreenEnabled || !frame.requestFullscreen;
