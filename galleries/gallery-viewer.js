@@ -49,10 +49,14 @@ let fullscreenActive = false;
 let keepViewerOpen = false;
 
 function setupGalleryScrollSnap() {
+  const adaptive = gallery.dataset.desktopScroll !== 'classic';
   const desktopScrolling = window.matchMedia('(any-hover: hover) and (any-pointer: fine)');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const scroller = document.scrollingElement;
   let movingDirection = 0;
+  let lastWheelTime = -Infinity;
+  let lastWheelDirection = 0;
+  let centeringFrame = null;
 
   function imageAtViewportCenter() {
     const hit = document.elementFromPoint(scroller.clientWidth / 2, scroller.clientHeight / 2);
@@ -67,24 +71,68 @@ function setupGalleryScrollSnap() {
     return target >= 0 && target <= scroller.scrollHeight - scroller.clientHeight ? offset : null;
   }
 
+  function cancelCentering() {
+    if (centeringFrame === null) return;
+    cancelAnimationFrame(centeringFrame);
+    centeringFrame = null;
+  }
+
+  function animateCentering(offset) {
+    const start = scroller.scrollTop;
+    const started = performance.now();
+    const duration = Math.min(400, 140 + 8 * Math.sqrt(Math.abs(offset)));
+    let lastPosition = start;
+
+    function render(now) {
+      centeringFrame = null;
+      // Let keyboard and scrollbar movement interrupt centering too.
+      if (viewer.open || Math.abs(scroller.scrollTop - lastPosition) > 2) return;
+
+      const progress = Math.min(1, Math.max(0, (now - started) / duration));
+      const eased = progress ** 3 * (progress * (progress * 6 - 15) + 10);
+      lastPosition = start + offset * eased;
+      window.scrollTo({ top: lastPosition, behavior: 'instant' });
+      if (progress < 1) centeringFrame = requestAnimationFrame(render);
+    }
+
+    centeringFrame = requestAnimationFrame(render);
+  }
+
   document.addEventListener('wheel', event => {
-    if (!desktopScrolling.matches || viewer.open || !event.cancelable || event.defaultPrevented ||
-        event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return;
+    if (!desktopScrolling.matches || viewer.open || (!adaptive && !event.cancelable) ||
+        event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {
+      cancelCentering();
+      lastWheelDirection = 0;
+      return;
+    }
 
     const mode = event.deltaMode;
     const delta = event.deltaY;
     const distance = Math.abs(delta);
     if (distance <= Math.abs(event.deltaX) || (mode === 0 && distance < 32)) {
       movingDirection = 0;
+      cancelCentering();
+      lastWheelDirection = 0;
       return;
     }
 
     const direction = Math.sign(delta);
-    if (direction === movingDirection) {
-      event.preventDefault();
-      return;
+    const pixels = distance * (mode === 1 ? 40 : mode === 2 ? scroller.clientHeight : 1);
+    if (adaptive) {
+      const interval = event.timeStamp - lastWheelTime;
+      const rapid = direction === lastWheelDirection && interval >= 0 && interval < 160;
+      lastWheelTime = event.timeStamp;
+      lastWheelDirection = direction;
+      cancelCentering();
+      // Let the browser handle the whole burst once the user speeds up.
+      if (rapid || !event.cancelable || pixels >= Math.max(240, scroller.clientHeight * 0.35)) return;
+    } else {
+      if (direction === movingDirection) {
+        event.preventDefault();
+        return;
+      }
+      movingDirection = 0;
     }
-    movingDirection = 0;
 
     const entry = imageAtViewportCenter();
     const offset = centerOffset(entry);
@@ -97,15 +145,20 @@ function setupGalleryScrollSnap() {
       if (movement === null || movement * direction < 1) return;
     } else {
       const snapDistance = Math.min(scroller.clientHeight * 0.17, 160);
-      const pixels = distance * (mode === 1 ? 40 : mode === 2 ? scroller.clientHeight : 1);
       const remaining = offset * direction;
       if (remaining < 0 || remaining > snapDistance || pixels > remaining + snapDistance) return;
     }
 
     event.preventDefault();
-    movingDirection = reducedMotion.matches ? 0 : direction;
-    window.scrollBy({ top: movement, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+    if (adaptive && !reducedMotion.matches) {
+      animateCentering(movement);
+    } else {
+      movingDirection = reducedMotion.matches ? 0 : direction;
+      window.scrollBy({ top: movement, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+    }
   }, { passive: false });
+
+  if (adaptive) return;
 
   function endWheelMove() {
     movingDirection = 0;
