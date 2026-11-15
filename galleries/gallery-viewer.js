@@ -51,30 +51,24 @@ let keepViewerOpen = false;
 function setupGalleryScrollSnap() {
   const desktopScrolling = window.matchMedia('(hover: hover) and (pointer: fine)');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const scroller = document.scrollingElement;
   let centeredEntry;
+  let movingToNeighbor = false;
 
-  function centerNearbyImage() {
-    if (!desktopScrolling.matches || viewer.open) return;
+  function imageAtViewportCenter() {
+    const hit = document.elementFromPoint(scroller.clientWidth / 2, scroller.clientHeight / 2);
+    return hit?.closest('.shot-entry') ?? hit?.closest('.shot');
+  }
 
-    const scroller = document.scrollingElement;
-    const viewportHeight = scroller.clientHeight;
-    const maxScroll = scroller.scrollHeight - viewportHeight;
-    const viewportCenter = viewportHeight / 2;
-    const hit = document.elementFromPoint(scroller.clientWidth / 2, viewportCenter);
-    const entry = hit?.closest('.shot-entry, .shot');
+  function centerOffset(entry) {
     const rect = entry?.getBoundingClientRect();
-    const offset = rect && rect.top + rect.height / 2 - viewportCenter;
-    const snapDistance = Math.min(viewportHeight * 0.1, 96);
-
-    if (!rect || rect.height > viewportHeight || Math.abs(offset) > snapDistance ||
-        scroller.scrollTop <= 0 || scroller.scrollTop >= maxScroll) {
-      centeredEntry = undefined;
-      return;
-    }
-
+    if (!rect || rect.height <= 0 || rect.height > scroller.clientHeight) return null;
+    const offset = rect.top + (rect.height - scroller.clientHeight) / 2;
     const target = scroller.scrollTop + offset;
-    if (target < 0 || target > maxScroll || entry === centeredEntry) return;
+    return target >= 0 && target <= scroller.scrollHeight - scroller.clientHeight ? offset : null;
+  }
 
+  function centerImage(entry, offset) {
     // Allow the next scroll to move away from this image even within the snap distance.
     centeredEntry = entry;
     if (Math.abs(offset) >= 1) {
@@ -82,13 +76,73 @@ function setupGalleryScrollSnap() {
     }
   }
 
+  function centerNearbyImage() {
+    movingToNeighbor = false;
+    if (!desktopScrolling.matches || viewer.open) return;
+    const entry = imageAtViewportCenter();
+    const offset = centerOffset(entry);
+    const snapDistance = Math.min(scroller.clientHeight * 0.1, 96);
+
+    if (offset === null || Math.abs(offset) > snapDistance ||
+        scroller.scrollTop <= 0 || scroller.scrollTop >= scroller.scrollHeight - scroller.clientHeight) {
+      centeredEntry = undefined;
+    } else if (entry !== centeredEntry) {
+      centerImage(entry, offset);
+    }
+  }
+
+  document.addEventListener('wheel', event => {
+    if (!desktopScrolling.matches || viewer.open || !event.cancelable || event.defaultPrevented ||
+        event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return;
+
+    const mode = event.deltaMode;
+    const delta = event.deltaY;
+    const distance = Math.abs(delta);
+    if (distance <= Math.abs(event.deltaX)) return;
+
+    // Line-based wheels and typical pixel-based mouse notches step between images.
+    const notch = mode !== 0 || (Number.isInteger(delta) && distance >= 80 && distance <= 160);
+    if (movingToNeighbor) {
+      if (notch) event.preventDefault();
+      else movingToNeighbor = false;
+      return;
+    }
+
+    const entry = imageAtViewportCenter();
+    const offset = centerOffset(entry);
+    if (offset === null) return;
+
+    if (notch && Math.abs(offset) <= 12) {
+      const neighbor = delta > 0 ? entry.nextElementSibling : entry.previousElementSibling;
+      const nextOffset = centerOffset(neighbor);
+      if (nextOffset === null || Math.abs(nextOffset) < 1) return;
+      event.preventDefault();
+      movingToNeighbor = true;
+      centerImage(neighbor, nextOffset);
+      return;
+    }
+
+    const snapDistance = Math.min(scroller.clientHeight * 0.1, 96);
+    const remaining = Math.abs(offset);
+    const pixels = distance * (mode === 1 ? 40 : mode === 2 ? scroller.clientHeight : 1);
+    if (entry === centeredEntry || delta * offset <= 0 || remaining > snapDistance ||
+        pixels > remaining + snapDistance / 4) return;
+
+    const pull = 1 + 0.5 * (1 - remaining / snapDistance);
+    const movement = Math.min(remaining, pixels * pull);
+    if (Math.abs(movement - pixels) < 0.5) return;
+    event.preventDefault();
+    if (remaining - movement < 1) centeredEntry = entry;
+    window.scrollBy({ top: Math.sign(delta) * movement, behavior: 'instant' });
+  }, { passive: false });
+
   if ('onscrollend' in document) {
     document.addEventListener('scrollend', centerNearbyImage);
   } else {
     let scrollTimer;
     document.addEventListener('scroll', () => {
       clearTimeout(scrollTimer);
-      if (desktopScrolling.matches && !viewer.open) {
+      if (desktopScrolling.matches) {
         scrollTimer = setTimeout(centerNearbyImage, 160);
       }
     }, { passive: true });
