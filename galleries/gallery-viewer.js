@@ -81,17 +81,14 @@ function setupGalleryScrollSnap() {
     const start = scroller.scrollTop;
     const started = performance.now();
     const duration = Math.min(400, 140 + 8 * Math.sqrt(Math.abs(offset)));
-    let lastPosition = start;
 
     function render(now) {
       centeringFrame = null;
-      // Let keyboard and scrollbar movement interrupt centering too.
-      if (viewer.open || Math.abs(scroller.scrollTop - lastPosition) > 2) return;
+      if (viewer.open) return;
 
       const progress = Math.min(1, Math.max(0, (now - started) / duration));
       const eased = progress ** 3 * (progress * (progress * 6 - 15) + 10);
-      lastPosition = start + offset * eased;
-      window.scrollTo({ top: lastPosition, behavior: 'instant' });
+      window.scrollTo({ top: start + offset * eased, behavior: 'instant' });
       if (progress < 1) centeringFrame = requestAnimationFrame(render);
     }
 
@@ -158,7 +155,12 @@ function setupGalleryScrollSnap() {
     }
   }, { passive: false });
 
-  if (adaptive) return;
+  if (adaptive) {
+    document.addEventListener('pointerdown', cancelCentering, { capture: true, passive: true });
+    document.addEventListener('keydown', cancelCentering, { capture: true });
+    window.addEventListener('resize', cancelCentering);
+    return;
+  }
 
   function endWheelMove() {
     movingDirection = 0;
