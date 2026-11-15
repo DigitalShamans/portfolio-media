@@ -52,7 +52,65 @@ function setupClassicGalleryScroll() {
   const desktopScrolling = window.matchMedia('(any-hover: hover) and (any-pointer: fine)');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const scroller = document.scrollingElement;
+  const twoImageScroll = gallery.hasAttribute('data-two-image-scroll');
   let movingDirection = 0;
+  let stepFrame;
+
+  function cancelTwoImageStep() {
+    if (stepFrame === undefined) return;
+    cancelAnimationFrame(stepFrame);
+    stepFrame = undefined;
+    movingDirection = 0;
+  }
+
+  function scrollTwoImages(offset, oneImageOffset) {
+    const start = scroller.scrollTop;
+    const started = performance.now();
+    // Match Chromium's desktop programmatic scroll for the original distance.
+    const duration = Math.min(1500, Math.sqrt(Math.abs(oneImageOffset)) * 1000 / 60);
+    let lastPosition = start;
+
+    function advance(now) {
+      if (viewer.open || !desktopScrolling.matches || Math.abs(scroller.scrollTop - lastPosition) > 1) {
+        cancelTwoImageStep();
+        return;
+      }
+      const elapsed = Math.min(1, Math.max(0, (now - started) / duration));
+      let progress = 1;
+      if (elapsed < 1) {
+        // Solve x(t) for cubic-bezier(0.4, 0, 0, 1), then evaluate y(t).
+        let low = 0;
+        let high = 1;
+        for (let index = 0; index < 14; index++) {
+          const t = (low + high) / 2;
+          const x = 1.2 * t * (1 - t) ** 2 + t ** 3;
+          if (x < elapsed) low = t;
+          else high = t;
+        }
+        const t = (low + high) / 2;
+        progress = t * t * (3 - 2 * t);
+      }
+      window.scrollTo({ top: start + offset * progress, behavior: 'instant' });
+      lastPosition = scroller.scrollTop;
+      if (elapsed === 1) {
+        stepFrame = undefined;
+        movingDirection = 0;
+      } else {
+        stepFrame = requestAnimationFrame(advance);
+      }
+    }
+    stepFrame = requestAnimationFrame(advance);
+  }
+
+  if (twoImageScroll) {
+    document.addEventListener('pointerdown', cancelTwoImageStep, { capture: true, passive: true });
+    document.addEventListener('keydown', cancelTwoImageStep, { capture: true });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) cancelTwoImageStep();
+    });
+    window.addEventListener('resize', cancelTwoImageStep);
+    reducedMotion.addEventListener?.('change', cancelTwoImageStep);
+  }
 
   function imageAtViewportCenter() {
     const hit = document.elementFromPoint(scroller.clientWidth / 2, scroller.clientHeight / 2);
@@ -69,12 +127,16 @@ function setupClassicGalleryScroll() {
 
   document.addEventListener('wheel', event => {
     if (!desktopScrolling.matches || viewer.open || !event.cancelable || event.defaultPrevented ||
-        event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return;
+        event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {
+      cancelTwoImageStep();
+      return;
+    }
 
     const mode = event.deltaMode;
     const delta = event.deltaY;
     const distance = Math.abs(delta);
     if (distance <= Math.abs(event.deltaX) || (mode === 0 && distance < 32)) {
+      cancelTwoImageStep();
       movingDirection = 0;
       return;
     }
@@ -84,6 +146,7 @@ function setupClassicGalleryScroll() {
       event.preventDefault();
       return;
     }
+    cancelTwoImageStep();
     movingDirection = 0;
 
     const entry = imageAtViewportCenter();
@@ -91,10 +154,19 @@ function setupClassicGalleryScroll() {
     if (offset === null) return;
 
     let movement = offset;
+    let oneImageOffset;
     if (Math.abs(offset) <= 24) {
       const neighbor = direction > 0 ? entry.nextElementSibling : entry.previousElementSibling;
       movement = centerOffset(neighbor);
       if (movement === null || movement * direction < 1) return;
+      if (twoImageScroll) {
+        const secondNeighbor = direction > 0 ? neighbor.nextElementSibling : neighbor.previousElementSibling;
+        const secondOffset = centerOffset(secondNeighbor);
+        if (secondOffset !== null && (secondOffset - movement) * direction > 0) {
+          oneImageOffset = movement;
+          movement = secondOffset;
+        }
+      }
     } else {
       const snapDistance = Math.min(scroller.clientHeight * 0.17, 160);
       const pixels = distance * (mode === 1 ? 40 : mode === 2 ? scroller.clientHeight : 1);
@@ -104,11 +176,15 @@ function setupClassicGalleryScroll() {
 
     event.preventDefault();
     movingDirection = reducedMotion.matches ? 0 : direction;
-    window.scrollBy({ top: movement, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+    if (oneImageOffset !== undefined && !reducedMotion.matches) {
+      scrollTwoImages(movement, oneImageOffset);
+    } else {
+      window.scrollBy({ top: movement, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+    }
   }, { passive: false });
 
   function endWheelMove() {
-    movingDirection = 0;
+    if (stepFrame === undefined) movingDirection = 0;
   }
 
   if ('onscrollend' in document) {
@@ -116,7 +192,7 @@ function setupClassicGalleryScroll() {
   } else {
     let scrollTimer;
     document.addEventListener('scroll', () => {
-      if (!movingDirection) return;
+      if (!movingDirection || stepFrame !== undefined) return;
       clearTimeout(scrollTimer);
       scrollTimer = setTimeout(endWheelMove, 160);
     }, { passive: true });
