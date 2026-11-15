@@ -48,6 +48,55 @@ let pointerOpened = false;
 let fullscreenActive = false;
 let keepViewerOpen = false;
 
+function setupGalleryScrollSnap() {
+  const desktopScrolling = window.matchMedia('(hover: hover) and (pointer: fine)');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let centeredEntry;
+
+  function centerNearbyImage() {
+    if (!desktopScrolling.matches || viewer.open) return;
+
+    const scroller = document.scrollingElement;
+    const viewportHeight = scroller.clientHeight;
+    const maxScroll = scroller.scrollHeight - viewportHeight;
+    const viewportCenter = viewportHeight / 2;
+    const hit = document.elementFromPoint(scroller.clientWidth / 2, viewportCenter);
+    const entry = hit?.closest('.shot-entry, .shot');
+    const rect = entry?.getBoundingClientRect();
+    const offset = rect && rect.top + rect.height / 2 - viewportCenter;
+    const snapDistance = Math.min(viewportHeight * 0.1, 96);
+
+    if (!rect || rect.height > viewportHeight || Math.abs(offset) > snapDistance ||
+        scroller.scrollTop <= 0 || scroller.scrollTop >= maxScroll) {
+      centeredEntry = undefined;
+      return;
+    }
+
+    const target = scroller.scrollTop + offset;
+    if (target < 0 || target > maxScroll || entry === centeredEntry) return;
+
+    // Allow the next scroll to move away from this image even within the snap distance.
+    centeredEntry = entry;
+    if (Math.abs(offset) >= 1) {
+      window.scrollBy({ top: offset, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+    }
+  }
+
+  if ('onscrollend' in document) {
+    document.addEventListener('scrollend', centerNearbyImage);
+  } else {
+    let scrollTimer;
+    document.addEventListener('scroll', () => {
+      clearTimeout(scrollTimer);
+      if (desktopScrolling.matches && !viewer.open) {
+        scrollTimer = setTimeout(centerNearbyImage, 160);
+      }
+    }, { passive: true });
+  }
+}
+
+setupGalleryScrollSnap();
+
 function fitImage() {
   stage.classList.remove('native');
   stage.scrollTo(0, 0);
