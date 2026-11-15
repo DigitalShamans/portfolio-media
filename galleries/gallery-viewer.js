@@ -159,8 +159,8 @@ function setupComparisonTouch(surface, getComparison) {
       gesture.select(comparisonAt(event.clientX, left, width, gesture.count));
     } else if (event.type === 'pointerup' && Math.abs(dx) >= 32 && Math.abs(dx) > Math.abs(dy)) {
       const { count, index, select } = gesture;
-      const step = dx < 0 ? 1 : -1;
-      select((index + step + count) % count);
+      const nextIndex = index + (dx < 0 ? 1 : -1);
+      if (nextIndex >= 0 && nextIndex < count) select(nextIndex);
     }
   }
 
