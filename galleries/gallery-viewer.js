@@ -3,6 +3,7 @@
 const galleryContent = document.querySelector('.gallery-content');
 const gallery = document.querySelector('.gallery');
 const title = document.querySelector('.intro h1').textContent;
+const dragComparisons = gallery.dataset.comparisonGesture === 'drag';
 
 // Desktop browser zoom changes viewport CSS pixels and devicePixelRatio together.
 // Keep the default fit in unzoomed CSS pixels so browser zoom scales the shots.
@@ -39,6 +40,7 @@ let drag;
 let didDrag = false;
 let comparisons = [];
 let comparisonIndex = 0;
+let selectedComparison = 0;
 let viewerIndicator;
 let openingPointer;
 let pointerOpened = false;
@@ -62,8 +64,10 @@ function showImage(index) {
   current = index;
   comparisons = [];
   comparisonIndex = 0;
+  selectedComparison = 0;
+  stage.classList.toggle('has-comparison', sources.length > 1);
   viewerIndicator?.remove();
-  viewerIndicator = sources.length > 1 ? createComparisonIndicator(sources.length) : null;
+  viewerIndicator = sources.length > 1 ? createComparisonIndicator(sources.length, selectViewerComparison) : null;
   if (viewerIndicator) {
     viewerIndicator.hidden = true;
     frame.append(viewerIndicator);
@@ -104,12 +108,77 @@ function updateComparison() {
   if (source && original.src !== source) original.src = source;
 }
 
+function selectViewerComparison(index) {
+  selectedComparison = comparisonIndex = index;
+  updateComparison();
+}
+
 function canCompare(event) {
   return (event.pointerType === 'mouse' || event.pointerType === 'pen') && !event.buttons;
 }
 
 function comparisonAt(x, left, width, count) {
   return Math.min(count - 1, Math.max(0, Math.floor((x - left) * count / width)));
+}
+
+function setupComparisonTouch(surface, getComparison) {
+  let gesture;
+  let suppressClick = false;
+
+  surface.addEventListener('pointerdown', event => {
+    suppressClick = false;
+    gesture = undefined;
+    if (event.pointerType !== 'touch' || !event.isPrimary) return;
+    const comparison = getComparison(event);
+    if (!comparison) return;
+    gesture = {
+      ...comparison,
+      id: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      horizontal: false
+    };
+    surface.setPointerCapture(event.pointerId);
+  });
+
+  function track(event) {
+    if (!gesture || gesture.id !== event.pointerId) return;
+    const dx = event.clientX - gesture.x;
+    const dy = event.clientY - gesture.y;
+    if (!gesture.horizontal) {
+      if (Math.hypot(dx, dy) < 12) return;
+      suppressClick = true;
+      if (Math.abs(dx) <= Math.abs(dy)) {
+        gesture = undefined;
+        return;
+      }
+      gesture.horizontal = true;
+    }
+    if (dragComparisons) {
+      const { left, width } = gesture.bounds;
+      gesture.select(comparisonAt(event.clientX, left, width, gesture.count));
+    } else if (event.type === 'pointerup' && Math.abs(dx) >= 32 && Math.abs(dx) > Math.abs(dy)) {
+      const { count, index, select } = gesture;
+      const step = dx < 0 ? 1 : -1;
+      select((index + step + count) % count);
+    }
+  }
+
+  surface.addEventListener('pointermove', track);
+  function finish(event) {
+    if (gesture?.id === event.pointerId) gesture = undefined;
+  }
+  surface.addEventListener('pointerup', event => {
+    track(event);
+    finish(event);
+  });
+  surface.addEventListener('pointercancel', finish);
+  surface.addEventListener('lostpointercapture', finish);
+  surface.addEventListener('click', event => {
+    if (!suppressClick || event.detail === 0) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }, { capture: true });
 }
 
 function viewerImageBounds() {
@@ -132,14 +201,19 @@ function positionViewerIndicator() {
 new ResizeObserver(positionViewerIndicator).observe(stage);
 stage.addEventListener('scroll', positionViewerIndicator, { passive: true });
 
+function isInsideImage(event, { left, top, width, height }) {
+  return event.clientX >= left && event.clientX < left + width &&
+    event.clientY >= top && event.clientY < top + height;
+}
+
 function compareAtPointer(event) {
   if (!comparisons.length || !original.naturalWidth || !canCompare(event)) return;
   if (openingPointer && event.screenX === openingPointer.x && event.screenY === openingPointer.y) return;
   openingPointer = null;
-  const { left, top, width, height } = viewerImageBounds();
-  const inside = event.clientX >= left && event.clientX < left + width &&
-    event.clientY >= top && event.clientY < top + height;
-  comparisonIndex = inside ? comparisonAt(event.clientX, left, width, comparisons.length + 1) : 0;
+  const bounds = viewerImageBounds();
+  comparisonIndex = isInsideImage(event, bounds)
+    ? comparisonAt(event.clientX, bounds.left, bounds.width, comparisons.length + 1)
+    : selectedComparison;
   updateComparison();
 }
 
@@ -150,37 +224,50 @@ original.addEventListener('error', () => {
   showStatus('This image could not be loaded.');
 });
 
-function createComparisonIndicator(count) {
+function createComparisonIndicator(count, select) {
   const indicator = document.createElement('span');
   indicator.className = 'comparison-indicator';
-  indicator.setAttribute('aria-hidden', 'true');
-  for (let index = 0; index < count; index++) indicator.append(document.createElement('span'));
+  indicator.setAttribute('role', 'group');
+  indicator.setAttribute('aria-label', 'Comparison images');
+  for (let index = 0; index < count; index++) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.setAttribute('aria-label', 'Show variant ' + (index + 1) + ' of ' + count);
+    button.setAttribute('aria-pressed', 'false');
+    button.addEventListener('click', () => select(index));
+    indicator.append(button);
+  }
   setActiveSegment(indicator, 0);
   return indicator;
 }
 
 function setActiveSegment(indicator, index) {
-  indicator.querySelector('.is-active')?.classList.remove('is-active');
-  indicator.children[index].classList.add('is-active');
+  indicator.querySelector('[aria-pressed="true"]')?.setAttribute('aria-pressed', 'false');
+  indicator.children[index].setAttribute('aria-pressed', 'true');
 }
 
-function setupGalleryComparison(link, sources) {
-  const indicator = createComparisonIndicator(sources.length);
-  link.append(indicator);
+function setupGalleryComparison(entry, link, sources) {
+  let selected = 0;
+  let requested = 0;
+  let displayed = 0;
   const alternates = [];
-  let active = 0;
+  const indicator = createComparisonIndicator(sources.length, select);
+  entry.append(indicator);
 
-  function showAlternate(index) {
-    alternates[index].classList.add('is-visible');
+  function show(index) {
+    alternates[displayed]?.classList.remove('is-visible');
+    alternates[index]?.classList.add('is-visible');
+    displayed = index;
     setActiveSegment(indicator, index);
   }
 
-  function select(index) {
-    if (index === active) return;
-    alternates[active]?.classList.remove('is-visible');
-    active = index;
-    setActiveSegment(indicator, 0);
-    if (index === 0) return;
+  function preview(index) {
+    requested = index;
+    if (index === displayed) return;
+    if (index === 0) {
+      show(0);
+      return;
+    }
 
     let alternate = alternates[index];
     if (!alternate) {
@@ -190,24 +277,37 @@ function setupGalleryComparison(link, sources) {
       alternate.setAttribute('aria-hidden', 'true');
       alternate.draggable = false;
       alternate.addEventListener('load', () => {
-        if (active === index) showAlternate(index);
+        if (requested === index) show(index);
       }, { once: true });
       alternates[index] = alternate;
       alternate.src = sources[index];
       link.append(alternate);
     }
-    if (alternate.naturalWidth) showAlternate(index);
+    if (alternate.naturalWidth) show(index);
+  }
+
+  function select(index) {
+    selected = index;
+    preview(index);
   }
 
   link.addEventListener('pointermove', event => {
     if (!canCompare(event)) return;
     const rect = link.getBoundingClientRect();
-    select(comparisonAt(event.clientX, rect.left, rect.width, sources.length));
+    preview(comparisonAt(event.clientX, rect.left, rect.width, sources.length));
   });
+  entry.addEventListener('pointerleave', event => {
+    if (canCompare(event)) preview(selected);
+  });
+  link.classList.add('has-comparison');
+  setupComparisonTouch(link, () => ({
+    bounds: link.getBoundingClientRect(),
+    count: sources.length,
+    index: selected,
+    select
+  }));
 
-  const reset = () => select(0);
-  link.addEventListener('pointerleave', reset);
-  return reset;
+  return () => preview(selected);
 }
 
 function createShot(entry, index) {
@@ -222,11 +322,19 @@ function createShot(entry, index) {
   image.width = 3840;
   image.height = 2160;
   image.decoding = 'async';
+  image.draggable = false;
   if (index === 0) image.fetchPriority = 'high';
   else image.loading = 'lazy';
   image.src = sources[0];
   link.append(image);
-  const resetComparison = sources.length > 1 ? setupGalleryComparison(link, sources) : null;
+  let element = link;
+  let resetComparison;
+  if (sources.length > 1) {
+    element = document.createElement('div');
+    element.className = 'shot-entry';
+    element.append(link);
+    resetComparison = setupGalleryComparison(element, link, sources);
+  }
   if (typeof viewer.showModal === 'function') {
     link.addEventListener('click', event => {
       if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
@@ -240,7 +348,7 @@ function createShot(entry, index) {
       void setFullscreen(true);
     });
   }
-  return { link, image, sources };
+  return { element, image, sources };
 }
 
 async function loadGallery() {
@@ -249,7 +357,7 @@ async function loadGallery() {
     if (!response.ok) throw new Error('Gallery order unavailable.');
     const entries = GalleryData.parse(await response.text());
     shots.push(...entries.map(createShot));
-    gallery.append(...shots.map(shot => shot.link));
+    gallery.append(...shots.map(shot => shot.element));
     galleryStatus.hidden = true;
   } catch (error) {
     console.error('Gallery could not be loaded', error);
@@ -320,9 +428,17 @@ stage.addEventListener('lostpointercapture', () => {
   stage.classList.remove('dragging');
 });
 
-stage.addEventListener('pointerleave', () => {
-  comparisonIndex = 0;
+stage.addEventListener('pointerleave', event => {
+  if (!canCompare(event)) return;
+  comparisonIndex = selectedComparison;
   updateComparison();
+});
+
+setupComparisonTouch(stage, event => {
+  if (!comparisons.length || !original.naturalWidth || stage.classList.contains('native')) return;
+  const bounds = viewerImageBounds();
+  if (!isInsideImage(event, bounds)) return;
+  return { bounds, count: comparisons.length + 1, index: selectedComparison, select: selectViewerComparison };
 });
 
 fullscreen.hidden = !document.fullscreenEnabled || !frame.requestFullscreen;
