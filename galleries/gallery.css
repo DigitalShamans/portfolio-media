@@ -1,3 +1,4 @@
+body { --background: #121212; }
 body:has(dialog[open]) { overflow: hidden; }
 .stage:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .shell { width: calc(100% - clamp(32px, 4vw, 144px)); margin-inline: auto; }
