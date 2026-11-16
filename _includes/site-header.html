@@ -9,8 +9,8 @@
         <a href="{{ personal_header.contact | escape }}">Contact</a>
       </nav>
     {% else %}
-      <a class="site-brand" href="{{ '/' | relative_url }}">
-        <img src="{{ '/assets/digital-shamans-logo.png' | relative_url }}" width="792" height="281" alt="Digital Shamans">
+      <a class="site-brand site-brand--studio" href="{{ '/' | relative_url }}">
+        <img src="{{ '/assets/DS_Logo_White_Transparent_With_Tagline_1200.png' | relative_url }}?v={{ site.github.build_revision | escape }}" width="1200" height="320" alt="Digital Shamans">
       </a>
       <nav class="site-nav" aria-label="Main navigation">
         <a href="{{ '/' | relative_url }}"{% unless page.url == '/resume/' %} aria-current="true"{% endunless %}>Portfolio</a>
