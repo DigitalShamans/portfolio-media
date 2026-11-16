@@ -167,6 +167,33 @@ function setupClassicGalleryScroll() {
     return target >= 0 && target <= scroller.scrollHeight - scroller.clientHeight ? offset : null;
   }
 
+  function groupedCenterOffsets(direction) {
+    const entries = gallery.children;
+    const top = scroller.scrollTop;
+    const height = scroller.clientHeight;
+    const maxScroll = Math.max(0, scroller.scrollHeight - height);
+    const start = direction > 0 ? 0 : entries.length - 1;
+    let nearCenter = false;
+    let movement;
+
+    // Use the actual row positions even when the viewport centre is over a gap.
+    for (let index = start; index >= 0 && index < entries.length; index += direction) {
+      const rect = entries[index].getBoundingClientRect();
+      if (rect.height <= 0) continue;
+      const center = top + rect.top + (rect.height - height) / 2;
+      const offset = Math.max(0, Math.min(maxScroll, center)) - top;
+      if (Math.abs(offset) <= 24) nearCenter = true;
+      if (offset * direction <= 24) continue;
+      if (movement !== undefined) {
+        if ((offset - movement) * direction > 1) return { movement, extraOffset: offset - movement };
+        continue;
+      }
+      movement = offset;
+      if (!nearCenter) break;
+    }
+    if (movement !== undefined) return { movement };
+  }
+
   document.addEventListener('wheel', event => {
     if (!desktopScrolling.matches || viewer.open || event.defaultPrevented ||
         event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {
@@ -203,31 +230,39 @@ function setupClassicGalleryScroll() {
     cancelGalleryStep();
     movingDirection = 0;
 
-    const entry = imageAtViewportCenter();
-    const offset = centerOffset(entry);
-    if (offset === null) return;
-
-    let movement = offset;
+    let movement;
     let oneImageOffset;
     let extraOffset;
-    if (Math.abs(offset) <= 24) {
-      const neighbor = direction > 0 ? entry.nextElementSibling : entry.previousElementSibling;
-      movement = centerOffset(neighbor);
-      if (movement === null || movement * direction < 1) return;
-      if (twoImageScroll || combinedImageScroll) {
-        const secondNeighbor = direction > 0 ? neighbor.nextElementSibling : neighbor.previousElementSibling;
-        const secondOffset = centerOffset(secondNeighbor);
-        if (secondOffset !== null && (secondOffset - movement) * direction > 0) {
-          oneImageOffset = movement;
-          if (twoImageScroll) movement = secondOffset;
-          else extraOffset = secondOffset - movement;
-        }
-      }
+    if (groupedImageScroll) {
+      const targets = groupedCenterOffsets(direction);
+      if (!targets) return;
+      movement = targets.movement;
+      extraOffset = targets.extraOffset;
+      if (extraOffset !== undefined) oneImageOffset = movement;
     } else {
-      const snapDistance = Math.min(scroller.clientHeight * 0.17, 160);
-      const pixels = distance * (mode === 1 ? 40 : mode === 2 ? scroller.clientHeight : 1);
-      const remaining = offset * direction;
-      if (remaining < 0 || remaining > snapDistance || pixels > remaining + snapDistance) return;
+      const entry = imageAtViewportCenter();
+      const offset = centerOffset(entry);
+      if (offset === null) return;
+      movement = offset;
+      if (Math.abs(offset) <= 24) {
+        const neighbor = direction > 0 ? entry.nextElementSibling : entry.previousElementSibling;
+        movement = centerOffset(neighbor);
+        if (movement === null || movement * direction < 1) return;
+        if (twoImageScroll || combinedImageScroll) {
+          const secondNeighbor = direction > 0 ? neighbor.nextElementSibling : neighbor.previousElementSibling;
+          const secondOffset = centerOffset(secondNeighbor);
+          if (secondOffset !== null && (secondOffset - movement) * direction > 0) {
+            oneImageOffset = movement;
+            if (twoImageScroll) movement = secondOffset;
+            else extraOffset = secondOffset - movement;
+          }
+        }
+      } else {
+        const snapDistance = Math.min(scroller.clientHeight * 0.17, 160);
+        const pixels = distance * (mode === 1 ? 40 : mode === 2 ? scroller.clientHeight : 1);
+        const remaining = offset * direction;
+        if (remaining < 0 || remaining > snapDistance || pixels > remaining + snapDistance) return;
+      }
     }
 
     event.preventDefault();
