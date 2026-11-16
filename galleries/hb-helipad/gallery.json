@@ -1,5 +1,9 @@
 [
   {
+    "image": "HelipadArena_06w_4k.jpg",
+    "compare": "HelipadArena_06_4k.jpg"
+  },
+  {
     "image": "HelipadArena_01_4k.jpg",
     "compare": "HelipadArena_02_4k.jpg"
   },
@@ -7,46 +11,38 @@
     "image": "HelipadArena_03_4k.jpg"
   },
   {
-    "image": "HelipadArena_04_4k.jpg"
+    "image": "HelipadArena_04_4k.jpg",
+    "compare": "HelipadArena_05_4k.jpg"
   },
   {
-    "image": "HelipadArena_05_4k.jpg"
+    "image": "HelipadArena_08w_4k.jpg",
+    "compare": "HelipadArena_08_4k.jpg"
   },
   {
-    "image": "HelipadArena_06_4k.jpg"
-  },
-  {
-    "image": "HelipadArena_08_4k.jpg"
-  },
-  {
-    "image": "HelipadArena_09_4k.jpg"
-  },
-  {
-    "image": "HelipadArena_10_4k.jpg"
+    "image": "HelipadArena_09_4k.jpg",
+    "compare": "HelipadArena_10_4k.jpg"
   },
   {
     "image": "HelipadArena_11_4k.jpg"
   },
   {
-    "image": "HelipadArena_12_4k.jpg"
+    "image": "HelipadArena_12w_4k.jpg",
+    "compare": "HelipadArena_12_4k.jpg"
   },
   {
-    "image": "HelipadArena_13_4k.jpg"
+    "image": "HelipadArena_43_4k.jpg",
+    "compare": "HelipadArena_43b_4k.jpg"
   },
   {
-    "image": "HelipadArena_14_4k.jpg"
-  },
-  {
-    "image": "HelipadArena_15_4k.jpg"
+    "image": "HelipadArena_14_4k.jpg",
+    "compare": "HelipadArena_15_4k.jpg"
   },
   {
     "image": "HelipadArena_16_4k.jpg"
   },
   {
-    "image": "HelipadArena_17_4k.jpg"
-  },
-  {
-    "image": "HelipadArena_18_4k.jpg"
+    "image": "HelipadArena_18_4k.jpg",
+    "compare": "HelipadArena_46_4k.jpg"
   },
   {
     "image": "HelipadArena_19_4k.jpg"
@@ -55,13 +51,24 @@
     "image": "HelipadArena_20_4k.jpg"
   },
   {
-    "image": "HelipadArena_21_4k.jpg"
+    "image": "HelipadArena_13_4k.jpg",
+    "compare": "HelipadArena_44_4k.jpg"
   },
   {
-    "image": "HelipadArena_22_4k.jpg"
+    "image": "HelipadArena_21w_4k.jpg",
+    "compare": "HelipadArena_21_4k.jpg"
   },
   {
-    "image": "HelipadArena_23_4k.jpg"
+    "image": "HelipadArena_22w_4k.jpg",
+    "compare": "HelipadArena_22_4k.jpg"
+  },
+  {
+    "image": "HelipadArena_23_4k.jpg",
+    "compare": "HelipadArena_24c_4k.jpg"
+  },
+  {
+    "image": "HelipadArena_53w_4k.jpg",
+    "compare": "HelipadArena_53_4k.jpg"
   },
   {
     "image": "HelipadArena_24_4k.jpg"
@@ -70,7 +77,8 @@
     "image": "HelipadArena_25_4k.jpg"
   },
   {
-    "image": "HelipadArena_27_4k.jpg"
+    "image": "HelipadArena_27w_4k.jpg",
+    "compare": "HelipadArena_27_4k.jpg"
   },
   {
     "image": "HelipadArena_28_4k.jpg"
@@ -79,10 +87,8 @@
     "image": "HelipadArena_29_4k.jpg"
   },
   {
-    "image": "HelipadArena_30_4k.jpg"
-  },
-  {
-    "image": "HelipadArena_31_4k.jpg"
+    "image": "HelipadArena_31_4k.jpg",
+    "compare": "HelipadArena_30_4k.jpg"
   },
   {
     "image": "HelipadArena_32_4k.jpg"
@@ -91,33 +97,40 @@
     "image": "HelipadArena_33_4k.jpg"
   },
   {
-    "image": "HelipadArena_34_4k.jpg"
+    "image": "HelipadArena_37_4k.jpg"
   },
   {
     "image": "HelipadArena_35_4k.jpg"
   },
   {
-    "image": "HelipadArena_36_4k.jpg"
+    "image": "HelipadArena_31b_4k.jpg",
+    "compare": "HelipadArena_35b_4k.jpg"
   },
   {
-    "image": "HelipadArena_37_4k.jpg"
+    "image": "HelipadArena_36_4k.jpg",
+    "compare": "HelipadArena_45_4k.jpg"
   },
   {
-    "image": "HelipadArena_38_4k.jpg"
+    "image": "HelipadArena_38_4k.jpg",
+    "compare": "HelipadArena_38b_4k.jpg"
+  },
+  {
+    "image": "HelipadArena_34w_4k.jpg",
+    "compare": "HelipadArena_34_4k.jpg"
   },
   {
     "image": "HelipadArena_42_4k.jpg"
   },
   {
-    "image": "HelipadArena_39_4k.jpg"
+    "image": "HelipadArena_39w_4k.jpg",
+    "compare": "HelipadArena_39_4k.jpg"
   },
   {
-    "image": "HelipadArena_40_4k.jpg"
+    "image": "HelipadArena_40w_4k.jpg",
+    "compare": "HelipadArena_40_4k.jpg"
   },
   {
-    "image": "HelipadArena_41_4k.jpg"
-  },
-  {
-    "image": "HelipadArena_43_4k.jpg"
+    "image": "HelipadArena_41w_4k.jpg",
+    "compare": "HelipadArena_41_4k.jpg"
   }
 ]
