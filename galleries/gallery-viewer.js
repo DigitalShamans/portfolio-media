@@ -53,15 +53,32 @@ function setupClassicGalleryScroll() {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const scroller = document.scrollingElement;
   const twoImageScroll = gallery.hasAttribute('data-two-image-scroll');
-  const combinedImageScroll = gallery.hasAttribute('data-combined-image-scroll');
+  const groupedImageScroll = gallery.hasAttribute('data-grouped-image-scroll');
+  const combinedImageScroll = groupedImageScroll || gallery.hasAttribute('data-combined-image-scroll');
   let movingDirection = 0;
   let activeStep;
+  let wheelStroke;
 
   function cancelGalleryStep() {
     if (!activeStep) return;
     cancelAnimationFrame(activeStep.frame);
     activeStep = undefined;
     movingDirection = 0;
+  }
+
+  function interruptGalleryScroll() {
+    wheelStroke = undefined;
+    cancelGalleryStep();
+  }
+
+  function recordWheelStroke(direction, time) {
+    // Start immediately, then group ticks until the wheel has been quiet for 150ms.
+    if (!wheelStroke || wheelStroke.direction !== direction || time - wheelStroke.last >= 150) {
+      wheelStroke = { direction, last: time, handled: false };
+    } else {
+      wheelStroke.last = Math.max(wheelStroke.last, time);
+    }
+    return wheelStroke;
   }
 
   function scrollDuration(offset) {
@@ -128,13 +145,13 @@ function setupClassicGalleryScroll() {
   }
 
   if (twoImageScroll || combinedImageScroll) {
-    document.addEventListener('pointerdown', cancelGalleryStep, { capture: true, passive: true });
-    document.addEventListener('keydown', cancelGalleryStep, { capture: true });
+    document.addEventListener('pointerdown', interruptGalleryScroll, { capture: true, passive: true });
+    document.addEventListener('keydown', interruptGalleryScroll, { capture: true });
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) cancelGalleryStep();
+      if (document.hidden) interruptGalleryScroll();
     });
-    window.addEventListener('resize', cancelGalleryStep);
-    reducedMotion.addEventListener?.('change', cancelGalleryStep);
+    window.addEventListener('resize', interruptGalleryScroll);
+    reducedMotion.addEventListener?.('change', interruptGalleryScroll);
   }
 
   function imageAtViewportCenter() {
@@ -151,24 +168,35 @@ function setupClassicGalleryScroll() {
   }
 
   document.addEventListener('wheel', event => {
-    if (!desktopScrolling.matches || viewer.open || !event.cancelable || event.defaultPrevented ||
+    if (!desktopScrolling.matches || viewer.open || event.defaultPrevented ||
         event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {
-      cancelGalleryStep();
+      interruptGalleryScroll();
       return;
     }
 
     const mode = event.deltaMode;
     const delta = event.deltaY;
     const distance = Math.abs(delta);
-    if (distance <= Math.abs(event.deltaX) || (mode === 0 && distance < 32)) {
+    const vertical = distance > Math.abs(event.deltaX);
+    const direction = Math.sign(delta);
+    const stroke = groupedImageScroll && vertical ? recordWheelStroke(direction, event.timeStamp) : undefined;
+    if (!event.cancelable) {
+      cancelGalleryStep();
+      return;
+    }
+    if (stroke?.handled) {
+      event.preventDefault();
+      return;
+    }
+    if (!vertical || (mode === 0 && distance < 32)) {
       cancelGalleryStep();
       movingDirection = 0;
       return;
     }
 
-    const direction = Math.sign(delta);
     if (direction === movingDirection) {
       event.preventDefault();
+      if (stroke) stroke.handled = true;
       extendGalleryStep();
       return;
     }
@@ -203,6 +231,7 @@ function setupClassicGalleryScroll() {
     }
 
     event.preventDefault();
+    if (stroke) stroke.handled = true;
     movingDirection = reducedMotion.matches ? 0 : direction;
     if (oneImageOffset !== undefined && !reducedMotion.matches) {
       animateGalleryStep(movement, oneImageOffset, extraOffset);
