@@ -52,10 +52,17 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
 }
 
 .site-brand { flex: none; }
-.site-brand img {
-  display: block;
+.site-brand--studio {
   width: clamp(160px, 23vw, 310px);
+  aspect-ratio: 792 / 281;
+  overflow: hidden;
+}
+.site-brand--studio img {
+  display: block;
+  /* Frame the visible mark inside the transparent 1200 x 320 export. */
+  width: calc(100% * 1200 / 792);
   height: auto;
+  transform: translate(-17%, -8.75%);
 }
 
 .site-nav {
