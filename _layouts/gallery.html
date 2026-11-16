@@ -36,7 +36,7 @@
         <p class="description">{{ gallery_page.gallery_intro | escape }}</p>
       </header>
       <p id="gallery-status" role="status">Loading gallery…</p>
-      <section class="gallery" data-comparison-gesture="{{ gallery_page.comparison_gesture | default: 'swipe' | escape }}"{% if page.grouped_image_scroll %} data-grouped-image-scroll{% elsif page.two_image_scroll %} data-two-image-scroll{% elsif page.combined_image_scroll %} data-combined-image-scroll{% endif %} aria-label="{{ gallery_label | escape }}"></section>
+      <section class="gallery" data-comparison-gesture="{{ gallery_page.comparison_gesture | default: 'swipe' | escape }}" data-grouped-image-scroll aria-label="{{ gallery_label | escape }}"></section>
     </div>
     <footer class="site-footer"><a class="back" href="{{ portfolio_url | relative_url }}#recent-work">Back to portfolio</a></footer>
   </main>
@@ -67,6 +67,6 @@
   </dialog>
 
   <script src="../gallery-data.js?v=3"></script>
-  <script src="../gallery-viewer.js?v={% if page.grouped_image_scroll %}21{% elsif page.combined_image_scroll %}19{% elsif page.two_image_scroll %}18{% else %}16{% endif %}"></script>
+  <script src="../gallery-viewer.js?v=22"></script>
 </body>
 </html>

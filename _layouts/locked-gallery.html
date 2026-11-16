@@ -142,11 +142,12 @@
       password.value = '';
       const template = document.createElement('template');
       template.innerHTML = markup;
+      template.content.querySelector('.gallery')?.setAttribute('data-grouped-image-scroll', '');
       template.content.querySelector('.site-footer .back')?.setAttribute('href', {{ portfolio_url | relative_url | append: '#recent-work' | jsonify }});
       document.querySelector('#gallery-access').replaceWith(template.content);
       try {
         await loadScript('../gallery-data.js?v=3');
-        await loadScript('../gallery-viewer.js?v=16');
+        await loadScript('../gallery-viewer.js?v=22');
       } catch {
         document.querySelector('#gallery-status').textContent =
           'The gallery could not be loaded. Please reload to try again.';
