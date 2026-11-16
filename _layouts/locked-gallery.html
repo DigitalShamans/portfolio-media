@@ -38,7 +38,7 @@
     .gallery-access p { min-height: 1.55em; margin: 0; color: var(--muted); }
   </style>
 </head>
-<body>
+<body data-gallery-revision="{{ site.github.build_revision | escape }}">
   {% include site-header.html %}
 
   <main id="gallery-access" class="shell gallery-access">
@@ -147,7 +147,7 @@
       document.querySelector('#gallery-access').replaceWith(template.content);
       try {
         await loadScript('../gallery-data.js?v=3');
-        await loadScript('../gallery-viewer.js?v=22');
+        await loadScript('../gallery-viewer.js?v=23');
       } catch {
         document.querySelector('#gallery-status').textContent =
           'The gallery could not be loaded. Please reload to try again.';

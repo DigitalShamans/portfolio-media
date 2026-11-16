@@ -2,6 +2,7 @@
 
 const galleryContent = document.querySelector('.gallery-content');
 const gallery = document.querySelector('.gallery');
+const galleryRevision = document.body.dataset.galleryRevision;
 const title = document.querySelector('.intro h1').textContent;
 const dragComparisons = gallery.dataset.comparisonGesture === 'drag';
 
@@ -558,9 +559,15 @@ function setupGalleryComparison(entry, link, sources) {
   return () => preview(selected);
 }
 
+function galleryAssetUrl(filename) {
+  const url = new URL(encodeURIComponent(filename), document.baseURI);
+  if (galleryRevision) url.searchParams.set('v', galleryRevision);
+  return url.href;
+}
+
 function createShot(entry, index) {
   const label = title + ' screenshot ' + (index + 1);
-  const sources = GalleryData.images(entry).map(name => new URL(encodeURIComponent(name), document.baseURI).href);
+  const sources = GalleryData.images(entry).map(galleryAssetUrl);
   const link = document.createElement('a');
   link.className = 'shot';
   link.href = sources[0];
@@ -601,7 +608,7 @@ function createShot(entry, index) {
 
 async function loadGallery() {
   try {
-    const response = await fetch('gallery.json');
+    const response = await fetch(galleryAssetUrl('gallery.json'));
     if (!response.ok) throw new Error('Gallery order unavailable.');
     const entries = GalleryData.parse(await response.text());
     shots.push(...entries.map(createShot));
