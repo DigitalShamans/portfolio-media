@@ -132,7 +132,3 @@
 @media (max-width: 620px) {
   .portfolio-grid { --portfolio-columns: 3; }
 }
-
-@media (max-width: 400px) {
-  .portfolio-grid { --portfolio-columns: 2; }
-}
