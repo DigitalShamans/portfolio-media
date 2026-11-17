@@ -2,11 +2,10 @@
   {% assign portfolio = site.data.personal_portfolio %}
   {% assign portfolio_name = portfolio.name %}
   {% assign gallery_prefix = portfolio.home | append: 'galleries/' %}
-  {% assign copyright = portfolio.name %}
+  {% assign copyright_owner = portfolio.name %}
 {% else %}
   {% assign portfolio = site.data.portfolio %}
   {% assign gallery_prefix = '/galleries/' %}
-  {% assign copyright = 'Digital Shamans Ltd.' %}
 {% endif %}
 <!doctype html>
 <html lang="en">
@@ -80,8 +79,6 @@
       </ul>
     </section>
   </main>
-  <footer class="portfolio-footer">
-    <div class="site-shell">© {{ site.time | date: "%Y" }} {{ copyright | escape }}</div>
-  </footer>
+  {% include copyright-footer.html owner=copyright_owner %}
 </body>
 </html>
