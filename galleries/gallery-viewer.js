@@ -341,18 +341,20 @@ function setImageSource(image, source, ready, failed) {
   });
 }
 
-function showImage(index) {
+function showImage(index, initialVariant = 0) {
   const shot = shots[index];
   const { image, sources } = shot;
   prioritizeShot(shot);
   current = index;
   comparisons = [];
-  comparisonIndex = 0;
-  selectedComparison = 0;
-  displayedComparison = 0;
+  comparisonIndex = initialVariant;
+  selectedComparison = initialVariant;
+  displayedComparison = initialVariant;
   stage.classList.toggle('has-comparison', sources.length > 1);
   viewerIndicator?.remove();
-  viewerIndicator = sources.length > 1 ? createComparisonIndicator(sources.length, selectViewerComparison) : null;
+  viewerIndicator = sources.length > 1
+    ? createComparisonIndicator(sources.length, selectViewerComparison, initialVariant)
+    : null;
   if (viewerIndicator) {
     viewerIndicator.hidden = true;
     frame.append(viewerIndicator);
@@ -364,9 +366,14 @@ function showImage(index) {
   original.alt = image.alt;
   showStatus('Loading 4K image…');
   if (galleryAccess) original.removeAttribute('src');
-  setImageSource(original, sources[0], () => {
+  setImageSource(original, sources[initialVariant], () => {
     if (original.complete && original.naturalWidth) imageLoaded();
   }, () => showStatus('This image could not be loaded.'));
+  if (galleryAccess && initialVariant !== 0) {
+    void shot.primaryLoad.then(() => {
+      if (shots[current] === shot) updateComparison();
+    });
+  }
 }
 
 function imageLoaded() {
@@ -512,7 +519,7 @@ original.addEventListener('error', () => {
   showStatus('This image could not be loaded.');
 });
 
-function createComparisonIndicator(count, select) {
+function createComparisonIndicator(count, select, initialVariant = 0) {
   const indicator = document.createElement('span');
   indicator.className = 'comparison-indicator';
   indicator.setAttribute('role', 'group');
@@ -525,7 +532,7 @@ function createComparisonIndicator(count, select) {
     button.addEventListener('click', () => select(index));
     indicator.append(button);
   }
-  setActiveSegment(indicator, 0);
+  setActiveSegment(indicator, initialVariant);
   return indicator;
 }
 
@@ -598,7 +605,11 @@ function setupGalleryComparison(entry, link, sources) {
     select
   }));
 
-  return () => preview(selected);
+  return () => {
+    const initialVariant = displayed;
+    preview(selected);
+    return initialVariant;
+  };
 }
 
 function galleryAssetUrl(filename) {
@@ -691,12 +702,12 @@ function createShot(entry, index) {
   image.draggable = false;
   link.append(image);
   let element = link;
-  let resetComparison;
+  let finishComparisonPreview;
   if (sources.length > 1) {
     element = document.createElement('div');
     element.className = 'shot-entry';
     element.append(link);
-    resetComparison = setupGalleryComparison(element, link, sources);
+    finishComparisonPreview = setupGalleryComparison(element, link, sources);
   }
   if (typeof viewer.showModal === 'function') {
     link.addEventListener('click', event => {
@@ -704,9 +715,9 @@ function createShot(entry, index) {
       event.preventDefault();
       opener = link;
       pointerOpened = event.detail > 0;
-      resetComparison?.();
+      const initialVariant = finishComparisonPreview?.() ?? 0;
       openingPointer = { x: event.screenX, y: event.screenY };
-      showImage(index);
+      showImage(index, initialVariant);
       viewer.showModal();
       void setFullscreen(true);
     });
