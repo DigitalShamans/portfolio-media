@@ -45,9 +45,13 @@
           {% for gallery in site.data.portfolio.recent %}
             {% assign gallery_url = gallery_prefix | append: gallery.folder | append: '/' %}
             {% assign banner_url = '/projects/' | append: gallery.folder | append: '/' | append: gallery.banner %}
+            {% assign banner_version = site.data.portfolio_banner_versions[banner_url] %}
+            {% if gallery.locked %}
+              {% assign banner_version = banner_version | default: site.github.build_revision %}
+            {% endif %}
             <li>
               <a class="recent-gallery" href="{{ gallery_url | relative_url }}">
-                <img src="{{ banner_url | relative_url }}{% if gallery.locked %}?v={{ site.github.build_revision | escape }}{% endif %}" width="2000" height="400" alt="{{ gallery.title | escape }}" decoding="async"{% if forloop.index > 6 %} loading="lazy"{% endif %}>
+                <img src="{{ banner_url | relative_url }}{% if banner_version %}?v={{ banner_version | escape }}{% endif %}" width="2000" height="400" alt="{{ gallery.title | escape }}" decoding="async"{% if forloop.index > 6 %} loading="lazy"{% endif %}>
                 {% if gallery.locked %}
                   <span class="recent-gallery__locked"><span class="lock-icon" aria-hidden="true"></span>Password required</span>
                 {% endif %}
