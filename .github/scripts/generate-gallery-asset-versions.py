@@ -44,10 +44,11 @@ def banner_versions():
 
 def portfolio_gallery_preloads(galleries):
     portfolio = json.loads((ROOT / '_data/portfolio.json').read_text(encoding='utf-8'))
+    locked_folders = {item['folder'] for item in portfolio['recent'] if item.get('locked')}
     preloads = {}
-    for gallery in portfolio['recent']:
-        folder = gallery['folder']
-        if gallery.get('locked') or folder not in galleries:
+    # Gallery pages also use the first URL, including galleries no longer on the homepage.
+    for folder in galleries:
+        if folder in locked_folders:
             continue
         manifest = ROOT / 'galleries' / folder / 'gallery.json'
         try:
