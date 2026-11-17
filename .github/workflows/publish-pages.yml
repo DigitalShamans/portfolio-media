@@ -35,6 +35,9 @@ jobs:
         if: steps.source.outputs.workflow_source == 'true'
         with:
           persist-credentials: false
+      - name: Validate public gallery manifests
+        if: steps.source.outputs.workflow_source == 'true'
+        run: node .github/scripts/validate-public-galleries.cjs
       - uses: actions/configure-pages@v5
         if: steps.source.outputs.workflow_source == 'true'
       - name: Generate gallery asset versions
