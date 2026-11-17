@@ -1,8 +1,9 @@
-"""Write version keys for gallery assets and homepage banners in the published commit."""
+"""Write asset versions and homepage gallery preloads for the published commit."""
 
 import json
 from pathlib import Path, PurePosixPath
 import subprocess
+from urllib.parse import quote
 
 
 IMAGE_SUFFIXES = {'.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif'}
@@ -41,10 +42,37 @@ def banner_versions():
     }
 
 
+def portfolio_gallery_preloads(galleries):
+    portfolio = json.loads((ROOT / '_data/portfolio.json').read_text(encoding='utf-8'))
+    preloads = {}
+    for gallery in portfolio['recent']:
+        folder = gallery['folder']
+        if gallery.get('locked') or folder not in galleries:
+            continue
+        manifest = ROOT / 'galleries' / folder / 'gallery.json'
+        try:
+            entries = json.loads(manifest.read_text(encoding='utf-8-sig'))
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(entries, list):
+            continue
+
+        urls = []
+        for entry in entries[:3]:
+            image = entry.get('image') if isinstance(entry, dict) else None
+            if isinstance(image, str) and image in galleries[folder] and image != 'gallery.json':
+                filename = quote(image, safe="~!*'()")
+                urls.append(f'/galleries/{folder}/{filename}?v={galleries[folder][image]}')
+        preloads[folder] = urls
+    return preloads
+
+
 if __name__ == '__main__':
+    galleries = gallery_versions()
     for name, versions in (
-        ('gallery_asset_versions', gallery_versions()),
+        ('gallery_asset_versions', galleries),
         ('portfolio_banner_versions', banner_versions()),
+        ('portfolio_gallery_preloads', portfolio_gallery_preloads(galleries)),
     ):
         destination = ROOT / '_data' / f'{name}.json'
         destination.write_text(json.dumps(versions, sort_keys=True) + '\n', encoding='utf-8')

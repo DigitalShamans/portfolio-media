@@ -28,6 +28,7 @@ const viewer = document.querySelector('#viewer');
 const frame = document.querySelector('#viewer-frame');
 const stage = document.querySelector('#stage');
 const original = document.querySelector('#original');
+original.fetchPriority = 'high';
 const previous = document.querySelector('#previous');
 const next = document.querySelector('#next');
 const previousSide = document.querySelector('#previous-side');
@@ -51,15 +52,9 @@ let pointerOpened = false;
 let fullscreenActive = false;
 let keepViewerOpen = false;
 const imageRequests = new WeakMap();
-const pendingShots = new WeakMap();
-const galleryObserver = galleryAccess && new IntersectionObserver(entries => {
-  for (const entry of entries) {
-    if (!entry.isIntersecting) continue;
-    galleryObserver.unobserve(entry.target);
-    pendingShots.get(entry.target)?.();
-    pendingShots.delete(entry.target);
-  }
-}, { rootMargin: '600px' });
+const foregroundLoads = new Set();
+let nextBackgroundIndex = 0;
+let backgroundLoading = false;
 
 function setupClassicGalleryScroll() {
   const desktopScrolling = window.matchMedia('(any-hover: hover) and (any-pointer: fine)');
@@ -332,7 +327,7 @@ function setImageSource(image, source, ready, failed) {
   }
   const request = Symbol();
   imageRequests.set(image, request);
-  void galleryAccess.image(source).then(url => {
+  void galleryAccess.image(source, image.fetchPriority).then(url => {
     if (imageRequests.get(image) !== request) return;
     imageRequests.delete(image);
     image.src = url;
@@ -345,7 +340,9 @@ function setImageSource(image, source, ready, failed) {
 }
 
 function showImage(index) {
-  const { image, sources } = shots[index];
+  const shot = shots[index];
+  const { image, sources } = shot;
+  prioritizeShot(shot);
   current = index;
   comparisons = [];
   comparisonIndex = 0;
@@ -610,6 +607,72 @@ function galleryAssetUrl(filename) {
   return url.href;
 }
 
+function loadPrimary(shot, priority) {
+  const { image, link, sources } = shot;
+  if (priority === 'high' || !shot.primaryLoad) image.fetchPriority = priority;
+  if (shot.primaryLoad) return shot.primaryLoad;
+
+  shot.primaryLoad = new Promise(resolve => {
+    function finish() {
+      image.removeEventListener('load', finish);
+      image.removeEventListener('error', finish);
+      resolve();
+    }
+
+    image.addEventListener('load', finish);
+    image.addEventListener('error', finish);
+    setImageSource(image, sources[0], url => {
+      link.href = url;
+      if (image.complete && image.naturalWidth) finish();
+    }, finish);
+  });
+  return shot.primaryLoad;
+}
+
+function loadNextBackgroundShot() {
+  if (backgroundLoading || foregroundLoads.size) return;
+  while (shots[nextBackgroundIndex]?.primaryLoad) nextBackgroundIndex++;
+  const shot = shots[nextBackgroundIndex];
+  if (!shot) return;
+
+  backgroundLoading = true;
+  void loadPrimary(shot, 'low').then(() => {
+    backgroundLoading = false;
+    loadNextBackgroundShot();
+  });
+}
+
+function prioritizeShot(shot) {
+  const request = loadPrimary(shot, 'high');
+  if (foregroundLoads.has(request)) return;
+
+  foregroundLoads.add(request);
+  void request.then(() => {
+    foregroundLoads.delete(request);
+    loadNextBackgroundShot();
+  });
+}
+
+function loadVisibleShotsFirst() {
+  const shotsByElement = new Map(shots.map(shot => [shot.element, shot]));
+  const observer = new IntersectionObserver(entries => {
+    for (const { isIntersecting, target } of entries) {
+      if (!isIntersecting) continue;
+      observer.unobserve(target);
+      prioritizeShot(shotsByElement.get(target));
+    }
+  });
+
+  const visible = shots.filter(({ element }) => {
+    const { top, bottom } = element.getBoundingClientRect();
+    return bottom > 0 && top < window.innerHeight;
+  });
+  for (const shot of visible.length ? visible : shots.slice(0, 1)) prioritizeShot(shot);
+  for (const shot of shots) {
+    if (!shot.primaryLoad) observer.observe(shot.element);
+  }
+}
+
 function createShot(entry, index) {
   const label = title + ' screenshot ' + (index + 1);
   const sources = GalleryData.images(entry).map(galleryAssetUrl);
@@ -618,13 +681,12 @@ function createShot(entry, index) {
   link.href = galleryAccess ? '#viewer' : sources[0];
   link.setAttribute('aria-label', 'Open ' + label + ' in 4K');
   const image = document.createElement('img');
+  image.className = 'shot-primary';
   image.alt = label;
   image.width = 3840;
   image.height = 2160;
   image.decoding = 'async';
   image.draggable = false;
-  if (index === 0) image.fetchPriority = 'high';
-  else image.loading = 'lazy';
   link.append(image);
   let element = link;
   let resetComparison;
@@ -633,13 +695,6 @@ function createShot(entry, index) {
     element.className = 'shot-entry';
     element.append(link);
     resetComparison = setupGalleryComparison(element, link, sources);
-  }
-  const loadPrimary = () => setImageSource(image, sources[0], url => { link.href = url; });
-  if (galleryObserver && index > 0) {
-    pendingShots.set(element, loadPrimary);
-    galleryObserver.observe(element);
-  } else {
-    loadPrimary();
   }
   if (typeof viewer.showModal === 'function') {
     link.addEventListener('click', event => {
@@ -654,7 +709,7 @@ function createShot(entry, index) {
       void setFullscreen(true);
     });
   }
-  return { element, image, sources };
+  return { element, image, link, sources };
 }
 
 async function loadGallery() {
@@ -665,6 +720,7 @@ async function loadGallery() {
     shots.push(...entries.map(createShot));
     gallery.append(...shots.map(shot => shot.element));
     galleryStatus.hidden = true;
+    loadVisibleShotsFirst();
   } catch (error) {
     console.error('Gallery could not be loaded', error);
     galleryStatus.textContent = 'The gallery could not be loaded. Please refresh to try again.';

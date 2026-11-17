@@ -20,7 +20,7 @@
     {% include site-favicon.html %}
   {% endif %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=10">
-  <link rel="stylesheet" href="../gallery.css?v=9">
+  <link rel="stylesheet" href="../gallery.css?v=10">
   <style>
     .gallery-access { max-width: 34rem; padding-block: 2rem; }
     .gallery-access h1 { font-size: clamp(.9rem, 2.5vw, 1.5rem); }
@@ -133,9 +133,10 @@
         return renewal;
       }
 
-      async function media(name) {
+      async function media(name, priority) {
         const response = await fetch(gateway + '/media/' + encodeURIComponent(name), {
           headers: { Authorization: 'Bearer ' + await token() },
+          priority,
         });
         if (!response.ok) throw new Error('Gallery file unavailable.');
         return response;
@@ -149,10 +150,10 @@
       return {
         manifest: () => media('gallery.json'),
         resolved: name => images.get(name),
-        image(name) {
+        image(name, priority) {
           if (images.has(name)) return Promise.resolve(images.get(name));
           if (!pending.has(name)) {
-            pending.set(name, media(name).then(async response => {
+            pending.set(name, media(name, priority).then(async response => {
               const url = URL.createObjectURL(await response.blob());
               images.set(name, url);
               return url;
@@ -202,7 +203,7 @@
       document.querySelector('#gallery-access').replaceWith(template.content);
       try {
         await loadScript('../gallery-data.js?v=3');
-        await loadScript('../gallery-viewer.js?v=25');
+        await loadScript('../gallery-viewer.js?v=26');
       } catch {
         document.querySelector('#gallery-status').textContent =
           'The gallery could not be loaded. Please reload to try again.';
