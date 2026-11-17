@@ -206,14 +206,19 @@
         position.textContent = String(index + 1);
         const assets = document.createElement('div');
         assets.className = 'assets';
-        assets.append(makeAsset(entry.image, entry.compare ? 'Primary · left' : ''));
+        const alternates = GalleryData.images(entry).slice(1);
+        assets.append(makeAsset(entry.image, alternates.length ? 'Primary · left' : ''));
         const actions = document.createElement('div');
         actions.className = 'tile-actions';
-        if (entry.compare) {
-          assets.append(makeAsset(entry.compare, 'Alternate · right'));
+        if (alternates.length) {
+          for (const [offset, name] of alternates.entries()) {
+            const role = alternates.length === 1 ? 'Alternate · right' : 'Variant ' + (offset + 2);
+            assets.append(makeAsset(name, role));
+          }
           actions.append(button('Unmerge', 'Unmerge ' + entry.image, () => {
-            entries.splice(index + 1, 0, { image: entry.compare });
+            entries.splice(index + 1, 0, ...alternates.map(image => ({ image })));
             delete entry.compare;
+            delete entry.additionalImages;
             markChanged('Images separated.');
           }));
         } else {
@@ -361,7 +366,9 @@
     });
 
     function orderText() {
-      return JSON.stringify(entries, null, 2) + '\n';
+      const text = JSON.stringify(entries, null, 2) + '\n';
+      GalleryData.parse(text, files);
+      return text;
     }
 
     saveButton.addEventListener('click', () => {
@@ -386,13 +393,15 @@
     });
 
     downloadButton.addEventListener('click', () => {
-      const url = URL.createObjectURL(new Blob([orderText()], { type: 'application/json' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      link.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      message('Downloaded gallery.json. Copy it into the gallery folder before committing.');
+      void run(() => {
+        const url = URL.createObjectURL(new Blob([orderText()], { type: 'application/json' }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        message('Downloaded gallery.json. Copy it into the gallery folder before committing.');
+      });
     });
 
     window.addEventListener('beforeunload', event => {
