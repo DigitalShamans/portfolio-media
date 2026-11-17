@@ -45,6 +45,14 @@
   height: auto;
 }
 
+.recent-gallery__title {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 5 / 1;
+  font-size: clamp(1rem, 3vw, 2rem);
+  font-weight: 650;
+}
+
 .recent-gallery__locked {
   position: absolute;
   inset-inline-start: .75rem;
