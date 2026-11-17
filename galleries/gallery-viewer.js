@@ -44,7 +44,9 @@ let current = 0;
 let opener;
 let drag;
 let didDrag = false;
-let comparisons = [];
+let viewerRequest = 0;
+let comparisonsInitialized = false;
+let viewerHover = null;
 let comparisonIndex = 0;
 let selectedComparison = 0;
 let displayedComparison = 0;
@@ -344,9 +346,11 @@ function setImageSource(image, source, ready, failed) {
 function showImage(index, initialVariant = 0) {
   const shot = shots[index];
   const { image, sources } = shot;
-  prioritizeShot(shot);
+  const primary = prioritizeShot(shot);
+  const request = ++viewerRequest;
   current = index;
-  comparisons = [];
+  comparisonsInitialized = false;
+  viewerHover = null;
   comparisonIndex = initialVariant;
   selectedComparison = initialVariant;
   displayedComparison = initialVariant;
@@ -365,47 +369,57 @@ function showImage(index, initialVariant = 0) {
   counter.textContent = (index + 1) + ' / ' + shots.length;
   original.alt = image.alt;
   showStatus('Loading 4K image…');
-  if (galleryAccess) original.removeAttribute('src');
-  setImageSource(original, sources[initialVariant], () => {
-    if (original.complete && original.naturalWidth) imageLoaded();
-  }, () => showStatus('This image could not be loaded.'));
-  if (galleryAccess && initialVariant !== 0) {
-    void shot.primaryLoad.then(() => {
-      if (shots[current] === shot) updateComparison();
-    });
+  if (initialVariant !== 0) {
+    const alternate = shot.comparison.getImage(initialVariant);
+    displayOriginal(alternate.src);
+  } else if (original.hasAttribute('src') && original.src !== resolvedImageSource(sources[0])) {
+    original.removeAttribute('src');
   }
+
+  void primary.then(loaded => {
+    if (request !== viewerRequest || !viewer.open || comparisonIndex !== 0) return;
+    if (loaded) displayOriginal(shot.image.src);
+    else if (initialVariant === 0) showStatus('This image could not be loaded.');
+  });
+}
+
+function displayOriginal(source) {
+  if (original.src !== source) original.src = source;
+  if (original.complete && original.naturalWidth) queueMicrotask(imageLoaded);
 }
 
 function imageLoaded() {
+  if (!viewer.open || !original.naturalWidth) return;
+  const shot = shots[current];
+  const displayed = shot.sources.findIndex(source => resolvedImageSource(source) === (original.currentSrc || original.src));
+  if (displayed < 0) return;
   zoom.disabled = false;
   showStatus('');
-  const { sources } = shots[current];
   if (viewerIndicator) {
-    const displayed = sources.findIndex(source => resolvedImageSource(source) === (original.currentSrc || original.src));
-    displayedComparison = Math.max(0, displayed);
+    displayedComparison = displayed;
     setActiveSegment(viewerIndicator, displayedComparison);
     viewerIndicator.hidden = false;
     positionViewerIndicator();
   }
-  if (sources.length === 1 || comparisons.length) return;
-  comparisons = sources.slice(1).map(source => {
-    const image = new Image();
-    image.addEventListener('load', updateComparison, { once: true });
-    setImageSource(image, source);
-    return image;
-  });
+  if (!shot.comparison || comparisonsInitialized) return;
+  comparisonsInitialized = true;
+  for (let index = 1; index < shot.sources.length; index++) shot.comparison.getImage(index, true);
 }
 
-function updateComparison() {
+function updateComparison(requestImage = false) {
   if (!viewer.open) return;
-  const alternate = comparisons[comparisonIndex - 1];
-  const source = comparisonIndex === 0 ? resolvedImageSource(shots[current].sources[0]) : alternate?.naturalWidth && alternate.src;
-  if (source && original.src !== source) original.src = source;
+  const shot = shots[current];
+  if (comparisonIndex === 0 && !shot.image.naturalWidth) {
+    if (requestImage) prioritizeShot(shot);
+    return;
+  }
+  const image = comparisonIndex === 0 ? shot.image : shot.comparison.getImage(comparisonIndex, requestImage);
+  if (image?.naturalWidth && original.src !== image.src) displayOriginal(image.src);
 }
 
 function selectViewerComparison(index) {
   selectedComparison = comparisonIndex = index;
-  updateComparison();
+  updateComparison(true);
 }
 
 function canCompare(event) {
@@ -451,7 +465,11 @@ function setupComparisonTouch(surface, getComparison) {
     }
     if (dragComparisons) {
       const { left, width } = gesture.bounds;
-      gesture.select(comparisonAt(event.clientX, left, width, gesture.count));
+      const index = comparisonAt(event.clientX, left, width, gesture.count);
+      if (gesture.lastIndex !== index) {
+        gesture.lastIndex = index;
+        gesture.select(index);
+      }
     } else if (event.type === 'pointerup' && Math.abs(dx) >= 32 && Math.abs(dx) > Math.abs(dy)) {
       const { count, index, select } = gesture;
       const step = dx > 0 ? 1 : -1;
@@ -502,18 +520,22 @@ function isInsideImage(event, { left, top, width, height }) {
 }
 
 function compareAtPointer(event) {
-  if (!comparisons.length || !original.naturalWidth || !canCompare(event)) return;
+  if (!comparisonsInitialized || !original.naturalWidth || !canCompare(event)) return;
   if (openingPointer && event.screenX === openingPointer.x && event.screenY === openingPointer.y) return;
   openingPointer = null;
   const bounds = viewerImageBounds();
-  comparisonIndex = isInsideImage(event, bounds)
-    ? comparisonAt(event.clientX, bounds.left, bounds.width, comparisons.length + 1)
-    : selectedComparison;
-  updateComparison();
+  const hovered = isInsideImage(event, bounds)
+    ? comparisonAt(event.clientX, bounds.left, bounds.width, shots[current].sources.length)
+    : null;
+  if (viewerHover === hovered) return;
+  viewerHover = hovered;
+  comparisonIndex = hovered ?? selectedComparison;
+  updateComparison(hovered !== null);
 }
 
 original.addEventListener('load', imageLoaded);
 original.addEventListener('error', () => {
+  if (!viewer.open || !original.hasAttribute('src')) return;
   zoom.disabled = true;
   if (viewerIndicator) viewerIndicator.hidden = true;
   showStatus('This image could not be loaded.');
@@ -541,10 +563,11 @@ function setActiveSegment(indicator, index) {
   indicator.children[index].setAttribute('aria-pressed', 'true');
 }
 
-function setupGalleryComparison(entry, link, sources) {
+function setupGalleryComparison(entry, link, sources, shotIndex) {
   let selected = 0;
   let requested = 0;
   let displayed = 0;
+  let hovered = null;
   const alternates = [];
   const indicator = createComparisonIndicator(sources.length, select);
   entry.append(indicator);
@@ -556,32 +579,46 @@ function setupGalleryComparison(entry, link, sources) {
     setActiveSegment(indicator, index);
   }
 
-  function preview(index) {
-    requested = index;
-    if (index === displayed) return;
-    if (index === 0) {
-      show(0);
-      return;
+  // The tile and fullscreen viewer share each alternate image and its in-flight request.
+  function getImage(index, request = false) {
+    if (alternates[index] || !request) return alternates[index];
+    const alternate = new Image();
+    alternate.className = 'shot-comparison';
+    alternate.alt = '';
+    alternate.setAttribute('aria-hidden', 'true');
+    alternate.draggable = false;
+    alternates[index] = alternate;
+
+    function failed() {
+      alternate.onload = alternate.onerror = null;
+      delete alternates[index];
+      alternate.remove();
     }
 
-    let alternate = alternates[index];
-    if (!alternate) {
-      alternate = new Image();
-      alternate.className = 'shot-comparison';
-      alternate.alt = '';
-      alternate.setAttribute('aria-hidden', 'true');
-      alternate.draggable = false;
-      alternate.addEventListener('load', () => {
-        if (requested === index) show(index);
-      }, { once: true });
-      alternates[index] = alternate;
-      setImageSource(alternate, sources[index], undefined, () => {
-        alternates[index] = undefined;
-        alternate.remove();
-      });
-      link.append(alternate);
+    alternate.onload = () => {
+      alternate.onload = alternate.onerror = null;
+      if (requested === index) show(index);
+      if (shots[current]?.link === link && comparisonIndex === index) updateComparison();
+    };
+    alternate.onerror = () => {
+      galleryAccess?.discard?.(sources[index], alternate.src);
+      failed();
+    };
+    link.append(alternate);
+    setImageSource(alternate, sources[index], undefined, failed);
+    return alternate;
+  }
+
+  function preview(index, request = true) {
+    requested = index;
+    if (index === 0) {
+      const shot = shots[shotIndex];
+      if (!shot.image.naturalWidth) {
+        if (request) prioritizeShot(shot);
+        return;
+      }
     }
-    if (alternate.naturalWidth) show(index);
+    if (index !== displayed && (index === 0 || getImage(index, request)?.naturalWidth)) show(index);
   }
 
   function select(index) {
@@ -592,10 +629,14 @@ function setupGalleryComparison(entry, link, sources) {
   link.addEventListener('pointermove', event => {
     if (!canCompare(event)) return;
     const rect = link.getBoundingClientRect();
-    preview(comparisonAt(event.clientX, rect.left, rect.width, sources.length));
+    const index = comparisonAt(event.clientX, rect.left, rect.width, sources.length);
+    if (index === hovered) return;
+    hovered = index;
+    preview(index);
   });
+  link.addEventListener('pointerleave', () => { hovered = null; });
   entry.addEventListener('pointerleave', event => {
-    if (canCompare(event)) preview(selected);
+    if (canCompare(event)) preview(selected, false);
   });
   link.classList.add('has-comparison');
   setupComparisonTouch(link, () => ({
@@ -605,10 +646,16 @@ function setupGalleryComparison(entry, link, sources) {
     select
   }));
 
-  return () => {
-    const initialVariant = displayed;
-    preview(selected);
-    return initialVariant;
+  return {
+    getImage,
+    primaryLoaded() {
+      if (requested === 0 && displayed !== 0) show(0);
+    },
+    finishPreview() {
+      const initialVariant = displayed;
+      preview(selected, false);
+      return initialVariant;
+    }
   };
 }
 
@@ -620,24 +667,53 @@ function galleryAssetUrl(filename) {
   return url.href;
 }
 
+function primaryIsVisible(shot) {
+  return shot.inViewport || (viewer.open && shots[current] === shot && comparisonIndex === 0);
+}
+
+function scheduleVisibleRetry(shot) {
+  if (!primaryIsVisible(shot) || shot.autoRetryUsed || shot.retryTimer !== undefined) return;
+  shot.retryTimer = setTimeout(() => {
+    shot.retryTimer = undefined;
+    if (!primaryIsVisible(shot) || !shot.primaryFailed) return;
+    shot.autoRetryUsed = true;
+    prioritizeShot(shot);
+  }, 1000);
+}
+
 function loadPrimary(shot, priority) {
   const { image, link, sources } = shot;
   if (priority === 'high' || !shot.primaryLoad) image.fetchPriority = priority;
-  if (shot.primaryLoad) return shot.primaryLoad;
+  if (shot.primaryLoad && (!shot.primaryFailed || priority !== 'high')) return shot.primaryLoad;
 
+  // The first shot can already be loading from the server-rendered fallback.
+  const adoptFallback = !shot.primaryLoad && image.hasAttribute('src') && image.src === sources[0];
+  clearTimeout(shot.retryTimer);
+  shot.retryTimer = undefined;
+  shot.primaryFailed = false;
   shot.primaryLoad = new Promise(resolve => {
-    function finish() {
-      image.removeEventListener('load', finish);
-      image.removeEventListener('error', finish);
-      resolve();
+    function finish(loaded) {
+      image.removeEventListener('load', onLoad);
+      image.removeEventListener('error', onError);
+      shot.primaryFailed = !loaded;
+      if (!loaded) scheduleVisibleRetry(shot);
+      resolve(loaded);
     }
-
-    image.addEventListener('load', finish);
-    image.addEventListener('error', finish);
+    function onLoad() { finish(true); }
+    function onError() {
+      galleryAccess?.discard?.(sources[0], image.currentSrc || image.src);
+      finish(false);
+    }
+    image.addEventListener('load', onLoad);
+    image.addEventListener('error', onError);
+    if (adoptFallback) {
+      if (image.complete) finish(image.naturalWidth > 0);
+      return;
+    }
     setImageSource(image, sources[0], url => {
       link.href = url;
-      if (image.complete && image.naturalWidth) finish();
-    }, finish);
+      if (image.complete && image.naturalWidth) onLoad();
+    }, () => finish(false));
   });
   return shot.primaryLoad;
 }
@@ -657,33 +733,38 @@ function loadNextBackgroundShot() {
 
 function prioritizeShot(shot) {
   const request = loadPrimary(shot, 'high');
-  if (foregroundLoads.has(request)) return;
-
-  foregroundLoads.add(request);
-  void request.then(() => {
-    foregroundLoads.delete(request);
-    loadNextBackgroundShot();
-  });
+  if (!foregroundLoads.has(request)) {
+    foregroundLoads.add(request);
+    void request.then(() => {
+      foregroundLoads.delete(request);
+      loadNextBackgroundShot();
+    });
+  }
+  return request;
 }
 
 function loadVisibleShotsFirst() {
   const shotsByElement = new Map(shots.map(shot => [shot.element, shot]));
   const observer = new IntersectionObserver(entries => {
     for (const { isIntersecting, target } of entries) {
-      if (!isIntersecting) continue;
-      observer.unobserve(target);
-      prioritizeShot(shotsByElement.get(target));
+      const shot = shotsByElement.get(target);
+      if (isIntersecting === shot.inViewport) continue;
+      shot.inViewport = isIntersecting;
+      if (isIntersecting) prioritizeShot(shot);
+      else if (!primaryIsVisible(shot)) {
+        clearTimeout(shot.retryTimer);
+        shot.retryTimer = undefined;
+      }
     }
   });
 
-  const visible = shots.filter(({ element }) => {
-    const { top, bottom } = element.getBoundingClientRect();
-    return bottom > 0 && top < window.innerHeight;
+  const visible = shots.filter(shot => {
+    const { top, bottom } = shot.element.getBoundingClientRect();
+    shot.inViewport = bottom > 0 && top < window.innerHeight;
+    observer.observe(shot.element);
+    return shot.inViewport;
   });
   for (const shot of visible.length ? visible : shots.slice(0, 1)) prioritizeShot(shot);
-  for (const shot of shots) {
-    if (!shot.primaryLoad) observer.observe(shot.element);
-  }
 }
 
 function createShot(entry, index) {
@@ -702,27 +783,34 @@ function createShot(entry, index) {
   image.draggable = false;
   link.append(image);
   let element = link;
-  let finishComparisonPreview;
+  let comparison;
   if (sources.length > 1) {
     element = document.createElement('div');
     element.className = 'shot-entry';
     element.append(link);
-    finishComparisonPreview = setupGalleryComparison(element, link, sources);
+    comparison = setupGalleryComparison(element, link, sources, index);
   }
+  // A later retry can succeed after a tile selection or fullscreen open has already failed.
+  link.addEventListener('load', event => {
+    const shot = shots[index];
+    if (event.target !== shot?.image) return;
+    comparison?.primaryLoaded();
+    if (viewer.open && current === index && comparisonIndex === 0) displayOriginal(shot.image.src);
+  }, true);
   if (typeof viewer.showModal === 'function') {
     link.addEventListener('click', event => {
       if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
       opener = link;
       pointerOpened = event.detail > 0;
-      const initialVariant = finishComparisonPreview?.() ?? 0;
+      const initialVariant = comparison?.finishPreview() ?? 0;
       openingPointer = { x: event.screenX, y: event.screenY };
       showImage(index, initialVariant);
       viewer.showModal();
       void setFullscreen(true);
     });
   }
-  return { element, image, link, sources };
+  return { element, image, link, sources, comparison };
 }
 
 async function loadGallery() {
@@ -821,15 +909,17 @@ stage.addEventListener('lostpointercapture', () => {
 
 stage.addEventListener('pointerleave', event => {
   if (!canCompare(event)) return;
+  openingPointer = null;
+  viewerHover = null;
   comparisonIndex = selectedComparison;
   updateComparison();
 });
 
 setupComparisonTouch(stage, event => {
-  if (!comparisons.length || !original.naturalWidth || stage.classList.contains('native')) return;
+  if (!comparisonsInitialized || !original.naturalWidth || stage.classList.contains('native')) return;
   const bounds = viewerImageBounds();
   if (!isInsideImage(event, bounds)) return;
-  return { bounds, count: comparisons.length + 1, index: displayedComparison, select: selectViewerComparison };
+  return { bounds, count: shots[current].sources.length, index: displayedComparison, select: selectViewerComparison };
 });
 
 fullscreen.hidden = !document.fullscreenEnabled || !frame.requestFullscreen;
@@ -862,10 +952,10 @@ document.addEventListener('fullscreenchange', () => {
 
 viewer.addEventListener('close', () => {
   if (document.fullscreenElement === frame) void setFullscreen(false);
-  comparisons = [];
+  viewerRequest++;
+  comparisonsInitialized = false;
   viewerIndicator?.remove();
   viewerIndicator = null;
-  imageRequests.delete(original);
   original.removeAttribute('src');
   fitImage();
   if (opener) {
