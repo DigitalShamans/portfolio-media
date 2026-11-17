@@ -1,0 +1,31 @@
+{%- assign seo_title = page.seo_title | default: include.title | default: page.title | default: site.title -%}
+{%- assign seo_description = page.seo_description | default: include.description | default: site.description -%}
+{%- assign seo_image_key = page.seo_image | default: include.image | default: site.seo_image -%}
+{%- assign seo_image = site.data.seo_images[seo_image_key] -%}
+{%- capture seo_url -%}{% include canonical-url.html path=page.url %}{%- endcapture -%}
+<title>{{ seo_title | escape }}</title>
+<meta name="description" content="{{ seo_description | escape }}">
+{% if page.seo_noindex %}
+  <meta name="robots" content="noindex">
+{% else %}
+  <link rel="canonical" href="{{ seo_url | escape }}">
+  <meta property="og:title" content="{{ seo_title | escape }}">
+  <meta property="og:description" content="{{ seo_description | escape }}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ seo_url | escape }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ seo_title | escape }}">
+  <meta name="twitter:description" content="{{ seo_description | escape }}">
+  {% if seo_image %}
+    {% assign seo_image_url = seo_image.path | absolute_url %}
+    <meta property="og:image" content="{{ seo_image_url | escape }}">
+    <meta property="og:image:alt" content="{{ seo_image.alt | escape }}">
+    {% if seo_image.width and seo_image.height %}
+      <meta property="og:image:width" content="{{ seo_image.width }}">
+      <meta property="og:image:height" content="{{ seo_image.height }}">
+    {% endif %}
+    {% if seo_image.type %}<meta property="og:image:type" content="{{ seo_image.type | escape }}">{% endif %}
+    <meta name="twitter:image" content="{{ seo_image_url | escape }}">
+    <meta name="twitter:image:alt" content="{{ seo_image.alt | escape }}">
+  {% endif %}
+{% endif %}

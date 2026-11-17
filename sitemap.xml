@@ -1,0 +1,31 @@
+---
+layout: none
+permalink: /sitemap.xml
+seo_noindex: true
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  {%- assign sitemap_pages = site.pages | sort: 'url' -%}
+  {%- assign excluded_names = '403.html|404.html|500.html|agents.md|readme.md' | split: '|' -%}
+  {%- assign excluded_roots = '403|404|500|_tools|admin|editor|errors|tools' | split: '|' -%}
+  {%- for item in sitemap_pages -%}
+    {%- if item.seo_noindex or item.sitemap == false or item.layout == 'locked-gallery' or item.redirect_to or item.redirect -%}
+      {%- continue -%}
+    {%- endif -%}
+    {%- assign source_name = item.path | split: '/' | last | downcase -%}
+    {%- assign source_extension = source_name | slice: -5, 5 -%}
+    {%- assign route_root = item.url | remove_first: '/' | split: '/' | first | downcase -%}
+    {%- if excluded_names contains source_name or excluded_roots contains route_root -%}
+      {%- continue -%}
+    {%- endif -%}
+    {%- unless item.layout or source_extension == '.html' -%}
+      {%- continue -%}
+    {%- endunless -%}
+    {%- assign route_end = item.url | slice: -1, 1 -%}
+    {%- assign route_extension = item.url | slice: -5, 5 -%}
+    {%- if route_end == '/' or route_extension == '.html' -%}
+      {%- capture canonical_url %}{% include canonical-url.html path=item.url %}{% endcapture %}
+  <url><loc>{{ canonical_url | strip | xml_escape }}</loc></url>
+    {%- endif -%}
+  {%- endfor %}
+</urlset>

@@ -1,0 +1,48 @@
+hb-airplanes:
+  path: /galleries/hb-airplanes/SandboxLab_Airplanes_4k_A_01.jpg
+  alt: "Passenger aircraft cabin with blue seating in the Hard Bullet Airplanes environment"
+  width: 3840
+  height: 2160
+  type: image/jpeg
+
+hb-atrium:
+  path: /galleries/hb-atrium/Hall_Atrium_Ground_01_4k_Logos.jpg
+  alt: "Curved reception desk and cyan lighting in the Hard Bullet Atrium"
+  width: 3840
+  height: 2160
+  type: image/jpeg
+
+hb-barchurch:
+  path: /galleries/hb-barchurch/Bar_Church_MainHall_26_4k_Logos.jpg
+  alt: "Chandelier-lit bar beneath stone arches in the Hard Bullet Bar & Church arena"
+  width: 3840
+  height: 2160
+  type: image/jpeg
+
+hb-egypt:
+  path: /galleries/hb-egypt/HB_Start_03.jpg
+  alt: "Sandstone columns framing a pyramid in the Hard Bullet Egypt environment"
+  width: 3840
+  height: 2160
+  type: image/jpeg
+
+hb-harbor:
+  path: /galleries/hb-harbor/Harbor_Scene_002_4k_Logos.jpg
+  alt: "Cargo cranes and shipping containers at sunset in the Hard Bullet Harbor arena"
+  width: 3840
+  height: 2160
+  type: image/jpeg
+
+hb-helipad:
+  path: /galleries/hb-helipad/HelipadArena_01_4k.jpg
+  alt: "Marble-lined corridor with strip lighting in the Hard Bullet Helipad arena"
+  width: 3840
+  height: 2160
+  type: image/jpeg
+
+hb-spybase:
+  path: /galleries/hb-spybase/SpyBase_01.jpg
+  alt: "Red-lit wind tunnel and industrial fan in the Hard Bullet Spy Base"
+  width: 3840
+  height: 2160
+  type: image/jpeg
