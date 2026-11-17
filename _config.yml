@@ -4,6 +4,9 @@ exclude:
   - marketing
   - galleries_PNG
   - gallery_PNG
+  - galleries/hb-rzstart
+  - artur/galleries/hb-rzstart
+  - projects/hb-rzstart
   - '**/*.[pP][sS][dD]'
   - '**/*.[pP][sS][bB]'
 
@@ -12,3 +15,5 @@ plugins:
 
 redirect_from:
   json: false
+
+rz_start_private_url: https://digital-shamans-rz-start-review.bonnydolphin3.chatgpt.site
