@@ -10,6 +10,8 @@
   {% assign gallery_page = page %}
   {% assign gallery_label = page.gallery_label %}
 {% endif %}
+{% assign gallery_folder = gallery_page.url | remove_first: '/galleries/' | split: '/' | first %}
+{% assign gallery_asset_versions = site.data.gallery_asset_versions[gallery_folder] %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -26,7 +28,7 @@
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=10">
   <link rel="stylesheet" href="../gallery.css?v=9">
 </head>
-<body data-gallery-revision="{{ site.github.build_revision | escape }}">
+<body data-gallery-revision="{{ site.github.build_revision | escape }}"{% if gallery_asset_versions %} data-gallery-asset-versions="{{ gallery_asset_versions | jsonify | escape }}"{% endif %}>
   {% include site-header.html %}
 
   <main class="shell">
@@ -67,6 +69,6 @@
   </dialog>
 
   <script src="../gallery-data.js?v=3"></script>
-  <script src="../gallery-viewer.js?v=23"></script>
+  <script src="../gallery-viewer.js?v=24"></script>
 </body>
 </html>
