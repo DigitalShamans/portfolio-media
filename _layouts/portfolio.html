@@ -23,7 +23,7 @@
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=10">
   <link rel="stylesheet" href="{{ '/assets/portfolio.css' | relative_url }}?v=6">
   {% if site.data.portfolio_gallery_preloads %}
-    <script src="{{ '/assets/portfolio-preload.js' | relative_url }}?v=1" defer></script>
+    <script src="{{ '/assets/portfolio-preload.js' | relative_url }}?v=2" defer></script>
   {% endif %}
 </head>
 <body class="portfolio-page">
@@ -57,7 +57,7 @@
               <a class="recent-gallery" href="{{ gallery_url | relative_url }}"
                 {% unless gallery.locked %}
                   {% if gallery_preloads %}
-                    data-gallery-preloads="{% for url in gallery_preloads %}{{ url | relative_url | escape }}{% unless forloop.last %} {% endunless %}{% endfor %}"
+                    data-gallery-preloads="[{% for url in gallery_preloads %}{{ url | relative_url | jsonify | escape }}{% unless forloop.last %},{% endunless %}{% endfor %}]"
                   {% endif %}
                 {% endunless %}>
                 <img src="{{ banner_url | relative_url }}{% if banner_version %}?v={{ banner_version | escape }}{% endif %}" width="2000" height="400" alt="{{ gallery.title | escape }}" decoding="async"{% if forloop.index > 6 %} loading="lazy"{% endif %}>
