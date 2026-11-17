@@ -726,15 +726,31 @@ function createShot(entry, index) {
 }
 
 async function loadGallery() {
+  const fallback = gallery.querySelector('[data-gallery-fallback]');
+  const fallbackImage = fallback?.querySelector('img');
+  galleryStatus.textContent = 'Loading gallery…';
+  galleryStatus.hidden = false;
   try {
     const response = galleryAccess ? await galleryAccess.manifest() : await fetch(galleryAssetUrl('gallery.json'));
     if (!response.ok) throw new Error('Gallery order unavailable.');
     const entries = GalleryData.parse(await response.text());
     shots.push(...entries.map(createShot));
-    gallery.append(...shots.map(shot => shot.element));
-    galleryStatus.hidden = true;
+    const firstShot = shots[0];
+    const restoreFocus = fallback && document.activeElement === fallback;
+    // Keep the already displayed image in place visually as its link becomes interactive.
+    if (fallbackImage && fallback.href === firstShot.sources[0]) {
+      firstShot.image.replaceWith(fallbackImage);
+      firstShot.image = fallbackImage;
+    }
+    gallery.replaceChildren(...shots.map(shot => shot.element));
     loadVisibleShotsFirst();
+    if (restoreFocus) firstShot.link.focus({ preventScroll: true });
+    galleryStatus.hidden = true;
   } catch (error) {
+    if (fallback) {
+      if (fallbackImage && fallbackImage.parentNode !== fallback) fallback.append(fallbackImage);
+      if (fallback.parentNode !== gallery) gallery.replaceChildren(fallback);
+    }
     console.error('Gallery could not be loaded', error);
     galleryStatus.textContent = 'The gallery could not be loaded. Please refresh to try again.';
   }
