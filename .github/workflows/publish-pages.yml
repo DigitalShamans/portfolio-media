@@ -51,6 +51,9 @@ jobs:
         with:
           source: ./
           destination: ./_site
+      - name: Validate homepage gallery links
+        if: steps.source.outputs.workflow_source == 'true'
+        run: python3 .github/scripts/validate-homepage-gallery-links.py ./_site
       - uses: actions/upload-pages-artifact@v4
         if: steps.source.outputs.workflow_source == 'true'
 
