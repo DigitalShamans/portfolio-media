@@ -3,7 +3,7 @@
 
   const region = document.querySelector('.recent-galleries');
   const galleryImages = Array.from(region.querySelectorAll('[data-gallery-preloads]'), gallery =>
-    gallery.dataset.galleryPreloads.split(' ').filter(Boolean)
+    JSON.parse(gallery.dataset.galleryPreloads)
   );
 
   function visibleBanners() {
