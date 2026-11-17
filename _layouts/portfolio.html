@@ -49,7 +49,7 @@
               <a class="recent-gallery" href="{{ gallery_url | relative_url }}">
                 <img src="{{ banner_url | relative_url }}{% if gallery.locked %}?v={{ site.github.build_revision | escape }}{% endif %}" width="2000" height="400" alt="{{ gallery.title | escape }}" decoding="async"{% if forloop.index > 6 %} loading="lazy"{% endif %}>
                 {% if gallery.locked %}
-                  <span class="recent-gallery__locked"><span class="lock-icon" aria-hidden="true"></span>Private gallery</span>
+                  <span class="recent-gallery__locked"><span class="lock-icon" aria-hidden="true"></span>Password required</span>
                 {% endif %}
               </a>
             </li>

@@ -3,6 +3,7 @@
 const galleryContent = document.querySelector('.gallery-content');
 const gallery = document.querySelector('.gallery');
 const galleryRevision = document.body.dataset.galleryRevision;
+const galleryAccess = window.galleryAccess;
 const title = document.querySelector('.intro h1').textContent;
 const dragComparisons = gallery.dataset.comparisonGesture === 'drag';
 
@@ -48,6 +49,16 @@ let openingPointer;
 let pointerOpened = false;
 let fullscreenActive = false;
 let keepViewerOpen = false;
+const imageRequests = new WeakMap();
+const pendingShots = new WeakMap();
+const galleryObserver = galleryAccess && new IntersectionObserver(entries => {
+  for (const entry of entries) {
+    if (!entry.isIntersecting) continue;
+    galleryObserver.unobserve(entry.target);
+    pendingShots.get(entry.target)?.();
+    pendingShots.delete(entry.target);
+  }
+}, { rootMargin: '600px' });
 
 function setupClassicGalleryScroll() {
   const desktopScrolling = window.matchMedia('(any-hover: hover) and (any-pointer: fine)');
@@ -306,6 +317,32 @@ function showStatus(message) {
   status.hidden = !message;
 }
 
+function resolvedImageSource(source) {
+  return galleryAccess ? galleryAccess.resolved(source) : source;
+}
+
+function setImageSource(image, source, ready, failed) {
+  const resolved = resolvedImageSource(source);
+  if (resolved) {
+    imageRequests.delete(image);
+    image.src = resolved;
+    ready?.(resolved);
+    return;
+  }
+  const request = Symbol();
+  imageRequests.set(image, request);
+  void galleryAccess.image(source).then(url => {
+    if (imageRequests.get(image) !== request) return;
+    imageRequests.delete(image);
+    image.src = url;
+    ready?.(url);
+  }, () => {
+    if (imageRequests.get(image) !== request) return;
+    imageRequests.delete(image);
+    failed?.();
+  });
+}
+
 function showImage(index) {
   const { image, sources } = shots[index];
   current = index;
@@ -326,8 +363,10 @@ function showImage(index) {
   counter.textContent = (index + 1) + ' / ' + shots.length;
   original.alt = image.alt;
   showStatus('Loading 4K image…');
-  original.src = sources[0];
-  if (original.complete && original.naturalWidth) imageLoaded();
+  if (galleryAccess) original.removeAttribute('src');
+  setImageSource(original, sources[0], () => {
+    if (original.complete && original.naturalWidth) imageLoaded();
+  }, () => showStatus('This image could not be loaded.'));
 }
 
 function imageLoaded() {
@@ -335,7 +374,7 @@ function imageLoaded() {
   showStatus('');
   const { sources } = shots[current];
   if (viewerIndicator) {
-    const displayed = sources.indexOf(original.currentSrc || original.src);
+    const displayed = sources.findIndex(source => resolvedImageSource(source) === (original.currentSrc || original.src));
     displayedComparison = Math.max(0, displayed);
     setActiveSegment(viewerIndicator, displayedComparison);
     viewerIndicator.hidden = false;
@@ -345,7 +384,7 @@ function imageLoaded() {
   comparisons = sources.slice(1).map(source => {
     const image = new Image();
     image.addEventListener('load', updateComparison, { once: true });
-    image.src = source;
+    setImageSource(image, source);
     return image;
   });
 }
@@ -353,7 +392,7 @@ function imageLoaded() {
 function updateComparison() {
   if (!viewer.open) return;
   const alternate = comparisons[comparisonIndex - 1];
-  const source = comparisonIndex === 0 ? shots[current].sources[0] : alternate?.naturalWidth && alternate.src;
+  const source = comparisonIndex === 0 ? resolvedImageSource(shots[current].sources[0]) : alternate?.naturalWidth && alternate.src;
   if (source && original.src !== source) original.src = source;
 }
 
@@ -529,7 +568,10 @@ function setupGalleryComparison(entry, link, sources) {
         if (requested === index) show(index);
       }, { once: true });
       alternates[index] = alternate;
-      alternate.src = sources[index];
+      setImageSource(alternate, sources[index], undefined, () => {
+        alternates[index] = undefined;
+        alternate.remove();
+      });
       link.append(alternate);
     }
     if (alternate.naturalWidth) show(index);
@@ -560,6 +602,7 @@ function setupGalleryComparison(entry, link, sources) {
 }
 
 function galleryAssetUrl(filename) {
+  if (galleryAccess) return filename;
   const url = new URL(encodeURIComponent(filename), document.baseURI);
   if (galleryRevision) url.searchParams.set('v', galleryRevision);
   return url.href;
@@ -570,7 +613,7 @@ function createShot(entry, index) {
   const sources = GalleryData.images(entry).map(galleryAssetUrl);
   const link = document.createElement('a');
   link.className = 'shot';
-  link.href = sources[0];
+  link.href = galleryAccess ? '#viewer' : sources[0];
   link.setAttribute('aria-label', 'Open ' + label + ' in 4K');
   const image = document.createElement('img');
   image.alt = label;
@@ -580,7 +623,6 @@ function createShot(entry, index) {
   image.draggable = false;
   if (index === 0) image.fetchPriority = 'high';
   else image.loading = 'lazy';
-  image.src = sources[0];
   link.append(image);
   let element = link;
   let resetComparison;
@@ -589,6 +631,13 @@ function createShot(entry, index) {
     element.className = 'shot-entry';
     element.append(link);
     resetComparison = setupGalleryComparison(element, link, sources);
+  }
+  const loadPrimary = () => setImageSource(image, sources[0], url => { link.href = url; });
+  if (galleryObserver && index > 0) {
+    pendingShots.set(element, loadPrimary);
+    galleryObserver.observe(element);
+  } else {
+    loadPrimary();
   }
   if (typeof viewer.showModal === 'function') {
     link.addEventListener('click', event => {
@@ -608,7 +657,7 @@ function createShot(entry, index) {
 
 async function loadGallery() {
   try {
-    const response = await fetch(galleryAssetUrl('gallery.json'));
+    const response = galleryAccess ? await galleryAccess.manifest() : await fetch(galleryAssetUrl('gallery.json'));
     if (!response.ok) throw new Error('Gallery order unavailable.');
     const entries = GalleryData.parse(await response.text());
     shots.push(...entries.map(createShot));
@@ -729,6 +778,7 @@ viewer.addEventListener('close', () => {
   comparisons = [];
   viewerIndicator?.remove();
   viewerIndicator = null;
+  imageRequests.delete(original);
   original.removeAttribute('src');
   fitImage();
   if (opener) {
