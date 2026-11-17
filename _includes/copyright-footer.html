@@ -1,0 +1,6 @@
+<footer class="portfolio-footer">
+  <div class="site-shell">© <span data-copyright-year>{{ site.time | date: "%Y" }}</span> {{ include.owner | default: 'Digital Shamans Ltd.' | escape }}</div>
+</footer>
+<script>
+  document.querySelector('[data-copyright-year]').textContent = String(new Date().getFullYear());
+</script>
