@@ -1,13 +1,10 @@
 {% if page.portfolio == 'personal' %}
   {% assign portfolio = site.data.personal_portfolio %}
   {% assign portfolio_name = portfolio.name %}
-  {% assign portfolio_description = 'Environment art portfolio of ' | append: portfolio_name | append: '.' %}
   {% assign gallery_prefix = portfolio.home | append: 'galleries/' %}
   {% assign copyright = portfolio.name %}
 {% else %}
   {% assign portfolio = site.data.portfolio %}
-  {% assign portfolio_name = 'Digital Shamans' %}
-  {% assign portfolio_description = 'Recent environment art and the full Digital Shamans game art portfolio.' %}
   {% assign gallery_prefix = '/galleries/' %}
   {% assign copyright = 'Digital Shamans Ltd.' %}
 {% endif %}
@@ -17,8 +14,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <meta name="description" content="{{ portfolio_description | escape }}">
-  <title>Portfolio | {{ portfolio_name | escape }}</title>
+  {% include seo.html %}
   {% unless page.portfolio == 'personal' %}{% include site-favicon.html %}{% endunless %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=10">
   <link rel="stylesheet" href="{{ '/assets/portfolio.css' | relative_url }}?v=6">

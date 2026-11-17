@@ -4,22 +4,24 @@
   {% assign gallery_path = '/galleries/' | append: page.gallery | append: '/' %}
   {% assign gallery_page = site.pages | where: 'url', gallery_path | first %}
   {% assign gallery_label = gallery_page.gallery_title | remove_first: 'Hard Bullet - ' | append: ' screenshots' %}
+  {% assign gallery_seo_description = gallery_page.personal_gallery_description | default: gallery_page.gallery_description %}
 {% else %}
   {% assign portfolio_name = 'Digital Shamans' %}
   {% assign portfolio_url = '/' %}
   {% assign gallery_page = page %}
   {% assign gallery_label = page.gallery_label %}
+  {% assign gallery_seo_description = page.gallery_description %}
 {% endif %}
 {% assign gallery_folder = gallery_page.url | remove_first: '/galleries/' | split: '/' | first %}
 {% assign gallery_asset_versions = site.data.gallery_asset_versions[gallery_folder] %}
+{% assign gallery_seo_title = gallery_page.gallery_title | append: ' Environment Art | ' | append: portfolio_name %}
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <meta name="description" content="{{ gallery_page.gallery_description | escape }}">
-  <title>{{ gallery_page.gallery_title | escape }} | {{ portfolio_name | escape }}</title>
+  {% include seo.html title=gallery_seo_title description=gallery_seo_description image=gallery_folder %}
   {% if page.portfolio == 'personal' %}
     <base href="{{ gallery_path | relative_url }}">
   {% else %}

@@ -1,0 +1,7 @@
+{%- assign canonical_path = include.path -%}
+{%- assign canonical_suffix = canonical_path | slice: -11, 11 -%}
+{%- if canonical_suffix == '/index.html' -%}
+  {%- assign canonical_length = canonical_path.size | minus: 10 -%}
+  {%- assign canonical_path = canonical_path | slice: 0, canonical_length -%}
+{%- endif -%}
+{{- canonical_path | absolute_url -}}
