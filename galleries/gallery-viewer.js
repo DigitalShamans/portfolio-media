@@ -4,6 +4,7 @@ const galleryContent = document.querySelector('.gallery-content');
 const gallery = document.querySelector('.gallery');
 const galleryRevision = document.body.dataset.galleryRevision;
 const galleryAccess = window.galleryAccess;
+const galleryAssetVersions = JSON.parse(document.body.dataset.galleryAssetVersions || '{}');
 const title = document.querySelector('.intro h1').textContent;
 const dragComparisons = gallery.dataset.comparisonGesture === 'drag';
 
@@ -604,7 +605,8 @@ function setupGalleryComparison(entry, link, sources) {
 function galleryAssetUrl(filename) {
   if (galleryAccess) return filename;
   const url = new URL(encodeURIComponent(filename), document.baseURI);
-  if (galleryRevision) url.searchParams.set('v', galleryRevision);
+  const revision = galleryAssetVersions[filename] ?? galleryRevision;
+  if (revision) url.searchParams.set('v', revision);
   return url.href;
 }
 

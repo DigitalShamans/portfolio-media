@@ -1,0 +1,65 @@
+name: Publish portfolio
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
+    outputs:
+      workflow_source: ${{ steps.source.outputs.workflow_source }}
+    steps:
+      - name: Check Pages publishing source
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mode=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.build_type')
+          if [[ "$mode" == workflow ]]; then
+            echo 'workflow_source=true' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v6
+        if: steps.source.outputs.workflow_source == 'true'
+        with:
+          persist-credentials: false
+      - uses: actions/configure-pages@v5
+        if: steps.source.outputs.workflow_source == 'true'
+      - name: Generate gallery asset versions
+        if: steps.source.outputs.workflow_source == 'true'
+        run: python3 .github/scripts/generate-gallery-asset-versions.py
+      - name: Build with Jekyll
+        if: steps.source.outputs.workflow_source == 'true'
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+      - uses: actions/upload-pages-artifact@v4
+        if: steps.source.outputs.workflow_source == 'true'
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.workflow_source == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
