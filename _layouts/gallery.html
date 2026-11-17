@@ -14,6 +14,7 @@
 {% endif %}
 {% assign gallery_folder = gallery_page.url | remove_first: '/galleries/' | split: '/' | first %}
 {% assign gallery_asset_versions = site.data.gallery_asset_versions[gallery_folder] %}
+{% assign first_image_url = site.data.portfolio_gallery_preloads[gallery_folder] | first %}
 {% assign gallery_seo_title = gallery_page.gallery_title | append: ' Environment Art | ' | append: portfolio_name %}
 <!doctype html>
 <html lang="en">
@@ -39,8 +40,15 @@
         <h1>{{ gallery_page.gallery_title | escape }}</h1>
         <p class="description">{{ gallery_page.gallery_intro | escape }}</p>
       </header>
-      <p id="gallery-status" role="status">Loading gallery…</p>
-      <section class="gallery" data-comparison-gesture="{{ gallery_page.comparison_gesture | default: 'swipe' | escape }}" data-grouped-image-scroll aria-label="{{ gallery_label | escape }}"></section>
+      <p id="gallery-status" role="status" hidden></p>
+      <section class="gallery" data-comparison-gesture="{{ gallery_page.comparison_gesture | default: 'swipe' | escape }}" data-grouped-image-scroll aria-label="{{ gallery_label | escape }}">
+        {% if first_image_url %}
+          {% assign first_image_url = first_image_url | relative_url | escape %}
+          <a class="shot" data-gallery-fallback href="{{ first_image_url }}" aria-label="Open {{ gallery_page.gallery_title | escape }} screenshot 1 in 4K">
+            <img class="shot-primary" src="{{ first_image_url }}" width="3840" height="2160" alt="{{ gallery_page.gallery_title | escape }} screenshot 1" decoding="async" fetchpriority="high" draggable="false">
+          </a>
+        {% endif %}
+      </section>
     </div>
     <footer class="site-footer"><a class="back" href="{{ portfolio_url | relative_url }}#recent-work">Back to portfolio</a></footer>
   </main>
@@ -71,6 +79,6 @@
   </dialog>
 
   <script src="../gallery-data.js?v=3"></script>
-  <script src="../gallery-viewer.js?v=28"></script>
+  <script src="../gallery-viewer.js?v=29"></script>
 </body>
 </html>
