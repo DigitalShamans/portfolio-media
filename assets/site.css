@@ -109,7 +109,10 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
     gap: .25rem;
   }
   .site-nav { justify-content: center; }
-  .site-nav a { font-size: .8125rem; }
+  .site-nav a {
+    font-size: .75rem;
+    font-weight: 400;
+  }
 }
 
 @media (max-width: 375px) {
