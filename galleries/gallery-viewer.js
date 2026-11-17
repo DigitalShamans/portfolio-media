@@ -16,7 +16,9 @@ const unzoomedDpr = window.devicePixelRatio / initialPageScale;
 
 function fitGallery() {
   const pageScale = window.devicePixelRatio / unzoomedDpr;
-  const fitWidth = Math.min(window.innerWidth, window.innerHeight * 16 / 9);
+  // On mobile, an oversized gallery can inflate innerWidth after rotation.
+  const viewportWidth = desktop ? window.innerWidth : document.documentElement.clientWidth;
+  const fitWidth = Math.min(viewportWidth, window.innerHeight * 16 / 9);
   galleryContent.style.setProperty('--shot-width', (0.9 * fitWidth * pageScale) + 'px');
 }
 
