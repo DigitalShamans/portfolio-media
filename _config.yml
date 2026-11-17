@@ -6,7 +6,6 @@ exclude:
   - gallery_PNG
   - galleries/hb-rzstart
   - artur/galleries/hb-rzstart
-  - projects/hb-rzstart
   - '**/*.[pP][sS][dD]'
   - '**/*.[pP][sS][bB]'
 

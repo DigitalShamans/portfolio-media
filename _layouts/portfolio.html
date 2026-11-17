@@ -21,7 +21,7 @@
   <title>Portfolio | {{ portfolio_name | escape }}</title>
   {% unless page.portfolio == 'personal' %}{% include site-favicon.html %}{% endunless %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=10">
-  <link rel="stylesheet" href="{{ '/assets/portfolio.css' | relative_url }}?v=7">
+  <link rel="stylesheet" href="{{ '/assets/portfolio.css' | relative_url }}?v=6">
 </head>
 <body class="portfolio-page">
   {% include site-header.html %}
@@ -47,11 +47,7 @@
             {% assign banner_url = '/projects/' | append: gallery.folder | append: '/' | append: gallery.banner %}
             <li>
               <a class="recent-gallery" href="{{ gallery_url | relative_url }}">
-                {% if gallery.banner %}
-                  <img src="{{ banner_url | relative_url }}" width="2000" height="400" alt="{{ gallery.title | escape }}" decoding="async"{% if forloop.index > 6 %} loading="lazy"{% endif %}>
-                {% else %}
-                  <span class="recent-gallery__title">{{ gallery.title | escape }}</span>
-                {% endif %}
+                <img src="{{ banner_url | relative_url }}{% if gallery.locked %}?v={{ site.github.build_revision | escape }}{% endif %}" width="2000" height="400" alt="{{ gallery.title | escape }}" decoding="async"{% if forloop.index > 6 %} loading="lazy"{% endif %}>
                 {% if gallery.locked %}
                   <span class="recent-gallery__locked"><span class="lock-icon" aria-hidden="true"></span>Private gallery</span>
                 {% endif %}

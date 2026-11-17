@@ -7,7 +7,7 @@
     { "title": "Harbor", "folder": "hb-harbor", "banner": "hb_harbor_header_400.jpg" },
     { "title": "Atrium", "folder": "hb-atrium", "banner": "hb_atrium_header_400.jpg" },
     { "title": "Spy Base", "folder": "hb-spybase", "banner": "hb_spybase_header_400.jpg" },
-    { "title": "RZ Start", "folder": "hb-rzstart", "locked": true }
+    { "title": "RZ Start", "folder": "hb-rzstart", "banner": "hb_rzstart_header_400.jpg", "locked": true }
   ],
   "full": [
     {
