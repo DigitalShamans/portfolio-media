@@ -109,11 +109,11 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
     gap: .25rem;
   }
   .site-nav { justify-content: center; }
+  .site-nav a { font-size: .8125rem; }
 }
 
 @media (max-width: 375px) {
   .site-nav { column-gap: .55rem; }
-  .site-nav a { font-size: .8125rem; }
 }
 
 .site-header--personal .site-header__inner {
