@@ -22,6 +22,9 @@
   {% unless page.portfolio == 'personal' %}{% include site-favicon.html %}{% endunless %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=10">
   <link rel="stylesheet" href="{{ '/assets/portfolio.css' | relative_url }}?v=6">
+  {% if site.data.portfolio_gallery_preloads %}
+    <script src="{{ '/assets/portfolio-preload.js' | relative_url }}?v=1" defer></script>
+  {% endif %}
 </head>
 <body class="portfolio-page">
   {% include site-header.html %}
@@ -46,11 +49,17 @@
             {% assign gallery_url = gallery_prefix | append: gallery.folder | append: '/' %}
             {% assign banner_url = '/projects/' | append: gallery.folder | append: '/' | append: gallery.banner %}
             {% assign banner_version = site.data.portfolio_banner_versions[banner_url] %}
+            {% assign gallery_preloads = site.data.portfolio_gallery_preloads[gallery.folder] %}
             {% if gallery.locked %}
               {% assign banner_version = banner_version | default: site.github.build_revision %}
             {% endif %}
             <li>
-              <a class="recent-gallery" href="{{ gallery_url | relative_url }}">
+              <a class="recent-gallery" href="{{ gallery_url | relative_url }}"
+                {% unless gallery.locked %}
+                  {% if gallery_preloads %}
+                    data-gallery-preloads="{% for url in gallery_preloads %}{{ url | relative_url | escape }}{% unless forloop.last %} {% endunless %}{% endfor %}"
+                  {% endif %}
+                {% endunless %}>
                 <img src="{{ banner_url | relative_url }}{% if banner_version %}?v={{ banner_version | escape }}{% endif %}" width="2000" height="400" alt="{{ gallery.title | escape }}" decoding="async"{% if forloop.index > 6 %} loading="lazy"{% endif %}>
                 {% if gallery.locked %}
                   <span class="recent-gallery__locked"><span class="lock-icon" aria-hidden="true"></span>Password required</span>
