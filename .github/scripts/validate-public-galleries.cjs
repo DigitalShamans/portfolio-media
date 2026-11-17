@@ -9,18 +9,21 @@ const root = resolve(__dirname, '../..');
 const parserPath = resolve(root, 'galleries/gallery-data.js');
 const parserSource = readFileSync(parserPath, 'utf8');
 const GalleryData = runInNewContext(parserSource + '\nGalleryData', {}, { filename: parserPath });
-const portfolio = JSON.parse(readFileSync(resolve(root, '_data/portfolio.json'), 'utf8'));
-const publicFolders = new Set(portfolio.recent.filter(gallery => !gallery.locked).map(gallery => gallery.folder));
-
 // Use Git's paths so a case-insensitive checkout cannot hide a spelling mismatch.
-const trackedPaths = execFileSync('git', ['ls-tree', '-r', '-z', '--name-only', 'HEAD', '--', 'galleries/'], {
+const trackedPaths = execFileSync('git', ['ls-tree', '-r', '-z', '--name-only', 'HEAD'], {
   cwd: root,
   encoding: 'utf8',
 }).split('\0');
-const filesByFolder = new Map([...publicFolders].map(folder => [folder, new Set()]));
+const pagePaths = trackedPaths.filter(path => /\.(?:html?|md|markdown|mkdown|mdown|mkdn|mkd)$/i.test(path));
+const publicFolders = JSON.parse(execFileSync('ruby', [resolve(__dirname, 'public-gallery-folders.rb')], {
+  cwd: root,
+  input: pagePaths.join('\0'),
+  encoding: 'utf8',
+}));
+const filesByFolder = new Map(publicFolders.map(folder => [folder, new Set()]));
 for (const path of trackedPaths) {
   const parts = path.split('/');
-  if (parts.length === 3) filesByFolder.get(parts[1])?.add(parts[2]);
+  if (parts.length === 3 && parts[0] === 'galleries') filesByFolder.get(parts[1])?.add(parts[2]);
 }
 
 function describeFailure(text, files, message) {

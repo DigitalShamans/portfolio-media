@@ -1,0 +1,59 @@
+'use strict';
+
+const assert = require('node:assert/strict');
+const { execFileSync, spawnSync } = require('node:child_process');
+const { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } = require('node:fs');
+const { tmpdir } = require('node:os');
+const { dirname, join, resolve } = require('node:path');
+const test = require('node:test');
+
+test('unlisted galleries are validated once and remain covered by a personal route alone', t => {
+  const root = resolve(__dirname, '../..');
+  const cwd = mkdtempSync(join(tmpdir(), 'public-gallery-routes-'));
+  t.after(() => rmSync(cwd, { recursive: true, force: true }));
+  const write = (path, text) => {
+    mkdirSync(join(cwd, dirname(path)), { recursive: true });
+    writeFileSync(join(cwd, path), text);
+  };
+  const git = (...args) => execFileSync('git', args, { cwd });
+  const commit = () => {
+    git('add', '-A');
+    git('-c', 'user.name=Gallery test', '-c', 'user.email=test@example.invalid',
+      'commit', '-qm', 'Gallery fixture');
+  };
+  const validate = () => spawnSync(process.execPath, ['.github/scripts/validate-public-galleries.cjs'],
+    { cwd, encoding: 'utf8' });
+
+  git('init', '-q');
+  for (const path of ['.github/scripts/validate-public-galleries.cjs',
+    '.github/scripts/public-gallery-folders.rb', 'galleries/gallery-data.js']) {
+    mkdirSync(join(cwd, dirname(path)), { recursive: true });
+    copyFileSync(join(root, path), join(cwd, path));
+  }
+  const studio = 'galleries/hb-egypt/index.html';
+  const manifest = 'galleries/hb-egypt/gallery.json';
+  write('_data/portfolio.json', '{"recent":[]}');
+  write(studio, '---\nlayout: gallery\n---\n');
+  write('artur/galleries/pyramids/index.html', '---\nlayout: gallery\nportfolio: personal\ngallery: hb-egypt\n---\n');
+  write('rz-start.html', '---\nlayout: locked-gallery\npermalink: /galleries/hb-rzstart/\n---\n');
+  write('galleries/hb-egypt/first.jpg', '');
+  write(manifest, '[{"image":"first.jpg"}]');
+  commit();
+
+  const valid = validate();
+  assert.equal(valid.status, 0, valid.stderr);
+  const validated = [...valid.stdout.matchAll(/^Validated (\S+) /gm)].map(match => match[1]);
+  assert.deepEqual(validated, [manifest]);
+
+  write(manifest, '{broken');
+  commit();
+  const invalid = validate();
+  assert.equal(invalid.status, 1, invalid.stderr);
+  assert.match(invalid.stderr, /galleries\/hb-egypt\/gallery\.json: gallery\.json is not valid JSON/);
+
+  rmSync(join(cwd, studio));
+  commit();
+  const personalOnly = validate();
+  assert.equal(personalOnly.status, 1, personalOnly.stderr);
+  assert.match(personalOnly.stderr, /galleries\/hb-egypt\/gallery\.json: gallery\.json is not valid JSON/);
+});
