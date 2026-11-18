@@ -79,14 +79,11 @@
         </div>
         <div class="viewer-bar">
           <div class="viewer-group">
-            <button id="previous" type="button" aria-label="Previous image">←</button>
             <output id="counter" class="counter" aria-live="polite"></output>
-            <button id="next" type="button" aria-label="Next image">→</button>
           </div>
           <div class="viewer-group">
             <button id="zoom" type="button" disabled>100%</button>
-            <button id="fullscreen" type="button" hidden>Fullscreen</button>
-            <button id="close" type="button" autofocus>Close</button>
+            <button id="fullscreen" type="button" autofocus>Back to gallery</button>
           </div>
         </div>
         <p id="status" class="status" role="status" hidden></p>
@@ -239,7 +236,7 @@
       document.querySelector('#gallery-access').replaceWith(template.content);
       try {
         await loadScript('../gallery-data.js?v=3');
-        await loadScript('../gallery-viewer.js?v=35');
+        await loadScript('../gallery-viewer.js?v=36');
       } catch {
         document.querySelector('#gallery-status').textContent =
           'The gallery could not be loaded. Please reload to try again.';

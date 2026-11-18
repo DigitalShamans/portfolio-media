@@ -40,14 +40,12 @@ const frame = document.querySelector('#viewer-frame');
 const stage = document.querySelector('#stage');
 const original = document.querySelector('#original');
 original.fetchPriority = 'high';
-const previous = document.querySelector('#previous');
-const next = document.querySelector('#next');
 const previousSide = document.querySelector('#previous-side');
 const nextSide = document.querySelector('#next-side');
 const counter = document.querySelector('#counter');
 const zoom = document.querySelector('#zoom');
 const fullscreen = document.querySelector('#fullscreen');
-const close = document.querySelector('#close');
+const fullscreenSupported = document.fullscreenEnabled && typeof frame.requestFullscreen === 'function';
 const status = document.querySelector('#status');
 let current = 0;
 let opener;
@@ -63,7 +61,6 @@ let viewerIndicator;
 let openingPointer;
 let pointerOpened = false;
 let fullscreenActive = false;
-let keepViewerOpen = false;
 const imageRequests = new WeakMap();
 const foregroundLoads = new Set();
 let nextBackgroundIndex = 0;
@@ -374,7 +371,7 @@ function showImage(index, initialVariant = 0) {
   }
   fitImage();
   zoom.disabled = true;
-  previous.disabled = previousSide.disabled = next.disabled = nextSide.disabled = shots.length < 2;
+  previousSide.disabled = nextSide.disabled = shots.length < 2;
   counter.textContent = (index + 1) + ' / ' + shots.length;
   original.alt = image.alt;
   showStatus('Loading image…');
@@ -860,9 +857,8 @@ function step(amount) {
   showImage((current + amount + shots.length) % shots.length);
 }
 
-for (const button of [previous, previousSide]) button.addEventListener('click', () => step(-1));
-for (const button of [next, nextSide]) button.addEventListener('click', () => step(1));
-close.addEventListener('click', () => viewer.close());
+previousSide.addEventListener('click', () => step(-1));
+nextSide.addEventListener('click', () => step(1));
 
 viewer.addEventListener('keydown', event => {
   if (stage.classList.contains('native') && event.target === stage) return;
@@ -939,30 +935,21 @@ setupImageTouch(stage, event => {
   };
 });
 
-fullscreen.hidden = !document.fullscreenEnabled || !frame.requestFullscreen;
-async function setFullscreen(enabled, reportError = false) {
-  if (fullscreen.hidden) return;
+async function setFullscreen(enabled) {
+  if (!fullscreenSupported) return;
   try {
     if (enabled) await frame.requestFullscreen();
     else await document.exitFullscreen();
   } catch (error) {
-    if (!enabled) keepViewerOpen = false;
     console.warn('Fullscreen request failed', error);
-    if (reportError) showStatus('Fullscreen is unavailable here. Try your browser’s fullscreen shortcut.');
   }
 }
 
-fullscreen.addEventListener('click', () => {
-  keepViewerOpen = document.fullscreenElement === frame;
-  void setFullscreen(!keepViewerOpen, true);
-});
+fullscreen.addEventListener('click', () => viewer.close());
 document.addEventListener('fullscreenchange', () => {
   const isFullscreen = document.fullscreenElement === frame;
-  fullscreen.textContent = isFullscreen ? 'Exit fullscreen' : 'Fullscreen';
-  if (fullscreenActive && !isFullscreen) {
-    if (viewer.open && !keepViewerOpen) viewer.close();
-    keepViewerOpen = false;
-  }
+  fullscreen.textContent = isFullscreen ? 'Exit fullscreen' : 'Back to gallery';
+  if (fullscreenActive && !isFullscreen && viewer.open) viewer.close();
   fullscreenActive = isFullscreen;
   if (isFullscreen && !viewer.open) void setFullscreen(false);
 });
