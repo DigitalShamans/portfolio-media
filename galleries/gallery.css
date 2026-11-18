@@ -209,3 +209,61 @@ dialog {
   .viewer-group { gap: .2rem; }
   .viewer-bar button, .counter { padding-inline: .45rem; }
 }
+
+/* Project navigation is separate from the fullscreen screenshot controls. */
+.gallery-navigation { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  .gallery-navigation { display: block; }
+  .gallery-navigation__link {
+    position: fixed;
+    z-index: 5;
+    top: 50%;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 64px;
+    border: 1px solid #404040;
+    border-radius: .35rem;
+    background: rgba(18, 18, 18, .92);
+    color: var(--muted);
+    text-decoration: none;
+    transform: translateY(-50%);
+  }
+  .gallery-navigation__link--previous { left: 8px; }
+  .gallery-navigation__link--next { right: 8px; }
+  .gallery-navigation__arrow { font-size: 36px; font-weight: 400; line-height: 1; padding-bottom: 4px; }
+  .gallery-navigation__details {
+    position: absolute;
+    top: 50%;
+    display: grid;
+    gap: 2px;
+    width: max-content;
+    max-width: 15rem;
+    border: 1px solid #404040;
+    border-radius: .35rem;
+    padding: .5rem .75rem;
+    background: #181818;
+    color: var(--text);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-50%);
+    transition: opacity 140ms ease;
+  }
+  .gallery-navigation__link--previous .gallery-navigation__details { left: calc(100% + 8px); }
+  .gallery-navigation__link--next .gallery-navigation__details { right: calc(100% + 8px); }
+  .gallery-navigation__direction { color: var(--muted); font-size: 11px; }
+  .gallery-navigation__name { font-size: 14px; line-height: 1.35; }
+  .gallery-navigation__link:hover,
+  .gallery-navigation__link:focus-visible { border-color: var(--accent); color: var(--text); }
+  .gallery-navigation__link:hover .gallery-navigation__details,
+  .gallery-navigation__link:focus-visible .gallery-navigation__details { opacity: 1; }
+}
+@media (hover: hover) and (pointer: fine) and (max-width: 900px) {
+  .gallery-navigation__link { width: 32px; height: 52px; }
+  .gallery-navigation__link--previous { left: 4px; }
+  .gallery-navigation__link--next { right: 4px; }
+}
+body:has(dialog[open]) .gallery-navigation { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .gallery-navigation__details { transition: none; }
+}

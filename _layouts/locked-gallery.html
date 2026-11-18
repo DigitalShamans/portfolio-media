@@ -20,7 +20,7 @@
     {% include site-favicon.html %}
   {% endif %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
-  <link rel="stylesheet" href="../gallery.css?v=17">
+  <link rel="stylesheet" href="../gallery.css?v=18">
   <style>
     .gallery-access { max-width: 34rem; padding-block: 2rem; }
     .gallery-access h1 { font-size: clamp(.9rem, 2.5vw, 1.5rem); }
@@ -41,6 +41,7 @@
 </head>
 <body data-gallery-revision="{{ site.github.build_revision | escape }}">
   {% include site-header.html %}
+  {% include gallery-navigation.html current='hb-rzstart' portfolio_url=portfolio_url %}
 
   <main id="gallery-access" class="shell gallery-access">
     <header class="intro">
