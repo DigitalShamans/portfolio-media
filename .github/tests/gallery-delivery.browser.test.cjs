@@ -83,7 +83,9 @@ async function openPage(t, { route = gallery, width = 2800, intercept } = {}) {
       return request.fulfill({ json: manifest });
     }
     if (url.pathname.endsWith('.webp')) return request.fulfill({ contentType: 'image/webp', body: webp });
-    if (url.pathname.endsWith('.jpg')) return request.fulfill({ contentType: 'image/jpeg', body: jpeg });
+    if (url.pathname.endsWith('.jpg')) {
+      return request.fulfill({ headers: { 'Access-Control-Allow-Origin': '*' }, contentType: 'image/jpeg', body: jpeg });
+    }
     if (url.origin === portfolio && /\.(?:js|css)$/.test(url.pathname)) {
       return request.fulfill({ path: resolve(root, url.pathname.slice(1)) });
     }
@@ -113,6 +115,12 @@ function onceEach(requests, ...urls) {
   for (const url of urls) assert.equal(requests.filter(request => request === url).length, 1, url);
 }
 
+function expectFallback(requests, name) {
+  const original = originals(name);
+  const webp = preview(name);
+  assert.deepEqual(requests.filter(url => url === original || url === webp), [original, original, webp]);
+}
+
 test('healthy 4K stays in 4K, and 1440p viewports go directly to WebP', async t => {
   for (const width of [2800, 1000]) {
     await t.test(`viewport ${width}px`, async t => {
@@ -129,6 +137,34 @@ test('healthy 4K stays in 4K, and 1440p viewports go directly to WebP', async t 
       assert.deepEqual(errors, []);
     });
   }
+});
+
+test('a temporary 4K failure retries the same JPG after a second and keeps 4K on success', async t => {
+  let failedAt;
+  let retryAt;
+  const { page, requests, errors } = await openPage(t, {
+    intercept: async (request, url) => {
+      if (url.href !== originals('First')) return false;
+      if (failedAt === undefined) {
+        failedAt = performance.now();
+        await request.fulfill({ status: 503 });
+        return true;
+      }
+      retryAt = performance.now();
+      return false;
+    },
+  });
+  await page.locator('.shot').first().press('Enter');
+  await page.waitForFunction(() => {
+    const image = document.querySelector('#original');
+    return image.complete && image.naturalWidth > 0 && image.currentSrc.startsWith('blob:') &&
+      image.currentSrc === document.querySelector('.shot-primary').currentSrc;
+  });
+  assert.ok(retryAt - failedAt >= 990, 'The second JPG request starts after the one-second delay');
+  assert.equal(requests.filter(url => url === originals('First')).length, 2);
+  assert.ok(!requests.includes(preview('First')));
+  assert.equal(await page.locator('.shot').first().getAttribute('href'), originals('First'));
+  assert.deepEqual(errors, []);
 });
 
 test('both routes recover when the 4K service is unreachable before the viewer starts', async t => {
@@ -150,12 +186,12 @@ test('both routes recover when the 4K service is unreachable before the viewer s
         },
       });
       await displayed(page, '.shot-primary', preview('First'));
-      assert.equal(await page.locator('.shot').first().getAttribute('href'), preview('First'));
+      assert.equal(await page.locator('.shot').first().getAttribute('href'), originals('First'));
       await page.locator('.shot').first().press('Enter');
       await displayed(page, '#original', preview('First'));
       await activeSegment(page, 0);
       assert.equal(await page.locator('#status').isHidden(), true);
-      onceEach(requests, originals('First'), preview('First'));
+      expectFallback(requests, 'First');
       assert.deepEqual(errors, []);
     });
   }
@@ -196,12 +232,14 @@ test('navigation holds the visible image and ignores late fallback from a previo
   await page.locator('#previous-side').press('Enter');
   await displayed(page, '#original', preview('Second'));
   assert.equal(await page.locator('#status').isHidden(), true);
-  onceEach(requests, originals('Second'), preview('Second'), originals('Third'));
+  expectFallback(requests, 'Second');
+  onceEach(requests, originals('Third'));
   assert.deepEqual(errors, []);
 });
 
-test('comparison fallback preserves the selected variant on the tile and in fullscreen', async t => {
+test('a late Checker fallback cannot replace the selected Wireframe', { timeout: 12_000 }, async t => {
   const releaseChecker = signal();
+  const checkerStarted = signal();
   t.after(releaseChecker.release);
   const { page, requests, errors } = await openPage(t, {
     intercept: async (request, url) => {
@@ -210,10 +248,17 @@ test('comparison fallback preserves the selected variant on the tile and in full
         return true;
       }
       if (url.href === originals('First_Wireframe')) {
-        await request.fulfill({ contentType: 'image/jpeg', body: 'invalid JPEG' });
+        await request.fulfill({
+          headers: { 'Access-Control-Allow-Origin': '*' },
+          contentType: 'image/jpeg',
+          body: 'invalid JPEG',
+        });
         return true;
       }
-      if (url.href === preview('First_Checker')) await releaseChecker.reached;
+      if (url.href === preview('First_Checker')) {
+        checkerStarted.release();
+        await releaseChecker.reached;
+      }
       return false;
     },
   });
@@ -224,26 +269,30 @@ test('comparison fallback preserves the selected variant on the tile and in full
   await page.locator('.shot').first().press('Enter');
   await displayed(page, '#original', preview('First_Wireframe'));
   await activeSegment(page, 2);
-  await segment(page, 1).press('Enter');
-  await displayed(page, '#original', preview('First_Wireframe'));
-  await activeSegment(page, 2);
   await segment(page, 0).press('Enter');
   await displayed(page, '#original', originals('First'));
+  await segment(page, 1).press('Enter');
+  await checkerStarted.reached;
+  await activeSegment(page, 0);
+  await segment(page, 2).press('Enter');
+  await displayed(page, '#original', preview('First_Wireframe'));
+  await activeSegment(page, 2);
   releaseChecker.release();
   await displayed(page, '.shot-comparison[src*="Checker"]', preview('First_Checker'));
-  await activeSegment(page, 0);
+  await displayed(page, '#original', preview('First_Wireframe'));
+  await activeSegment(page, 2);
   await segment(page, 1).press('Enter');
   await displayed(page, '#original', preview('First_Checker'));
   await activeSegment(page, 1);
   await segment(page, 2).press('Enter');
   await displayed(page, '#original', preview('First_Wireframe'));
   await activeSegment(page, 2);
-  onceEach(requests, originals('First_Checker'), preview('First_Checker'),
-    originals('First_Wireframe'), preview('First_Wireframe'));
+  expectFallback(requests, 'First_Checker');
+  expectFallback(requests, 'First_Wireframe');
   assert.deepEqual(errors, []);
 });
 
-test('a failed 4K and WebP pair stops after one attempt at each URL', async t => {
+test('two 4K failures and one WebP failure show an error without restarting the requests', async t => {
   const { page, requests, errors } = await openPage(t, {
     intercept: async (request, url) => {
       if (![originals('Second'), preview('Second'), originals('First_Checker'),
@@ -263,9 +312,10 @@ test('a failed 4K and WebP pair stops after one attempt at each URL', async t =>
   await displayed(page, '#original', originals('First'));
   await page.locator('#previous-side').press('Enter');
   await page.locator('#next-side').press('Enter');
-  // Allow the existing one-second visible-image retry to fire if the failed pair wrongly scheduled it.
+  // Leave enough time to detect an extra retry after the terminal failure.
   await page.waitForTimeout(1100);
-  onceEach(requests, originals('Second'), preview('Second'), originals('First_Checker'), preview('First_Checker'));
+  expectFallback(requests, 'Second');
+  expectFallback(requests, 'First_Checker');
   assert.deepEqual(errors, []);
 });
 

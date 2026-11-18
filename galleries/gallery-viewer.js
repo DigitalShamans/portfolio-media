@@ -69,6 +69,7 @@ let viewerIndicator;
 let openingPointer;
 let pointerOpened = false;
 let fullscreenActive = false;
+const imageRetryDelay = 1000;
 const foregroundLoads = new Set();
 let nextBackgroundIndex = 0;
 let backgroundLoading = false;
@@ -333,9 +334,7 @@ function imageUrl(image) {
   return image.currentSrc || image.src;
 }
 
-function loadImage(image, source, { link, pictureSource } = {}) {
-  let fallbackUrl = source.fallbackUrl;
-  let requestedUrl;
+function loadImageSource(image, url, adopt = false) {
   return new Promise(resolve => {
     function finish(loaded) {
       image.removeEventListener('load', onLoad);
@@ -344,56 +343,78 @@ function loadImage(image, source, { link, pictureSource } = {}) {
     }
 
     function currentRequestComplete() {
-      return image.complete && (!requestedUrl || !image.currentSrc || image.currentSrc === requestedUrl);
+      return image.complete && (adopt || !image.currentSrc || image.currentSrc === url);
     }
 
     function onLoad() {
-      if (!currentRequestComplete() || !image.naturalWidth) return;
-      const url = imageUrl(image);
-      finish(true);
-      if (link) link.href = url;
-      if (pictureSource?.parentNode) {
-        // Keep the chosen resolution stable after adopting the server-rendered picture.
-        if (image.src !== url) image.src = url;
-        pictureSource.remove();
-      }
-    }
-
-    function setSource(url) {
-      requestedUrl = url;
-      if (link && !source.fallbackUrl) link.href = url;
-      if (!pictureSource || image.src !== url) image.src = url;
-      onLoad();
+      if (currentRequestComplete() && image.naturalWidth) finish(true);
     }
 
     function onError() {
-      if (!currentRequestComplete() || image.naturalWidth) return;
-      if (fallbackUrl && image.currentSrc !== fallbackUrl) {
-        const preview = fallbackUrl;
-        fallbackUrl = undefined;
-        pictureSource?.remove();
-        setSource(preview);
-        return;
-      }
-      galleryAccess?.discard?.(source.url, imageUrl(image));
-      finish(false);
+      if (currentRequestComplete() && !image.naturalWidth) finish(false);
     }
 
     image.addEventListener('load', onLoad);
     image.addEventListener('error', onError);
-    if (pictureSource) {
+    if (adopt) {
       // Adopt the parser's request even when it settled before the viewer script ran.
-      if (!source.fallbackUrl) link.href = source.url;
-      if (image.naturalWidth) onLoad();
-      else onError();
-    } else if (galleryAccess) {
-      const resolved = galleryAccess.resolved(source.url);
-      if (resolved) setSource(resolved);
-      else void galleryAccess.image(source.url, image.fetchPriority).then(setSource, () => finish(false));
+      if (image.complete) finish(image.naturalWidth > 0);
     } else {
-      setSource(source.url);
+      image.src = url;
+      onLoad();
     }
   });
+}
+
+async function retryPublicOriginal(url, priority) {
+  try {
+    // The delivery route requires an exact URL. Force a fresh request to that URL.
+    const response = await fetch(url, { cache: 'reload', credentials: 'omit', priority });
+    if (response.ok) return URL.createObjectURL(await response.blob());
+    await response.body?.cancel();
+  } catch {
+    // A request or response-body failure will use the WebP.
+  }
+}
+
+async function loadImage(image, source, { link, pictureSource } = {}) {
+  let url = source.url;
+  if (galleryAccess) {
+    try {
+      url = galleryAccess.resolved(url) ?? await galleryAccess.image(url, image.fetchPriority);
+    } catch {
+      return false;
+    }
+  }
+  if (link) link.href = url;
+
+  const loaded = await loadImageSource(image, url, Boolean(pictureSource));
+  if (loaded) {
+    if (pictureSource) {
+      // Keep the chosen resolution stable after adopting the server-rendered picture.
+      const chosen = imageUrl(image);
+      if (image.src !== chosen) image.src = chosen;
+      pictureSource.remove();
+    }
+    return true;
+  }
+  if (!source.fallbackUrl || image.currentSrc === source.fallbackUrl) {
+    galleryAccess?.discard?.(source.url, imageUrl(image));
+    return false;
+  }
+
+  if (pictureSource) {
+    // Suppress the picture's automatic WebP selection until the original retry settles.
+    image.removeAttribute('src');
+    pictureSource.remove();
+  }
+  await new Promise(resolve => setTimeout(resolve, imageRetryDelay));
+  const retry = await retryPublicOriginal(url, image.fetchPriority);
+  if (retry) {
+    if (await loadImageSource(image, retry)) return true;
+    URL.revokeObjectURL(retry);
+  }
+  return loadImageSource(image, source.fallbackUrl);
 }
 
 function showImage(index, initialVariant = 0) {
@@ -722,7 +743,7 @@ function scheduleVisibleRetry(shot) {
     if (!primaryIsVisible(shot) || !shot.primaryFailed) return;
     shot.autoRetryUsed = true;
     prioritizeShot(shot);
-  }, 1000);
+  }, imageRetryDelay);
 }
 
 function loadPrimary(shot, priority) {
@@ -810,7 +831,7 @@ function createShot(entry, index, firstImage) {
   link.setAttribute('aria-label', 'Open ' + label + ' in fullscreen');
   const image = existing?.image ?? document.createElement('img');
   if (!existing) {
-    link.href = galleryAccess ? '#viewer' : (sources[0].fallbackUrl ?? sources[0].url);
+    link.href = galleryAccess ? '#viewer' : sources[0].url;
     image.className = 'shot-primary';
     image.alt = label;
     image.width = imageResolution === '4k' ? 3840 : 2560;
