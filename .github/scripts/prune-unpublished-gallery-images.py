@@ -86,7 +86,7 @@ def main():
                 if Path(name).suffix.lower() not in IMAGE_SUFFIXES:
                     raise ValueError(f'Unsupported image filename: {name!r}')
                 for path in (manifest.parent / name,
-                             manifest.parent / '1440p' / (name + '.webp')):
+                             manifest.parent / '1440p' / Path(name).with_suffix('.webp')):
                     path = path.resolve(strict=True)
                     if not path.is_relative_to(site) or not path.is_file():
                         raise ValueError(f'Invalid public image: {path}')

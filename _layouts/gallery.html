@@ -46,7 +46,9 @@
           {% assign image_parts = first_image_url | split: '?' %}
           {% assign image_dir = gallery_folder | prepend: '/galleries/' | append: '/' %}
           {% assign reduced_dir = image_dir | append: '1440p/' %}
-          {% assign reduced_image_url = image_parts[0] | replace_first: image_dir, reduced_dir | append: '.webp?' | append: image_parts[1] | append: '&webp=' | append: site.gallery_webp_revision | relative_url | escape %}
+          {% assign image_extension = image_parts[0] | split: '.' | last | prepend: '.' %}
+          {% assign image_stem_length = image_parts[0] | size | minus: image_extension.size %}
+          {% assign reduced_image_url = image_parts[0] | slice: 0, image_stem_length | replace_first: image_dir, reduced_dir | append: '.webp?' | append: image_parts[1] | append: '&webp=' | append: site.gallery_webp_revision | relative_url | escape %}
           {% assign first_image_url = first_image_url | relative_url | escape %}
           <a class="shot" data-gallery-fallback href="{{ reduced_image_url }}" aria-label="Open {{ gallery_page.gallery_title | escape }} screenshot 1">
             <picture>
@@ -81,7 +83,7 @@
     </div>
   </dialog>
 
-  <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=2"></script>
+  <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=3"></script>
   <script src="../gallery-data.js?v=3"></script>
   <script src="../gallery-viewer.js?v=37"></script>
 </body>
