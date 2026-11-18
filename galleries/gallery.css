@@ -38,7 +38,7 @@ h1 { margin: 0; text-align: center; font-size: clamp(1rem, 2.6vw, 2.4rem); line-
   color: var(--muted);
 }
 @media (pointer: coarse) {
-  .description { font-size: .875rem; }
+  .description { font-size: .75rem; }
 }
 
 .gallery {
