@@ -31,6 +31,7 @@
   async function preloadGalleryImages() {
     await Promise.all(visibleBanners().map(waitForImage));
 
+    const resolution = GalleryResolution.current();
     const queue = new Set();
     const maxImages = Math.max(0, ...galleryImages.map(images => images.length));
     for (let index = 0; index < maxImages; index++) {
@@ -42,7 +43,7 @@
     for (const url of queue) {
       const image = new Image();
       image.fetchPriority = 'low';
-      image.src = url;
+      image.src = GalleryResolution.publicImageUrl(url, resolution);
       await waitForImage(image);
     }
   }

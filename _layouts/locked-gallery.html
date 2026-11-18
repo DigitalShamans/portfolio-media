@@ -6,7 +6,7 @@
   {% assign portfolio_url = '/' %}
 {% endif %}
 <!doctype html>
-<html lang="en">
+<html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -68,7 +68,7 @@
       <footer class="site-footer"><a class="back" href="{{ portfolio_url | relative_url }}#recent-work">Back to portfolio</a></footer>
     </main>
 
-    <dialog id="viewer" aria-label="4K image viewer">
+    <dialog id="viewer" aria-label="Fullscreen image viewer">
       <div id="viewer-frame" class="viewer-frame">
         <div id="stage" class="stage" tabindex="0" aria-label="Image viewing area">
           <img id="original" alt="" draggable="false">
@@ -94,6 +94,7 @@
     </dialog>
   </template>
 
+  <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=1"></script>
   <script type="module">
     const gateway = {{ site.rz_start_gateway_url | jsonify }};
     const form = document.querySelector('#gallery-access-form');
@@ -108,6 +109,7 @@
     };
 
     function createGalleryAccess(session) {
+      const resolution = GalleryResolution.current();
       const images = new Map();
       const pending = new Map();
       const requests = new AbortController();
@@ -136,7 +138,8 @@
 
       async function media(name, priority) {
         if (!validSession()) throw new Error('Gallery session expired.');
-        const response = await fetch(new URL('/media/' + encodeURIComponent(name), gateway), {
+        const folder = resolution === '1440p' && name !== 'gallery.json' ? '/media/1440p/' : '/media/';
+        const response = await fetch(new URL(folder + encodeURIComponent(name), gateway), {
           ...requestPolicy,
           headers: { Authorization: 'Bearer ' + session.token },
           signal: requests.signal,
@@ -156,6 +159,7 @@
       });
 
       return {
+        resolution,
         manifest: () => media('gallery.json'),
         resolved: name => validSession() ? images.get(name) : undefined,
         discard(name, url) {
@@ -235,7 +239,7 @@
       document.querySelector('#gallery-access').replaceWith(template.content);
       try {
         await loadScript('../gallery-data.js?v=3');
-        await loadScript('../gallery-viewer.js?v=30');
+        await loadScript('../gallery-viewer.js?v=31');
       } catch {
         document.querySelector('#gallery-status').textContent =
           'The gallery could not be loaded. Please reload to try again.';
