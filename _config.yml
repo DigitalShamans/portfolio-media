@@ -4,9 +4,13 @@ title: Digital Shamans
 description: Digital Shamans is a game art outsourcing studio creating concept art, environments and game-ready 3D assets.
 seo_image: hb-egypt
 gallery_4k_media: '(min-width: 2560px) and (hover: hover) and (pointer: fine)'
+gallery_webp_revision: q95-m6
 
 # Publish the gallery and project media without the shared source assets.
 exclude:
+  - README.md
+  - folderico-azure.ico
+  - "**/*.dsbackup"
   - branding
   - marketing
   - galleries_PNG

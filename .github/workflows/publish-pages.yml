@@ -40,6 +40,9 @@ jobs:
         run: |
           node --test .github/tests/public-gallery-routes.test.cjs
           node .github/scripts/validate-public-galleries.cjs
+      - name: Test gallery publication cleanup
+        if: steps.source.outputs.workflow_source == 'true'
+        run: python3 -m unittest discover --start-directory .github/tests --pattern 'test_prune*.py'
       - uses: actions/configure-pages@v5
         if: steps.source.outputs.workflow_source == 'true'
       - name: Generate gallery asset versions
@@ -57,6 +60,12 @@ jobs:
         with:
           source: ./
           destination: ./_site
+      - name: Prune unpublished gallery images
+        if: steps.source.outputs.workflow_source == 'true'
+        run: |
+          # Jekyll's build container creates its output as root.
+          sudo chown -R "$(id -u):$(id -g)" ./_site/galleries
+          python3 .github/scripts/prune-unpublished-gallery-images.py ./_site --apply
       - name: Validate homepage gallery links
         if: steps.source.outputs.workflow_source == 'true'
         run: python3 .github/scripts/validate-homepage-gallery-links.py ./_site
