@@ -4,6 +4,7 @@ const galleryContent = document.querySelector('.gallery-content');
 const gallery = document.querySelector('.gallery');
 const galleryRevision = document.body.dataset.galleryRevision;
 const galleryAccess = window.galleryAccess;
+const imageResolution = galleryAccess?.resolution ?? GalleryResolution.current();
 const galleryAssetVersions = JSON.parse(document.body.dataset.galleryAssetVersions || '{}');
 const title = document.querySelector('.intro h1').textContent;
 const dragComparisons = gallery.dataset.comparisonGesture === 'drag';
@@ -368,7 +369,7 @@ function showImage(index, initialVariant = 0) {
   previous.disabled = previousSide.disabled = next.disabled = nextSide.disabled = shots.length < 2;
   counter.textContent = (index + 1) + ' / ' + shots.length;
   original.alt = image.alt;
-  showStatus('Loading 4K image…');
+  showStatus('Loading image…');
   if (initialVariant !== 0) {
     const alternate = shot.comparison.getImage(initialVariant);
     displayOriginal(alternate.src);
@@ -664,7 +665,7 @@ function galleryAssetUrl(filename) {
   const url = new URL(encodeURIComponent(filename), document.baseURI);
   const revision = galleryAssetVersions[filename] ?? galleryRevision;
   if (revision) url.searchParams.set('v', revision);
-  return url.href;
+  return filename === 'gallery.json' ? url.href : GalleryResolution.publicImageUrl(url, imageResolution);
 }
 
 function primaryIsVisible(shot) {
@@ -773,12 +774,12 @@ function createShot(entry, index) {
   const link = document.createElement('a');
   link.className = 'shot';
   link.href = galleryAccess ? '#viewer' : sources[0];
-  link.setAttribute('aria-label', 'Open ' + label + ' in 4K');
+  link.setAttribute('aria-label', 'Open ' + label + ' in fullscreen');
   const image = document.createElement('img');
   image.className = 'shot-primary';
   image.alt = label;
-  image.width = 3840;
-  image.height = 2160;
+  image.width = imageResolution === '4k' ? 3840 : 2560;
+  image.height = imageResolution === '4k' ? 2160 : 1440;
   image.decoding = 'async';
   image.draggable = false;
   link.append(image);
@@ -816,6 +817,9 @@ function createShot(entry, index) {
 async function loadGallery() {
   const fallback = gallery.querySelector('[data-gallery-fallback]');
   const fallbackImage = fallback?.querySelector('img');
+  const fallbackPicture = fallbackImage?.parentNode;
+  const fallbackSrc = fallbackImage?.src;
+  if (imageResolution === '4k' && fallback) fallback.href = fallback.querySelector('source').srcset;
   galleryStatus.textContent = 'Loading gallery…';
   galleryStatus.hidden = false;
   try {
@@ -827,6 +831,7 @@ async function loadGallery() {
     const restoreFocus = fallback && document.activeElement === fallback;
     // Keep the already displayed image in place visually as its link becomes interactive.
     if (fallbackImage && fallback.href === firstShot.sources[0]) {
+      fallbackImage.src = fallback.href;
       firstShot.image.replaceWith(fallbackImage);
       firstShot.image = fallbackImage;
     }
@@ -836,7 +841,10 @@ async function loadGallery() {
     galleryStatus.hidden = true;
   } catch (error) {
     if (fallback) {
-      if (fallbackImage && fallbackImage.parentNode !== fallback) fallback.append(fallbackImage);
+      if (fallbackImage && fallbackImage.parentNode !== fallbackPicture) {
+        fallbackImage.src = fallbackSrc;
+        fallbackPicture.append(fallbackImage);
+      }
       if (fallback.parentNode !== gallery) gallery.replaceChildren(fallback);
     }
     console.error('Gallery could not be loaded', error);

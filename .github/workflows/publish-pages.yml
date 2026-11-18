@@ -54,6 +54,12 @@ jobs:
       - name: Validate homepage gallery links
         if: steps.source.outputs.workflow_source == 'true'
         run: python3 .github/scripts/validate-homepage-gallery-links.py ./_site
+      - name: Generate 1440p gallery images
+        if: steps.source.outputs.workflow_source == 'true'
+        run: |
+          python3 -m venv "$RUNNER_TEMP/gallery-image-tools"
+          "$RUNNER_TEMP/gallery-image-tools/bin/python" -m pip install 'Pillow==13.0.0'
+          "$RUNNER_TEMP/gallery-image-tools/bin/python" .github/scripts/generate-gallery-1440p.py ./_site/galleries/*/gallery.json
       - uses: actions/upload-pages-artifact@v4
         if: steps.source.outputs.workflow_source == 'true'
 
