@@ -54,7 +54,8 @@ h1 { margin: 0; text-align: center; font-size: clamp(1rem, 2.6vw, 2.4rem); line-
   pointer-events: none;
 }
 .shot .shot-comparison.is-visible { opacity: 1; }
-.shot.has-comparison, .stage.has-comparison:not(.native) { touch-action: pan-y pinch-zoom; }
+.shot.has-comparison { touch-action: pan-y pinch-zoom; }
+.stage:not(.native) { touch-action: pinch-zoom; }
 .comparison-indicator {
   --indicator-height: clamp(6px, .62vw, 13px);
   --target-height: 24px;
