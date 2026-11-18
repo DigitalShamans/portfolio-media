@@ -16,6 +16,8 @@ class PublicationCleanupTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.site = Path(self.temporary.name) / '_site'
+        self.media_config = Path(self.temporary.name) / 'gallery_delivery.json'
+        self.media_config.write_text('{"revision": null}', encoding='utf-8')
         self.gallery = self.site / 'galleries/example'
         self.gallery.mkdir(parents=True)
         (self.site / 'index.html').write_text('<!doctype html>', encoding='utf-8')
@@ -37,7 +39,7 @@ class PublicationCleanupTests(unittest.TestCase):
         return path
 
     def run_cleanup(self, apply=True):
-        args = [sys.executable, str(SCRIPT), str(self.site)]
+        args = [sys.executable, str(SCRIPT), str(self.site), '--media-config', str(self.media_config)]
         if apply:
             args.append('--apply')
         return subprocess.run(args, capture_output=True, text=True)
@@ -64,6 +66,31 @@ class PublicationCleanupTests(unittest.TestCase):
         result = self.run_cleanup(apply=False)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn('"remove_count": 1', result.stdout)
+
+    def test_activated_delivery_excludes_originals_and_preserves_previews_and_public_images(self):
+        self.media_config.write_text(json.dumps({'revision': 'a' * 40}), encoding='utf-8')
+        (self.gallery / 'Final.jpg').unlink()
+        banner = self.site / 'projects/hb-rzstart/hb_rzstart_header_400.jpg'
+        banner.parent.mkdir(parents=True)
+        banner.write_bytes(b'public fixture')
+        (self.site / 'index.html').write_text(
+            '<img src="/projects/hb-rzstart/hb_rzstart_header_400.jpg">'
+            '<meta property="og:image" content="/galleries/example/1440p/Final.webp">',
+            encoding='utf-8')
+        result = self.run_cleanup()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(banner.exists())
+        self.assertEqual(list(self.gallery.glob('*.jpg')), [])
+        for name in ('Final', 'Wireframe', 'Checker'):
+            self.assertTrue((self.gallery / f'1440p/{name}.webp').exists())
+
+    def test_activated_delivery_rejects_old_local_original_links(self):
+        self.media_config.write_text(json.dumps({'revision': 'a' * 40}), encoding='utf-8')
+        (self.site / 'index.html').write_text(
+            '<meta property="og:image" content="/galleries/example/Final.jpg">',
+            encoding='utf-8')
+        result = self.assert_safe_failure()
+        self.assertIn('Public markup still points to migrated original', result.stderr)
         self.assertTrue((self.gallery / 'Omitted.jpg').exists())
 
     def test_obsolete_double_extension_previews_are_removed(self):

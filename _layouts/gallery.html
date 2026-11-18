@@ -17,7 +17,7 @@
 {% assign first_image_url = site.data.portfolio_gallery_preloads[gallery_folder] | first %}
 {% assign gallery_seo_title = gallery_page.gallery_title | append: ' Environment Art | ' | append: portfolio_name %}
 <!doctype html>
-<html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}" data-gallery-webp-revision="{{ site.gallery_webp_revision | escape }}">
+<html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}" data-gallery-webp-revision="{{ site.gallery_webp_revision | escape }}"{% if site.data.gallery_delivery.revision %} data-gallery-originals-origin="{{ site.data.gallery_delivery.service_origin | escape }}" data-gallery-originals-revision="{{ site.data.gallery_delivery.revision | escape }}"{% endif %}>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -49,10 +49,15 @@
           {% assign image_extension = image_parts[0] | split: '.' | last | prepend: '.' %}
           {% assign image_stem_length = image_parts[0] | size | minus: image_extension.size %}
           {% assign reduced_image_url = image_parts[0] | slice: 0, image_stem_length | replace_first: image_dir, reduced_dir | append: '.webp?' | append: image_parts[1] | append: '&webp=' | append: site.gallery_webp_revision | relative_url | escape %}
-          {% assign first_image_url = first_image_url | relative_url | escape %}
+          {% if site.data.gallery_delivery.revision %}
+            {% assign image_route = image_parts[0] | remove_first: '/galleries/' %}
+            {% assign first_image_url = site.data.gallery_delivery.service_origin | append: '/public-media/' | append: site.data.gallery_delivery.revision | append: '/' | append: image_route %}
+          {% else %}
+            {% assign first_image_url = first_image_url | relative_url %}
+          {% endif %}
           <a class="shot" data-gallery-fallback href="{{ reduced_image_url }}" aria-label="Open {{ gallery_page.gallery_title | escape }} screenshot 1">
             <picture>
-              <source media="{{ site.gallery_4k_media | escape }}" srcset="{{ first_image_url }}" width="3840" height="2160">
+              <source media="{{ site.gallery_4k_media | escape }}" srcset="{{ first_image_url | escape }}" width="3840" height="2160">
               <img class="shot-primary" src="{{ reduced_image_url }}" width="2560" height="1440" alt="{{ gallery_page.gallery_title | escape }} screenshot 1" decoding="async" fetchpriority="high" draggable="false">
             </picture>
           </a>
@@ -83,7 +88,7 @@
     </div>
   </dialog>
 
-  <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=3"></script>
+  <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=4"></script>
   <script src="../gallery-data.js?v=3"></script>
   <script src="../gallery-viewer.js?v=38"></script>
 </body>

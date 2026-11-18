@@ -24,14 +24,23 @@ def tracked_versions(directory):
 
 
 def gallery_versions():
+    tracked = dict(tracked_versions('galleries'))
+    delivery = json.loads((ROOT / '_data/gallery_delivery.json').read_text(encoding='utf-8'))
     versions = {}
-    for path, digest in tracked_versions('galleries'):
-        if len(path.parts) != 3:
+    for path, digest in tracked.items():
+        if len(path.parts) != 3 or path.name != 'gallery.json':
             continue
-        _, gallery, filename = path.parts
-        if filename == 'gallery.json' or path.suffix.lower() in IMAGE_SUFFIXES:
-            versions.setdefault(gallery, {})[filename] = digest
-    return {gallery: files for gallery, files in versions.items() if 'gallery.json' in files}
+        files = {'gallery.json': digest}
+        entries = json.loads((ROOT / path).read_text(encoding='utf-8-sig'))
+        for entry in entries:
+            for name in (entry['image'], entry.get('compare'), *(entry.get('additionalImages') or [])):
+                if name is None:
+                    continue
+                preview = path.parent / '1440p' / PurePosixPath(name).with_suffix('.webp').name
+                asset = preview if delivery['revision'] else path.parent / name
+                files[name] = tracked[asset]
+        versions[path.parent.name] = files
+    return versions
 
 
 def banner_versions():

@@ -92,7 +92,7 @@
 
   <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=3"></script>
   <script type="module">
-    const gateway = {{ site.rz_start_gateway_url | jsonify }};
+    const gateway = {{ site.data.gallery_delivery.service_origin | jsonify }};
     const form = document.querySelector('#gallery-access-form');
     const password = document.querySelector('#gallery-password');
     const submit = form.querySelector('button');

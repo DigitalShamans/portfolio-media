@@ -6,13 +6,18 @@ const vm = require('node:vm');
 
 const source = fs.readFileSync(path.join(__dirname, '../../assets/gallery-resolution.js'), 'utf8');
 
-function resolution(baseURI, wide = false) {
+const serviceOrigin = 'https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site';
+const commit = '1234567890abcdef1234567890abcdef12345678';
+
+function resolution(baseURI, wide = false, delivery = {}) {
   return vm.runInNewContext(source + '\nGalleryResolution;', {
     URL,
     window: { matchMedia: () => ({ matches: wide }) },
     document: {
       baseURI,
-      documentElement: { dataset: { gallery4kMedia: 'wide desktop', galleryWebpRevision: 'q92-m6' } },
+      documentElement: {
+        dataset: { gallery4kMedia: 'wide desktop', galleryWebpRevision: 'q92-m6', ...delivery },
+      },
     },
   });
 }
@@ -58,4 +63,21 @@ test('4K URLs keep their JPEG names and existing content revisions', () => {
   assert.equal(mapper.publicImageUrl('HB_Start_03.jpg?v=unchanged', '4k'),
     'https://digitalshamans.co.uk/galleries/hb-egypt/HB_Start_03.jpg?v=unchanged');
   assert.equal(resolution('https://digitalshamans.co.uk/').current(), '1440p');
+});
+
+test('both portfolios use the immutable delivery route for all wide-desktop variants', () => {
+  const delivery = { galleryOriginalsOrigin: serviceOrigin, galleryOriginalsRevision: commit };
+  for (const base of ['https://digitalshamans.co.uk/', 'https://digitalshamans.co.uk/artur/',
+    'https://digitalshamans.co.uk/galleries/hb-egypt/']) {
+    const desktop = resolution(base, true, delivery);
+    const mobile = resolution(base, false, delivery);
+    for (const suffix of ['', '_Wireframe', '_Checker']) {
+      const name = 'HB_Start_03' + suffix;
+      const original = '/galleries/hb-egypt/' + name + '.jpg?v=obsolete#image';
+      assert.equal(desktop.publicImageUrl(original, desktop.current()),
+        `${serviceOrigin}/public-media/${commit}/hb-egypt/${name}.jpg`);
+      assert.equal(new URL(mobile.publicImageUrl(original, mobile.current())).pathname,
+        '/galleries/hb-egypt/1440p/' + name + '.webp');
+    }
+  }
 });

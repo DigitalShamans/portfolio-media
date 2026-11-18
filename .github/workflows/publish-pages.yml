@@ -48,12 +48,6 @@ jobs:
       - name: Generate gallery asset versions
         if: steps.source.outputs.workflow_source == 'true'
         run: python3 .github/scripts/generate-gallery-asset-versions.py
-      - name: Generate 1440p gallery images
-        if: steps.source.outputs.workflow_source == 'true'
-        run: |
-          python3 -m venv "$RUNNER_TEMP/gallery-image-tools"
-          "$RUNNER_TEMP/gallery-image-tools/bin/python" -m pip install 'Pillow==13.0.0'
-          "$RUNNER_TEMP/gallery-image-tools/bin/python" .github/scripts/generate-gallery-1440p.py ./galleries/*/gallery.json
       - name: Build with Jekyll
         if: steps.source.outputs.workflow_source == 'true'
         uses: actions/jekyll-build-pages@v1
