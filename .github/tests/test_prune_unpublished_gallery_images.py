@@ -24,7 +24,7 @@ class PublicationCleanupTests(unittest.TestCase):
         self.write_manifest()
         for name in ('Final.jpg', 'Wireframe.jpg', 'Checker.jpg'):
             self.image(name)
-            self.image('1440p/' + name + '.webp')
+            self.image('1440p/' + Path(name).with_suffix('.webp').name)
         self.image('Omitted.jpg')
 
     def write_manifest(self):
@@ -58,7 +58,7 @@ class PublicationCleanupTests(unittest.TestCase):
         self.assertEqual(source.read_bytes(), b'original')
         for name in ('Final.jpg', 'Wireframe.jpg', 'Checker.jpg'):
             self.assertTrue((self.gallery / name).exists())
-            self.assertTrue((self.gallery / '1440p' / (name + '.webp')).exists())
+            self.assertTrue((self.gallery / '1440p' / Path(name).with_suffix('.webp')).exists())
 
     def test_dry_run_keeps_files(self):
         result = self.run_cleanup(apply=False)
@@ -66,14 +66,21 @@ class PublicationCleanupTests(unittest.TestCase):
         self.assertIn('"remove_count": 1', result.stdout)
         self.assertTrue((self.gallery / 'Omitted.jpg').exists())
 
+    def test_obsolete_double_extension_previews_are_removed(self):
+        old = self.image('1440p/Final.jpg.webp')
+        result = self.run_cleanup()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(old.exists())
+        self.assertTrue((self.gallery / '1440p/Final.webp').exists())
+
     def test_reselecting_an_omitted_image_retains_it_on_next_build(self):
         self.entries.append({'image': 'Omitted.jpg'})
         self.write_manifest()
-        self.image('1440p/Omitted.jpg.webp')
+        self.image('1440p/Omitted.webp')
         result = self.run_cleanup()
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertTrue((self.gallery / 'Omitted.jpg').exists())
-        self.assertTrue((self.gallery / '1440p/Omitted.jpg.webp').exists())
+        self.assertTrue((self.gallery / '1440p/Omitted.webp').exists())
 
     def test_page_seo_css_and_personal_base_references_are_preserved(self):
         names = ['SEO.jpg', 'Linked.jpg', 'Stylesheet.jpg', 'Inline.jpg',
@@ -111,7 +118,7 @@ class PublicationCleanupTests(unittest.TestCase):
         self.assert_safe_failure()
 
     def test_missing_selected_preview_aborts_before_deletion(self):
-        (self.gallery / '1440p/Checker.jpg.webp').unlink()
+        (self.gallery / '1440p/Checker.webp').unlink()
         self.assert_safe_failure()
 
     def test_invalid_manifests_abort_before_deletion(self):
