@@ -38,6 +38,10 @@ h1 { margin: 0; text-align: center; font-size: clamp(1rem, 2.6vw, 2.4rem); line-
   color: var(--muted);
 }
 @media (pointer: coarse) {
+  .gallery-content > .intro { padding-block-end: .5rem; }
+  .gallery-content > .intro h1 {
+    font-size: calc(clamp(1.125rem, 2.1vw, 1.5rem) - 2px);
+  }
   .description { font-size: .75rem; }
 }
 
