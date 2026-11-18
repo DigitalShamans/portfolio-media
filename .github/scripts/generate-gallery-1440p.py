@@ -26,7 +26,7 @@ def generate_image(source):
         image = ImageOps.exif_transpose(original)
         image.thumbnail((2560, 1440), Image.Resampling.LANCZOS)
         image.save(
-            destination, 'WEBP', quality=89, method=4,
+            destination, 'WEBP', quality=95, method=6,
             icc_profile=image.info.get('icc_profile'),
         )
     return destination.stat().st_size
