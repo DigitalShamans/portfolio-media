@@ -81,3 +81,22 @@ test('both portfolios use the immutable delivery route for all wide-desktop vari
     }
   }
 });
+
+test('only offloaded 4K gallery images have a same-variant WebP fallback', () => {
+  const delivery = { galleryOriginalsOrigin: serviceOrigin, galleryOriginalsRevision: commit };
+  const base = 'https://digitalshamans.co.uk/artur/galleries/hb-egypt/';
+  const desktop = resolution(base, true, delivery);
+  const mobile = resolution(base, false, delivery);
+  const legacy = resolution(base, true);
+  for (const suffix of ['', '_Wireframe', '_Checker']) {
+    const original = `/galleries/hb-egypt/HB_Start_03${suffix}.jpg?v=content-hash`;
+    const source = desktop.publicImageSource(original, desktop.current());
+    assert.equal(source.url, desktop.publicImageUrl(original, '4k'));
+    assert.equal(source.fallbackUrl, mobile.publicImageUrl(original, '1440p'));
+    assert.equal(new URL(source.fallbackUrl).search, '?v=content-hash&webp=q92-m6');
+    assert.equal(mobile.publicImageSource(original, '1440p').fallbackUrl, undefined);
+    assert.equal(legacy.publicImageSource(original, '4k').fallbackUrl, undefined);
+  }
+  assert.equal(desktop.publicImageSource(`${serviceOrigin}/outside.jpg`, '4k').fallbackUrl, undefined);
+  assert.equal(desktop.publicImageSource('/projects/image.jpg', '4k').fallbackUrl, undefined);
+});

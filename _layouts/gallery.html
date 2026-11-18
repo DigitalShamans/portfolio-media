@@ -44,6 +44,7 @@
       <p id="gallery-status" role="status" hidden></p>
       <section class="gallery" data-grouped-image-scroll aria-label="{{ gallery_label | escape }}">
         {% if first_image_url %}
+          {% assign gallery_original_url = first_image_url | relative_url %}
           {% assign image_parts = first_image_url | split: '?' %}
           {% assign image_dir = gallery_folder | prepend: '/galleries/' | append: '/' %}
           {% assign reduced_dir = image_dir | append: '1440p/' %}
@@ -56,7 +57,7 @@
           {% else %}
             {% assign first_image_url = first_image_url | relative_url %}
           {% endif %}
-          <a class="shot" data-gallery-fallback href="{{ reduced_image_url }}" aria-label="Open {{ gallery_page.gallery_title | escape }} screenshot 1">
+          <a class="shot" data-gallery-fallback data-gallery-original="{{ gallery_original_url | escape }}" href="{{ reduced_image_url }}" aria-label="Open {{ gallery_page.gallery_title | escape }} screenshot 1">
             <picture>
               <source media="{{ site.gallery_4k_media | escape }}" srcset="{{ first_image_url | escape }}" width="3840" height="2160">
               <img class="shot-primary" src="{{ reduced_image_url }}" width="2560" height="1440" alt="{{ gallery_page.gallery_title | escape }} screenshot 1" decoding="async" fetchpriority="high" draggable="false">
@@ -89,8 +90,8 @@
     </div>
   </dialog>
 
-  <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=4"></script>
+  <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=5"></script>
   <script src="../gallery-data.js?v=3"></script>
-  <script src="../gallery-viewer.js?v=38"></script>
+  <script src="../gallery-viewer.js?v=39"></script>
 </body>
 </html>
