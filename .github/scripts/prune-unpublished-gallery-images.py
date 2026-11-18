@@ -54,14 +54,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('site', type=Path)
     parser.add_argument('--apply', action='store_true')
+    source = Path(__file__).resolve().parents[2]
+    parser.add_argument('--media-config', type=Path, default=source / '_data/gallery_delivery.json')
     options = parser.parse_args()
     site = options.site.resolve(strict=True)
-    source = Path(__file__).resolve().parents[2]
     if site == source or (site / '_config.yml').exists() or (site / '.git').exists():
         raise ValueError('Expected Jekyll build output, not a source checkout; refusing to prune.')
     if not (site / 'index.html').is_file():
         raise ValueError('No built homepage found; refusing to prune.')
+    delivery = json.loads(options.media_config.read_text(encoding='utf-8'))
+    remote_originals = delivery['revision'] is not None
     required = set()
+    migrated = set()
     manifests = sorted((site / 'galleries').glob('*/gallery.json'))
     if not manifests:
         raise ValueError('No public gallery manifests found; refusing to prune.')
@@ -85,8 +89,11 @@ def main():
                     raise ValueError(f'Invalid image filename: {name!r}')
                 if Path(name).suffix.lower() not in IMAGE_SUFFIXES:
                     raise ValueError(f'Unsupported image filename: {name!r}')
-                for path in (manifest.parent / name,
-                             manifest.parent / '1440p' / Path(name).with_suffix('.webp')):
+                original = manifest.parent / name
+                preview = manifest.parent / '1440p' / Path(name).with_suffix('.webp')
+                if remote_originals:
+                    migrated.add(original.resolve())
+                for path in (preview,) if remote_originals else (original, preview):
                     path = path.resolve(strict=True)
                     if not path.is_relative_to(site) or not path.is_file():
                         raise ValueError(f'Invalid public image: {path}')
@@ -97,6 +104,10 @@ def main():
         if url.hostname not in ('digitalshamans.co.uk', 'www.digitalshamans.co.uk'):
             return
         path = (site / unquote(url.path).lstrip('/')).resolve()
+        if path in migrated:
+            raise ValueError(f'Public markup still points to migrated original: {url.path}')
+        if path.suffix.lower() in IMAGE_SUFFIXES and not path.is_file():
+            raise ValueError(f'Public markup points to an image missing from the build: {url.path}')
         if path.is_relative_to(site) and path.is_file():
             required.add(path)
 
@@ -130,6 +141,8 @@ def main():
     if options.apply:
         for path in plan:
             path.unlink()
+        if any(path.exists() for path in migrated):
+            raise ValueError('A migrated original remains in the Pages payload.')
     files = [path for path in site.rglob('*') if path.is_file()]
     print(json.dumps({'published_files': len(files),
                       'published_payload_bytes': sum(path.stat().st_size for path in files)}))

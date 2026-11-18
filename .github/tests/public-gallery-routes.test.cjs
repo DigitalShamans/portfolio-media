@@ -32,11 +32,17 @@ test('unlisted galleries are validated once and remain covered by a personal rou
   }
   const studio = 'galleries/hb-egypt/index.html';
   const manifest = 'galleries/hb-egypt/gallery.json';
+  const preview = 'galleries/hb-egypt/1440p/first.webp';
+  const configureDelivery = revision => write('_data/gallery_delivery.json', JSON.stringify({
+    service_origin: 'https://images.example.test', revision,
+  }));
+  configureDelivery(null);
   write('_data/portfolio.json', '{"recent":[]}');
   write(studio, '---\nlayout: gallery\n---\n');
   write('artur/galleries/pyramids/index.html', '---\nlayout: gallery\nportfolio: personal\ngallery: hb-egypt\n---\n');
   write('rz-start.html', '---\nlayout: locked-gallery\npermalink: /galleries/hb-rzstart/\n---\n');
   write('galleries/hb-egypt/first.jpg', '');
+  write(preview, '');
   write(manifest, '[{"image":"first.jpg"}]');
   commit();
 
@@ -44,6 +50,28 @@ test('unlisted galleries are validated once and remain covered by a personal rou
   assert.equal(valid.status, 0, valid.stderr);
   const validated = [...valid.stdout.matchAll(/^Validated (\S+) /gm)].map(match => match[1]);
   assert.deepEqual(validated, [manifest]);
+
+  configureDelivery('a'.repeat(40));
+  write('_data/public-gallery-originals.json',
+    JSON.stringify({ galleries: { 'hb-egypt': { 'first.jpg': { blob: 'b'.repeat(40), size: 1 } } } }));
+  rmSync(join(cwd, 'galleries/hb-egypt/first.jpg'));
+  commit();
+  const remote = validate();
+  assert.equal(remote.status, 0, remote.stderr);
+
+  write(manifest, '[{"image":"unapproved.jpg"}]');
+  commit();
+  const unapproved = validate();
+  assert.equal(unapproved.status, 1, unapproved.stderr);
+  assert.match(unapproved.stderr, /approved originals for this media revision must match/);
+
+  write(manifest, '[{"image":"first.jpg"}]');
+  rmSync(join(cwd, preview));
+  commit();
+  const missingPreview = validate();
+  assert.equal(missingPreview.status, 1, missingPreview.stderr);
+  assert.match(missingPreview.stderr, /Add and commit the matching WebP/);
+  write(preview, '');
 
   write(manifest, '{broken');
   commit();

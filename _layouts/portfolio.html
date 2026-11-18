@@ -8,7 +8,7 @@
   {% assign gallery_prefix = '/galleries/' %}
 {% endif %}
 <!doctype html>
-<html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}" data-gallery-webp-revision="{{ site.gallery_webp_revision | escape }}">
+<html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}" data-gallery-webp-revision="{{ site.gallery_webp_revision | escape }}"{% if site.data.gallery_delivery.revision %} data-gallery-originals-origin="{{ site.data.gallery_delivery.service_origin | escape }}" data-gallery-originals-revision="{{ site.data.gallery_delivery.revision | escape }}"{% endif %}>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
   <link rel="stylesheet" href="{{ '/assets/portfolio.css' | relative_url }}?v=7">
   {% if site.data.portfolio_gallery_preloads %}
-    <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=3" defer></script>
+    <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=4" defer></script>
     <script src="{{ '/assets/portfolio-preload.js' | relative_url }}?v=3" defer></script>
   {% endif %}
 </head>

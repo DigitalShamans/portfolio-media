@@ -1,0 +1,1650 @@
+{
+  "galleries": {
+    "hb-airplanes": {
+      "SandboxLab_Airplanes_4k_A_01.jpg": {
+        "blob": "7340b158a9b0cf7c3ebdff80be88a486ded12d02",
+        "size": 1632706
+      },
+      "SandboxLab_Airplanes_4k_A_01_Checker.jpg": {
+        "blob": "ab99d9a66dddaea3fcf343828b3d5a764f5cc4dd",
+        "size": 1334745
+      },
+      "SandboxLab_Airplanes_4k_A_01_Wireframe.jpg": {
+        "blob": "03251580084d9469e390971259948bfbf73b1faf",
+        "size": 2018376
+      },
+      "SandboxLab_Airplanes_4k_A_04.jpg": {
+        "blob": "346b0c9cd945952c3273c2398d0fa9673a9a1a42",
+        "size": 1453576
+      },
+      "SandboxLab_Airplanes_4k_A_04_Checker.jpg": {
+        "blob": "4e9c63e53c753f2c156fd046db9d2c93a4709bbc",
+        "size": 1308563
+      },
+      "SandboxLab_Airplanes_4k_A_04_Wireframe.jpg": {
+        "blob": "fdd7eebfccd5aad6577be121b8c390133a8eadbb",
+        "size": 1954753
+      },
+      "SandboxLab_Airplanes_4k_A_06.jpg": {
+        "blob": "4d6d837dc8f28fb87828fcad9e8e9fa11a62f248",
+        "size": 1389218
+      },
+      "SandboxLab_Airplanes_4k_A_06_Checker.jpg": {
+        "blob": "c1b1aaa8588c362919087d298df95b7b8340cb9c",
+        "size": 1096232
+      },
+      "SandboxLab_Airplanes_4k_A_06_Wireframe.jpg": {
+        "blob": "5d5c1a85c075bcabc09131129950832913d09f04",
+        "size": 1525370
+      },
+      "SandboxLab_Airplanes_4k_A_07.jpg": {
+        "blob": "dcca7c1e3fc335045e3b770a8e2f8d701c01dd6a",
+        "size": 1451444
+      },
+      "SandboxLab_Airplanes_4k_A_07_Checker.jpg": {
+        "blob": "bf152a8fc123333d93a65ac5d35865f06220a9cf",
+        "size": 1153590
+      },
+      "SandboxLab_Airplanes_4k_A_07_Wireframe.jpg": {
+        "blob": "abc4b174a1b0628af190eadae61b86c9d48e8fbf",
+        "size": 1629532
+      },
+      "SandboxLab_Airplanes_4k_A_08.jpg": {
+        "blob": "15fd306a3d7aede1a88231881fc4048caceffd3e",
+        "size": 1107363
+      },
+      "SandboxLab_Airplanes_4k_A_08_Checker.jpg": {
+        "blob": "e9b52a7b812de12023d78bdac05a071bc39a76a3",
+        "size": 1118394
+      },
+      "SandboxLab_Airplanes_4k_A_08_Wireframe.jpg": {
+        "blob": "e2ae7de57858885c2df7ecce90b935c5da1b68a9",
+        "size": 1544938
+      },
+      "SandboxLab_Airplanes_4k_A_10.jpg": {
+        "blob": "a52cb7ad849949876ff0eae142ee9fb73115ff68",
+        "size": 650427
+      },
+      "SandboxLab_Airplanes_4k_A_10_Checker.jpg": {
+        "blob": "e2f20d315896edc706c87fb0fc45ed8be05d8b1e",
+        "size": 888492
+      },
+      "SandboxLab_Airplanes_4k_A_10_Wireframe.jpg": {
+        "blob": "4357166ce5a9735d45c5ed85d763bd4e995e0a6d",
+        "size": 917747
+      },
+      "SandboxLab_Airplanes_4k_A_13.jpg": {
+        "blob": "e13a6ebe8a4a206849312a42f6fff1774b1757dc",
+        "size": 609686
+      },
+      "SandboxLab_Airplanes_4k_A_13_Checker.jpg": {
+        "blob": "4d6aa35ea62a529e8e70a4eca51374c29b002f33",
+        "size": 888459
+      },
+      "SandboxLab_Airplanes_4k_A_13_Wireframe.jpg": {
+        "blob": "ccab822515e0f08d97799aab66fe5ec73ff6579c",
+        "size": 854703
+      },
+      "SandboxLab_Airplanes_4k_A_14.jpg": {
+        "blob": "cc6093bf65ad2f33a0021dfff63c5eb8edbe2176",
+        "size": 735108
+      },
+      "SandboxLab_Airplanes_4k_A_14_Checker.jpg": {
+        "blob": "95ee57de5b7dd11caff0052b7f380b18c0096e3c",
+        "size": 1116653
+      },
+      "SandboxLab_Airplanes_4k_A_14_Wireframe.jpg": {
+        "blob": "17d718526c76a3fad9b6b6a2dd6da12a7615e5d1",
+        "size": 970155
+      },
+      "SandboxLab_Airplanes_4k_A_16.jpg": {
+        "blob": "5fd0f2a20cdb2938e758d932b95e83727517d189",
+        "size": 852267
+      },
+      "SandboxLab_Airplanes_4k_A_16_Checker.jpg": {
+        "blob": "02eeea2e8ecb5d7ad3418e612845bbaea3b5fef7",
+        "size": 732258
+      },
+      "SandboxLab_Airplanes_4k_A_16_Wireframe.jpg": {
+        "blob": "8c92551c347393ab42e2459ecd8113a385ca5d17",
+        "size": 1041067
+      },
+      "SandboxLab_Airplanes_4k_A_18.jpg": {
+        "blob": "4b5957224f0c25f1be9a01368aeb254ec5c63ef3",
+        "size": 1620288
+      },
+      "SandboxLab_Airplanes_4k_A_18_Checker.jpg": {
+        "blob": "cbde7ffe094ca2c43c2226e95c2d30e482bc7f45",
+        "size": 1166446
+      },
+      "SandboxLab_Airplanes_4k_A_18_Wireframe.jpg": {
+        "blob": "208de51ae48f4c8a725884ac721cf7ce08a213ba",
+        "size": 1818463
+      },
+      "SandboxLab_Airplanes_4k_A_19.jpg": {
+        "blob": "6a19cef5bd383bc79381c023416863ea18b303fa",
+        "size": 1635197
+      },
+      "SandboxLab_Airplanes_4k_A_19_Checker.jpg": {
+        "blob": "90be0c6f83d157c4b102cc17803806c9807d10a1",
+        "size": 881817
+      },
+      "SandboxLab_Airplanes_4k_A_19_Wireframe.jpg": {
+        "blob": "e6a54c841438cf426f69a7ff451a6e7dbff36440",
+        "size": 1905024
+      },
+      "SandboxLab_Airplanes_4k_A_20.jpg": {
+        "blob": "2690966701913448fe091e394f2b9b993853ab28",
+        "size": 1289789
+      },
+      "SandboxLab_Airplanes_4k_A_20_Checker.jpg": {
+        "blob": "54b7d467d3ab930570bef5522db8a3004c30ba3f",
+        "size": 911992
+      },
+      "SandboxLab_Airplanes_4k_A_20_Wireframe.jpg": {
+        "blob": "97e8a1afb71e643e8b88e952807b6ba60ecd9ad0",
+        "size": 1732056
+      },
+      "SandboxLab_Airplanes_4k_A_21.jpg": {
+        "blob": "c2576e1e6f5143613ba41aac39fd68bbdd25c69f",
+        "size": 1727231
+      },
+      "SandboxLab_Airplanes_4k_A_21_Checker.jpg": {
+        "blob": "122a04ebf97eceea59ab62aed446664a4015e4f3",
+        "size": 1047909
+      },
+      "SandboxLab_Airplanes_4k_A_21_Wireframe.jpg": {
+        "blob": "8054a86280986900d92f47d740dd13657b1a5b63",
+        "size": 1724530
+      },
+      "SandboxLab_Airplanes_4k_A_22.jpg": {
+        "blob": "3af40e3042d71ba2f0684386fb8d45441e608cef",
+        "size": 1865754
+      },
+      "SandboxLab_Airplanes_4k_A_22_Checker.jpg": {
+        "blob": "89934701f2301cd557fe98040d2c4e1c9972dd55",
+        "size": 1053829
+      },
+      "SandboxLab_Airplanes_4k_A_22_Wireframe.jpg": {
+        "blob": "8133ea4c4b24e5d3f98ed5b995a1640374630c45",
+        "size": 1847846
+      },
+      "SandboxLab_Airplanes_4k_B_01.jpg": {
+        "blob": "954d3e3c56dd4fc6cb98e1c4385a17daa1bc25e7",
+        "size": 1262214
+      },
+      "SandboxLab_Airplanes_4k_B_01_Checker.jpg": {
+        "blob": "24f20fb07813d1a82eb5dcd58bc51c3c5db21721",
+        "size": 1303653
+      },
+      "SandboxLab_Airplanes_4k_B_01_Wireframe.jpg": {
+        "blob": "36ff366d4b6a5215f4e9b19e1211be42e09b6a80",
+        "size": 1998976
+      },
+      "SandboxLab_Airplanes_4k_B_02.jpg": {
+        "blob": "2305d985041cd9f2390bf34b22b13353bb9bec34",
+        "size": 1485283
+      },
+      "SandboxLab_Airplanes_4k_B_02_Checker.jpg": {
+        "blob": "5ae7ae7badf296979d44ff6718bec9131b4f2464",
+        "size": 1350944
+      },
+      "SandboxLab_Airplanes_4k_B_02_Wireframe.jpg": {
+        "blob": "1e59610093109da2afec8aaae8ad8b3fca228a19",
+        "size": 2158685
+      },
+      "SandboxLab_Airplanes_4k_B_03.jpg": {
+        "blob": "3c676bb0633a318912137be6b718c403ffeab21d",
+        "size": 1307647
+      },
+      "SandboxLab_Airplanes_4k_B_03_Checker.jpg": {
+        "blob": "aaa5207013f01960a757f9e6cb7177e0a309efc6",
+        "size": 1503975
+      },
+      "SandboxLab_Airplanes_4k_B_03_Wireframe.jpg": {
+        "blob": "1c22049e90958f7ef40523faa78782ed1344030f",
+        "size": 2046983
+      },
+      "SandboxLab_Airplanes_4k_B_04.jpg": {
+        "blob": "6b56bedcc83914d8a7e1a49271d629a066ba5c89",
+        "size": 1587269
+      },
+      "SandboxLab_Airplanes_4k_B_04_Checker.jpg": {
+        "blob": "4320ce9c00513fdeee6ed415f4ebbb5a1877bf33",
+        "size": 721104
+      },
+      "SandboxLab_Airplanes_4k_B_04_Wireframe.jpg": {
+        "blob": "b7fbcf092b4c94e455fbbcc22c7bd14898e9f38c",
+        "size": 1831425
+      },
+      "SandboxLab_Airplanes_4k_B_05.jpg": {
+        "blob": "c8aff44ff394511b41fd0998883e84deafb33c22",
+        "size": 1140848
+      },
+      "SandboxLab_Airplanes_4k_B_05_Checker.jpg": {
+        "blob": "948c5e14ad6eeb0ffb246d89d3d6619bdba126d8",
+        "size": 1234193
+      },
+      "SandboxLab_Airplanes_4k_B_05_Wireframe.jpg": {
+        "blob": "3851a2ba5c417aed1a05584eecf1b4ac262bb158",
+        "size": 1694588
+      },
+      "SandboxLab_Airplanes_4k_B_06.jpg": {
+        "blob": "6f07985a3750ac401bba0843090b8066bb1c95c8",
+        "size": 1103554
+      },
+      "SandboxLab_Airplanes_4k_B_06_Checker.jpg": {
+        "blob": "0da3e9da06fdb5e1cab9721efe20fb1c7d1c14c3",
+        "size": 1016556
+      },
+      "SandboxLab_Airplanes_4k_B_06_Wireframe.jpg": {
+        "blob": "2f337f0f20b312f40c98efae0ab991dea4047d49",
+        "size": 1542671
+      },
+      "SandboxLab_Airplanes_4k_B_07.jpg": {
+        "blob": "08193be18aab40907e949fa9d6b25c394c6a0f83",
+        "size": 1075003
+      },
+      "SandboxLab_Airplanes_4k_B_07_Checker.jpg": {
+        "blob": "0a3c5d135704b312f3a34bc3b29b3caea89b7d30",
+        "size": 1170499
+      },
+      "SandboxLab_Airplanes_4k_B_07_Wireframe.jpg": {
+        "blob": "bc07f106200501f3305f401302c8123b185a542f",
+        "size": 1596530
+      },
+      "SandboxLab_Airplanes_4k_B_08.jpg": {
+        "blob": "eca729ed24fcb279cebc4278d21114f4d96bc479",
+        "size": 1170974
+      },
+      "SandboxLab_Airplanes_4k_B_08_Checker.jpg": {
+        "blob": "4c7d8ade9ecee384b75e13ce40bdf9fa26db43b6",
+        "size": 1302850
+      },
+      "SandboxLab_Airplanes_4k_B_08_Wireframe.jpg": {
+        "blob": "5ea3e1aad7911a40840cea6c66283b6d58dea452",
+        "size": 1741443
+      },
+      "SandboxLab_Airplanes_4k_B_10.jpg": {
+        "blob": "df6bc7450577bb10ce5edaa6716f4f67891e3e40",
+        "size": 802306
+      },
+      "SandboxLab_Airplanes_4k_B_10_Checker.jpg": {
+        "blob": "4e257d50253b3b8ebff03a3de9bcf5419ba2c363",
+        "size": 935140
+      },
+      "SandboxLab_Airplanes_4k_B_10_Wireframe.jpg": {
+        "blob": "871772904f0d36f46e4c7921e2fa1107b1f8f6e9",
+        "size": 1068499
+      },
+      "SandboxLab_Airplanes_4k_B_13.jpg": {
+        "blob": "c3ede254f1804016284a56a1431946d81db53253",
+        "size": 980096
+      },
+      "SandboxLab_Airplanes_4k_B_13_Checker.jpg": {
+        "blob": "2864aec2041ed35c4f88547d20def5c44d837274",
+        "size": 1148667
+      },
+      "SandboxLab_Airplanes_4k_B_13_Wireframe.jpg": {
+        "blob": "719fa91c15c2ef9a0bca5bd5e59f28cb8e0e979c",
+        "size": 1421326
+      },
+      "SandboxLab_Airplanes_4k_B_15.jpg": {
+        "blob": "f74751c08735f9d5912dae51bee8f9c018fee65a",
+        "size": 1178899
+      },
+      "SandboxLab_Airplanes_4k_B_15_Checker.jpg": {
+        "blob": "74a6bc5a49210bea53125bfe0199813aa60f6633",
+        "size": 970140
+      },
+      "SandboxLab_Airplanes_4k_B_15_Wireframe.jpg": {
+        "blob": "79b4e35d31aeefcb691b950bcef41f62a96c9261",
+        "size": 1204385
+      },
+      "SandboxLab_Airplanes_4k_B_16.jpg": {
+        "blob": "166d661f7f7ccfe6bfc1f0eff7f760b6d40133f6",
+        "size": 1242316
+      },
+      "SandboxLab_Airplanes_4k_B_16_Checker.jpg": {
+        "blob": "cd05d257e027b7374868ffe54f39a7b540f1985b",
+        "size": 971542
+      },
+      "SandboxLab_Airplanes_4k_B_16_Wireframe.jpg": {
+        "blob": "df5b2933f7a38e4aa7df7feb8b1299d573b08a2f",
+        "size": 1391240
+      },
+      "SandboxLab_Airplanes_4k_B_17.jpg": {
+        "blob": "7884195cb36cc495266e1b9e742badd1472a9627",
+        "size": 1099981
+      },
+      "SandboxLab_Airplanes_4k_B_17_Checker.jpg": {
+        "blob": "7993209de9a916997c59319e463e500bd89a0646",
+        "size": 1081048
+      },
+      "SandboxLab_Airplanes_4k_B_17_Wireframe.jpg": {
+        "blob": "bb5c0342ab1bc45bf0d5b882706ff14409a1cf51",
+        "size": 1530350
+      },
+      "SandboxLab_Airplanes_4k_B_18.jpg": {
+        "blob": "98a97e5a851ccf4f439c66c96480b29bf9bbcc1e",
+        "size": 1062580
+      },
+      "SandboxLab_Airplanes_4k_B_18_Checker.jpg": {
+        "blob": "699bf36db5d5fa6984129e3674cf8a111ad986a3",
+        "size": 1244418
+      },
+      "SandboxLab_Airplanes_4k_B_18_Wireframe.jpg": {
+        "blob": "a6c1f448fe67ffd4d8dca57fbceb14845a194478",
+        "size": 1552822
+      },
+      "SandboxLab_Airplanes_4k_B_19.jpg": {
+        "blob": "69c6a14634d70580bbc5f8a1c812f09d8a8ffb89",
+        "size": 1728026
+      },
+      "SandboxLab_Airplanes_4k_B_19_Checker.jpg": {
+        "blob": "f364fe4a3f18fbddc01f485893fe6cbd338dabf6",
+        "size": 1167910
+      },
+      "SandboxLab_Airplanes_4k_B_19_Wireframe.jpg": {
+        "blob": "e0a65882ed600be2f33b31d05a881c3043cf9542",
+        "size": 1934775
+      },
+      "SandboxLab_Airplanes_4k_B_20.jpg": {
+        "blob": "b1be213b3d522b55a51efcb019bbe69f93ca7480",
+        "size": 1920666
+      },
+      "SandboxLab_Airplanes_4k_B_20_Checker.jpg": {
+        "blob": "aeccf7cae413d78af56093c96d0a3e1e1f8c65e5",
+        "size": 1195541
+      },
+      "SandboxLab_Airplanes_4k_B_20_Wireframe.jpg": {
+        "blob": "a975ad8833aa3697d8f2724c0d847a2db02d551d",
+        "size": 1880866
+      },
+      "SandboxLab_Airplanes_4k_B_21.jpg": {
+        "blob": "c4a539f7b61b7fc0bdb6846e64f723eeb4917806",
+        "size": 1540045
+      },
+      "SandboxLab_Airplanes_4k_B_21_Checker.jpg": {
+        "blob": "797370d78c12bc66194ca3d10e5321dd2baeae7e",
+        "size": 1061934
+      },
+      "SandboxLab_Airplanes_4k_B_21_Wireframe.jpg": {
+        "blob": "6d7c0dc94f78499eab76de925ac8e59a22f500d1",
+        "size": 1889825
+      },
+      "SandboxLab_Airplanes_4k_B_22.jpg": {
+        "blob": "1b8062a116801391ef42852a1158609c36bd7617",
+        "size": 1785612
+      },
+      "SandboxLab_Airplanes_4k_B_22_Checker.jpg": {
+        "blob": "5c8f134ff3fbc1a4d717dc72ace6ec2c01f7c306",
+        "size": 1083858
+      },
+      "SandboxLab_Airplanes_4k_B_22_Wireframe.jpg": {
+        "blob": "ad352b3c12bd2d1734bbcef23f1171f628c04fa9",
+        "size": 1863309
+      }
+    },
+    "hb-atrium": {
+      "Hall_00_4k_Logos.jpg": {
+        "blob": "36ad8ac360f992f1d99ec0aa991d980523574b03",
+        "size": 1543328
+      },
+      "Hall_01_4k_Logos.jpg": {
+        "blob": "3005f9632184f5af7af9f8e8ebe8d2848b44728e",
+        "size": 896584
+      },
+      "Hall_02_4k_Logos.jpg": {
+        "blob": "9079aeeafbf3abd2906c2b2deca7f347b50a1550",
+        "size": 771810
+      },
+      "Hall_Atrium_1st_00_4k_Logos.jpg": {
+        "blob": "6aff66a36e13c33ad429438169ae2afc56692ac3",
+        "size": 1308376
+      },
+      "Hall_Atrium_1st_01_4k_Logos.jpg": {
+        "blob": "b7765f88bdc7bd75f5e28624a13173f8ae4025ad",
+        "size": 1301489
+      },
+      "Hall_Atrium_1st_02_4k_Logos.jpg": {
+        "blob": "0e58b3eea77ce5e753176b2df991842fc8afcfa7",
+        "size": 1329859
+      },
+      "Hall_Atrium_1st_03_4k_Logos.jpg": {
+        "blob": "6d512dcce5840a6c27bdd004668e114407e365d0",
+        "size": 1448147
+      },
+      "Hall_Atrium_1st_04_4k_Logos.jpg": {
+        "blob": "1b4934d5a4e9c77fb27fd6cb75f3e30880727212",
+        "size": 1308825
+      },
+      "Hall_Atrium_Ground_00_4k_Logos.jpg": {
+        "blob": "adac103fa26d910f3dd5a9fbe9a2fe6a648eb16e",
+        "size": 957499
+      },
+      "Hall_Atrium_Ground_01_4k_Logos.jpg": {
+        "blob": "d04666361fdae09bb75e05704d89bd47a7cebf15",
+        "size": 1526633
+      },
+      "Hall_Atrium_Ground_02_4k_Logos.jpg": {
+        "blob": "df990d0e4a7f5c291339809b1217f16cc70ad16f",
+        "size": 955804
+      },
+      "Hall_Atrium_Ground_03_4k_Logos.jpg": {
+        "blob": "4df51d913b661900ab18b45fbd8b7962fbb0cfab",
+        "size": 1245879
+      },
+      "Hall_Atrium_Ground_04_4k_Logos.jpg": {
+        "blob": "1d26502d589bfcb2db18054ea7b39cdffc6376b0",
+        "size": 998887
+      },
+      "Hall_Atrium_Ground_05_4k_Logos.jpg": {
+        "blob": "cfc6bb8327a9354095a46cde8a03da05d905a977",
+        "size": 1337282
+      },
+      "Hall_Elevator_01_4k_Logos.jpg": {
+        "blob": "4fa12f44e73c2a03a2f8b8d0a703ca7da7618b3b",
+        "size": 1060727
+      },
+      "Hall_Elevator_02_4k_Logos.jpg": {
+        "blob": "b81e1cc31d5f4fb83ba9661022d54056ae8919fc",
+        "size": 1077228
+      },
+      "Hall_Elevator_Ground_01_4k_Logos.jpg": {
+        "blob": "099798862fee85a55d43670980e515514508d877",
+        "size": 1029475
+      },
+      "Hall_Final_IntermediaryA_01_4k_Logos.jpg": {
+        "blob": "6139c75028ab65c70419d2b152e9df1f49fa5848",
+        "size": 930662
+      },
+      "Hall_Final_IntermediaryB_01_4k_Logos.jpg": {
+        "blob": "61f3229dca10ad2740af5cd9a200414db19df3eb",
+        "size": 1848515
+      },
+      "Hall_Final_IntermediaryB_03_4k_Logos.jpg": {
+        "blob": "9643b9d7cc37cb5f2b8f36b9bfbfb87e52088c89",
+        "size": 1904181
+      },
+      "Hall_Final_Office_02_4k_Logos.jpg": {
+        "blob": "65c2df3716d0cbe01061c4983f9535d74594b79c",
+        "size": 1678782
+      },
+      "Hall_Final_Office_03_4k_Logos.jpg": {
+        "blob": "a7f0e025bd1ccbd88d168c7379a2859d057ad9c9",
+        "size": 1426685
+      },
+      "Hall_Final_Office_05_4k_Logos.jpg": {
+        "blob": "d6c0ad05f69c83d9a14880a9980ef5c0e8e02edd",
+        "size": 1525228
+      },
+      "Hall_Final_Office_06_4k_Logos.jpg": {
+        "blob": "f129a06c088305a6f874e024c12a7ab834f5c396",
+        "size": 1588086
+      },
+      "Hall_Final_Office_07_4k_Logos.jpg": {
+        "blob": "e2b3b2ec66c2507a1bdc5594b39212e529ba9ca6",
+        "size": 1792618
+      },
+      "Hall_Final_StaircaseA_01_4k_Logos.jpg": {
+        "blob": "d3497396cb3783654faad8aa3b5be2c9a8667b81",
+        "size": 1126656
+      },
+      "Hall_Final_StaircaseA_02_4k_Logos.jpg": {
+        "blob": "5597a670bb12023b2c107c64946524ce27ad2a8b",
+        "size": 1153803
+      },
+      "Hall_Final_StaircaseB_01_4k_Logos.jpg": {
+        "blob": "2c1bcde30d0ecfa57ecc7ab3b8d90114b2413e7c",
+        "size": 1122474
+      },
+      "Hall_StartingRoom_01_4k_Logos.jpg": {
+        "blob": "5742c33a30c7709918381c48d53a8e2613a2a5ae",
+        "size": 905945
+      },
+      "Hall_StartingRoom_02_4k_Logos.jpg": {
+        "blob": "53fb30725eb9f09a0e1d4ce83993a21bf9ab4c94",
+        "size": 861027
+      },
+      "Hall_Technical_Bakery_01_4k_Logos.jpg": {
+        "blob": "7b772ed24d36b0f99946380a4cc78992d0ae8fd8",
+        "size": 4214746
+      },
+      "Hall_Technical_LightProbes_01_4k_Logos.jpg": {
+        "blob": "c26f23db6441ac0259430ec3aed069914e1990a1",
+        "size": 2540959
+      },
+      "Hall_Technical_LightProbes_02_4k_Logos.jpg": {
+        "blob": "97cadb325e2535f8e050b817d9cec185b712a92a",
+        "size": 2413739
+      },
+      "Hall_Technical_LightProbes_04_4k_Logos.jpg": {
+        "blob": "9252f8a71f3f741e6dd222698acbaf84958964a9",
+        "size": 1693593
+      },
+      "Hall_Technical_Wireframe_01_4k_Logos.jpg": {
+        "blob": "31657089cff13912e470a0c5cbc933c2d8bdbdd7",
+        "size": 2485084
+      },
+      "Hall_Technical_Wireframe_02_4k_Logos.jpg": {
+        "blob": "bcc39a6197261e2dd4ae9b1beb171aad4466e2ae",
+        "size": 2311659
+      },
+      "Hall_Technical_Wireframe_03_4k_Logos.jpg": {
+        "blob": "120fdbe8ccaea80ee44e3bf02434a5669e2945ab",
+        "size": 1951747
+      }
+    },
+    "hb-barchurch": {
+      "00_Bar_Church_00_4k_Logos.jpg": {
+        "blob": "fe1857841ebfa5af31fdaf3a3ee6f08ad1421adf",
+        "size": 1362470
+      },
+      "01_Bar_Church_01_4k_Logos.jpg": {
+        "blob": "eeeaf3a3222cf83b3fdb6e56894dbccc28c804db",
+        "size": 1139062
+      },
+      "02_Bar_Church_02_4k_Logos.jpg": {
+        "blob": "05b94dd443fdc09c54e922e149a4fc7f30c7227d",
+        "size": 640658
+      },
+      "BarChurch_Casino_40_4k_Logos.jpg": {
+        "blob": "a58a678917d723af16cb173f12f535790a88ae4c",
+        "size": 1477380
+      },
+      "BarChurch_Casino_41_4k_Logos.jpg": {
+        "blob": "ea883046444ff7e5ecdb99b640642e967823b2af",
+        "size": 1228317
+      },
+      "BarChurch_Casino_42_4k_Logos.jpg": {
+        "blob": "2ce2e3565b7a3154af4a0b8bf0055143b7477be6",
+        "size": 1538769
+      },
+      "BarChurch_Casino_43_4k_Logos.jpg": {
+        "blob": "90e2c2813ea9563316d51aa8e26794fb16206986",
+        "size": 1630392
+      },
+      "BarChurch_Casino_44_4k_Logos.jpg": {
+        "blob": "988f90a59cf32c5d031826a7a1847184826ed37c",
+        "size": 1393316
+      },
+      "BarChurch_Casino_45_4k_Logos.jpg": {
+        "blob": "f52d29e2fd4722b4632d49b48aefe70b1536c3ef",
+        "size": 1923855
+      },
+      "BarChurch_Casino_46_4k_Logos.jpg": {
+        "blob": "af1e6d4b094c9b2b3dc5921d2688430f672ed25c",
+        "size": 1845120
+      },
+      "BarChurch_Casino_48_4k_Logos.jpg": {
+        "blob": "0dd12edecf7974706932da2b60f426ea7394ead4",
+        "size": 1789480
+      },
+      "BarChurch_Casino_49_4k_Logos.jpg": {
+        "blob": "08c4e3ad2b818947772ba5a741093233d518673d",
+        "size": 1639051
+      },
+      "BarChurch_Casino_50_4k_Logos.jpg": {
+        "blob": "138ae33fbdbed172b5411198c4e0f3eb984c689d",
+        "size": 878146
+      },
+      "BarChurch_Casino_61_4k_Logos.jpg": {
+        "blob": "19ff99310600656d53aa56e93d74ec04624b7050",
+        "size": 1740400
+      },
+      "BarChurch_Intermediary_30_4k_Logos.jpg": {
+        "blob": "f419150bbaa9a27bc3f0a99efa2d280c22851a4a",
+        "size": 1510940
+      },
+      "BarChurch_Intermediary_31_4k_Logos.jpg": {
+        "blob": "e3b03a4149408b2058c6bd6fffad020abab6bdb4",
+        "size": 1649255
+      },
+      "BarChurch_Technical_Bakery_01_4k_Logos.jpg": {
+        "blob": "8d860af391a0a4f9e038f0e3cdec1686c6162da2",
+        "size": 4732470
+      },
+      "BarChurch_Technical_Bakery_02_4k_Logos.jpg": {
+        "blob": "f525fc908963634ada30f950fa10c193d2d680d0",
+        "size": 3661914
+      },
+      "BarChurch_Technical_Colliders_01_4k_Logos.jpg": {
+        "blob": "3923c396eb187fc044f3603ee6ae31ea45b952ed",
+        "size": 2279097
+      },
+      "BarChurch_Technical_Colliders_02_4k_Logos.jpg": {
+        "blob": "ef24766f0ba4d58d1b8d4ee134f74b869adb4a81",
+        "size": 2036996
+      },
+      "BarChurch_Technical_LightProbes_02_4k_Logos.jpg": {
+        "blob": "95935e6351227db4c16e41342be549c8dea7824d",
+        "size": 1918501
+      },
+      "BarChurch_Technical_LightProbes_03_4k_Logos.jpg": {
+        "blob": "81f39a4b786fb557370f5359c3ff0eaef9a835cb",
+        "size": 2419386
+      },
+      "BarChurch_Technical_LightProbes_04_4k_Logos.jpg": {
+        "blob": "db8e2ac69e699e81146c228fa4e9c90070c60a39",
+        "size": 2316038
+      },
+      "BarChurch_Technical_Wireframe_01_4k_Logos.jpg": {
+        "blob": "749774bed4cc4a75d5d24171adebb9607bf30e8f",
+        "size": 3291614
+      },
+      "BarChurch_Technical_Wireframe_02_4k_Logos.jpg": {
+        "blob": "64607d415ab62d5b33de1c7e69c8f43c40787565",
+        "size": 3126844
+      },
+      "BarChurch_Technical_Wireframe_03_4k_Logos.jpg": {
+        "blob": "11333f2f0c88045283269df314ab6798b4121699",
+        "size": 3209908
+      },
+      "BarChurch_Technical_Wireframe_04_4k_Logos.jpg": {
+        "blob": "70121ae6bda523dcf31c191edc9a07e1367a225e",
+        "size": 3088779
+      },
+      "Bar_Church_00_4k_Logos.jpg": {
+        "blob": "dea372c364956232699cd3be0dcf29805bad80f4",
+        "size": 661994
+      },
+      "Bar_Church_01_4k_Logos.jpg": {
+        "blob": "dbee1176d138cca2d8697fe6639258a2a8810df5",
+        "size": 1236839
+      },
+      "Bar_Church_02_4k_Logos.jpg": {
+        "blob": "729ee585a3e8b717c885a93aac6161dadf2afd78",
+        "size": 1390027
+      },
+      "Bar_Church_03_4k_Logos.jpg": {
+        "blob": "c3accff5d0c26020f614b75eab8189de4dd07222",
+        "size": 1269404
+      },
+      "Bar_Church_Basement_35_4k_Logos.jpg": {
+        "blob": "28780fae52a96f03dd512511eb9127ed42b0bed4",
+        "size": 1011492
+      },
+      "Bar_Church_Basement_37_4k_Logos.jpg": {
+        "blob": "e1c2a7656a1554b62e9a9f5acaf8bec3e57791c0",
+        "size": 911030
+      },
+      "Bar_Church_Basement_38_4k_Logos.jpg": {
+        "blob": "8d349827d41efed6df507db4bec0b754b77d0e30",
+        "size": 876103
+      },
+      "Bar_Church_Basement_39_4k_Logos.jpg": {
+        "blob": "114901a605056cff4fedc9c6d574c5bb5a583033",
+        "size": 1029115
+      },
+      "Bar_Church_Basement_40_4k_Logos.jpg": {
+        "blob": "d4bda67b76a4ab8aff811324c8540bf70f04355c",
+        "size": 975030
+      },
+      "Bar_Church_MainHall_04_4k_Logos.jpg": {
+        "blob": "2c25855320a69ed193d91cc9bbab1ca4828e4358",
+        "size": 1596896
+      },
+      "Bar_Church_MainHall_06_4k_Logos.jpg": {
+        "blob": "a9d7ffdc9b2b33fb37c3195e7f3dcb029ec688cd",
+        "size": 1472555
+      },
+      "Bar_Church_MainHall_07_4k_Logos.jpg": {
+        "blob": "2b345b1a79b31a4df3520c4798781954ecd87e6e",
+        "size": 1093174
+      },
+      "Bar_Church_MainHall_08_4k_Logos.jpg": {
+        "blob": "97be2b855ab70501d51fc41f12341e483349f313",
+        "size": 1333259
+      },
+      "Bar_Church_MainHall_09_4k_Logos.jpg": {
+        "blob": "ae7515128fa98373a1ceb7b91536d4576264a201",
+        "size": 1497064
+      },
+      "Bar_Church_MainHall_13_4k_Logos.jpg": {
+        "blob": "194090b29ccd81518e9d1a24741d2f475ec947ca",
+        "size": 1223710
+      },
+      "Bar_Church_MainHall_26_4k_Logos.jpg": {
+        "blob": "7a4d3afe67970c210df8e98209be848da4db7784",
+        "size": 1439231
+      }
+    },
+    "hb-egypt": {
+      "HB_Egypt_Passage_A_02.jpg": {
+        "blob": "f38ae4033d53f8b27571930f145a945047e5707c",
+        "size": 1365954
+      },
+      "HB_Egypt_Passage_A_02_Checker.jpg": {
+        "blob": "d708134acc891f35ac531a96ffd229087052f711",
+        "size": 869453
+      },
+      "HB_Egypt_Passage_A_02_Wireframe.jpg": {
+        "blob": "8ce647b3ad4ae882d7388667dca843648a6f092a",
+        "size": 2070921
+      },
+      "HB_Egypt_Passage_A_03.jpg": {
+        "blob": "7b5cffe37af7b13df8fecb861fb8e7b67792106f",
+        "size": 1169186
+      },
+      "HB_Egypt_Passage_A_03_Checker.jpg": {
+        "blob": "6a060a9dd99cc24a5476c71b2c92b749e6afaa5c",
+        "size": 909279
+      },
+      "HB_Egypt_Passage_A_03_Wireframe.jpg": {
+        "blob": "64753ee34f78dd95b2e79faf94bdd461889e16e7",
+        "size": 1978264
+      },
+      "HB_Egypt_Passage_A_04.jpg": {
+        "blob": "7a5515cf11ca68330ce7bad6e2d6ca8d233ed3fb",
+        "size": 1160932
+      },
+      "HB_Egypt_Passage_A_04_Checker.jpg": {
+        "blob": "454356b0d2a92f29491560355143a84004c3669e",
+        "size": 756093
+      },
+      "HB_Egypt_Passage_A_04_Wireframe.jpg": {
+        "blob": "a2e168fb63238b2d7729d1bb0388a304633e6c8a",
+        "size": 1414474
+      },
+      "HB_Egypt_Passage_B_01.jpg": {
+        "blob": "a62c4b6a5b6d3f32644eddabb8c8e537e77864ff",
+        "size": 1121607
+      },
+      "HB_Egypt_Passage_B_01_Checker.jpg": {
+        "blob": "ea47965c32636d0bee233380b9bc4ac59175b1a8",
+        "size": 920637
+      },
+      "HB_Egypt_Passage_B_01_Wireframe.jpg": {
+        "blob": "8ecb6e86e7e653503de34017ae3b392cab493f6d",
+        "size": 1581956
+      },
+      "HB_Egypt_Passage_B_02.jpg": {
+        "blob": "f9ce820b3a00c4a8d0b4b92c1b2a2c3919aab8c6",
+        "size": 1134892
+      },
+      "HB_Egypt_Passage_B_02_Checker.jpg": {
+        "blob": "1a312c143411bfbb59a587589c117dc86e11d33f",
+        "size": 840624
+      },
+      "HB_Egypt_Passage_B_02_Wireframe.jpg": {
+        "blob": "b4d73014f03e09c71d4762b612e234f027a9888e",
+        "size": 1372040
+      },
+      "HB_Egypt_Passage_B_03.jpg": {
+        "blob": "c7cd020d125ae6dd69adc71547c7df9f04406d42",
+        "size": 1254985
+      },
+      "HB_Egypt_Passage_B_03_Checker.jpg": {
+        "blob": "f619c3b0fb95db8ea09d32c0add8303ae7fe61af",
+        "size": 913694
+      },
+      "HB_Egypt_Passage_B_03_Wireframe.jpg": {
+        "blob": "cdc97ca7329db0fe0e8674cde3160d2cb88df532",
+        "size": 1587063
+      },
+      "HB_Egypt_Passage_B_04.jpg": {
+        "blob": "227daee35f155855bae891081c7bf80a00d3ee95",
+        "size": 1150064
+      },
+      "HB_Egypt_Passage_B_04_Checker.jpg": {
+        "blob": "ec5bb2af898e596012e9ffe93b068448946db5a7",
+        "size": 845833
+      },
+      "HB_Egypt_Passage_B_04_Wireframe.jpg": {
+        "blob": "7e06b057200b7ea40844792fd07ef08ad6bd5103",
+        "size": 1487015
+      },
+      "HB_Egypt_Passage_B_05.jpg": {
+        "blob": "94becd946284a1b22cdf7fcfcdcdafba07c86c77",
+        "size": 1072462
+      },
+      "HB_Egypt_Passage_B_05_Checker.jpg": {
+        "blob": "1dc60ce364525918f6c44e10e70d7c79d1a4ca56",
+        "size": 868699
+      },
+      "HB_Egypt_Passage_B_05_Wireframe.jpg": {
+        "blob": "c31758e77f1584ac8e3069650d5cfc59d0be50da",
+        "size": 1434041
+      },
+      "HB_Egypt_Passage_C_01.jpg": {
+        "blob": "bae24115832b3dd63b84c9bf1522ee870b02483f",
+        "size": 1330717
+      },
+      "HB_Egypt_Passage_C_01_Checker.jpg": {
+        "blob": "d4cc895cec9037ebef6d9f54ad54a4ae1e20dc18",
+        "size": 910763
+      },
+      "HB_Egypt_Passage_C_01_Wireframe.jpg": {
+        "blob": "c2ad7055a73d39b89655dacc2ed487a189608a26",
+        "size": 1810300
+      },
+      "HB_Egypt_Room_A_01.jpg": {
+        "blob": "a7247aba792865ecdb0bcbd15de9166703e80e55",
+        "size": 1127075
+      },
+      "HB_Egypt_Room_A_01_Checker.jpg": {
+        "blob": "f37c52231586d89c19027230ee4f9b01fe107539",
+        "size": 1558045
+      },
+      "HB_Egypt_Room_A_01_Wireframe.jpg": {
+        "blob": "0a47d36add20f153fdd1d8ab3e11a5ee1cb2b1be",
+        "size": 2243522
+      },
+      "HB_Egypt_Room_A_02.jpg": {
+        "blob": "2c1d0f88928712cae7ae3f63ba8cb6ebce0bedf9",
+        "size": 1169611
+      },
+      "HB_Egypt_Room_A_02_Checker.jpg": {
+        "blob": "f32d000c0bc6573491660f1a42a6206b74ac4443",
+        "size": 1562987
+      },
+      "HB_Egypt_Room_A_02_Wireframe.jpg": {
+        "blob": "3f32526f520905426c86ed6a7e4b1135d6676c54",
+        "size": 2445182
+      },
+      "HB_Egypt_Room_A_03.jpg": {
+        "blob": "7ea1cc83742f65c72d091ab3b53fb7c9cc59c29e",
+        "size": 1066470
+      },
+      "HB_Egypt_Room_A_03_Checker.jpg": {
+        "blob": "69ec680ddc8f6c7ba9a376cc3d4e3e41d7f41e44",
+        "size": 1599099
+      },
+      "HB_Egypt_Room_A_03_Wireframe.jpg": {
+        "blob": "d0a3becbdd0f9d56ee4b6c0f8e6c9d2ed0e1511a",
+        "size": 2250649
+      },
+      "HB_Egypt_Room_A_04.jpg": {
+        "blob": "3c2feacc2a78045bea6559e45dfd658a02c509e0",
+        "size": 1124676
+      },
+      "HB_Egypt_Room_A_04_Checker.jpg": {
+        "blob": "c1376bb63dff7a9caff9d807b943574bcb0a811f",
+        "size": 593929
+      },
+      "HB_Egypt_Room_A_04_Wireframe.jpg": {
+        "blob": "146ce6c2f752826b72f01a4f7236dfde5475dfa4",
+        "size": 1439141
+      },
+      "HB_Egypt_Room_B_01.jpg": {
+        "blob": "a4f90f60b4227f1ec3cb9b707db8ccb24bfd2165",
+        "size": 744269
+      },
+      "HB_Egypt_Room_B_01_Checker.jpg": {
+        "blob": "7ed72752d105a91a469ab1d00dbaed6580ef8c69",
+        "size": 782242
+      },
+      "HB_Egypt_Room_B_01_Wireframe.jpg": {
+        "blob": "728187f6d93b2dcbb2008de0089227d13fb6d1ec",
+        "size": 1398403
+      },
+      "HB_Egypt_Room_B_02.jpg": {
+        "blob": "bf2486be4ecc192d4249764c65ddc2e5c29201e3",
+        "size": 953797
+      },
+      "HB_Egypt_Room_B_02_Checker.jpg": {
+        "blob": "16a99703046bb9a3c6b655b4a8f40c173feaed4b",
+        "size": 895687
+      },
+      "HB_Egypt_Room_B_02_Wireframe.jpg": {
+        "blob": "ff38d209cfc02cc9ade31362a58d8622f036ee92",
+        "size": 1771490
+      },
+      "HB_Egypt_Room_B_03.jpg": {
+        "blob": "0e974fa839be22ee2b7618cd4bc0e2e1aa095617",
+        "size": 1055321
+      },
+      "HB_Egypt_Room_B_03_Checker.jpg": {
+        "blob": "13a21723745a2104d2fae5d962f06e1afa457874",
+        "size": 1100688
+      },
+      "HB_Egypt_Room_B_03_Wireframe.jpg": {
+        "blob": "c7731bf55d1b75aaf29f360a82fd74308e8d6b11",
+        "size": 1958080
+      },
+      "HB_Egypt_Room_B_04.jpg": {
+        "blob": "3fd25fd09c39766f5d648028066e0fd595e4a5b7",
+        "size": 857610
+      },
+      "HB_Egypt_Room_B_04_Checker.jpg": {
+        "blob": "0f46cb24b531310348b29d408c6a3a77af9ed5da",
+        "size": 1007117
+      },
+      "HB_Egypt_Room_B_04_Wireframe.jpg": {
+        "blob": "e035cbc1757fe883323d085e3e352b5509602e6b",
+        "size": 1887133
+      },
+      "HB_Egypt_Room_C_01.jpg": {
+        "blob": "eab6e43282d71c3075c32be8798181d506bf6815",
+        "size": 1332740
+      },
+      "HB_Egypt_Room_C_01_Checker.jpg": {
+        "blob": "90336e527f7b2bb53d03a087cf519468e4359645",
+        "size": 820548
+      },
+      "HB_Egypt_Room_C_01_Wireframe.jpg": {
+        "blob": "27216f5bb1125397957ef7ae985962ce3195d58b",
+        "size": 1810015
+      },
+      "HB_Egypt_Room_C_02.jpg": {
+        "blob": "7a6913e9dfad017b2e198f634c56ff4ab6bcded9",
+        "size": 880193
+      },
+      "HB_Egypt_Room_C_02_Checker.jpg": {
+        "blob": "d479e97d9f3b475d0f09524320e78e42973f295d",
+        "size": 1223267
+      },
+      "HB_Egypt_Room_C_02_Wireframe.jpg": {
+        "blob": "88dcdc4c073ab0ec236d4a2baeb35463acec71bb",
+        "size": 2625060
+      },
+      "HB_Egypt_Room_C_03.jpg": {
+        "blob": "a99961198f12c35150512628464d9a4a936c914d",
+        "size": 909672
+      },
+      "HB_Egypt_Room_C_03_Checker.jpg": {
+        "blob": "3ffa28c6794479bfbe6c0ac8b199068a128e7323",
+        "size": 1287419
+      },
+      "HB_Egypt_Room_C_03_Wireframe.jpg": {
+        "blob": "e6000b004919a06f4ad60cf96c8d2f48995bd536",
+        "size": 2874407
+      },
+      "HB_Egypt_Room_D_01.jpg": {
+        "blob": "c3372de05188e30910fb9be13b1a5651de70a0c8",
+        "size": 1029421
+      },
+      "HB_Egypt_Room_D_01_Checker.jpg": {
+        "blob": "e3c8231bc4140d33577d79c1a0f77d323c9aad15",
+        "size": 935713
+      },
+      "HB_Egypt_Room_D_01_Wireframe.jpg": {
+        "blob": "0fd327ebb724150b5d080363a61caebae0e5e75c",
+        "size": 1676767
+      },
+      "HB_Egypt_Room_D_02.jpg": {
+        "blob": "77b7929fec4f47f3eab2dc17e90f67171af9b312",
+        "size": 1197701
+      },
+      "HB_Egypt_Room_D_02_Checker.jpg": {
+        "blob": "2d48e6b638e437355cfd1a8949de8736bd7a30d6",
+        "size": 1497337
+      },
+      "HB_Egypt_Room_D_02_Wireframe.jpg": {
+        "blob": "c53c3f265a2fb75d188d517897e3cadaef82cfe5",
+        "size": 2785158
+      },
+      "HB_Egypt_Room_D_03.jpg": {
+        "blob": "082144306f409c79cd214934f857729932a9d52d",
+        "size": 1394088
+      },
+      "HB_Egypt_Room_D_03_Checker.jpg": {
+        "blob": "8f4bad7dd95faf23cb701def136b285c63756565",
+        "size": 1706895
+      },
+      "HB_Egypt_Room_D_03_Wireframe.jpg": {
+        "blob": "745aceeb56ca4f1b782fd92c1d58dd0cfae75786",
+        "size": 2296212
+      },
+      "HB_Egypt_Room_E_02.jpg": {
+        "blob": "bea5c34553b06493609e2289ca93f6932d10cb20",
+        "size": 1414199
+      },
+      "HB_Egypt_Room_E_02_Checker.jpg": {
+        "blob": "df035eeeccedc77c7259016883c9bc7faf6d2aee",
+        "size": 1397869
+      },
+      "HB_Egypt_Room_E_02_Wireframe.jpg": {
+        "blob": "1f440e24edef01233e55f271e4a723d1b92c4239",
+        "size": 2041124
+      },
+      "HB_Egypt_Room_E_03.jpg": {
+        "blob": "7f54c0d8d9a3de635e148d11a2f8e4f3ce013ad9",
+        "size": 1407236
+      },
+      "HB_Egypt_Room_E_03_Checker.jpg": {
+        "blob": "3e2f5199fcecedb015103024b2b9859bad3e073b",
+        "size": 1582385
+      },
+      "HB_Egypt_Room_E_03_Wireframe.jpg": {
+        "blob": "b731666e891c37a776cbd1d94b344c16a6dcb616",
+        "size": 2255810
+      },
+      "HB_Egypt_Room_E_04.jpg": {
+        "blob": "76ce943a98188e4fa9dee7eba4dcf829e62d91a3",
+        "size": 1744743
+      },
+      "HB_Egypt_Room_E_04_Checker.jpg": {
+        "blob": "568c4ad9d053d0f3da50853ac511053820ccfa55",
+        "size": 1653641
+      },
+      "HB_Egypt_Room_E_04_Wireframe.jpg": {
+        "blob": "6dcfa0542b0dba43513151755a543266852b6eb5",
+        "size": 2571750
+      },
+      "HB_Egypt_Room_E_05.jpg": {
+        "blob": "070922905b8412fc3c7bf0e19a7a76efc038c863",
+        "size": 1612367
+      },
+      "HB_Egypt_Room_E_05_Checker.jpg": {
+        "blob": "25bf21084ec65dfab540aff27aa1d29672bd873a",
+        "size": 1333618
+      },
+      "HB_Egypt_Room_E_05_Wireframe.jpg": {
+        "blob": "f79354ba099bcdc8140ad80ee54c0648fbf68327",
+        "size": 2230548
+      },
+      "HB_Egypt_Room_E_06.jpg": {
+        "blob": "1f33a1d41a637aa39e7442cc8dbf7d30e0e35594",
+        "size": 1870682
+      },
+      "HB_Egypt_Room_E_06_Checker.jpg": {
+        "blob": "297028ad976427412e528d30e9d0193010adb89a",
+        "size": 1739501
+      },
+      "HB_Egypt_Room_E_06_Wireframe.jpg": {
+        "blob": "8070ffa479614adac5e0bb028bd5fd88e2a6ae4b",
+        "size": 2650340
+      },
+      "HB_Egypt_Room_E_07.jpg": {
+        "blob": "b9028651cb13048e112f8e93c52be7edb5dd4099",
+        "size": 1690151
+      },
+      "HB_Egypt_Room_E_07_Checker.jpg": {
+        "blob": "c0f0edf0ee994922de031a2a4e5676a95b5cbb31",
+        "size": 671705
+      },
+      "HB_Egypt_Room_E_07_Wireframe.jpg": {
+        "blob": "0527a99c5351126892a5a8b8f8071a48e38678b3",
+        "size": 1643200
+      },
+      "HB_Egypt_Room_E_08.jpg": {
+        "blob": "bdf5a2e953e7408d3c07b8f211bc01d98e9c4963",
+        "size": 1461721
+      },
+      "HB_Egypt_Room_E_08_Checker.jpg": {
+        "blob": "5b305fb16a54952d669a39666ee8f7a07306be53",
+        "size": 1246136
+      },
+      "HB_Egypt_Room_E_08_Wireframe.jpg": {
+        "blob": "1ed3e2020e009fb27dd9fdf36e647992a7978c6e",
+        "size": 2090404
+      },
+      "HB_Egypt_Room_E_09.jpg": {
+        "blob": "c5a1d481a26eb25a474eb17efcb3bff39011fa73",
+        "size": 1456493
+      },
+      "HB_Egypt_Room_E_09_Checker.jpg": {
+        "blob": "25d53e38232ce2a2e939e71d293927f9c062bff8",
+        "size": 1215812
+      },
+      "HB_Egypt_Room_E_09_Wireframe.jpg": {
+        "blob": "64d139b7b41bb4bf8e87226afbd9a0ee38bb9fcb",
+        "size": 2002798
+      },
+      "HB_Egypt_Room_E_11.jpg": {
+        "blob": "b61c72e50bc9f6b2817a7ae92c52cbdcfb22a2f8",
+        "size": 1514072
+      },
+      "HB_Egypt_Room_E_11_Checker.jpg": {
+        "blob": "7374ef782de8950922683e525e06415218335203",
+        "size": 1075821
+      },
+      "HB_Egypt_Room_E_11_Wireframe.jpg": {
+        "blob": "55302b79b0fc38e61358648b8f40b3dcd99cb4fe",
+        "size": 2051288
+      },
+      "HB_Egypt_Room_E_12.jpg": {
+        "blob": "74f526b4d1aea8299a46b231bf8a0606d0634eca",
+        "size": 1054078
+      },
+      "HB_Egypt_Room_E_12_Checker.jpg": {
+        "blob": "f9b9c70761de84507174efbd0d3e604bba1599a0",
+        "size": 879082
+      },
+      "HB_Egypt_Room_E_12_Wireframe.jpg": {
+        "blob": "0e3717417305129401103e1176ee6157e6e1adf6",
+        "size": 1524900
+      },
+      "HB_End_01.jpg": {
+        "blob": "115c815e026b01d4da0c6dbd9c176fe5c3819523",
+        "size": 1888531
+      },
+      "HB_End_01_Checker.jpg": {
+        "blob": "afc46dd7d28c3d4f13e0b93e95713e6ca2a486e3",
+        "size": 746769
+      },
+      "HB_End_01_Wireframe.jpg": {
+        "blob": "d51105f1983276a682a5b729d65f616a2222c7ac",
+        "size": 2470856
+      },
+      "HB_Start_01.jpg": {
+        "blob": "872b7867cfb89e34ef6ee8e55567b1b353c81542",
+        "size": 1669389
+      },
+      "HB_Start_01_Checker.jpg": {
+        "blob": "98e714a426be54ad3d85fbb9759665af71b65e53",
+        "size": 788896
+      },
+      "HB_Start_01_Wireframe.jpg": {
+        "blob": "919f1bcc0f88fcaa426de6c29e03530fd45d737d",
+        "size": 2348990
+      },
+      "HB_Start_03.jpg": {
+        "blob": "44fb8d78deb8d83326b07478aafea9d8163a8aad",
+        "size": 1691980
+      },
+      "HB_Start_03_Checker.jpg": {
+        "blob": "da75142bbd6038bd1670e444ad2348b24c953dcd",
+        "size": 868278
+      },
+      "HB_Start_03_Wireframe.jpg": {
+        "blob": "6607680e5db32e4144b02eab62877e226ac5afd3",
+        "size": 3167615
+      }
+    },
+    "hb-harbor": {
+      "Harbor_Intro_001_4k_Logos.jpg": {
+        "blob": "5fbf18d903e22d0609716e90f3ae9472d82fc9df",
+        "size": 1308491
+      },
+      "Harbor_Intro_002_4k_Logos.jpg": {
+        "blob": "a4247ba8c74c22aeea35dbc303f31b2df38307c7",
+        "size": 1637195
+      },
+      "Harbor_Intro_003_4k_Logos.jpg": {
+        "blob": "586d7a5d9d8eab9e05f0d153cc5dc3d876b603ea",
+        "size": 606269
+      },
+      "Harbor_Scene_001_4k_Logos.jpg": {
+        "blob": "219786935598c3237b76fb8759ab8c1e30241e01",
+        "size": 1343995
+      },
+      "Harbor_Scene_002_4k_Logos.jpg": {
+        "blob": "49d98cd39e5f4770f6c83eea5a8264a3b9f07693",
+        "size": 1395142
+      },
+      "Harbor_Scene_004_4k_Logos.jpg": {
+        "blob": "8a55bf66b37329331c9f750a3beb68f7356537f3",
+        "size": 1369824
+      },
+      "Harbor_Scene_005_4k_Logos.jpg": {
+        "blob": "b5756cc5a568a934a585f3d775d4f59ba2312976",
+        "size": 1314849
+      },
+      "Harbor_Scene_006_4k_Logos.jpg": {
+        "blob": "fb7c70c6e1bbe4bc323df8d529f0569436e58f37",
+        "size": 1316500
+      },
+      "Harbor_Scene_007_4k_Logos.jpg": {
+        "blob": "3fd3ac327b4521ca22aa956151bc3cbe13b28fcf",
+        "size": 1207156
+      },
+      "Harbor_Scene_009_4k_Logos.jpg": {
+        "blob": "aa8404697ce2bb035a231ec6bbd0aaf54a039fa6",
+        "size": 1247432
+      },
+      "Harbor_Scene_010_4k_Logos.jpg": {
+        "blob": "105a4aca6236a2559d11657d7d299ff3167989c9",
+        "size": 1258111
+      },
+      "Harbor_Scene_012_4k_Logos.jpg": {
+        "blob": "536de6876e07101e9a8397fd02557f43740e098a",
+        "size": 1194685
+      },
+      "Harbor_Scene_013_4k_Logos.jpg": {
+        "blob": "619de3cb414209779c7c90ed53375518ed2a2df8",
+        "size": 1382429
+      },
+      "Harbor_Scene_017_4k_Logos.jpg": {
+        "blob": "920c2655c856e1da6e4615d05e33d02edb6428e1",
+        "size": 1437845
+      },
+      "Harbor_Scene_022_4k_Logos.jpg": {
+        "blob": "3ba33cda247a319ed04ad66e96c52a0ee48592b8",
+        "size": 2733576
+      },
+      "Harbor_Scene_023_4k_Logos.jpg": {
+        "blob": "41ba031fa1d0c85a88dec351178c318a8bd6954d",
+        "size": 1143236
+      },
+      "Harbor_Scene_024_4k_Logos.jpg": {
+        "blob": "11f19b6496fe78a121e17187b72e6207297d6c17",
+        "size": 1342624
+      },
+      "Harbor_Scene_025_4k_Logos.jpg": {
+        "blob": "e7ffadf3a616d4393f6bd34891501d583ce5840c",
+        "size": 1362579
+      },
+      "Harbor_Scene_026_4k_Logos.jpg": {
+        "blob": "03a8c640e7bfc08a686a281414c5307bbd8ad18c",
+        "size": 1541216
+      },
+      "Harbor_Scene_030_4k_Logos.jpg": {
+        "blob": "5322ac367d0e399a8641e65f7a27793b13adacc9",
+        "size": 1008674
+      },
+      "Harbor_Scene_031_4k_Logos.jpg": {
+        "blob": "5808dbfaadc6b410f8fc5dd6387df4540e50b6cb",
+        "size": 3414080
+      },
+      "Harbor_Scene_032_4k_Logos.jpg": {
+        "blob": "18e3645ed2c8c57918b5c90c665cb9b65a49d6c9",
+        "size": 4037993
+      },
+      "Harbor_Scene_033_4k_Logos.jpg": {
+        "blob": "866fb3e06fa46b1c3fa3ed51bd5e1988ad1f6586",
+        "size": 4744744
+      },
+      "Harbor_Scene_034_4k_Logos.jpg": {
+        "blob": "8407cddbe15fff8df6468e3308ec1d2f9296f51b",
+        "size": 3576754
+      },
+      "Harbor_Scene_035_4k_Logos.jpg": {
+        "blob": "83418988ca46b310e0ec79353834f0636da2b489",
+        "size": 3144331
+      },
+      "Harbor_Scene_036_4k_Logos.jpg": {
+        "blob": "67ca59d97370e87953f29d061989379d8bf151e0",
+        "size": 3991027
+      },
+      "Harbor_Scene_037_4k_Logos.jpg": {
+        "blob": "3fbbaec0c06d88166b5324197e7a8ef6fb437a63",
+        "size": 3341200
+      },
+      "Harbor_Scene_038_4k_Logos.jpg": {
+        "blob": "5d0230a2c64bdf41d39d20675abb890e0ea06ee4",
+        "size": 4156722
+      },
+      "Harbor_Technical_Bakery_01_4k_Logos.jpg": {
+        "blob": "189318f3c89294bb36f2e1aedf88f221e3edb685",
+        "size": 4250258
+      },
+      "Harbor_Technical_Colliders_01_4k_Logos.jpg": {
+        "blob": "93e7ea22945143b59977131dbe9804e84fdedd62",
+        "size": 1832523
+      },
+      "Harbor_Technical_Colliders_02_4k_Logos.jpg": {
+        "blob": "520952bdfe631ad5b31b9e32a1f108a6efe0de97",
+        "size": 1194818
+      },
+      "Harbor_Technical_LightProbes_01_4k_Logos.jpg": {
+        "blob": "33379bf64c065ccffc77975b40c36f19fa838762",
+        "size": 1433506
+      },
+      "Harbor_Technical_LightProbes_02_4k_Logos.jpg": {
+        "blob": "d36d6c2d0b218d4862d1d28757352e6fc49a0139",
+        "size": 2804907
+      },
+      "Harbor_Technical_Wireframe_01_4k_Logos.jpg": {
+        "blob": "b18e39c0c63f481d402e16f827db0856eed5b79a",
+        "size": 2387005
+      },
+      "Harbor_Technical_Wireframe_02_4k_Logos.jpg": {
+        "blob": "020884972320a1e580df93c9e1ad8fbd4bbdbe09",
+        "size": 2305576
+      },
+      "Harbor_Technical_Wireframe_03_4k_Logos.jpg": {
+        "blob": "732a95666ff2dfda33671a29751928d935e11968",
+        "size": 2597780
+      }
+    },
+    "hb-helipad": {
+      "HelipadArena_01_4k.jpg": {
+        "blob": "3f8855e937823eaf723e6ee9f7f9924f3c70c9f6",
+        "size": 1072178
+      },
+      "HelipadArena_02_4k.jpg": {
+        "blob": "6024a7979d34576858bc8bafe83df63f592ca1cc",
+        "size": 1110587
+      },
+      "HelipadArena_03_4k.jpg": {
+        "blob": "e68e9f9c2ae716c626cc86a0bdcb76ab44668f41",
+        "size": 2141953
+      },
+      "HelipadArena_04_4k.jpg": {
+        "blob": "07b404bfe9ebefe5847945215bbe5ab73458d13f",
+        "size": 1247276
+      },
+      "HelipadArena_05_4k.jpg": {
+        "blob": "a67f3e02b8d61b91416f0c0dc570b1222e01ea29",
+        "size": 1309415
+      },
+      "HelipadArena_06_4k.jpg": {
+        "blob": "07d3d3365dfca9a8a6950b88f3cdbf43ee872227",
+        "size": 1053934
+      },
+      "HelipadArena_06w_4k.jpg": {
+        "blob": "7ee130a1cb13c96a593dc2ce498e5e09423a58b7",
+        "size": 1191646
+      },
+      "HelipadArena_08_4k.jpg": {
+        "blob": "1c6ebb1204dec7d752846a3ace8fda834e87ac38",
+        "size": 1425873
+      },
+      "HelipadArena_08w_4k.jpg": {
+        "blob": "325cfde0c6e22c51474845a2d6765a1b403dab6a",
+        "size": 1457392
+      },
+      "HelipadArena_09_4k.jpg": {
+        "blob": "47c15053f7efa2e799b9b6931ba698fb450348e6",
+        "size": 2140301
+      },
+      "HelipadArena_10_4k.jpg": {
+        "blob": "0093a10812340b002f13dc79a26df046cbaa92d4",
+        "size": 1407240
+      },
+      "HelipadArena_11_4k.jpg": {
+        "blob": "63df037256035a62214140e871c7469c5a460d6b",
+        "size": 2253359
+      },
+      "HelipadArena_12_4k.jpg": {
+        "blob": "715a03d330d566ae01627ab444e5bb9542169b81",
+        "size": 1345861
+      },
+      "HelipadArena_12w_4k.jpg": {
+        "blob": "e4630b55e05d6e211fce8c4eb1baac179db1d1ab",
+        "size": 1380074
+      },
+      "HelipadArena_13_4k.jpg": {
+        "blob": "1edd736ad2405ff73b0a2c5aebce96e223376a0f",
+        "size": 1802464
+      },
+      "HelipadArena_14_4k.jpg": {
+        "blob": "d7e79fd5253894fd7c4d185d43b81eb0526c72d0",
+        "size": 1215891
+      },
+      "HelipadArena_15_4k.jpg": {
+        "blob": "10c8827a25ff461fb24cafbad80adc7654437ef5",
+        "size": 1794059
+      },
+      "HelipadArena_16_4k.jpg": {
+        "blob": "d4147cb16e8e57785178c469cd9355e501371f2b",
+        "size": 3635404
+      },
+      "HelipadArena_18_4k.jpg": {
+        "blob": "e553222d089c7fd6475a3f1bd27956de94d9e396",
+        "size": 1294576
+      },
+      "HelipadArena_19_4k.jpg": {
+        "blob": "3b0da1cc680ea60146d58d803faf3e0d19a14451",
+        "size": 1199907
+      },
+      "HelipadArena_20_4k.jpg": {
+        "blob": "25eb6c5cb49fb1059698010ca1c5daffebbc8e6c",
+        "size": 1481308
+      },
+      "HelipadArena_21_4k.jpg": {
+        "blob": "6fd3e2da9d80c977fbb5e759d1af36d3faba8e22",
+        "size": 1710140
+      },
+      "HelipadArena_21w_4k.jpg": {
+        "blob": "57f4736cad4b158daf5b08a83e866bf653fe2297",
+        "size": 1755967
+      },
+      "HelipadArena_22_4k.jpg": {
+        "blob": "69e45de97f8ad4147c9a561dcd25db56a914d3ba",
+        "size": 1670002
+      },
+      "HelipadArena_22w_4k.jpg": {
+        "blob": "9a7917bc3b8a7bce343e4f1248d11c672da098c7",
+        "size": 1704252
+      },
+      "HelipadArena_23_4k.jpg": {
+        "blob": "ceccd052d1e1c1b99c038a772201b0fc2707938e",
+        "size": 1701187
+      },
+      "HelipadArena_24_4k.jpg": {
+        "blob": "7050ac37787be0ce8776e28e5545af6c25020b6c",
+        "size": 2090516
+      },
+      "HelipadArena_24c_4k.jpg": {
+        "blob": "a77aee3efc2b08a09a9b5f6b69d7e1eb32493d08",
+        "size": 2054274
+      },
+      "HelipadArena_25_4k.jpg": {
+        "blob": "cc545f655ac29fc7529c692e697d7050b5abf5a6",
+        "size": 2478728
+      },
+      "HelipadArena_27_4k.jpg": {
+        "blob": "244b16efbabf2a6f3982589328ff3f603ac00172",
+        "size": 1565568
+      },
+      "HelipadArena_27w_4k.jpg": {
+        "blob": "a48314f50b333ae8b4ab5290d89b1e8e32f81e4c",
+        "size": 1598805
+      },
+      "HelipadArena_28_4k.jpg": {
+        "blob": "561518d74be216b5825e0c930a4524b621d9b404",
+        "size": 1061747
+      },
+      "HelipadArena_29_4k.jpg": {
+        "blob": "221f6630831b7d60a0cd5dd753ac78e5649b35d5",
+        "size": 2738810
+      },
+      "HelipadArena_30_4k.jpg": {
+        "blob": "ef2f86861a9545e761fa16623e2dc19b9cd66c5c",
+        "size": 1140865
+      },
+      "HelipadArena_31_4k.jpg": {
+        "blob": "eb9a13a35c87c94f04f63a77f3b158f586c5f76c",
+        "size": 1876514
+      },
+      "HelipadArena_31b_4k.jpg": {
+        "blob": "367bdc2de0f579e18c313fe1bae223f125048c26",
+        "size": 1908282
+      },
+      "HelipadArena_32_4k.jpg": {
+        "blob": "a07369a192cc3726ce12daecee702a5e455293fd",
+        "size": 1076321
+      },
+      "HelipadArena_33_4k.jpg": {
+        "blob": "03a4fc9eec307f55f2021dda576b71285290fbc8",
+        "size": 963447
+      },
+      "HelipadArena_34_4k.jpg": {
+        "blob": "46ffb0a9a05a350f596e52ada9ff17e1449fa8ba",
+        "size": 1055499
+      },
+      "HelipadArena_34w_4k.jpg": {
+        "blob": "ce0a8e17a90d9b93badc0c0e0ef0ad76d42ade1c",
+        "size": 1087913
+      },
+      "HelipadArena_35_4k.jpg": {
+        "blob": "af56b25252620e79fb2cc83eadbb0fa495c6ed5e",
+        "size": 1321588
+      },
+      "HelipadArena_35b_4k.jpg": {
+        "blob": "f9f02eba084be6cb4a289fe26ffa925ced64a641",
+        "size": 2472376
+      },
+      "HelipadArena_36_4k.jpg": {
+        "blob": "1d11418da6c9abedd960ebed0c9fb5f0796cd4c9",
+        "size": 995605
+      },
+      "HelipadArena_37_4k.jpg": {
+        "blob": "75b80a536f422347752f8211d812f558d4589c8c",
+        "size": 846146
+      },
+      "HelipadArena_38_4k.jpg": {
+        "blob": "e301430f2c8e9679ac95c506a7701a34499f0f90",
+        "size": 805725
+      },
+      "HelipadArena_38b_4k.jpg": {
+        "blob": "6e05512314c43e5b10ebb224d3c34b75d20bd659",
+        "size": 1141750
+      },
+      "HelipadArena_39_4k.jpg": {
+        "blob": "b424ff20d526757d1c2d27e118fefcdff39ed5fd",
+        "size": 1141412
+      },
+      "HelipadArena_39w_4k.jpg": {
+        "blob": "36f5b4831ed2ced89c096437603cbdde349ebbde",
+        "size": 1169143
+      },
+      "HelipadArena_40_4k.jpg": {
+        "blob": "9ad4acd77bd260bdc8c68ae71e3e19135dcdaa5e",
+        "size": 1236442
+      },
+      "HelipadArena_40w_4k.jpg": {
+        "blob": "19a71e39beec3ed374e1ae35c06faa1515fe8e29",
+        "size": 1307863
+      },
+      "HelipadArena_41_4k.jpg": {
+        "blob": "d9ac2a518fb6728a2ad4b5f6bca7376ff8b2d853",
+        "size": 1022578
+      },
+      "HelipadArena_41w_4k.jpg": {
+        "blob": "6a28af3309bfaf8ed96567d74fc9eea110a8dc4b",
+        "size": 1165339
+      },
+      "HelipadArena_42_4k.jpg": {
+        "blob": "80cae7cc4e6fdb3862f478fb229702f4452ef939",
+        "size": 1110637
+      },
+      "HelipadArena_43_4k.jpg": {
+        "blob": "6602779cb60ec20096bc754de404f2f1680f707d",
+        "size": 2277670
+      },
+      "HelipadArena_43b_4k.jpg": {
+        "blob": "97241b4113b1e3d0f3fe49c9ad8b2e2c6dac22ae",
+        "size": 941723
+      },
+      "HelipadArena_44_4k.jpg": {
+        "blob": "504b45f447bf1cda15c404429fdae32bed1fb0ee",
+        "size": 2081356
+      },
+      "HelipadArena_45_4k.jpg": {
+        "blob": "dc8deceb3e0657cc8c722acf77e454a339e1564c",
+        "size": 1645223
+      },
+      "HelipadArena_46_4k.jpg": {
+        "blob": "4266b9ab6724514d0de8287645749d40efd5a42e",
+        "size": 1546716
+      },
+      "HelipadArena_53_4k.jpg": {
+        "blob": "d97c91f4fd119ef24bb46f059cd0b1bed7584538",
+        "size": 1564723
+      },
+      "HelipadArena_53w_4k.jpg": {
+        "blob": "08ffba665ac74ba414cdc366d8cfc67299d37a0b",
+        "size": 1603938
+      }
+    },
+    "hb-spybase": {
+      "SpyBase_01.jpg": {
+        "blob": "5092cb659da06d899b968c7c6a205af3682cec87",
+        "size": 2686471
+      },
+      "SpyBase_01_Wireframe.jpg": {
+        "blob": "47e93526d3450ba0dba900d99ee9f8ea37799af3",
+        "size": 4509089
+      },
+      "SpyBase_03.jpg": {
+        "blob": "f2baa9694f73bc829740489f0fca754523c31485",
+        "size": 2175788
+      },
+      "SpyBase_03_Wireframe.jpg": {
+        "blob": "b61d080bf384f0e450b4cca2e9ce8cf50b53a9b5",
+        "size": 3742824
+      },
+      "SpyBase_04.jpg": {
+        "blob": "f0fadabb2c39d9703c585272377e7409e9b805d2",
+        "size": 2535428
+      },
+      "SpyBase_04_Wireframe.jpg": {
+        "blob": "945894cd2c405578d6fcc69d785d1eebe656e1f9",
+        "size": 4100930
+      },
+      "SpyBase_05.jpg": {
+        "blob": "be04e8be345c2f407cfb0d00256591785ba479a4",
+        "size": 2454647
+      },
+      "SpyBase_05_Wireframe.jpg": {
+        "blob": "1869969d686f20c66992d8c86035fb2af1df7435",
+        "size": 3780549
+      },
+      "SpyBase_08.jpg": {
+        "blob": "dbbde2f9912a9441e1996027abd4c3e6a39c6bcb",
+        "size": 2731529
+      },
+      "SpyBase_08_Wireframe.jpg": {
+        "blob": "6f629a007a3d01b3241b47a60c2632f2c4e87bab",
+        "size": 4298676
+      },
+      "SpyBase_100a_WIP.jpg": {
+        "blob": "6581e15243c06dddba26ad94cd4a442f036d41ae",
+        "size": 1004844
+      },
+      "SpyBase_101a_WIP.jpg": {
+        "blob": "8b5f4a2fd9c051f091809ed529231253c7be3d0b",
+        "size": 1520846
+      },
+      "SpyBase_102a_WIP.jpg": {
+        "blob": "5abae1036406571ea36ea618ee0e753a7443575a",
+        "size": 1536733
+      },
+      "SpyBase_103a_WIP.jpg": {
+        "blob": "e28926437c133c7a69e805f865df978105c6fba8",
+        "size": 1538383
+      },
+      "SpyBase_104a_WIP.jpg": {
+        "blob": "791f0279d8fdaae9a6232afee0e818ac4a17a5dd",
+        "size": 1607463
+      },
+      "SpyBase_105a_WIP.jpg": {
+        "blob": "719342dcbd1c022e0194ccf18b8e18d04ddb667e",
+        "size": 1081494
+      },
+      "SpyBase_106a_WIP.jpg": {
+        "blob": "5e9ecc2deb4082ff73cc2b4c54bcf18b97df1743",
+        "size": 961795
+      },
+      "SpyBase_106b_WIP.jpg": {
+        "blob": "d98e967c8554f49a3266eaac6e2580927fd4346b",
+        "size": 1087465
+      },
+      "SpyBase_107a_WIP.jpg": {
+        "blob": "4ea381a5cc456310dd33efc5bef2c1d19259c980",
+        "size": 1076145
+      },
+      "SpyBase_108a_WIP.jpg": {
+        "blob": "3d88ea01841b9132cc43a485365c81b6a0f62b38",
+        "size": 1055987
+      },
+      "SpyBase_111a_WIP.jpg": {
+        "blob": "fdc6f503d950def51f2cee74b3288dec0430ffef",
+        "size": 1229434
+      },
+      "SpyBase_112a_WIP.jpg": {
+        "blob": "ed40a3a4f94bd3349b3b966b6f77fb5f9b596167",
+        "size": 1049313
+      },
+      "SpyBase_114a_WIP.jpg": {
+        "blob": "a6cf49c008d4ea14405e16a8c2614a02747bf77c",
+        "size": 1059539
+      },
+      "SpyBase_115a_WIP.jpg": {
+        "blob": "d7cc60525de192f75f6d25dc6a49f71e2de40d2c",
+        "size": 991507
+      },
+      "SpyBase_32a.jpg": {
+        "blob": "79b89253cf00febb05e08351d4387dd982e5d368",
+        "size": 2334840
+      },
+      "SpyBase_34a.jpg": {
+        "blob": "3d0d30fa46ded7ea1bab4b217305260346bb4ccd",
+        "size": 2842791
+      },
+      "SpyBase_35aa.jpg": {
+        "blob": "0f1ee6e7089f886d51fb6d2eef8284a5e9d68315",
+        "size": 2725239
+      },
+      "SpyBase_WindTunnels_Colliders_01.jpg": {
+        "blob": "460f9297d2aa52e8ae9a4833152570a3badd120d",
+        "size": 2008643
+      }
+    }
+  }
+}
