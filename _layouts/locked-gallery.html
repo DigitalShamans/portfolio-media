@@ -82,7 +82,6 @@
             <output id="counter" class="counter" aria-live="polite"></output>
           </div>
           <div class="viewer-group">
-            <button id="zoom" type="button" disabled>100%</button>
             <button id="fullscreen" type="button" autofocus>Back to gallery</button>
           </div>
         </div>
@@ -236,7 +235,7 @@
       document.querySelector('#gallery-access').replaceWith(template.content);
       try {
         await loadScript('../gallery-data.js?v=3');
-        await loadScript('../gallery-viewer.js?v=36');
+        await loadScript('../gallery-viewer.js?v=37');
       } catch {
         document.querySelector('#gallery-status').textContent =
           'The gallery could not be loaded. Please reload to try again.';
