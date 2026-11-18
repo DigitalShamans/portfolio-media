@@ -1,0 +1,77 @@
+---
+layout: none
+permalink: /experiments/atrium-overview/
+seo_noindex: true
+sitemap: false
+overview_image: Hall_Technical_LightProbes_01_4k_Logos.jpg
+regions:
+  - label: Offices
+    image: Hall_Final_Office_05_4k_Logos.jpg
+    x: 25
+    y: 29
+  - label: Upper walkway
+    image: Hall_Atrium_1st_04_4k_Logos.jpg
+    x: 66
+    y: 25
+  - label: Reception
+    image: Hall_Atrium_Ground_01_4k_Logos.jpg
+    x: 37
+    y: 70
+  - label: Stairwell
+    image: Hall_Final_StaircaseB_01_4k_Logos.jpg
+    x: 77
+    y: 68
+---
+{% assign image_root = '/galleries/hb-atrium/' %}
+{% assign versions = site.data.gallery_asset_versions['hb-atrium'] %}
+<!doctype html>
+<html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}" data-gallery-webp-revision="{{ site.gallery_webp_revision | escape }}"{% if site.data.gallery_delivery.revision %} data-gallery-originals-origin="{{ site.data.gallery_delivery.service_origin | escape }}" data-gallery-originals-revision="{{ site.data.gallery_delivery.revision | escape }}"{% endif %}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Atrium Interactive Overview Test | Digital Shamans</title>
+  {% include site-favicon.html %}
+  <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
+  <link rel="stylesheet" href="{{ '/experiments/atrium-overview/overview.css' | relative_url }}?v={{ site.github.build_revision | escape }}">
+</head>
+<body>
+  {% include site-header.html %}
+  <main class="overview-page">
+    <header class="overview-intro">
+      <div>
+        <p class="eyebrow">Interactive overview · Test gallery</p>
+        <h1>Hard Bullet - Atrium</h1>
+      </div>
+      <p id="overview-help" class="overview-help">Hover a screenshot to enlarge it. Move towards its edge to return.</p>
+    </header>
+
+    <section id="overview-stage" class="overview-stage" aria-label="Interactive Atrium overview" aria-describedby="overview-help">
+      {% assign overview_version = versions[page.overview_image] %}
+      {% assign overview_stem = page.overview_image | remove: '.jpg' %}
+      <picture class="overview-base">
+        <source media="{{ site.gallery_4k_media | escape }}" srcset="{{ site.data.gallery_delivery.service_origin | escape }}/public-media/{{ site.data.gallery_delivery.revision | escape }}/hb-atrium/{{ page.overview_image | escape }}" width="3840" height="2160">
+        <img src="{{ image_root | append: '1440p/' | append: overview_stem | append: '.webp' | relative_url }}?v={{ overview_version }}&amp;webp={{ site.gallery_webp_revision | escape }}" width="2560" height="1440" alt="Angled whole-level technical overview of the Atrium, with its light-probe layout visible" decoding="async" fetchpriority="high" draggable="false">
+      </picture>
+      {% for region in page.regions %}
+        {% assign image_version = versions[region.image] %}
+        {% assign image_stem = region.image | remove: '.jpg' %}
+        <button class="region" type="button" style="--x: {{ region.x }}%; --y: {{ region.y }}%;" data-x="{{ region.x }}" data-y="{{ region.y }}" data-label="{{ region.label | escape }}" aria-label="Enlarge {{ region.label | escape }} screenshot" aria-expanded="false">
+          <picture>
+            <source media="{{ site.gallery_4k_media | escape }}" srcset="{{ site.data.gallery_delivery.service_origin | escape }}/public-media/{{ site.data.gallery_delivery.revision | escape }}/hb-atrium/{{ region.image | escape }}" width="3840" height="2160">
+            <img src="{{ image_root | append: '1440p/' | append: image_stem | append: '.webp' | relative_url }}?v={{ image_version }}&amp;webp={{ site.gallery_webp_revision | escape }}" width="2560" height="1440" alt="{{ region.label | escape }} in the Atrium" decoding="async" draggable="false">
+          </picture>
+        </button>
+      {% endfor %}
+    </section>
+
+    <div class="overview-caption">
+      <p id="active-region" role="status" aria-live="polite">Whole-level overview</p>
+      <a href="{{ '/galleries/hb-atrium/' | relative_url }}">View the Atrium gallery <span aria-hidden="true">↗</span></a>
+    </div>
+    <noscript><p class="overview-help">Enable JavaScript to enlarge the screenshots.</p></noscript>
+  </main>
+  <script src="{{ '/experiments/atrium-overview/overview.js' | relative_url }}?v={{ site.github.build_revision | escape }}" defer></script>
+</body>
+</html>
