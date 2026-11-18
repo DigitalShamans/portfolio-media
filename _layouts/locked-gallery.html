@@ -20,7 +20,7 @@
     {% include site-favicon.html %}
   {% endif %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
-  <link rel="stylesheet" href="../gallery.css?v=10">
+  <link rel="stylesheet" href="../gallery.css?v=11">
   <style>
     .gallery-access { max-width: 34rem; padding-block: 2rem; }
     .gallery-access h1 { font-size: clamp(.9rem, 2.5vw, 1.5rem); }
@@ -239,7 +239,7 @@
       document.querySelector('#gallery-access').replaceWith(template.content);
       try {
         await loadScript('../gallery-data.js?v=3');
-        await loadScript('../gallery-viewer.js?v=33');
+        await loadScript('../gallery-viewer.js?v=34');
       } catch {
         document.querySelector('#gallery-status').textContent =
           'The gallery could not be loaded. Please reload to try again.';

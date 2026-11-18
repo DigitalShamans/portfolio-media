@@ -433,7 +433,7 @@ function comparisonAt(x, left, width, count) {
   return Math.min(count - 1, Math.max(0, Math.floor((x - left) * count / width)));
 }
 
-function setupComparisonTouch(surface, getComparison) {
+function setupImageTouch(surface, getInteraction) {
   let gesture;
   let suppressClick = false;
 
@@ -441,14 +441,14 @@ function setupComparisonTouch(surface, getComparison) {
     suppressClick = false;
     gesture = undefined;
     if (event.pointerType !== 'touch' || !event.isPrimary) return;
-    const comparison = getComparison(event);
-    if (!comparison) return;
+    const interaction = getInteraction(event);
+    if (!interaction) return;
     gesture = {
-      ...comparison,
+      ...interaction,
       id: event.pointerId,
       x: event.clientX,
       y: event.clientY,
-      horizontal: false
+      axis: null
     };
     surface.setPointerCapture(event.pointerId);
   });
@@ -457,16 +457,19 @@ function setupComparisonTouch(surface, getComparison) {
     if (!gesture || gesture.id !== event.pointerId) return;
     const dx = event.clientX - gesture.x;
     const dy = event.clientY - gesture.y;
-    if (!gesture.horizontal) {
+    if (!gesture.axis) {
       if (Math.hypot(dx, dy) < 12) return;
       suppressClick = true;
-      if (Math.abs(dx) <= Math.abs(dy)) {
+      gesture.axis = Math.abs(dx) > Math.abs(dy) ? 'horizontal' : 'vertical';
+      if (gesture.axis === 'vertical' && !gesture.navigate) {
         gesture = undefined;
         return;
       }
-      gesture.horizontal = true;
     }
-    if (event.type === 'pointerup' && Math.abs(dx) >= 32 && Math.abs(dx) > Math.abs(dy)) {
+    if (event.type !== 'pointerup') return;
+    if (gesture.axis === 'vertical') {
+      if (Math.abs(dy) >= 32 && Math.abs(dy) > Math.abs(dx)) gesture.navigate(dy < 0 ? 1 : -1);
+    } else if (gesture.count > 1 && Math.abs(dx) >= 32 && Math.abs(dx) > Math.abs(dy)) {
       const { count, index, select } = gesture;
       const step = dx > 0 ? 1 : -1;
       select((index + step + count) % count);
@@ -635,7 +638,7 @@ function setupGalleryComparison(entry, link, sources, shotIndex) {
     if (canCompare(event)) preview(selected, false);
   });
   link.classList.add('has-comparison');
-  setupComparisonTouch(link, () => ({
+  setupImageTouch(link, () => ({
     count: sources.length,
     index: displayed,
     select
@@ -917,11 +920,17 @@ stage.addEventListener('pointerleave', event => {
   updateComparison();
 });
 
-setupComparisonTouch(stage, event => {
-  if (!comparisonsInitialized || !original.naturalWidth || stage.classList.contains('native')) return;
+setupImageTouch(stage, event => {
+  if (!viewer.open || stage.classList.contains('native')) return;
+  if (!comparisonsInitialized || !original.naturalWidth) return { navigate: step };
   const bounds = viewerImageBounds();
-  if (!isInsideImage(event, bounds)) return;
-  return { count: shots[current].sources.length, index: displayedComparison, select: selectViewerComparison };
+  if (!isInsideImage(event, bounds)) return { navigate: step };
+  return {
+    count: shots[current].sources.length,
+    index: displayedComparison,
+    select: selectViewerComparison,
+    navigate: step
+  };
 });
 
 fullscreen.hidden = !document.fullscreenEnabled || !frame.requestFullscreen;
