@@ -66,7 +66,10 @@ jobs:
         run: python3 .github/scripts/validate-homepage-gallery-links.py ./_site
       - name: Omit externally hosted gallery images from Pages
         if: steps.source.outputs.workflow_source == 'true'
-        run: python3 .github/scripts/publish-gallery-media.py --strip-pages ./_site
+        run: |
+          # Jekyll's build container creates its output as root.
+          sudo chown -R "$(id -u):$(id -g)" ./_site
+          python3 .github/scripts/publish-gallery-media.py --strip-pages ./_site
       - uses: actions/upload-pages-artifact@v4
         if: steps.source.outputs.workflow_source == 'true'
 
