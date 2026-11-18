@@ -9,17 +9,20 @@ const galleryAssetVersions = JSON.parse(document.body.dataset.galleryAssetVersio
 const title = document.querySelector('.intro h1').textContent;
 const dragComparisons = gallery.dataset.comparisonGesture === 'drag';
 
-// Desktop browser zoom changes viewport CSS pixels and devicePixelRatio together.
-// Keep the default fit in unzoomed CSS pixels so browser zoom scales the shots.
-const desktop = window.matchMedia('(pointer: fine)').matches;
-const initialPageScale = desktop && window.outerWidth > 0 ? window.outerWidth / window.innerWidth : 1;
-const unzoomedDpr = window.devicePixelRatio / initialPageScale;
+const finePointer = window.matchMedia('(pointer: fine)');
+let displaySize = `${screen.width}x${screen.height}`;
+let baselinePixelRatio = window.devicePixelRatio;
 
 function fitGallery() {
-  const pageScale = window.devicePixelRatio / unzoomedDpr;
-  // On mobile, an oversized gallery can inflate innerWidth after rotation.
-  const viewportWidth = desktop ? window.innerWidth : document.documentElement.clientWidth;
-  const fitWidth = Math.min(viewportWidth, window.innerHeight * 16 / 9);
+  const viewport = document.documentElement;
+  const currentDisplaySize = `${screen.width}x${screen.height}`;
+  // Changing the emulated display can also change its pixel ratio.
+  if (currentDisplaySize !== displaySize) {
+    displaySize = currentDisplaySize;
+    baselinePixelRatio = window.devicePixelRatio;
+  }
+  const pageScale = finePointer.matches ? window.devicePixelRatio / baselinePixelRatio : 1;
+  const fitWidth = Math.min(viewport.clientWidth, viewport.clientHeight * 16 / 9);
   galleryContent.style.setProperty('--shot-width', (0.9 * fitWidth * pageScale) + 'px');
 }
 
