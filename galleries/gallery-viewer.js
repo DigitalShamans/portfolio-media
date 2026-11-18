@@ -20,7 +20,7 @@ function fitGallery() {
     displaySize = currentDisplaySize;
     baselinePixelRatio = window.devicePixelRatio;
   }
-  // Mobile toolbars change dvh without changing the layout viewport height.
+  // Mobile CSS uses stable viewport sizing independently of browser toolbar changes.
   if (!finePointer.matches) {
     galleryContent.style.removeProperty('--shot-width');
     return;
@@ -36,6 +36,15 @@ finePointer.addEventListener('change', fitGallery);
 const galleryStatus = document.querySelector('#gallery-status');
 const shots = [];
 const viewer = document.querySelector('#viewer');
+// This optional enhancement must never block gallery loading or desktop scrolling.
+if (window.matchMedia('(pointer: coarse)').matches && navigator.maxTouchPoints > 0) {
+  const mobileScrollScript = document.createElement('script');
+  mobileScrollScript.src = new URL('./gallery-mobile-scroll.js?v=1', document.currentScript.src).href;
+  mobileScrollScript.addEventListener('load', () => {
+    window.GalleryMobileScroll?.start({ gallery, viewer });
+  }, { once: true });
+  document.head.append(mobileScrollScript);
+}
 const frame = document.querySelector('#viewer-frame');
 const stage = document.querySelector('#stage');
 const original = document.querySelector('#original');
