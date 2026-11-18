@@ -43,7 +43,6 @@ original.fetchPriority = 'high';
 const previousSide = document.querySelector('#previous-side');
 const nextSide = document.querySelector('#next-side');
 const counter = document.querySelector('#counter');
-const zoom = document.querySelector('#zoom');
 const fullscreen = document.querySelector('#fullscreen');
 const fullscreenSupported = document.fullscreenEnabled && typeof frame.requestFullscreen === 'function';
 const status = document.querySelector('#status');
@@ -314,7 +313,6 @@ setupClassicGalleryScroll();
 function fitImage() {
   stage.classList.remove('native');
   stage.scrollTo(0, 0);
-  zoom.textContent = '100%';
   positionViewerIndicator();
 }
 
@@ -370,7 +368,6 @@ function showImage(index, initialVariant = 0) {
     frame.append(viewerIndicator);
   }
   fitImage();
-  zoom.disabled = true;
   previousSide.disabled = nextSide.disabled = shots.length < 2;
   counter.textContent = (index + 1) + ' / ' + shots.length;
   original.alt = image.alt;
@@ -399,7 +396,6 @@ function imageLoaded() {
   const shot = shots[current];
   const displayed = shot.sources.findIndex(source => resolvedImageSource(source) === (original.currentSrc || original.src));
   if (displayed < 0) return;
-  zoom.disabled = false;
   showStatus('');
   if (viewerIndicator) {
     displayedComparison = displayed;
@@ -538,7 +534,6 @@ function compareAtPointer(event) {
 original.addEventListener('load', imageLoaded);
 original.addEventListener('error', () => {
   if (!viewer.open || !original.hasAttribute('src')) return;
-  zoom.disabled = true;
   if (viewerIndicator) viewerIndicator.hidden = true;
   showStatus('This image could not be loaded.');
 });
@@ -866,21 +861,6 @@ viewer.addEventListener('keydown', event => {
     event.preventDefault();
     step(event.key === 'ArrowLeft' ? -1 : 1);
   }
-});
-
-zoom.addEventListener('click', () => {
-  if (stage.classList.contains('native')) {
-    fitImage();
-    return;
-  }
-  const scale = window.devicePixelRatio || 1;
-  stage.style.setProperty('--native-width', (original.naturalWidth / scale) + 'px');
-  stage.style.setProperty('--native-height', (original.naturalHeight / scale) + 'px');
-  stage.classList.add('native');
-  stage.scrollTo((stage.scrollWidth - stage.clientWidth) / 2, (stage.scrollHeight - stage.clientHeight) / 2);
-  zoom.textContent = 'Fit';
-  positionViewerIndicator();
-  stage.focus();
 });
 
 stage.addEventListener('click', () => {
