@@ -12,6 +12,8 @@ const GalleryResolution = (() => {
     if (resolution === '1440p') {
       const split = url.pathname.lastIndexOf('/') + 1;
       url.pathname = url.pathname.slice(0, split) + '1440p/' + url.pathname.slice(split) + '.webp';
+      const revision = document.documentElement.dataset.galleryWebpRevision;
+      if (revision) url.searchParams.set('webp', revision);
     }
     return url.href;
   }
