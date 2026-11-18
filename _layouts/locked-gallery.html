@@ -63,7 +63,7 @@
           <p class="description">Environment art by Digital Shamans for Hard Bullet.</p>
         </header>
         <p id="gallery-status" role="status">Loading gallery…</p>
-        <section class="gallery" data-comparison-gesture="swipe" data-grouped-image-scroll aria-label="RZ Start screenshots"></section>
+        <section class="gallery" data-grouped-image-scroll aria-label="RZ Start screenshots"></section>
       </div>
       <footer class="site-footer"><a class="back" href="{{ portfolio_url | relative_url }}#recent-work">Back to portfolio</a></footer>
     </main>
@@ -239,7 +239,7 @@
       document.querySelector('#gallery-access').replaceWith(template.content);
       try {
         await loadScript('../gallery-data.js?v=3');
-        await loadScript('../gallery-viewer.js?v=32');
+        await loadScript('../gallery-viewer.js?v=33');
       } catch {
         document.querySelector('#gallery-status').textContent =
           'The gallery could not be loaded. Please reload to try again.';

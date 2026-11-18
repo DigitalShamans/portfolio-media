@@ -7,7 +7,6 @@ const galleryAccess = window.galleryAccess;
 const imageResolution = galleryAccess?.resolution ?? GalleryResolution.current();
 const galleryAssetVersions = JSON.parse(document.body.dataset.galleryAssetVersions || '{}');
 const title = document.querySelector('.intro h1').textContent;
-const dragComparisons = gallery.dataset.comparisonGesture === 'drag';
 
 const finePointer = window.matchMedia('(pointer: fine)');
 let displaySize = `${screen.width}x${screen.height}`;
@@ -467,14 +466,7 @@ function setupComparisonTouch(surface, getComparison) {
       }
       gesture.horizontal = true;
     }
-    if (dragComparisons) {
-      const { left, width } = gesture.bounds;
-      const index = comparisonAt(event.clientX, left, width, gesture.count);
-      if (gesture.lastIndex !== index) {
-        gesture.lastIndex = index;
-        gesture.select(index);
-      }
-    } else if (event.type === 'pointerup' && Math.abs(dx) >= 32 && Math.abs(dx) > Math.abs(dy)) {
+    if (event.type === 'pointerup' && Math.abs(dx) >= 32 && Math.abs(dx) > Math.abs(dy)) {
       const { count, index, select } = gesture;
       const step = dx > 0 ? 1 : -1;
       select((index + step + count) % count);
@@ -644,7 +636,6 @@ function setupGalleryComparison(entry, link, sources, shotIndex) {
   });
   link.classList.add('has-comparison');
   setupComparisonTouch(link, () => ({
-    bounds: link.getBoundingClientRect(),
     count: sources.length,
     index: displayed,
     select
@@ -930,7 +921,7 @@ setupComparisonTouch(stage, event => {
   if (!comparisonsInitialized || !original.naturalWidth || stage.classList.contains('native')) return;
   const bounds = viewerImageBounds();
   if (!isInsideImage(event, bounds)) return;
-  return { bounds, count: shots[current].sources.length, index: displayedComparison, select: selectViewerComparison };
+  return { count: shots[current].sources.length, index: displayedComparison, select: selectViewerComparison };
 });
 
 fullscreen.hidden = !document.fullscreenEnabled || !frame.requestFullscreen;

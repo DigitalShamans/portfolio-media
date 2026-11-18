@@ -41,7 +41,7 @@
         <p class="description">{{ gallery_page.gallery_intro | escape }}</p>
       </header>
       <p id="gallery-status" role="status" hidden></p>
-      <section class="gallery" data-comparison-gesture="{{ gallery_page.comparison_gesture | default: 'swipe' | escape }}" data-grouped-image-scroll aria-label="{{ gallery_label | escape }}">
+      <section class="gallery" data-grouped-image-scroll aria-label="{{ gallery_label | escape }}">
         {% if first_image_url %}
           {% assign image_parts = first_image_url | split: '?' %}
           {% assign image_dir = gallery_folder | prepend: '/galleries/' | append: '/' %}
@@ -87,6 +87,6 @@
 
   <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=1"></script>
   <script src="../gallery-data.js?v=3"></script>
-  <script src="../gallery-viewer.js?v=32"></script>
+  <script src="../gallery-viewer.js?v=33"></script>
 </body>
 </html>
