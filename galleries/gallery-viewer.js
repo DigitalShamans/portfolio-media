@@ -20,13 +20,19 @@ function fitGallery() {
     displaySize = currentDisplaySize;
     baselinePixelRatio = window.devicePixelRatio;
   }
-  const pageScale = finePointer.matches ? window.devicePixelRatio / baselinePixelRatio : 1;
+  // Mobile toolbars change dvh without changing the layout viewport height.
+  if (!finePointer.matches) {
+    galleryContent.style.removeProperty('--shot-width');
+    return;
+  }
+  const pageScale = window.devicePixelRatio / baselinePixelRatio;
   const fitWidth = Math.min(viewport.clientWidth, viewport.clientHeight * 16 / 9);
   galleryContent.style.setProperty('--shot-width', (0.9 * fitWidth * pageScale) + 'px');
 }
 
 fitGallery();
 window.addEventListener('resize', fitGallery);
+finePointer.addEventListener('change', fitGallery);
 const galleryStatus = document.querySelector('#gallery-status');
 const shots = [];
 const viewer = document.querySelector('#viewer');
