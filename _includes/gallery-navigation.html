@@ -1,0 +1,35 @@
+{% assign navigation_items = site.data.portfolio.recent %}
+{% assign navigation_count = navigation_items | size %}
+{% if navigation_count > 1 %}
+  {% for navigation_item in navigation_items %}
+    {% if navigation_item.folder == include.current %}
+      {% assign navigation_previous_index = forloop.index0 | minus: 1 %}
+      {% assign navigation_next_index = forloop.index0 | plus: 1 %}
+      {% if navigation_previous_index < 0 %}
+        {% assign navigation_previous_index = navigation_count | minus: 1 %}
+      {% endif %}
+      {% if navigation_next_index >= navigation_count %}
+        {% assign navigation_next_index = 0 %}
+      {% endif %}
+      {% assign navigation_previous = navigation_items[navigation_previous_index] %}
+      {% assign navigation_next = navigation_items[navigation_next_index] %}
+      <nav class="gallery-navigation" aria-label="Hard Bullet galleries">
+        <a class="gallery-navigation__link gallery-navigation__link--previous" href="{{ include.portfolio_url | append: 'galleries/' | append: navigation_previous.folder | append: '/' | relative_url }}" aria-label="Previous gallery: {{ navigation_previous.title | escape }}{% if navigation_previous.locked %} (password required){% endif %}">
+          <span class="gallery-navigation__arrow" aria-hidden="true">‹</span>
+          <span class="gallery-navigation__details" aria-hidden="true">
+            <span class="gallery-navigation__direction">Previous gallery</span>
+            <span class="gallery-navigation__name">{{ navigation_previous.title | escape }}{% if navigation_previous.locked %} · Password{% endif %}</span>
+          </span>
+        </a>
+        <a class="gallery-navigation__link gallery-navigation__link--next" href="{{ include.portfolio_url | append: 'galleries/' | append: navigation_next.folder | append: '/' | relative_url }}" aria-label="Next gallery: {{ navigation_next.title | escape }}{% if navigation_next.locked %} (password required){% endif %}">
+          <span class="gallery-navigation__arrow" aria-hidden="true">›</span>
+          <span class="gallery-navigation__details" aria-hidden="true">
+            <span class="gallery-navigation__direction">Next gallery</span>
+            <span class="gallery-navigation__name">{{ navigation_next.title | escape }}{% if navigation_next.locked %} · Password{% endif %}</span>
+          </span>
+        </a>
+      </nav>
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endif %}

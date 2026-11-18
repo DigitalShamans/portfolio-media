@@ -29,10 +29,11 @@
     {% include site-favicon.html %}
   {% endif %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
-  <link rel="stylesheet" href="../gallery.css?v=17">
+  <link rel="stylesheet" href="../gallery.css?v=18">
 </head>
 <body data-gallery-revision="{{ site.github.build_revision | escape }}"{% if gallery_asset_versions %} data-gallery-asset-versions="{{ gallery_asset_versions | jsonify | escape }}"{% endif %}>
   {% include site-header.html %}
+  {% include gallery-navigation.html current=gallery_folder portfolio_url=portfolio_url %}
 
   <main class="shell">
     <div class="gallery-content">
