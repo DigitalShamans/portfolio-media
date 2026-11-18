@@ -13,12 +13,11 @@
   {% assign gallery_seo_description = page.gallery_description %}
 {% endif %}
 {% assign gallery_folder = gallery_page.url | remove_first: '/galleries/' | split: '/' | first %}
-{% assign media_origin = site.data.public_gallery_media.origin | default: '' %}
 {% assign gallery_asset_versions = site.data.gallery_asset_versions[gallery_folder] %}
 {% assign first_image_url = site.data.portfolio_gallery_preloads[gallery_folder] | first %}
 {% assign gallery_seo_title = gallery_page.gallery_title | append: ' Environment Art | ' | append: portfolio_name %}
 <!doctype html>
-<html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}" data-gallery-media-origin="{{ media_origin | escape }}">
+<html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -47,8 +46,8 @@
           {% assign image_parts = first_image_url | split: '?' %}
           {% assign image_dir = gallery_folder | prepend: '/galleries/' | append: '/' %}
           {% assign reduced_dir = image_dir | append: '1440p/' %}
-          {% assign reduced_image_url = image_parts[0] | replace_first: image_dir, reduced_dir | append: '.webp?' | append: image_parts[1] | relative_url | prepend: media_origin | escape %}
-          {% assign first_image_url = first_image_url | relative_url | prepend: media_origin | escape %}
+          {% assign reduced_image_url = image_parts[0] | replace_first: image_dir, reduced_dir | append: '.webp?' | append: image_parts[1] | relative_url | escape %}
+          {% assign first_image_url = first_image_url | relative_url | escape %}
           <a class="shot" data-gallery-fallback href="{{ reduced_image_url }}" aria-label="Open {{ gallery_page.gallery_title | escape }} screenshot 1">
             <picture>
               <source media="{{ site.gallery_4k_media | escape }}" srcset="{{ first_image_url }}" width="3840" height="2160">
@@ -86,7 +85,7 @@
     </div>
   </dialog>
 
-  <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=2"></script>
+  <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=1"></script>
   <script src="../gallery-data.js?v=3"></script>
   <script src="../gallery-viewer.js?v=32"></script>
 </body>

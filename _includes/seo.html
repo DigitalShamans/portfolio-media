@@ -18,16 +18,6 @@
   <meta name="twitter:description" content="{{ seo_description | escape }}">
   {% if seo_image %}
     {% assign seo_image_url = seo_image.path | absolute_url %}
-    {% if site.data.public_gallery_media and seo_image.path contains '/galleries/' %}
-      {% assign image_parts = seo_image.path | remove_first: '/galleries/' | split: '/' %}
-      {% assign image_folder = image_parts[0] %}
-      {% assign image_name = image_parts[1] %}
-      {% assign image_version = site.data.public_gallery_media.versions[image_folder][image_name] %}
-      {% if image_version %}
-        {% assign image_path = seo_image.path | uri_escape %}
-        {% assign seo_image_url = site.data.public_gallery_media.origin | append: image_path | append: '?v=' | append: image_version %}
-      {% endif %}
-    {% endif %}
     <meta property="og:image" content="{{ seo_image_url | escape }}">
     <meta property="og:image:alt" content="{{ seo_image.alt | escape }}">
     {% if seo_image.width and seo_image.height %}

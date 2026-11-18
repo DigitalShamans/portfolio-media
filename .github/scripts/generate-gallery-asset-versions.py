@@ -31,10 +31,6 @@ def gallery_versions():
         _, gallery, filename = path.parts
         if filename == 'gallery.json' or path.suffix.lower() in IMAGE_SUFFIXES:
             versions.setdefault(gallery, {})[filename] = digest
-    media = ROOT / '_data/public_gallery_media.json'
-    if media.is_file():
-        for folder, images in json.loads(media.read_text(encoding='utf-8'))['versions'].items():
-            versions[folder] = {'gallery.json': versions[folder]['gallery.json'], **images}
     return {gallery: files for gallery, files in versions.items() if 'gallery.json' in files}
 
 
