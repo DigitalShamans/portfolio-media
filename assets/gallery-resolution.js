@@ -2,6 +2,7 @@
 
 const GalleryResolution = (() => {
   const wide = window.matchMedia(document.documentElement.dataset.gallery4kMedia);
+  const mediaOrigin = document.documentElement.dataset.galleryMediaOrigin;
 
   function current() {
     return wide.matches ? '4k' : '1440p';
@@ -13,7 +14,7 @@ const GalleryResolution = (() => {
       const split = url.pathname.lastIndexOf('/') + 1;
       url.pathname = url.pathname.slice(0, split) + '1440p/' + url.pathname.slice(split) + '.webp';
     }
-    return url.href;
+    return mediaOrigin ? new URL(url.pathname + url.search, mediaOrigin).href : url.href;
   }
 
   return { current, publicImageUrl };
