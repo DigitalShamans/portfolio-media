@@ -12,7 +12,8 @@ body:has(dialog[open]) { overflow: hidden; }
   .gallery-content { width: min(100%, 86vw); }
 }
 @media (pointer: coarse) and (orientation: landscape) {
-  .gallery-content { width: min(100%, calc(100dvh * 16 / 9)); }
+  /* Keep image size stable while the browser toolbar expands and retracts. */
+  .gallery-content { width: min(100%, calc(100lvh * 16 / 9)); }
 }
 .intro { padding-block: clamp(16px, 2vw, 32px) clamp(28px, 4vw, 54px); }
 .gallery-content > .intro {
