@@ -1,6 +1,6 @@
 # Vegetation verification
 
-PREPUBLICATION CHECKPOINT: source/native/private/service gates passed.
+PUBLISHED AND VERIFIED: all required publication gates passed.
 
 Source: [ArtStationkDEvad](https://www.artstation.com/artwork/kDEvad). [Studio](https://digitalshamans.co.uk/galleries/vegetation/) and [Artur](https://digitalshamans.co.uk/artur/galleries/vegetation/) routes. One incoming gallery, one media release and one Pages publication. Ancient Weapons completed before this source capture.
 
@@ -24,16 +24,16 @@ All23 actual service GETs passed in13.788s with Windows TLS and10s request bound
 
 ## Website and live acceptance
 
-Website source is checkpointed on codex/vegetation-20261119. Next: generated asset versions, applicable local validators, one terminal Pages deployment, full public delivery checks, both-route390/2800 interactions and capture cleanup.
+Public sourcecdfc3906488644037a92c74dda51942c7b5d179d; PR83 merged7dc1b7c0003fc6c2ae1406c5c85d13c31ad9bd9f. Pages44610792849 completed success2026-11-19T20:41:25Z, including actual Ruby/Jekyll and maintained policy/navigation/resolution/embed/map/pruning/homepage checks. All31 public GETs passed in5.767s:16 exact WebPs/full decodes, canonical manifest, both HTML documents/build revision,16 exact caption templates per route,17 versions,9 dependencies, homes/nav/sitemap.
 
 No shared runtime/layout was changed. Existing caption rendering is reused. Both pages are unlisted/noindex/sitemapfalse; existing external Full Portfolio cards, ID redirects, homes/navigation and global delivery fallback remain. Incoming gallery only added to approval/per-gallery revision metadata. Appropriate local map/embed validation and generated17 versions pass before publication. Ruby is unavailable locally; actual public policy/Jekyll/build/pruning/homepage checks run in Pages CI. PR-only navigation checks are path-filtered for this data-only change and are not falsely counted as a run.
 
-Actual live interactions are not yet claimed. Use in-app first,5s checks/locators,15s calls, one fresh tab retry and bounded delivery fallback. HTTP cannot substitute for interaction.
+Actual IAB390x844 and2800x1600 checks passed on both routes:16 exact captions/accessible associations/source order, decoded mobile2560-wide WebP and genuine3840-wide desktop originals, full-viewport viewer1→2→1 and Escape closure. Normal1280 desktop WebP also passed. Loaded mobile/desktop proof was visually inspected. Four IAB native Fullscreen API grant warnings occurred; full-viewport fallback passed. Native permission grant and physical touch/iOS/Safari are unverified. See VEGETATION-BROWSER.json.
 
 ## Capture, preservation and final checkpoint
 
-After the last screenshot, reset all capture-owner kernels, stop only exact verified helpers with one bounded restart retry and record cleanup. No screenshot after cleanup; no visual yellow-border disappearance claim inferred from counts.
+Capture-owner sessions were reset; exact verified helpers50004, 25916 stopped with one bounded restart retry. Zero original survivors and cleanup errors. A newly warmed helper may restart; presence does not establish capture. Main app, other recorders and privacy/border settings untouched. No post-cleanup screenshot or visual yellow-border disappearance claim.
 
 Only explicit incoming gallery/data/report paths are staged. Existing user header artwork remains under projects; no header image/PSB is moved into gallery originals. Existing user edits and private extra-image folders remain protected. Detailed raw/decode proofs live under work/kDEvad; concise durable evidence accompanies this report.
 
-Pages/public/browser verification and automatic capture cleanup remain pending.
+Verification/capture release elapsed1035.718s; report preparation1101.575s, 71.48% below64m23s baseline. Half-time threshold32m11.5s met at preparation: True. Push/response add overhead. Final evidence is pushed on codex/vegetation-20261119 without a second docs-only Pages publication.
