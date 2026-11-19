@@ -10,7 +10,8 @@ published gallery. This is preparation tooling, not a new viewer or hosting syst
 1. **Source**: inspect current main/instructions and route conflicts once. Open the
    rendered ArtStation project through the supported browser. Capture its exact
    mixed-media sequence, real download links, identifiers, captions and dimensions
-   in one JSON. Prefer the actual original download links; do not invent a 4K URL.
+   in one JSON. Prefer the actual original download links, retaining `dl=1` when
+   present; do not invent a 4K URL or discard download parameters.
    Stop and isolate a feature task for an unsupported media type. Keep acquisition
    to the established three materially different legitimate approaches if blocked.
 2. **Prepared**: download once, verify every file, run the importer below, review its
@@ -52,7 +53,7 @@ Example normalized input (replace every sample value with verified source data):
   "source_project": "https://www.artstation.com/artwork/PROJECT_ID",
   "media": [
     {"type": "image", "id": 123, "filename": "Exact-Name.jpg",
-     "source_url": "https://cdnb.artstation.com/p/assets/images/images/000/000/123/large/Exact-Name.jpg?1234567890",
+     "source_url": "https://cdnb.artstation.com/p/assets/images/images/000/000/123/large/Exact-Name.jpg?1234567890&dl=1",
      "width": 1920, "height": 1080},
     {"type": "youtube", "id": "eWHDcWZnTMY", "title": "Verified trailer"}
   ]
@@ -74,7 +75,7 @@ $GallerySource = 'C:\task\source.json'
 $GalleryOriginals = 'C:\task\originals'
 $GalleryStage = 'C:\task\stage'
 
-powershell -NoProfile -File .github/scripts/download-gallery-assets.ps1 `
+powershell -NoProfile -ExecutionPolicy Bypass -File .github/scripts/download-gallery-assets.ps1 `
   -InputFile $GallerySource -OutputDir $GalleryOriginals `
   -ReportPath 'C:\task\downloads.json'
 
@@ -107,6 +108,8 @@ the downloaded bytes, validates Windows names/public ArtStation CDN URLs and use
 at most four transfers. Its successful report is the resume record; retain it
 beside the originals. Conflicting or corrupt existing files block rather than being
 overwritten. The Python core does no network access, Git actions or publication.
+The command's execution policy applies only to that reviewed-script process; it
+does not change the machine or user policy or disable HTTPS certificate validation.
 
 Both planning commands emit replacement JSONs and expected input/output hashes.
 They do **not** modify repository metadata, apply patches, commit or deploy. Review
@@ -153,6 +156,19 @@ byte-identical to the published files; MP4 bytes, JPG order and video anchors al
 matched. This replay excludes acquisition, editor/browser work and deployment.
 See `IMPORT-BENCHMARK.json` for compact measured results.
 
+Transport smoke: one real 115,319-byte JPG downloaded in 0.413s and resumed from
+verified cache in 0.103s (internal script timings). Its hash/decode/dimensions match
+the archived original. The same source URL without its genuine `dl=1` parameter
+returned an 89,214-byte progressive JPEG with equal decoded pixels and different
+EXIF/container bytes; expected hash validation correctly rejected it. Preserve
+actual source download parameters and previously archived originals.
+
+Nine Python tests and 75 offline downloader assertions pass. Downloader offline
+checks ran in Windows PowerShell 5.1 and PowerShell 7; actual transport/resume ran
+in Windows PowerShell 5.1. Redirect/retry-status/cancellation branches and live MP4
+transfer were not exercised by this tooling smoke. MP4 container/byte preservation
+was checked by the real local replay; no new viewer behavior was introduced.
+
 For a comparable gallery using supported formats and healthy services, target
 **25–30 minutes end to end**: source/preflight 4m; acquisition/preparation/private
 checkpoint 4m; pages/service/integration 7m; Pages 3m; editor/live acceptance 8m;
@@ -165,5 +181,5 @@ Offline verification:
 
 ```powershell
 & $GalleryPython -m unittest discover -s .github/tests -p test_gallery_import.py
-powershell -NoProfile -File .github/tests/download-gallery-assets.tests.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .github/tests/download-gallery-assets.tests.ps1
 ```

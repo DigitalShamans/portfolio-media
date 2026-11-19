@@ -148,5 +148,42 @@
     ],
     "scope": "one new gallery per release; supported formats; healthy source/deployment",
     "end_to_end_speedup_measured": false
+  },
+  "transport_smoke": {
+    "files": 1,
+    "original_bytes": 115319,
+    "original_dimensions": [
+      2560,
+      1366
+    ],
+    "expected_sha256": "aa7291eb8e92ede7858e62c37732ea8046b838c6e828725b1a7338d90c5ddd22",
+    "original_hash_and_decode_match": true,
+    "download_elapsed_seconds": 0.413,
+    "resume_elapsed_seconds": 0.103,
+    "resume_transfers": 0,
+    "source_download_parameter_preserved": "dl=1",
+    "alternate_container_rejected": {
+      "bytes": 89214,
+      "pixels_identical": true,
+      "exif_and_container_different": true,
+      "originals_overwritten": false
+    }
+  },
+  "checks": {
+    "python_tests_passed": 9,
+    "offline_downloader_assertions_passed": 75,
+    "offline_shells": [
+      "Windows PowerShell5.1",
+      "PowerShell7"
+    ],
+    "live_transport_shell": "Windows PowerShell5.1",
+    "production_manifest_parsers_passed": true,
+    "not_exercised": [
+      "live_redirects",
+      "live_retry_statuses",
+      "live_cancellation",
+      "live_MP4_transfer",
+      "new_gallery_end_to_end_speedup"
+    ]
   }
 }
