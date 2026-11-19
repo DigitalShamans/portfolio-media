@@ -12,6 +12,7 @@
     + '[contenteditable]:not([contenteditable="false"]), [role="button"], [role="link"], [role="slider"]';
   const holdDelay = 180;
   const slideDuration = 750;
+  const editable = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])';
   let direction = null;
   let hovering = false;
   let navigating = false;
@@ -59,11 +60,11 @@
     }
   } catch { /* Session storage can be disabled. */ }
 
-  function blocked() {
+  function blocked(checkFocused = false) {
     return !desktop.matches || document.hidden || document.fullscreenElement ||
       document.querySelector('dialog[open]') || pressed ||
       Math.abs((window.visualViewport?.scale ?? 1) - 1) > .01 ||
-      document.activeElement?.closest?.('input, textarea, select, [contenteditable]:not([contenteditable="false"])') ||
+      (checkFocused && document.activeElement?.closest?.(editable)) ||
       window.getSelection?.()?.isCollapsed === false;
   }
 
@@ -179,7 +180,20 @@
   }
 
   function keyboard(event) {
-    if (blocked() || navigating || event.ctrlKey || event.metaKey || event.altKey ||
+    // Chromium can skip history entries created by hover-only navigation in its
+    // Back/Forward browser buttons. Programmatic history traversal is not subject
+    // to that intervention; preserve the standard shortcuts where the page sees them.
+    if (event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey &&
+        (event.key === 'ArrowLeft' || event.key === 'ArrowRight') &&
+        desktop.matches && !document.hidden && !document.fullscreenElement &&
+        !document.querySelector('dialog[open]')) {
+      event.preventDefault();
+      if (!navigating) clear();
+      if (event.key === 'ArrowLeft') window.history.back();
+      else window.history.forward();
+      return;
+    }
+    if (blocked(true) || navigating || event.ctrlKey || event.metaKey || event.altKey ||
         event.shiftKey || event.target?.closest?.(interactive)) return;
     const which = event.key === 'ArrowLeft' ? 'previous' : event.key === 'ArrowRight' ? 'next' : null;
     if (!which) return;
@@ -200,7 +214,19 @@
   window.addEventListener('blur', interrupt);
   window.addEventListener('resize', interrupt);
   window.addEventListener('pagehide', () => { navigating = false; clear(); });
-  window.addEventListener('pageshow', () => { navigating = false; clear(); });
+  window.addEventListener('pageshow', event => {
+    navigating = false;
+    clear();
+    // History restorations may not rerun the script (BFCache). Keep the
+    // stationary pointer from immediately forwarding the user again.
+    const historyVisit = window.performance?.getEntriesByType?.('navigation')?.[0]?.type === 'back_forward';
+    if (event.persisted || historyVisit) armed = false;
+  });
+  window.addEventListener('popstate', () => {
+    navigating = false;
+    clear();
+    armed = false;
+  });
   document.addEventListener('visibilitychange', interrupt);
   document.addEventListener('pointerleave', interrupt);
   desktop.addEventListener?.('change', interrupt);

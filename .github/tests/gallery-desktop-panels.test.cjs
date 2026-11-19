@@ -10,12 +10,16 @@ const root = path.resolve(__dirname, '../..');
 const script = fs.readFileSync(path.join(root, 'galleries/gallery-desktop-panels.js'), 'utf8');
 const markup = fs.readFileSync(path.join(root, '_includes/gallery-navigation.html'), 'utf8');
 const styles = fs.readFileSync(path.join(root, 'galleries/gallery.css'), 'utf8');
+const locked = fs.readFileSync(path.join(root, '_layouts/locked-gallery.html'), 'utf8');
+const exitLinks = fs.readFileSync(path.join(root, '_includes/rz-gallery-exit.html'), 'utf8');
 
 function browser({ desktop = true, reduced = false, prefix = '', gsap = true, arrival = null,
-    nextHref, previousHref } = {}) {
+    nextHref, previousHref, folder = 'hb-egypt', activeTag = 'body',
+    navigationType = 'navigate' } = {}) {
   const events = {};
   const calls = [];
   const tweens = [];
+  const historyCalls = [];
   const timers = new Map();
   let now = 0;
   let nextId = 0;
@@ -63,10 +67,11 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
   const navigation = { querySelector: key => key.endsWith('--next') ? next : previous };
   let dialog = false;
   const body = new Element('body');
+  const activeElement = activeTag === 'body' ? body : new Element(activeTag);
   const document = {
-    currentScript: { src: 'https://example.test/galleries/gallery-desktop-panels.js?v=2' },
+    currentScript: { src: 'https://example.test/galleries/gallery-desktop-panels.js?v=3' },
     hidden: false, fullscreenElement: null,
-    activeElement: body, body, head: new Element('head'),
+    activeElement, body, head: new Element('head'),
     createElement(tag) { return new Element(tag); },
     querySelector(key) {
       if (key === '.gallery-navigation') return navigation;
@@ -83,10 +88,15 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
     innerWidth: 1440, innerHeight: 900, visualViewport: { scale: 1 },
     location: {
       origin: 'https://example.test',
-      pathname: prefix + '/galleries/hb-egypt/',
-      href: 'https://example.test' + prefix + '/galleries/hb-egypt/',
+      pathname: prefix + '/galleries/' + folder + '/',
+      href: 'https://example.test' + prefix + '/galleries/' + folder + '/',
       assign(url) { calls.push(url); }
     },
+    history: {
+      back() { historyCalls.push('back'); },
+      forward() { historyCalls.push('forward'); }
+    },
+    performance: { getEntriesByType() { return [{ type: navigationType }]; } },
     matchMedia(query) { return query.includes('prefers-reduced-motion') ? motion : media; },
     getSelection() { return { isCollapsed: true }; },
     sessionStorage: {
@@ -123,23 +133,24 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
   function pointer(x, { type = 'mouse', target = body } = {}) {
     events['window:pointermove']?.({ pointerType: type, clientX: x, target });
   }
-  function keydown(key, target = body) {
-    const e = { key, target, prevented: false, preventDefault() { this.prevented = true; } };
+  function keydown(key, target = body, modifiers = {}) {
+    const e = { key, target, ...modifiers, prevented: false,
+      preventDefault() { this.prevented = true; } };
     events['window:keydown']?.(e);
     return e;
   }
   return {
-    window, document, events, calls, tweens, pointer, advance, keydown, next, previous, Element,
+    window, document, events, calls, historyCalls, tweens, pointer, advance, keydown, next, previous, Element,
     setDialog(value) { dialog = value; },
     get panel() { return body.children.find(node => node.className === 'gallery-desktop-edge-panel'); },
-    event(type) { events['window:' + type]?.(); }
+    event(type, payload = {}) { events['window:' + type]?.(payload); }
   };
 }
 
 test('no desktop boxes/arrows and no scroll stage; fullscreen screenshot controls remain', () => {
   assert.match(markup, /gallery-navigation[^>]+hidden/);
   assert.doesNotMatch(markup, /gallery-navigation__arrow|gallery-navigation__details/);
-  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=2/);
+  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=3/);
   assert.match(styles, /\.gallery-navigation\s*\{\s*display:\s*none !important/);
   assert.match(styles, /\.viewer-arrows button/);
   assert.doesNotMatch(styles, /gallery-desktop-scroll-stage/);
@@ -219,8 +230,7 @@ test('gallery fullscreen, dialogs, editable targets and zoom block edge navigati
   for (const setup of [
     b => { b.document.fullscreenElement = {}; },
     b => b.setDialog(true),
-    b => { b.window.visualViewport.scale = 1.3; },
-    b => { b.document.activeElement = new b.Element('input'); }
+    b => { b.window.visualViewport.scale = 1.3; }
   ]) {
     const b = browser();
     setup(b);
@@ -228,10 +238,12 @@ test('gallery fullscreen, dialogs, editable targets and zoom block edge navigati
     b.advance(2000);
     assert.deepEqual(b.calls, []);
   }
-  const b = browser();
-  b.pointer(1439, { target: new b.Element('a') });
-  b.advance(1000);
-  assert.equal(b.calls.length, 0);
+  for (const tag of ['a', 'input', 'button', 'label']) {
+    const b = browser({ activeTag: 'input' });
+    b.pointer(1439, { target: new b.Element(tag) });
+    b.advance(1000);
+    assert.equal(b.calls.length, 0, 'interactive element: ' + tag);
+  }
 });
 
 test('mouse button press cancels an active edge transition', () => {
@@ -277,4 +289,70 @@ test('invalid, cross-origin or cross-portfolio destinations do not activate', ()
     b.advance(2000);
     assert.deepEqual(b.calls, []);
   }
+});
+
+test('RZ Start password focus does not trap edge navigation on either portfolio', () => {
+  for (const prefix of ['', '/artur']) {
+    const options = {
+      prefix, folder: 'hb-rzstart', activeTag: 'input',
+      previousHref: 'https://example.test' + prefix + '/galleries/hb-spybase/',
+      nextHref: 'https://example.test' + prefix + '/galleries/hb-egypt/'
+    };
+    for (const [x, expected] of [[1, options.previousHref], [1439, options.nextHref]]) {
+      const b = browser(options);
+      b.pointer(x);
+      b.advance(930);
+      assert.deepEqual(b.calls, [expected], 'RZ Start escape must work: ' + expected);
+    }
+  }
+});
+
+test('Alt+Left and Alt+Right traverse history even while a password input is focused', () => {
+  const b = browser({ folder: 'hb-rzstart', activeTag: 'input' });
+  const password = new b.Element('input');
+  assert.equal(b.keydown('ArrowLeft', password, { altKey: true }).prevented, true);
+  assert.equal(b.keydown('ArrowRight', password, { altKey: true }).prevented, true);
+  assert.deepEqual(b.historyCalls, ['back', 'forward']);
+  assert.deepEqual(b.calls, [], 'history shortcuts must not create new gallery entries');
+});
+
+test('Back/Forward history restoration stays disarmed until mouse leaves edge', () => {
+  for (const [options, event] of [
+    [{}, { persisted: true }],
+    [{ navigationType: 'back_forward' }, { persisted: false }]
+  ]) {
+    const b = browser(options);
+    b.event('pageshow', event);
+    b.pointer(1439);
+    b.advance(1400);
+    assert.deepEqual(b.calls, [], 'history restore must not automatically advance');
+    b.pointer(700);
+    b.pointer(1439);
+    b.advance(930);
+    assert.deepEqual(b.calls, [b.next.href]);
+  }
+});
+
+test('RZ gate provides visible previous and looping-next fallback links before and after unlock', () => {
+  assert.match(locked, /<main id="gallery-access"/);
+  assert.equal(locked.split('include rz-gallery-exit.html').length - 1, 2);
+  assert.match(exitLinks, /rz_previous\.folder/);
+  assert.match(exitLinks, /rz_next\.folder/);
+  assert.match(exitLinks, /Previous gallery:/);
+  assert.match(exitLinks, /Next gallery:/);
+  assert.match(exitLinks, /include\.portfolio_url/);
+  assert.doesNotMatch(exitLinks, /onclick=|type="button"/);
+});
+
+test('transition tint is exactly RGB 21,20,23 without the old brown gradient', () => {
+  assert.match(styles, /\.gallery-desktop-edge-panel\s*\{[^}]*background:\s*rgb\(21, 20, 23\)/s);
+  assert.doesNotMatch(styles, /linear-gradient\(125deg, #171717/);
+});
+
+test('Alt+Back/Forward are not intercepted while the fullscreen image viewer is open', () => {
+  const b = browser();
+  b.document.fullscreenElement = {};
+  const e = b.keydown('ArrowLeft', new b.Element('body'), { altKey: true });
+  assert.equal(e.prevented, false);
+  assert.deepEqual(b.historyCalls, []);
 });

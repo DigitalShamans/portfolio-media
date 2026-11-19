@@ -20,7 +20,7 @@
     {% include site-favicon.html %}
   {% endif %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
-  <link rel="stylesheet" href="../gallery.css?v=22">
+  <link rel="stylesheet" href="../gallery.css?v=23">
   <style>
     .gallery-access { max-width: 34rem; padding-block: 2rem; }
     .gallery-access h1 { font-size: clamp(.9rem, 2.5vw, 1.5rem); }
@@ -37,6 +37,16 @@
     .gallery-access button { background: var(--accent); color: #191919; font-weight: 700; cursor: pointer; }
     .gallery-access button:disabled { opacity: .5; cursor: default; }
     .gallery-access p { min-height: 1.55em; margin: 0; color: var(--muted); }
+    .gallery-access__escape {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: .6rem 1.5rem;
+      margin-block: 1.35rem;
+      font-size: .875rem;
+    }
+    .gallery-access__escape a { color: var(--muted); text-underline-offset: .25em; }
+    .gallery-access__escape a:hover, .gallery-access__escape a:focus-visible { color: var(--text); }
   </style>
 </head>
 <body data-gallery-revision="{{ site.github.build_revision | escape }}">
@@ -53,6 +63,7 @@
       <button type="submit" disabled>Unlock gallery</button>
       <p id="access-message" role="status"></p>
     </form>
+    {% include rz-gallery-exit.html portfolio_url=portfolio_url %}
     <noscript><p>Enable JavaScript to unlock the gallery.</p></noscript>
   </main>
 
@@ -66,7 +77,10 @@
         <p id="gallery-status" role="status">Loading gallery…</p>
         <section class="gallery" data-grouped-image-scroll aria-label="RZ Start screenshots"></section>
       </div>
-      <footer class="site-footer"><a class="back" href="{{ portfolio_url | relative_url }}#recent-work">Back to portfolio</a></footer>
+      <footer class="site-footer">
+        <a class="back" href="{{ portfolio_url | relative_url }}#recent-work">Back to portfolio</a>
+        {% include rz-gallery-exit.html portfolio_url=portfolio_url %}
+      </footer>
     </main>
 
     <dialog id="viewer" aria-label="Fullscreen image viewer">
