@@ -1,0 +1,260 @@
+{
+  "browser": "ChatGPT in-app browser",
+  "checks": [
+    {
+      "check": "studio-hydrated",
+      "count": 15,
+      "first": "https://digitalshamans.co.uk/galleries/battlezone-vr/1440p/digital-shamans-artur-perzyna-battlezone-cg3d-8.webp?v=d05d34898ad41b8d136c8ac28e4e2406d09c9761&webp=q92-m6",
+      "iframe": "https://www.youtube-nocookie.com/embed/PGp2Fjsuni8?rel=0",
+      "mixed": [
+        "gallery-embed",
+        "shot",
+        "shot",
+        "shot",
+        "shot",
+        "shot",
+        "shot",
+        "shot",
+        "shot",
+        "shot",
+        "shot",
+        "shot",
+        "shot",
+        "shot",
+        "shot",
+        "shot"
+      ],
+      "route": "/galleries/battlezone-vr/",
+      "width": 1280
+    },
+    {
+      "check": "studio-video-resume",
+      "video": [
+        {
+          "currentTime": 31.79369,
+          "duration": 83.661,
+          "error": null,
+          "muted": true,
+          "paused": false,
+          "readyState": 4
+        }
+      ]
+    },
+    {
+      "check": "studio-video-explicit-pause",
+      "video": [
+        {
+          "currentTime": 31.852605,
+          "duration": 83.661,
+          "error": null,
+          "muted": true,
+          "paused": true,
+          "readyState": 4
+        }
+      ]
+    },
+    {
+      "check": "studio-video-seek",
+      "from": 31.852605,
+      "to": 41.852605,
+      "paused": true
+    },
+    {
+      "check": "studio-video-fullscreen-attempt",
+      "result": "not-confirmed-in-IAB",
+      "allowFullscreen": true
+    },
+    {
+      "check": "studio-mobile",
+      "clientWidth": 375,
+      "count": 15,
+      "first": "https://digitalshamans.co.uk/galleries/battlezone-vr/1440p/digital-shamans-artur-perzyna-battlezone-cg3d-8.webp?v=d05d34898ad41b8d136c8ac28e4e2406d09c9761&webp=q92-m6",
+      "iframeWidth": 351,
+      "route": "/galleries/battlezone-vr/",
+      "scrollWidth": 375,
+      "width": 390
+    },
+    {
+      "check": "studio-mobile-image-cycle",
+      "images": [],
+      "width": 390,
+      "closed": true
+    },
+    {
+      "check": "studio-wide-image-cycle",
+      "width": 2800,
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "closed": true
+    },
+    {
+      "check": "studio-wide-delivery",
+      "width": 2800,
+      "kind": "approved-original-jpg",
+      "naturalWidth": 1920,
+      "complete": true
+    },
+    {
+      "check": "studio-video-fullscreen",
+      "confirmed": true,
+      "buttons": [
+        "Hide player controls",
+        "",
+        "Mute",
+        "No subtitles are available for this video",
+        "Playback settings",
+        "Rewind 10 seconds",
+        "Play video",
+        "Fast-forward 10 seconds",
+        "Exit full screen",
+        "Copy link",
+        "More videos"
+      ],
+      "geometry": {
+        "allowFullscreen": true,
+        "frameHeight": 1600,
+        "frameWidth": 2785,
+        "width": 2800
+      }
+    },
+    {
+      "check": "personal-wide-delivery",
+      "complete": true,
+      "count": 15,
+      "first": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/985ce8fac8ea8b23f0acf69489e2fef2735b953c/battlezone-vr/digital-shamans-artur-perzyna-battlezone-cg3d-8.jpg",
+      "naturalWidth": 1920,
+      "order": [
+        "gallery-embed",
+        "shot"
+      ],
+      "route": "/artur/galleries/battlezone-vr/",
+      "width": 2800
+    },
+    {
+      "check": "personal-wide-image-cycle",
+      "width": 2800,
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "closed": true
+    },
+    {
+      "check": "personal-mobile-layout",
+      "clientWidth": 375,
+      "count": 15,
+      "first": "https://digitalshamans.co.uk/galleries/battlezone-vr/1440p/digital-shamans-artur-perzyna-battlezone-cg3d-8.webp?v=d05d34898ad41b8d136c8ac28e4e2406d09c9761&webp=q92-m6",
+      "iframeWidth": 351,
+      "route": "/artur/galleries/battlezone-vr/",
+      "scrollWidth": 375,
+      "width": 390
+    },
+    {
+      "check": "personal-mobile-image-cycle",
+      "width": 390,
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "images": [
+        {
+          "complete": true,
+          "naturalWidth": 1920,
+          "src": "https://digitalshamans.co.uk/galleries/battlezone-vr/1440p/digital-shamans-artur-perzyna-battlezone-presentation-a01-impr-denoised.webp?v=3f78f5702c85b3967479ef64a18621b84fddb858&webp=q92-m6"
+        }
+      ],
+      "closed": true
+    },
+    {
+      "check": "personal-video-controls",
+      "playing": {
+        "video": [
+          {
+            "currentTime": 0.111338,
+            "duration": 83.661,
+            "error": null,
+            "paused": false,
+            "readyState": 4
+          }
+        ]
+      },
+      "paused": {
+        "video": [
+          {
+            "currentTime": 0.237054,
+            "error": null,
+            "paused": true,
+            "readyState": 4
+          }
+        ]
+      },
+      "seek": {
+        "video": [
+          {
+            "currentTime": 10.237054,
+            "error": null,
+            "paused": true,
+            "readyState": 4
+          }
+        ]
+      },
+      "resumed": {
+        "video": [
+          {
+            "currentTime": 10.61939,
+            "error": null,
+            "paused": false,
+            "readyState": 4
+          }
+        ]
+      }
+    },
+    {
+      "check": "personal-video-fullscreen",
+      "confirmed": true,
+      "buttons": [
+        "Hide player controls",
+        "",
+        "Mute",
+        "No subtitles are available for this video",
+        "Playback settings",
+        "Rewind 10 seconds",
+        "Play video",
+        "Fast-forward 10 seconds",
+        "Exit full screen",
+        "Copy link",
+        "More videos"
+      ]
+    }
+  ],
+  "diagnosis": "Earlier viewport changes targeted the selected fallback tab while checks used another tab. Rebound checks to selected tab 13; actual widths 390 and 2800 confirmed. Video fullscreen then confirmed on both routes.",
+  "limits": [
+    "Physical touch devices, iOS and Safari untested.",
+    "Native image Fullscreen API denied twice by IAB; existing screen-filling overlay/navigation/Escape exit passed."
+  ],
+  "finalLogs": [
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T15:59:57.021Z",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43"
+    },
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T16:00:20.719Z",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43"
+    }
+  ],
+  "personalVideoFullscreenExited": true,
+  "final_tab": "13",
+  "observation_tabs": {
+    "12": "Initial studio hydration and video controls; initial fullscreen not confirmed.",
+    "13": "Selected tab: actual mobile/wide checks and confirmed trailer fullscreen on both routes."
+  }
+}

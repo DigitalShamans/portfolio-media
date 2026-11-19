@@ -55,6 +55,12 @@ UI input or force an unresponsive tool transport to return. Do not race input
 callbacks against further input. After an unknown action outcome, obtain fresh
 state before continuing; reset/rebind the CUA session once if needed.
 
+After a fresh-tab fallback, bind acceptance to the selected tab before applying
+viewport overrides. Read back `innerWidth` after each change; a successful viewport
+API response alone does not prove that the tab being checked changed size. Wait
+for the visible embed after navigation before asserting its asynchronously mounted
+content. Confirm fullscreen through visible player state and geometry.
+
 Delivery fallback can consume independently verified HTTP results. Its status is
 `delivery-only`, with interactive acceptance still unverified. If both in-app
 attempts fail, continue independent work and record the exact missing interaction
