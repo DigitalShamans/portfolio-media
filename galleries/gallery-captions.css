@@ -1,0 +1,9 @@
+.shot:has(.shot-caption) { text-decoration: none; }
+.shot-caption {
+  display: block;
+  padding: .625rem .75rem;
+  color: var(--muted);
+  font-size: .875rem;
+  line-height: 1.45;
+  white-space: pre-line;
+}
