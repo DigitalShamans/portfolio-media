@@ -161,7 +161,7 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
 test('no desktop boxes/arrows and no scroll stage; fullscreen screenshot controls remain', () => {
   assert.match(markup, /gallery-navigation[^>]+hidden/);
   assert.doesNotMatch(markup, /gallery-navigation__arrow|gallery-navigation__details/);
-  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=4/);
+  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=6/);
   assert.match(styles, /\.gallery-navigation\s*\{\s*display:\s*none !important/);
   assert.match(styles, /\.viewer-arrows button/);
   assert.doesNotMatch(styles, /gallery-desktop-scroll-stage/);
