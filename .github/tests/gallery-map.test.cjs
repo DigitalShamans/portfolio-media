@@ -138,11 +138,12 @@ test('pre-publish CLI accepts the valid fixture and blocks invalid or protected 
   } finally { rmSync(temp, { recursive: true, force: true }); }
 });
 
-function mapRenderer(hoverEnabled = true) {
+function mapRenderer(hoverEnabled = true, position = { x: 25, y: 29 }) {
   class Element {
     constructor(tag = 'div') {
       this.tag = tag; this.children = []; this.dataset = {}; this.attributes = new Map(); this.listeners = new Map();
       this.clientWidth = 1000; this.clientHeight = 562.5; this.clientLeft = 0; this.clientTop = 0;
+      this.left = 0; this.top = 0;
       const values = new Map(), classes = new Set();
       this.style = { setProperty: (name, value) => values.set(name, value), getPropertyValue: name => values.get(name), removeProperty: name => values.delete(name) };
       this.classList = { add: name => classes.add(name), remove: name => classes.delete(name), contains: name => classes.has(name), toggle: (name, on) => on ? classes.add(name) : classes.delete(name) };
@@ -154,7 +155,7 @@ function mapRenderer(hoverEnabled = true) {
     replaceChildren(...children) { this.children = children; }
     setAttribute(name, value) { this.attributes.set(name, value); }
     getAttribute(name) { return this.attributes.get(name); }
-    getBoundingClientRect() { return { left: 0, top: 0, width: this.clientWidth, height: this.clientHeight }; }
+    getBoundingClientRect() { return { left: this.left, top: this.top, width: this.clientWidth, height: this.clientHeight }; }
     matches() { return false; }
     contains(element) { return this === element || this.children.some(child => child.contains(element)); }
   }
@@ -171,14 +172,15 @@ function mapRenderer(hoverEnabled = true) {
     }
     now = end;
   }
+  let onResize;
   const renderer = runInNewContext(readFileSync(join(root, 'galleries/gallery-map.js'), 'utf8') + '\nGalleryMap', {
-    document, matchMedia: () => hover, ResizeObserver: class { observe() {} disconnect() {} },
+    document, matchMedia: () => hover, ResizeObserver: class { constructor(callback) { onResize = callback; } observe() {} disconnect() {} },
     setTimeout(run, delay) { const id = ++nextTimer; timers.set(id, { run, at: now + delay }); return id; },
     clearTimeout(id) { timers.delete(id); }
   });
   const stage = new Element();
-  const map = { overview: { image: 'Overview.jpg', alt: 'Overview' }, regions: [{ image: 'Office.jpg', label: 'Offices', x: 25, y: 29 }] };
-  return { mount: options => renderer.mount(stage, map, name => ({ src: name }), options), stage, advance };
+  const map = { overview: { image: 'Overview.jpg', alt: 'Overview' }, regions: [{ image: 'Office.jpg', label: 'Offices', ...position }] };
+  return { mount: options => renderer.mount(stage, map, name => ({ src: name }), options), stage, advance, document, resize: () => onResize() };
 }
 
 test('hover requires a continuous 400ms stay without restarting on small cursor movements', () => {
@@ -271,36 +273,60 @@ test('standalone editor preview keeps its existing toggle behavior without a nav
   view.destroy();
 });
 
-test('hover closing band is four times wider on every edge', () => {
-  for (const edge of ['left', 'right', 'top', 'bottom']) {
-    const { mount, stage, advance } = mapRenderer();
-    const view = mount({}), card = view.cards[0];
-    card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 163 });
-    advance(400);
-    stage.fire('pointermove', { pointerType: 'mouse', clientX: 500, clientY: 281.25 });
-    const point = distance => ({
-      pointerType: 'mouse',
-      clientX: edge === 'left' ? distance : edge === 'right' ? stage.clientWidth - distance : 500,
-      clientY: edge === 'top' ? distance : edge === 'bottom' ? stage.clientHeight - distance : 281.25
-    });
-    // The previous 40px band becomes 160px at this overview size.
-    stage.fire('pointermove', point(161));
-    assert.equal(card.getAttribute('aria-expanded'), 'true', edge + ': stays open outside band');
-    stage.fire('pointermove', point(159));
-    assert.equal(card.getAttribute('aria-expanded'), 'false', edge + ': closes inside band');
-    view.destroy();
+test('each thumbnail anchors its own keep-open rectangle on all four sides', () => {
+  for (const position of [{ x: 25, y: 29 }, { x: 66, y: 25 }, { x: 37, y: 70 }, { x: 77, y: 68 }]) {
+    for (const edge of ['left', 'right', 'top', 'bottom']) {
+      const { mount, stage, advance } = mapRenderer(true, position);
+      const view = mount({}), card = view.cards[0];
+      const x = stage.clientWidth * position.x / 100, y = stage.clientHeight * position.y / 100;
+      card.fire('pointerenter', { pointerType: 'mouse', clientX: x, clientY: y });
+      advance(400);
+      const bounds = {
+        left: Math.max(0, x - stage.clientWidth * .225), right: Math.min(stage.clientWidth, x + stage.clientWidth * .225),
+        top: Math.max(0, y - stage.clientHeight * .27), bottom: Math.min(stage.clientHeight, y + stage.clientHeight * .27)
+      };
+      const point = inset => ({
+        pointerType: 'mouse',
+        clientX: edge === 'left' ? bounds.left + inset : edge === 'right' ? bounds.right - inset : x,
+        clientY: edge === 'top' ? bounds.top + inset : edge === 'bottom' ? bounds.bottom - inset : y
+      });
+      stage.fire('pointermove', point(1));
+      assert.equal(card.getAttribute('aria-expanded'), 'true', JSON.stringify(position) + ' stays open inside ' + edge);
+      stage.fire('pointermove', point(-1));
+      assert.equal(card.getAttribute('aria-expanded'), 'false', JSON.stringify(position) + ' closes beyond ' + edge);
+      view.destroy();
+    }
   }
 });
 
-test('opening inside the wider edge band waits for entry into the image interior', () => {
-  const { mount, stage, advance } = mapRenderer();
+test('Reception stays open near its origin and closes in the red area without a centre visit', () => {
+  const { mount, stage, advance } = mapRenderer(true, { x: 37, y: 70 });
   const view = mount({}), card = view.cards[0];
-  card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 120 });
+  card.fire('pointerenter', { pointerType: 'mouse', clientX: 370, clientY: 393.75 });
   advance(400);
-  stage.fire('pointermove', { pointerType: 'mouse', clientX: 250, clientY: 110 });
+  // Green in the reference, but inside the old bottom closing band.
+  stage.fire('pointermove', { pointerType: 'mouse', clientX: 370, clientY: stage.clientHeight * .85 });
   assert.equal(card.getAttribute('aria-expanded'), 'true');
-  stage.fire('pointermove', { pointerType: 'mouse', clientX: 500, clientY: 281.25 });
-  stage.fire('pointermove', { pointerType: 'mouse', clientX: 250, clientY: 110 });
+  // Red in the reference, although this point is in the enlarged image's interior.
+  stage.fire('pointermove', { pointerType: 'mouse', clientX: 700, clientY: 393.75 });
+  assert.equal(card.getAttribute('aria-expanded'), 'false');
+  view.destroy();
+});
+
+test('hover rectangle follows resizing and screen position changes', () => {
+  const { mount, stage, advance, document, resize } = mapRenderer(true, { x: 37, y: 70 });
+  const view = mount({}), card = view.cards[0];
+  card.fire('pointerenter', { pointerType: 'mouse', clientX: 370, clientY: 393.75 });
+  advance(400);
+  stage.clientWidth = 1400; stage.clientHeight = 787.5;
+  resize();
+  stage.fire('pointermove', { pointerType: 'mouse', clientX: 800, clientY: 700 });
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  stage.left = 300;
+  document.fire('scroll');
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  stage.left = 900;
+  document.fire('scroll');
   assert.equal(card.getAttribute('aria-expanded'), 'false');
   view.destroy();
 });
