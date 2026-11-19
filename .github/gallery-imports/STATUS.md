@@ -1,10 +1,9 @@
 # Gallery publication status
 
-Current item: Aircrafts source verification (02).
+Current item: port Aircrafts pages and ordered embeds (04).
 
-- Public website main: `8891795da78be0434ba934a310de7c2c79d84810` (PR #41, NFS Unbound). The `codex/artstation-three-galleries-20261119` head `3e75ea9f3b392b1036a64e7eac9a37c51f96ffb5` is diagnostic work and is outside the release.
-- Checked all six proposed route paths against main. They are available. Vehicles - Aircrafts is separate from `hb-airplanes`.
-- Architecture: GitHub Pages builds the shared Jekyll gallery layout and publishes WebPs. The existing media service serves revision-pinned originals. Gallery Editor data keeps original JPG names. Any ordered embeds use companion data keyed to a stable image reference.
-- The Aircrafts import, metadata and 23 JPGs are already committed in the originals repository. Two earlier website implementations have been recovered locally. None of the new website routes are published yet. The matching media-service version is saved and requires deployment verification.
-- Public Git checkout reads work. This environment has no shell write credential for GitHub. The connected GitHub operation created this working branch.
-- Next: match the source sequence against the original import, validate the recovered WebPs and select one website implementation. Push the verified site changes and publish the existing media-service version before the Pages rollout.
+- Public baseline `8891795d` (PR #41). The prior diagnostic branch `codex/artstation-three-galleries-20261119` is excluded. All six proposed paths are available in the baseline. Aircrafts is separate from `hb-airplanes`.
+- Aircrafts originals and source manifest are in the originals repo's merged PR #2. Verified the live ArtStation sequence against the recovered import. There are 23 JPGs: 8 at 3840×2160, 12 at 1920×1080, and 3 at 1920×905. Four Sketchfab viewers follow the lead image in source order.
+- All 23 recovered WebPs match a fresh run of the existing exporter byte for byte. The editable JPG references and both public delivery manifests match the verified source and approved candidate originals revision.
+- The existing media-service v6 is saved. Its 14 local gateway checks passed. Production is on the earlier version and the Aircrafts originals are not live yet.
+- Next: validate the two recovered page/embedded-viewer implementations, integrate the smallest one that meets acceptance, then deploy the media service before merging the Pages rollout.
