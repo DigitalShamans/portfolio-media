@@ -26,7 +26,7 @@ Large screens scale the timeline text, marker radii, stroke width, label spacing
 
 ## Animation and references
 
-On desktop, one scrubbed GSAP timeline drives DrawSVG, MotionPath, marker growth and label emphasis, with `start: 'top center'` and `end: 'bottom center'`. The existing vendored GSAP, ScrollTrigger, DrawSVG and MotionPath 3.15.1 remain unchanged.
+One scrubbed GSAP timeline drives DrawSVG, MotionPath and desktop marker/label emphasis. Version 5 clamps its start and end to page bounds and uses a fixed pixel reveal line derived from the layout viewport (50% desktop, 65% mobile). The existing vendored GSAP, ScrollTrigger, DrawSVG and MotionPath 3.15.1 remain unchanged.
 
 ## Mobile reveal revision
 
@@ -60,3 +60,26 @@ Version 4 passes JavaScript syntax and the 12-checkpoint inventory. Browser QA a
 The 1363×936 desktop check retains its 46.2% minimum curve fraction, white completed path and existing label emphasis, with no overlaps or horizontal overflow. With GSAP omitted, all 12 copies remain fully visible in the static fallback. No application console errors were observed.
 
 The existing Pages workflow performs the final repository validation and Jekyll build.
+
+## Version 5: initial position, mobile stability and gallery previews
+
+The second mobile recording shows that the v4 journey is already partway down the route at page load. The prior `top 65%` start was negative while the timeline was above that viewport line, so zero page scroll mapped to a later point near the 2015 checkpoints. Clamping the trigger start to zero now starts the drawn path at 2004. Browser history may still restore a genuinely scrolled position.
+
+Mobile layout now measures `100svh` rather than the height changed by collapsible browser controls. The reveal line uses pixels calculated from that same stable height, so a subsequent ScrollTrigger refresh does not move the journey to a new viewport percentage. `ignoreMobileResize: true` suppresses the library's small vertical refreshes on touch-only devices. Width/orientation changes still rebuild the layout, and the font-ready rebuild only runs when fonts were actually loading. This removes the two resize/rebuild paths that could move the spline or reset entrances during scrolling.
+
+Each of the ten employment descriptions now has a small 16:9 image slot beside its text. Eight use existing public gallery screenshots and link directly to the personal portfolio's corresponding gallery; image dimensions and CSS aspect ratio reserve space before loading. The images share the existing gallery assets, load lazily and require no new media files. There are unlinked placeholders for CI Games and Couch Heroes, which have no matching published galleries. Change the image `src`, `alt` and containing link `href` directly in the experiment HTML when assigning or replacing a preview.
+
+| Checkpoint | Preview destination |
+| --- | --- |
+| Jujubee | `/artur/galleries/vehicles-aircrafts/` |
+| Rebellion Developments | `/artur/galleries/sniper-elite-4/` |
+| nDreams | `/artur/galleries/phantom-covert-ops/` |
+| Chuhai Labs | `/artur/galleries/carve-snowboarding-vr-concept-art-design/` |
+| Super Trumpers | `/artur/galleries/survisland-concept-art/` |
+| Digital Shamans, 2021 | `/artur/galleries/carve-snowboarding-vr-concept-art-design/` |
+| Realtime UK & EA | `/artur/galleries/nfs-unbound/` |
+| Digital Shamans, Present | `/artur/galleries/hb-atrium/` |
+
+Version 5 passes syntax and the 12-checkpoint inventory. Desktop Chrome browser QA used 390×844 and 320×844 frame viewports, 1363×936 desktop and 3840×2040 wide desktop. Their minimum curve fractions remain 49.0%, 48.8%, 46.2% and 45.0%; no label overlaps or horizontal overflow were found. Mobile slots measure exactly 16:9, all eight images loaded, a gallery link opened Sniper Elite 4, and the full employment-details dialog retained all role/project text. A fast scroll completes all 12 reveals, while a fresh top-of-page load starts with the 2004 label and a zero-length drawn path. The static fallback keeps every description visible. Automatic phone address-bar collapse itself is not reproduced by the desktop QA frames.
+
+Both experiment assets now use `?v=5`.
