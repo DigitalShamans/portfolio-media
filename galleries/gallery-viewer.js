@@ -891,7 +891,11 @@ async function loadGallery() {
     galleryStatus.hidden = true;
     return {
       entries,
-      items: shots.map(shot => ({ element: shot.element, link: shot.link, image: shot.image, filenames: shot.filenames }))
+      items: shots.map(shot => ({ element: shot.element, link: shot.link, image: shot.image, filenames: shot.filenames })),
+      // On a desktop gallery handoff, reveal only after its first image has
+      // completed the normal JPG retry / WebP fallback path.
+      firstReady: window.__galleryDesktopEdgeArrived && shots[0]
+        ? prioritizeShot(shots[0]) : shots[0]?.primaryLoad
     };
   } catch (error) {
     if (fallback && fallback.parentNode !== gallery) gallery.replaceChildren(fallback);

@@ -30,12 +30,15 @@
     {% include site-favicon.html %}
   {% endif %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
-  <link rel="stylesheet" href="../gallery.css?v=26">
+  <link rel="stylesheet" href="../gallery.css?v=27">
+  <link rel="expect" href="#gallery-edge-ready" blocking="render">
   {% if gallery_page.gallery_embeds %}<link rel="stylesheet" href="../gallery-embeds.css?v=2">{% endif %}
   {% if gallery_page.gallery_youtube_id %}<link rel="stylesheet" href="{{ '/assets/gallery-video.css' | relative_url }}?v=1">{% endif %}
 </head>
 <body data-gallery-revision="{{ site.github.build_revision | escape }}"{% if gallery_asset_versions %} data-gallery-asset-versions="{{ gallery_asset_versions | jsonify | escape }}"{% endif %}>
+  <div id="gallery-edge-arrival"><script src="../gallery-arrival.js?v=1"></script></div>
   {% include site-header.html %}
+  <div id="gallery-edge-ready" hidden></div>
   {% include gallery-navigation.html current=gallery_folder portfolio_url=portfolio_url %}
 
   <main class="shell">
@@ -87,6 +90,6 @@
   <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=6"></script>
   <script src="../gallery-data.js?v=3"></script>
   {% if gallery_page.gallery_embeds %}<script src="../gallery-embeds.js?v=3"></script>{% endif %}
-  <script src="../gallery-viewer.js?v=42"></script>
+  <script src="../gallery-viewer.js?v=43"></script>
 </body>
 </html>
