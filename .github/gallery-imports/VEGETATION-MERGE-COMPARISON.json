@@ -1,0 +1,201 @@
+{
+  "sources": [
+    {
+      "original_description": "Some of vegetation made for Sniper Elite 4 and Strange Brigade made in Plant Factory before switching to Speed Tree 8 for Phantom: Covert Ops and SurvIsland.",
+      "preserved_images": 16,
+      "source_project": "https://www.artstation.com/artwork/kDEvad",
+      "title": "Vegetation"
+    },
+    {
+      "incoming_images": 25,
+      "original_description": "Selection of vegetation made for various games, using Speed Tree and Plant Factory.",
+      "retained_additions": 13,
+      "source_project": "https://www.artstation.com/artwork/lV0z8a",
+      "title": "Vegetation: SpeedTree"
+    }
+  ],
+  "existing_count": 16,
+  "personal_source_count": 25,
+  "added": 13,
+  "duplicates": 12,
+  "merged": 29,
+  "old_originals_and_derivatives_preserved": true,
+  "collage_rationale": "Root visually inspected both original Phantom collage JPGs. They differ materially in the two upper fern panels: the incoming image shows different fern views/variants plus polygon stats, even though most collage panels match. Retain incoming collage as distinct.",
+  "personal_decisions": [
+    {
+      "position": 1,
+      "personal_filename": "the-digital-shaman-palms-019b-4k.jpg",
+      "root_decision": "retain_distinct_addition",
+      "root_rationale": "Root approved this candidate as a distinct addition.",
+      "best_existing_filename": "digital-shamans-ds-vegetation-survisland-wheat02-4k.jpg"
+    },
+    {
+      "position": 3,
+      "personal_filename": "the-digital-shaman-palms-004-4k.jpg",
+      "root_decision": "retain_distinct_addition",
+      "root_rationale": "Root approved this candidate as a distinct addition.",
+      "best_existing_filename": "digital-shamans-ds-vegetation-survisland-wheat02-4k.jpg"
+    },
+    {
+      "position": 4,
+      "personal_filename": "the-digital-shaman-palms-005-4k.jpg",
+      "root_decision": "retain_distinct_addition",
+      "root_rationale": "Root approved this candidate as a distinct addition.",
+      "best_existing_filename": "digital-shamans-ds-vegetation-survisland-wheat02-4k.jpg"
+    },
+    {
+      "position": 5,
+      "personal_filename": "the-digital-shaman-papaya-series-v1-unreal5.jpg",
+      "root_decision": "retain_distinct_addition",
+      "root_rationale": "Root approved this candidate as a distinct addition.",
+      "best_existing_filename": "digital-shamans-ds-vegetation-survisland-papaya-4k.jpg"
+    },
+    {
+      "position": 6,
+      "personal_filename": "the-digital-shaman-ds-vegetation-survisland-papaya-4k.jpg",
+      "root_decision": "duplicate_repost_retain_existing",
+      "root_rationale": "Root confirmed the 4 exact and 8 strong repost duplicate decisions; keep existing original and caption.",
+      "best_existing_filename": "digital-shamans-ds-vegetation-survisland-papaya-4k.jpg"
+    },
+    {
+      "position": 7,
+      "personal_filename": "the-digital-shaman-digital-shamans-digital-shamans-pineapple-series-v4more-srgb.jpg",
+      "root_decision": "retain_distinct_addition",
+      "root_rationale": "Root approved this candidate as a distinct addition.",
+      "best_existing_filename": "digital-shamans-ds-vegetation-survisland-pineapple-4k.jpg"
+    },
+    {
+      "position": 8,
+      "personal_filename": "the-digital-shaman-ds-vegetation-survisland-wheat02-4k.jpg",
+      "root_decision": "duplicate_repost_retain_existing",
+      "root_rationale": "Root confirmed the 4 exact and 8 strong repost duplicate decisions; keep existing original and caption.",
+      "best_existing_filename": "digital-shamans-ds-vegetation-survisland-wheat02-4k.jpg"
+    },
+    {
+      "position": 9,
+      "personal_filename": "the-digital-shaman-ds-vegetation-survisland-wheat01-4k.jpg",
+      "root_decision": "duplicate_repost_retain_existing",
+      "root_rationale": "Root confirmed the 4 exact and 8 strong repost duplicate decisions; keep existing original and caption.",
+      "best_existing_filename": "digital-shamans-ds-vegetation-survisland-wheat01-4k.jpg"
+    },
+    {
+      "position": 10,
+      "personal_filename": "the-digital-shaman-ds-vegetation-survisland-seaweed-4k.jpg",
+      "root_decision": "duplicate_repost_retain_existing",
+      "root_rationale": "Root confirmed the 4 exact and 8 strong repost duplicate decisions; keep existing original and caption.",
+      "best_existing_filename": "digital-shamans-ds-vegetation-survisland-seaweed-4k.jpg"
+    },
+    {
+      "position": 11,
+      "personal_filename": "the-digital-shaman-palms-008-4k.jpg",
+      "root_decision": "retain_distinct_addition",
+      "root_rationale": "Root approved this candidate as a distinct addition.",
+      "best_existing_filename": "digital-shamans-ds-vegetation-survisland-wheat02-4k.jpg"
+    },
+    {
+      "position": 12,
+      "personal_filename": "the-digital-shaman-palms-009-4k.jpg",
+      "root_decision": "retain_distinct_addition",
+      "root_rationale": "Root approved this candidate as a distinct addition.",
+      "best_existing_filename": "digital-shamans-ds-vegetation-survisland-pineapple-4k.jpg"
+    },
+    {
+      "position": 13,
+      "personal_filename": "the-digital-shaman-palms-002-4k.jpg",
+      "root_decision": "retain_distinct_addition",
+      "root_rationale": "Root approved this candidate as a distinct addition.",
+      "best_existing_filename": "digital-shamans-ds-vegetation-survisland-wheat02-4k.jpg"
+    },
+    {
+      "position": 14,
+      "personal_filename": "the-digital-shaman-palms-001b-4k.jpg",
+      "root_decision": "retain_distinct_addition",
+      "root_rationale": "Root approved this candidate as a distinct addition.",
+      "best_existing_filename": "digital-shamans-ds-vegetation-survisland-pineapple-4k.jpg"
+    },
+    {
+      "position": 15,
+      "personal_filename": "the-digital-shaman-palms-014-4k.jpg",
+      "root_decision": "retain_distinct_addition",
+      "root_rationale": "Root approved this candidate as a distinct addition.",
+      "best_existing_filename": "digital-shamans-ds-vegetation-survisland-wheat02-4k.jpg"
+    },
+    {
+      "position": 16,
+      "personal_filename": "the-digital-shaman-palms-006-4k.jpg",
+      "root_decision": "retain_distinct_addition",
+      "root_rationale": "Root approved this candidate as a distinct addition.",
+      "best_existing_filename": "digital-shamans-ds-vegetation-survisland-wheat02-4k.jpg"
+    },
+    {
+      "position": 17,
+      "personal_filename": "artur-perzyna-artur-perzyna-sniper-elite4-dockyard-environment-art-201.jpg",
+      "root_decision": "duplicate_repost_retain_existing",
+      "root_rationale": "Root confirmed the 4 exact and 8 strong repost duplicate decisions; keep existing original and caption.",
+      "best_existing_filename": "digital-shamans-digital-shamans-sniper-elite4-environment02.jpg"
+    },
+    {
+      "position": 18,
+      "personal_filename": "artur-perzyna-artur-perzyna-sniper-elite4-dockyard-environment-art-202.jpg",
+      "root_decision": "duplicate_repost_retain_existing",
+      "root_rationale": "Root confirmed the 4 exact and 8 strong repost duplicate decisions; keep existing original and caption.",
+      "best_existing_filename": "digital-shamans-digital-shamans-sniper-elite4-environment03.jpg"
+    },
+    {
+      "position": 19,
+      "personal_filename": "artur-perzyna-artur-perzyna-sniper-elite4-dockyard-environment-art-200.jpg",
+      "root_decision": "duplicate_repost_retain_existing",
+      "root_rationale": "Root confirmed the 4 exact and 8 strong repost duplicate decisions; keep existing original and caption.",
+      "best_existing_filename": "digital-shamans-digital-shamans-sniper-elite4-environment01.jpg"
+    },
+    {
+      "position": 20,
+      "personal_filename": "the-digital-shaman-mobile.jpg",
+      "root_decision": "retain_distinct_addition",
+      "root_rationale": "Root approved this candidate as a distinct addition.",
+      "best_existing_filename": "digital-shamans-unreal4-phantom-environments-11-srgb.jpg"
+    },
+    {
+      "position": 21,
+      "personal_filename": "the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.jpg",
+      "root_decision": "retain_distinct_addition",
+      "root_rationale": "Root visually inspected both original Phantom collage JPGs. They differ materially in the two upper fern panels: the incoming image shows different fern views/variants plus polygon stats, even though most collage panels match. Retain incoming collage as distinct.",
+      "best_existing_filename": "digital-shamans-digitalshamans-vegetation-phantom-speedtree.jpg"
+    },
+    {
+      "position": 22,
+      "personal_filename": "the-digital-shaman-digital-shamans-unreal4-phantom-environments-13-srgb.jpg",
+      "root_decision": "duplicate_repost_retain_existing",
+      "root_rationale": "Root confirmed the 4 exact and 8 strong repost duplicate decisions; keep existing original and caption.",
+      "best_existing_filename": "digital-shamans-unreal4-phantom-environments-13-srgb.jpg"
+    },
+    {
+      "position": 23,
+      "personal_filename": "the-digital-shaman-digital-shamans-unreal4-phantom-environments-14-srgb.jpg",
+      "root_decision": "duplicate_repost_retain_existing",
+      "root_rationale": "Root confirmed the 4 exact and 8 strong repost duplicate decisions; keep existing original and caption.",
+      "best_existing_filename": "digital-shamans-unreal4-phantom-environments-14-srgb.jpg"
+    },
+    {
+      "position": 24,
+      "personal_filename": "the-digital-shaman-digital-shamans-unreal4-phantom-environments-11-srgb.jpg",
+      "root_decision": "duplicate_repost_retain_existing",
+      "root_rationale": "Root confirmed the 4 exact and 8 strong repost duplicate decisions; keep existing original and caption.",
+      "best_existing_filename": "digital-shamans-unreal4-phantom-environments-11-srgb.jpg"
+    },
+    {
+      "position": 25,
+      "personal_filename": "the-digital-shaman-digital-shamans-unreal4-phantom-environments-08b-srgb.jpg",
+      "root_decision": "duplicate_repost_retain_existing",
+      "root_rationale": "Root confirmed the 4 exact and 8 strong repost duplicate decisions; keep existing original and caption.",
+      "best_existing_filename": "digital-shamans-unreal4-phantom-environments-08b-srgb.jpg"
+    },
+    {
+      "position": 26,
+      "personal_filename": "the-digital-shaman-digital-shamans-unreal4-phantom-environments-10-srgb.jpg",
+      "root_decision": "duplicate_repost_retain_existing",
+      "root_rationale": "Root confirmed the 4 exact and 8 strong repost duplicate decisions; keep existing original and caption.",
+      "best_existing_filename": "digital-shamans-unreal4-phantom-environments-10-srgb.jpg"
+    }
+  ]
+}

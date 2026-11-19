@@ -1,0 +1,9 @@
+# Vegetation merge publication checkpoint
+
+User confirmed the personal [Vegetation: SpeedTree](https://www.artstation.com/artwork/lV0z8a) collection should merge with [Vegetation](https://www.artstation.com/artwork/kDEvad). Keep one dataset and two existing routes: [studio](https://digitalshamans.co.uk/galleries/vegetation/) and [Artur](https://digitalshamans.co.uk/artur/galleries/vegetation/).
+
+Source and immutable preparation complete. Existing16 unchanged,13 additions,12 duplicates omitted,29 final images. Eight near-identical reposts were compared using full/interior pixels, aspect ratio and perceptual hashes;4 duplicates are exact. The collage is retained after original-resolution review showed different upper fern panels. Pineapple layout also differs materially. Names, source order, exact captions and genuine download URLs with dl=1 preserved. Existing JPG encodings retained even where fresh source bytes changed with identical RGB pixels. Separate provenance records both descriptions and all decisions; old provenance bit-identical.
+
+PrivatePR15 merged0f32e45b4ec85c19aa0527ce5725256787dafbbf; all29 blobs/sizes/approval verified. Other19 gallery groups preserved. Root authored a separate additive CAS plan for this existing-gallery update, with expected target/replacement hashes and new-file-only copies. No new-import overwrite guard bypass. Before public application, retain14 catalogs, global fallback, all other gallery overrides/groups and unchanged homepage/card/navigation/noindex policy. Root service and website gates are pending in this checkpoint.
+
+Evidence: VEGETATION-MERGE-ASSETS.md/json, PRIVATE-TREE.json, COMPARISON.json and optional EDITOR.json. Detailed service/public/browser/capture/timing results follow after actual deployment. No shared runtime, protected security or authoring behavior changed. Native editor scratch check, both responsive routes and capture release remain mandatory.
