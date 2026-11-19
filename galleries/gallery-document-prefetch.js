@@ -14,7 +14,7 @@
     const link = navigation.querySelector('.gallery-navigation__link--' + direction);
     if (!link) return null;
     const url = new URL(link.href, window.location.href);
-    if (url.origin !== window.location.origin ||
+    if (url.search || url.hash || url.origin !== window.location.origin ||
         url.pathname.split('/galleries/')[0] !== prefix ||
         !/^\/galleries\/hb-[a-z0-9-]+\/$/.test(url.pathname.slice(prefix.length))) return null;
     return url.href;
