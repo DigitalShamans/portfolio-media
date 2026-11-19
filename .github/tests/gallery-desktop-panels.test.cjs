@@ -10,12 +10,16 @@ const root = path.resolve(__dirname, '../..');
 const script = fs.readFileSync(path.join(root, 'galleries/gallery-desktop-panels.js'), 'utf8');
 const markup = fs.readFileSync(path.join(root, '_includes/gallery-navigation.html'), 'utf8');
 const styles = fs.readFileSync(path.join(root, 'galleries/gallery.css'), 'utf8');
+const locked = fs.readFileSync(path.join(root, '_layouts/locked-gallery.html'), 'utf8');
+const exitLinks = fs.readFileSync(path.join(root, '_includes/rz-gallery-exit.html'), 'utf8');
 
 function browser({ desktop = true, reduced = false, prefix = '', gsap = true, arrival = null,
-    nextHref, previousHref } = {}) {
+    nextHref, previousHref, folder = 'hb-egypt', activeTag = 'body',
+    navigationType = 'navigate' } = {}) {
   const events = {};
   const calls = [];
   const tweens = [];
+  const historyCalls = [];
   const timers = new Map();
   let now = 0;
   let nextId = 0;
@@ -63,10 +67,11 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
   const navigation = { querySelector: key => key.endsWith('--next') ? next : previous };
   let dialog = false;
   const body = new Element('body');
+  const activeElement = activeTag === 'body' ? body : new Element(activeTag);
   const document = {
-    currentScript: { src: 'https://example.test/galleries/gallery-desktop-panels.js?v=2' },
+    currentScript: { src: 'https://example.test/galleries/gallery-desktop-panels.js?v=3' },
     hidden: false, fullscreenElement: null,
-    activeElement: body, body, head: new Element('head'),
+    activeElement, body, head: new Element('head'),
     createElement(tag) { return new Element(tag); },
     querySelector(key) {
       if (key === '.gallery-navigation') return navigation;
@@ -83,10 +88,15 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
     innerWidth: 1440, innerHeight: 900, visualViewport: { scale: 1 },
     location: {
       origin: 'https://example.test',
-      pathname: prefix + '/galleries/hb-egypt/',
-      href: 'https://example.test' + prefix + '/galleries/hb-egypt/',
+      pathname: prefix + '/galleries/' + folder + '/',
+      href: 'https://example.test' + prefix + '/galleries/' + folder + '/',
       assign(url) { calls.push(url); }
     },
+    history: {
+      back() { historyCalls.push('back'); },
+      forward() { historyCalls.push('forward'); }
+    },
+    performance: { getEntriesByType() { return [{ type: navigationType }]; } },
     matchMedia(query) { return query.includes('prefers-reduced-motion') ? motion : media; },
     getSelection() { return { isCollapsed: true }; },
     sessionStorage: {
@@ -123,23 +133,24 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
   function pointer(x, { type = 'mouse', target = body } = {}) {
     events['window:pointermove']?.({ pointerType: type, clientX: x, target });
   }
-  function keydown(key, target = body) {
-    const e = { key, target, prevented: false, preventDefault() { this.prevented = true; } };
+  function keydown(key, target = body, modifiers = {}) {
+    const e = { key, target, ...modifiers, prevented: false,
+      preventDefault() { this.prevented = true; } };
     events['window:keydown']?.(e);
     return e;
   }
   return {
-    window, document, events, calls, tweens, pointer, advance, keydown, next, previous, Element,
+    window, document, events, calls, historyCalls, tweens, pointer, advance, keydown, next, previous, Element,
     setDialog(value) { dialog = value; },
     get panel() { return body.children.find(node => node.className === 'gallery-desktop-edge-panel'); },
-    event(type) { events['window:' + type]?.(); }
+    event(type, payload = {}) { events['window:' + type]?.(payload); }
   };
 }
 
 test('no desktop boxes/arrows and no scroll stage; fullscreen screenshot controls remain', () => {
   assert.match(markup, /gallery-navigation[^>]+hidden/);
   assert.doesNotMatch(markup, /gallery-navigation__arrow|gallery-navigation__details/);
-  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=2/);
+  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=3/);
   assert.match(styles, /\.gallery-navigation\s*\{\s*display:\s*none !important/);
   assert.match(styles, /\.viewer-arrows button/);
   assert.doesNotMatch(styles, /gallery-desktop-scroll-stage/);
