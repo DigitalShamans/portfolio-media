@@ -230,8 +230,7 @@ test('gallery fullscreen, dialogs, editable targets and zoom block edge navigati
   for (const setup of [
     b => { b.document.fullscreenElement = {}; },
     b => b.setDialog(true),
-    b => { b.window.visualViewport.scale = 1.3; },
-    b => { b.document.activeElement = new b.Element('input'); }
+    b => { b.window.visualViewport.scale = 1.3; }
   ]) {
     const b = browser();
     setup(b);
@@ -239,10 +238,12 @@ test('gallery fullscreen, dialogs, editable targets and zoom block edge navigati
     b.advance(2000);
     assert.deepEqual(b.calls, []);
   }
-  const b = browser();
-  b.pointer(1439, { target: new b.Element('a') });
-  b.advance(1000);
-  assert.equal(b.calls.length, 0);
+  for (const tag of ['a', 'input', 'button', 'label']) {
+    const b = browser({ activeTag: 'input' });
+    b.pointer(1439, { target: new b.Element(tag) });
+    b.advance(1000);
+    assert.equal(b.calls.length, 0, 'interactive element: ' + tag);
+  }
 });
 
 test('mouse button press cancels an active edge transition', () => {
