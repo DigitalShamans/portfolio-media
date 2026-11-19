@@ -74,7 +74,8 @@ const GalleryEmbeds = (() => {
           anchor.after(section);
           tails.set(index, section);
         } else {
-          const next = elements[anchorIndex(entries, embed.before)];
+          const next = elements[anchorIndex(entries, embed.before)]
+            ?? (embed.after === undefined ? elements[0] : undefined);
           if (next) next.before(section);
           else gallery.append(section);
         }
