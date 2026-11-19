@@ -1,0 +1,12 @@
+.gallery-embed { min-width: 0; }
+.gallery-embed h2 { margin: 0 0 .75rem; font-size: 1.125rem; }
+.gallery-embed iframe {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  background: #101010;
+}
+.gallery-embed p, .gallery-embed-error { color: var(--muted); }
+.gallery-embed p { margin: .75rem 0 0; }

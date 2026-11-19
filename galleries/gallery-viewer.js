@@ -883,6 +883,10 @@ async function loadGallery() {
     shots.push(...entries.map((entry, index) => createShot(entry, index, firstImage)));
     gallery.replaceChildren(...shots.map(shot => shot.element));
     loadVisibleShotsFirst();
+    if (gallery.dataset.galleryEmbeds && typeof GalleryEmbeds !== 'undefined') {
+      void GalleryEmbeds.mount(gallery, entries, shots.map(shot => shot.element),
+        galleryAssetUrl(gallery.dataset.galleryEmbeds));
+    }
     if (restoreFocus) shots[0].link.focus({ preventScroll: true });
     galleryStatus.hidden = true;
   } catch (error) {

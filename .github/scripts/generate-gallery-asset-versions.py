@@ -34,6 +34,9 @@ def gallery_versions():
         map_path = path.parent / 'gallery-map.json'
         if map_path in tracked:
             files['gallery-map.json'] = tracked[map_path]
+        embeds_path = path.parent / 'gallery-embeds.json'
+        if embeds_path in tracked:
+            files['gallery-embeds.json'] = tracked[embeds_path]
         entries = json.loads((ROOT / path).read_text(encoding='utf-8-sig'))
         for entry in entries:
             for name in (entry['image'], entry.get('compare'), *(entry.get('additionalImages') or [])):
