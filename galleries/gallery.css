@@ -210,62 +210,65 @@ dialog {
   .viewer-bar button, .counter { padding-inline: .45rem; }
 }
 
-/* Project navigation is separate from the fullscreen screenshot controls. */
-.gallery-navigation { display: none; }
+/* Project-to-project arrows are intentionally absent. Fullscreen image arrows remain. */
+.gallery-navigation { display: none !important; }
+
+/* A wheel/trackpad scrubbed, full-viewport GSAP panel for directional gallery switches. */
+.gallery-desktop-slide {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 3rem;
+  background: linear-gradient(125deg, #181818 0%, #282421 55%, #171717 100%);
+  color: var(--text);
+  text-align: center;
+  pointer-events: none;
+  will-change: transform;
+}
+.gallery-desktop-slide[hidden] { display: none; }
+.gallery-desktop-slide__content { max-width: min(90vw, 56rem); }
+.gallery-desktop-slide__content p { margin: 0 0 .8rem; color: var(--accent); font-size: .9rem; letter-spacing: .16em; text-transform: uppercase; }
+.gallery-desktop-slide__content h2 { margin: 0; font-size: clamp(2rem, 5vw, 5rem); line-height: 1.1; }
+
+.gallery-desktop-scroll-stage,
+.gallery-desktop-scroll-exit { display: none; }
 @media (hover: hover) and (pointer: fine) {
-  .gallery-navigation { display: block; }
-  .gallery-navigation__link {
-    position: fixed;
-    z-index: 5;
-    top: 50%;
+  html:has(.gallery-navigation) { overscroll-behavior-x: contain; }
+  .gallery-desktop-scroll-stage {
+    display: block;
+    position: relative;
+    height: 100svh;
+    min-height: 26rem;
+    overflow: hidden;
+    isolation: isolate;
+    background: #171717;
+  }
+  .gallery-desktop-scroll-panel {
     display: grid;
     place-items: center;
-    width: 44px;
-    height: 64px;
-    border: 1px solid #404040;
-    border-radius: .35rem;
-    background: rgba(18, 18, 18, .92);
+    width: 100%;
+    height: 100%;
+    padding: clamp(1.5rem, 4vw, 5rem);
+    background: linear-gradient(125deg, #181818 0%, #29231e 55%, #171717 100%);
+    text-align: center;
+    will-change: transform;
+  }
+  .gallery-desktop-scroll-copy { max-width: min(90vw, 64rem); }
+  .gallery-desktop-scroll-copy p { margin: 0 0 1.2rem; color: var(--accent); letter-spacing: .08em; }
+  .gallery-desktop-scroll-copy h2 {
+    margin: 0 0 1.2rem;
+    font-size: clamp(2rem, 5vw, 5rem);
+    line-height: 1.05;
+  }
+  .gallery-desktop-scroll-copy p:last-child {
+    margin: 0;
     color: var(--muted);
-    text-decoration: none;
-    transform: translateY(-50%);
+    font-size: .9rem;
+    letter-spacing: 0;
   }
-  .gallery-navigation__link--previous { left: 8px; }
-  .gallery-navigation__link--next { right: 8px; }
-  .gallery-navigation__arrow { font-size: 36px; font-weight: 400; line-height: 1; padding-bottom: 4px; }
-  .gallery-navigation__details {
-    position: absolute;
-    top: 50%;
-    display: grid;
-    gap: 2px;
-    width: max-content;
-    max-width: 15rem;
-    border: 1px solid #404040;
-    border-radius: .35rem;
-    padding: .5rem .75rem;
-    background: #181818;
-    color: var(--text);
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(-50%);
-    transition: opacity 140ms ease;
-  }
-  .gallery-navigation__link--previous .gallery-navigation__details { left: calc(100% + 8px); }
-  .gallery-navigation__link--next .gallery-navigation__details { right: calc(100% + 8px); }
-  .gallery-navigation__direction { color: var(--muted); font-size: 11px; }
-  .gallery-navigation__name { font-size: 14px; line-height: 1.35; }
-  .gallery-navigation__link:hover,
-  .gallery-navigation__link:focus-visible { border-color: var(--accent); color: var(--text); }
-  .gallery-navigation__link:hover .gallery-navigation__details,
-  .gallery-navigation__link:focus-visible .gallery-navigation__details { opacity: 1; }
-}
-@media (hover: hover) and (pointer: fine) and (max-width: 900px) {
-  .gallery-navigation__link { width: 32px; height: 52px; }
-  .gallery-navigation__link--previous { left: 4px; }
-  .gallery-navigation__link--next { right: 4px; }
-}
-body:has(dialog[open]) .gallery-navigation { display: none; }
-@media (prefers-reduced-motion: reduce) {
-  .gallery-navigation__details { transition: none; }
+  .gallery-desktop-scroll-exit { display: block; height: 12svh; background: #171717; }
 }
 
 /* Keep native vertical scrolling and zoom, while the gallery owns horizontal
