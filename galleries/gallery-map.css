@@ -8,7 +8,20 @@
 .gallery-map-stage .gallery-map-region.is-open { z-index: 5; opacity: 1; border-color: var(--accent, #eb9a56); box-shadow: 0 6px 24px #000b; cursor: default; }
 .gallery-map-region:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .gallery-map-placeholder { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 24px; color: #bbb; text-align: center; }
-.gallery-map-page { width: min(calc(100% - 32px), 1600px); margin: 0 auto; padding: 24px 0 32px; }
+/* Match the image frame used by gallery.css and gallery-viewer.js. */
+.gallery-map-page {
+  width: var(--shot-width, min(calc(100% - clamp(32px, 4vw, 144px)), 90vw, calc(90dvh * 16 / 9)));
+  margin: 0 auto;
+  padding: 24px 0 32px;
+}
+.gallery-map-page .gallery-map-stage { border: 0; }
+@media (pointer: coarse) and (orientation: portrait) {
+  .gallery-map-page { width: min(calc(100% - clamp(32px, 4vw, 144px)), 86vw); }
+}
+@media (pointer: coarse) and (orientation: landscape) {
+  /* Keep the overview stable while the mobile browser toolbar changes. */
+  .gallery-map-page { width: min(calc(100% - clamp(32px, 4vw, 144px)), calc(100lvh * 16 / 9)); }
+}
 .gallery-map-intro, .gallery-map-caption { display: flex; justify-content: space-between; gap: 12px 32px; align-items: baseline; }
 .gallery-map-intro { margin-bottom: 18px; }
 .gallery-map-intro h1 { margin: 0; font-size: clamp(20px, 2.1vw, 28px); line-height: 1.15; }
