@@ -52,6 +52,12 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
     }
     append(...nodes) { this.children.push(...nodes); }
     setAttribute(name, value) { this[name] = value; }
+    cloneNode() {
+      const clone = new Element(this.tagName);
+      clone.className = this.className;
+      return clone;
+    }
+    getBoundingClientRect() { return { height: 96 }; }
     closest(selector) {
       return selector.split(',').some(part => part.trim() === this.tagName.toLowerCase()) ? this : null;
     }
@@ -67,14 +73,17 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
   const navigation = { querySelector: key => key.endsWith('--next') ? next : previous };
   let dialog = false;
   const body = new Element('body');
+  const sourceHeader = new Element('header');
+  sourceHeader.className = 'site-header';
   const activeElement = activeTag === 'body' ? body : new Element(activeTag);
   const document = {
-    currentScript: { src: 'https://example.test/galleries/gallery-desktop-panels.js?v=3' },
+    currentScript: { src: 'https://example.test/galleries/gallery-desktop-panels.js?v=5' },
     hidden: false, fullscreenElement: null,
     activeElement, body, head: new Element('head'),
     createElement(tag) { return new Element(tag); },
     querySelector(key) {
       if (key === '.gallery-navigation') return navigation;
+      if (key === 'body > .site-header') return sourceHeader;
       if (key === 'dialog[open]' && dialog) return {};
       return null;
     },
@@ -143,6 +152,7 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
     window, document, events, calls, historyCalls, tweens, pointer, advance, keydown, next, previous, Element,
     setDialog(value) { dialog = value; },
     get panel() { return body.children.find(node => node.className === 'gallery-desktop-edge-panel'); },
+    get header() { return body.children.find(node => node.className.includes('gallery-desktop-edge-header')); },
     event(type, payload = {}) { events['window:' + type]?.(payload); }
   };
 }
@@ -150,7 +160,7 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
 test('no desktop boxes/arrows and no scroll stage; fullscreen screenshot controls remain', () => {
   assert.match(markup, /gallery-navigation[^>]+hidden/);
   assert.doesNotMatch(markup, /gallery-navigation__arrow|gallery-navigation__details/);
-  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=4/);
+  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=5/);
   assert.match(styles, /\.gallery-navigation\s*\{\s*display:\s*none !important/);
   assert.match(styles, /\.viewer-arrows button/);
   assert.doesNotMatch(styles, /gallery-desktop-scroll-stage/);
@@ -169,7 +179,7 @@ test('moving mouse into right or left edge starts the slide and navigates automa
       assert.equal(b.panel.hidden, false);
       assert.equal(b.panel.dataset.direction, which);
       assert.equal(b.calls.length, 0, 'animation must be visible before navigation');
-      b.advance(419);
+      b.advance(119);
       assert.equal(b.calls.length, 0);
       b.advance(1);
       assert.deepEqual(b.calls, [which === 'next' ? b.next.href : b.previous.href]);
@@ -180,12 +190,12 @@ test('moving mouse into right or left edge starts the slide and navigates automa
 test('approaching within five percent of an edge works without touching screen border', () => {
   const b = browser();
   b.pointer(75);
-  b.advance(600);
+  b.advance(300);
   assert.deepEqual(b.calls, [b.previous.href]);
 });
 
 test('moving out of the edge before or during animation cancels the transition', () => {
-  for (const elapsed of [80, 360]) {
+  for (const elapsed of [80, 240]) {
     const b = browser();
     b.pointer(1439);
     b.advance(elapsed);
@@ -201,7 +211,7 @@ test('moving between edges changes direction instead of leaving a stale navigati
   b.pointer(1439);
   b.advance(200);
   b.pointer(0);
-  b.advance(180 + 420);
+  b.advance(180 + 120);
   assert.deepEqual(b.calls, [b.previous.href]);
 });
 
@@ -212,7 +222,7 @@ test('page visits do not automatically chain to another gallery until the mouse 
   assert.equal(b.calls.length, 0);
   b.pointer(700);
   b.pointer(1439);
-  b.advance(600);
+  b.advance(300);
   assert.deepEqual(b.calls, [b.next.href]);
 });
 
@@ -258,7 +268,7 @@ test('mouse button press cancels an active edge transition', () => {
 test('keyboard arrows remain a click-free fallback outside interactive elements', () => {
   const b = browser();
   assert.equal(b.keydown('ArrowRight').prevented, true);
-  b.advance(420);
+  b.advance(120);
   assert.deepEqual(b.calls, [b.next.href]);
   const c = browser();
   assert.equal(c.keydown('ArrowLeft', new c.Element('input')).prevented, false);
@@ -273,7 +283,7 @@ test('reduced motion and GSAP failure both preserve auto navigation', () => {
   assert.deepEqual(reduced.calls, [reduced.next.href]);
   const css = browser({ gsap: false });
   css.pointer(1439);
-  css.advance(180 + 460);
+  css.advance(180 + 160);
   assert.deepEqual(css.calls, [css.next.href]);
 });
 
@@ -301,7 +311,7 @@ test('RZ Start password focus does not trap edge navigation on either portfolio'
     for (const [x, expected] of [[1, options.previousHref], [1439, options.nextHref]]) {
       const b = browser(options);
       b.pointer(x);
-      b.advance(600);
+      b.advance(300);
       assert.deepEqual(b.calls, [expected], 'RZ Start escape must work: ' + expected);
     }
   }
@@ -328,7 +338,7 @@ test('Back/Forward history restoration stays disarmed until mouse leaves edge', 
     assert.deepEqual(b.calls, [], 'history restore must not automatically advance');
     b.pointer(700);
     b.pointer(1439);
-    b.advance(600);
+    b.advance(300);
     assert.deepEqual(b.calls, [b.next.href]);
   }
 });
@@ -368,8 +378,54 @@ test('loading gallery status overlays without shifting the first image during hy
 
 test('faster handoff keeps the exact edge initiation, cancellation and easing unchanged', () => {
   assert.match(script, /const holdDelay = 180;/);
-  assert.match(script, /const slideDuration = 420;/);
+  assert.match(script, /const slideDuration = 120;/);
   assert.match(script, /Math\.max\(52, Math\.min\(96, width \* \.06\)\)/);
   assert.match(script, /ease: 'power2\.inOut'/);
   assert.match(script, /clear\(true\)/);
+});
+
+
+test('studio and personal header remains visible above the panel through the shortened transition', () => {
+  for (const prefix of ['', '/artur']) {
+    const b = browser({ prefix });
+    assert.equal(b.header.hidden, true, 'decorative header remains hidden normally');
+    b.pointer(1439);
+    b.advance(180);
+    assert.equal(b.header.hidden, false, 'header remains visible while the panel slides in');
+    assert.equal(b.header['aria-hidden'], 'true');
+    assert.equal(b.header.inert, true, 'the decorative copy must never receive focus');
+    assert.equal(b.panel.style.top, '96px', 'panel begins immediately under header');
+    assert.equal(b.calls.length, 0);
+    b.advance(119);
+    assert.equal(b.header.hidden, false);
+    assert.equal(b.calls.length, 0);
+    b.advance(1);
+    assert.deepEqual(b.calls, [b.next.href], 'navigation starts after exactly 120ms');
+  }
+});
+
+test('moving away during slide cancels and restores the original page without a header duplicate', () => {
+  const b = browser();
+  b.pointer(1439);
+  b.advance(205);
+  assert.equal(b.header.hidden, false);
+  b.pointer(720);
+  b.advance(190);
+  assert.equal(b.panel.hidden, true);
+  assert.equal(b.header.hidden, true);
+  assert.equal(b.panel.style.top, '');
+  assert.deepEqual(b.calls, []);
+});
+
+test('header overlay stays below fullscreen controls and never appears in mobile mode', () => {
+  const mobile = browser({ desktop: false });
+  assert.equal(mobile.header, undefined);
+  const headerCSS = styles.match(/\.gallery-desktop-edge-header\s*\{([^}]*)\}/s)?.[1] || '';
+  const panelCSS = styles.match(/\.gallery-desktop-edge-panel\s*\{([^}]*)\}/s)?.[1] || '';
+  assert.match(headerCSS, /position:\s*fixed/);
+  assert.match(headerCSS, /z-index:\s*31/);
+  assert.match(headerCSS, /pointer-events:\s*none/);
+  assert.match(panelCSS, /z-index:\s*30/);
+  assert.match(styles, /\.gallery-desktop-edge-header\[hidden\]/);
+  assert.match(styles, /body:has\(dialog\[open\]\) \.gallery-desktop-edge-header/);
 });
