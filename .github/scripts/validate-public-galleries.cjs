@@ -107,9 +107,10 @@ for (const [folder, files] of filesByFolder) {
     const entries = GalleryData.parse(text, remoteOriginals ? undefined : files);
     const filenames = entries.flatMap(GalleryData.images);
     const approvedFiles = remoteOriginals ? Object.keys(approved[folder] || {}) : undefined;
-    if (approvedFiles && (approvedFiles.length !== filenames.length ||
-        filenames.some(filename => !approvedFiles.includes(filename)))) {
-      throw new Error('The gallery manifest and the approved originals for this media revision must match.');
+    // Approval is an inventory, not the visible gallery selection. The editor
+    // can exclude approved images without modifying their immutable identities.
+    if (approvedFiles && filenames.some(filename => !approvedFiles.includes(filename))) {
+      throw new Error('The gallery references an image outside the approved originals for this media revision.');
     }
     const previewNames = new Set();
     for (const filename of filenames) {
@@ -134,3 +135,4 @@ if (failures) {
   console.error(`Gallery validation failed for ${failures} manifest(s). Correct the errors before publishing.`);
   process.exitCode = 1;
 }
+
