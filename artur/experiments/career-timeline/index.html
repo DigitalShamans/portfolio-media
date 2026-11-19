@@ -4,7 +4,7 @@ portfolio: personal
 title: Career timeline
 permalink: /artur/experiments/career-timeline/
 seo_title: "Career Timeline Test | Artur Perzyna"
-seo_description: "Artur Perzyna's career in game art, from his first steps in CG in 2004 to art direction in 2023."
+seo_description: "Artur Perzyna's career in game art, from his first steps in CG in 2004 through game art and art direction."
 seo_noindex: true
 sitemap: false
 ---
@@ -16,75 +16,70 @@ sitemap: false
   <meta name="color-scheme" content="dark">
   {% include seo.html %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
-  <link rel="stylesheet" href="{{ '/assets/career-timeline.css' | relative_url }}?v=1">
+  <link rel="stylesheet" href="{{ '/assets/career-timeline.css' | relative_url }}?v=2">
   <script src="{{ '/assets/vendor/gsap/3.15.1/gsap.min.js' | relative_url }}" defer></script>
   <script src="{{ '/assets/vendor/gsap/3.15.1/ScrollTrigger.min.js' | relative_url }}" defer></script>
   <script src="{{ '/assets/vendor/gsap/3.15.1/DrawSVGPlugin.min.js' | relative_url }}" defer></script>
   <script src="{{ '/assets/vendor/gsap/3.15.1/MotionPathPlugin.min.js' | relative_url }}" defer></script>
-  <script src="{{ '/assets/career-timeline.js' | relative_url }}?v=1" defer></script>
+  <script src="{{ '/assets/career-timeline.js' | relative_url }}?v=2" defer></script>
 </head>
 <body class="career-page">
   {% include site-header.html %}
   <main class="career-shell">
     <header class="career-intro">
-      <p class="career-eyebrow">2004 — 2023</p>
+      <p class="career-eyebrow">2004 — Present</p>
       <h1>Career timeline</h1>
-      <p class="career-intro__hint">Scroll to follow my journey in game art.</p>
+      <p class="career-intro__hint">Scroll to follow my journey. Select a checkpoint for details.</p>
     </header>
 
     <section class="career-track" data-career-timeline aria-label="Career milestones, in chronological order">
       <div class="career-rail" aria-hidden="true">
         <svg class="career-svg" xmlns="http://www.w3.org/2000/svg" focusable="false">
+          <path class="career-path-background" data-career-background fill="none"></path>
           <g data-career-guides></g>
           <path class="career-path" data-career-path fill="none"></path>
           <g data-career-stops></g>
           <circle class="career-pointer" data-career-pointer cx="0" cy="0" r="8"></circle>
         </svg>
       </div>
-      <!-- Dates and career details follow the supplied résumé screenshot, including same-year entries. -->
+      <!-- Checkpoint placement follows the user's S-curve sketch. The final entry is draft copy for later refinement. -->
       <ol class="career-list">
-        <li class="career-milestone" id="career-2004">
+        <li class="career-milestone" id="career-2004" data-curve-at="0" data-curve-side="above">
           <time class="career-year" datetime="2004">2004</time>
           <div class="career-copy">
-            <h2>First steps in CG</h2>
+            <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">First steps in CG</button></h2>
           </div>
         </li>
-        <li class="career-milestone" id="career-2006">
+        <li class="career-milestone" id="career-2006" data-curve-at=".045" data-curve-side="right">
           <time class="career-year" datetime="2006">2006</time>
           <div class="career-copy">
-            <h2>First freelance work</h2>
+            <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">First freelance work</button></h2>
           </div>
         </li>
-        <li class="career-milestone" id="career-2010">
+        <li class="career-milestone" id="career-2010" data-curve-at=".11" data-curve-side="right">
           <time class="career-year" datetime="2010">2010</time>
           <div class="career-copy">
-            <h2>CI Games</h2>
+            <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">CI Games</button></h2>
             <p class="career-role">3D artist</p>
             <ul class="career-projects">
               <li><strong>Sniper Ghost Warrior 2</strong><span>FPP stealth shooter</span></li>
             </ul>
           </div>
         </li>
-        <li class="career-milestone" id="career-2012">
-          <time class="career-year" datetime="2012">2012</time>
-          <div class="career-copy">
-            <h2>Back to freelance</h2>
-          </div>
-        </li>
-        <li class="career-milestone" id="career-2015-jujubee">
+        <li class="career-milestone" id="career-2015-jujubee" data-curve-at=".19" data-curve-side="left">
           <time class="career-year" datetime="2015">2015</time>
           <div class="career-copy">
-            <h2>Jujubee</h2>
+            <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Jujubee</button></h2>
             <p class="career-role">Freelance Vehicle 3D Artist</p>
             <ul class="career-projects">
               <li><strong>Take Off</strong><span>Flight simulator</span></li>
             </ul>
           </div>
         </li>
-        <li class="career-milestone" id="career-2015-rebellion">
+        <li class="career-milestone" id="career-2015-rebellion" data-curve-at=".34" data-curve-side="right">
           <time class="career-year" datetime="2015">2015</time>
           <div class="career-copy">
-            <h2>Rebellion Developments</h2>
+            <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Rebellion Developments</button></h2>
             <p class="career-role">Environment &amp; indoor lighting artist</p>
             <ul class="career-projects">
               <li><strong>2015 · Sniper Elite 4</strong><span>TPP stealth shooter</span></li>
@@ -93,40 +88,40 @@ sitemap: false
             </ul>
           </div>
         </li>
-        <li class="career-milestone" id="career-2018">
+        <li class="career-milestone" id="career-2018" data-curve-at=".56" data-curve-side="right">
           <time class="career-year" datetime="2018">2018</time>
           <div class="career-copy">
-            <h2>nDreams Ltd</h2>
+            <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">nDreams Ltd</button></h2>
             <p class="career-role">Environment artist</p>
             <ul class="career-projects">
               <li><strong>Phantom: Covert Ops</strong><span>VR stealth shooter</span></li>
             </ul>
           </div>
         </li>
-        <li class="career-milestone" id="career-2020-chuhai">
+        <li class="career-milestone" id="career-2020-chuhai" data-curve-at=".695" data-curve-side="left">
           <time class="career-year" datetime="2020">2020</time>
           <div class="career-copy">
-            <h2>Chuhai Labs</h2>
+            <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Chuhai Labs</button></h2>
             <p class="career-role">Art Director</p>
             <ul class="career-projects">
               <li><strong>Carve: Snowboarding</strong></li>
             </ul>
           </div>
         </li>
-        <li class="career-milestone" id="career-2020-super-trumpers">
+        <li class="career-milestone" id="career-2020-super-trumpers" data-curve-at=".76" data-curve-side="left">
           <time class="career-year" datetime="2020">2020</time>
           <div class="career-copy">
-            <h2>Super Trumpers</h2>
+            <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Super Trumpers</button></h2>
             <p class="career-role">Freelancer</p>
             <ul class="career-projects">
               <li><strong>SurvIsland</strong></li>
             </ul>
           </div>
         </li>
-        <li class="career-milestone" id="career-2021">
+        <li class="career-milestone" id="career-2021" data-curve-at=".80" data-curve-side="right">
           <time class="career-year" datetime="2021">2021</time>
           <div class="career-copy">
-            <h2>Digital Shamans</h2>
+            <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Digital Shamans</button></h2>
             <p class="career-role">Lead Artist</p>
             <ul class="career-projects">
               <li><strong>MerCorp: The Retrieval</strong></li>
@@ -135,21 +130,33 @@ sitemap: false
             </ul>
           </div>
         </li>
-        <li class="career-milestone" id="career-2022">
+        <li class="career-milestone" id="career-2022" data-curve-at=".875" data-curve-side="left">
           <time class="career-year" datetime="2022">2022</time>
           <div class="career-copy">
-            <h2>Realtime UK &amp; EA</h2>
+            <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Realtime UK &amp; EA</button></h2>
             <p class="career-role">3D Artist</p>
             <ul class="career-projects">
               <li><strong>The Need For Speed: Unbound</strong></li>
             </ul>
           </div>
         </li>
-        <li class="career-milestone" id="career-2023">
+        <li class="career-milestone" id="career-2023" data-curve-at=".935" data-curve-side="right">
           <time class="career-year" datetime="2023">2023</time>
           <div class="career-copy">
-            <h2>Couch Heroes</h2>
+            <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Couch Heroes</button></h2>
             <p class="career-role">Art Direction</p>
+          </div>
+        </li>
+        <li class="career-milestone" id="career-current" data-curve-at=".985" data-curve-side="right">
+          <span class="career-year">Present</span>
+          <div class="career-copy">
+            <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Digital Shamans</button></h2>
+            <p class="career-role">Lead Artist</p>
+            <ul class="career-projects">
+              <li><strong>MerCorp: The Retrieval</strong></li>
+              <li><strong>Hex Journey</strong></li>
+              <li><strong>Carve: Snowboarding</strong></li>
+            </ul>
           </div>
         </li>
       </ol>
@@ -159,6 +166,10 @@ sitemap: false
       <a class="career-portfolio-link" href="{{ '/artur/' | relative_url }}">View portfolio</a>
     </div>
   </main>
+  <dialog class="career-details" id="career-details" aria-labelledby="career-details-title">
+    <form method="dialog"><button class="career-details-close" type="submit">Close</button></form>
+    <div data-career-details-body></div>
+  </dialog>
   {% include copyright-footer.html owner='Artur Perzyna' %}
 </body>
 </html>
