@@ -1,0 +1,65 @@
+{
+  "w8LJ5g": [
+    {
+      "endpoint": "https://www.artstation.com/projects/w8LJ5g.json",
+      "status": 403,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "endpoint": "https://www.artstation.com/api/v2/projects/w8LJ5g.json",
+      "status": 404,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "endpoint": "https://www.artstation.com/artwork/w8LJ5g",
+      "status": 403,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "endpoint": "https://digital_shamans.artstation.com/projects/w8LJ5g",
+      "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'digital_shamans.artstation.com'. (_ssl.c:1081)>"
+    }
+  ],
+  "A9VRrq": [
+    {
+      "endpoint": "https://www.artstation.com/projects/A9VRrq.json",
+      "status": 403,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "endpoint": "https://www.artstation.com/api/v2/projects/A9VRrq.json",
+      "status": 404,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "endpoint": "https://www.artstation.com/artwork/A9VRrq",
+      "status": 403,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "endpoint": "https://digital_shamans.artstation.com/projects/A9VRrq",
+      "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'digital_shamans.artstation.com'. (_ssl.c:1081)>"
+    }
+  ],
+  "58QBOJ": [
+    {
+      "endpoint": "https://www.artstation.com/projects/58QBOJ.json",
+      "status": 403,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "endpoint": "https://www.artstation.com/api/v2/projects/58QBOJ.json",
+      "status": 404,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "endpoint": "https://www.artstation.com/artwork/58QBOJ",
+      "status": 403,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "endpoint": "https://digital_shamans.artstation.com/projects/58QBOJ",
+      "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'digital_shamans.artstation.com'. (_ssl.c:1081)>"
+    }
+  ]
+}
