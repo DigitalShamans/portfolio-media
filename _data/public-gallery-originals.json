@@ -1,5 +1,67 @@
 {
   "galleries": {
+    "battlezone-vr": {
+      "digital-shamans-artur-perzyna-battlezone-cg3d-1.jpg": {
+        "blob": "600986757445d527ac0a68ea26e0b430432a61f4",
+        "size": 496878
+      },
+      "digital-shamans-artur-perzyna-battlezone-cg3d-2.jpg": {
+        "blob": "624b861721f998a192dbb0bdd0d56eba9ea53fb7",
+        "size": 426151
+      },
+      "digital-shamans-artur-perzyna-battlezone-cg3d-3.jpg": {
+        "blob": "6ad6cf9ab0dbfb81fed7905aee4bd9b961382a73",
+        "size": 471203
+      },
+      "digital-shamans-artur-perzyna-battlezone-cg3d-4.jpg": {
+        "blob": "f1e4cb1744ae4207191301107d0481e073825d66",
+        "size": 474891
+      },
+      "digital-shamans-artur-perzyna-battlezone-cg3d-5.jpg": {
+        "blob": "8b140e0d9a3e93c918887f320b0341c877e4333b",
+        "size": 411326
+      },
+      "digital-shamans-artur-perzyna-battlezone-cg3d-6.jpg": {
+        "blob": "9749455087dffaefe72c338f72d1e78f8dc67537",
+        "size": 446638
+      },
+      "digital-shamans-artur-perzyna-battlezone-cg3d-7.jpg": {
+        "blob": "0f55a09a8ebd493366fb16c5cb6a473977374b68",
+        "size": 424423
+      },
+      "digital-shamans-artur-perzyna-battlezone-cg3d-8.jpg": {
+        "blob": "68b4fd47493ebaa0f7e70b4e353017babf41f03a",
+        "size": 361846
+      },
+      "digital-shamans-artur-perzyna-battlezone-presentation-a00b-impr2-denoised.jpg": {
+        "blob": "43f0598f2658008f93210689e624779ee76b8d7e",
+        "size": 390575
+      },
+      "digital-shamans-artur-perzyna-battlezone-presentation-a01-impr-denoised.jpg": {
+        "blob": "ee20f56e94e0015580570d432152f901a5fdf836",
+        "size": 474163
+      },
+      "digital-shamans-artur-perzyna-battlezone-presentation-a04-impr-denoised.jpg": {
+        "blob": "412eca7465bd0544ad9736687148c1064f88335b",
+        "size": 297358
+      },
+      "digital-shamans-artur-perzyna-battlezone-presentation-a10-impr-denoised.jpg": {
+        "blob": "ad1e37f8e0bf58f10d1a0ea006773355f3c573de",
+        "size": 461862
+      },
+      "digital-shamans-artur-perzyna-battlezone-presentation-c01-impr-denoised-m.jpg": {
+        "blob": "1071a8b82ce2b6cc28137a48c5ccdca0134073e7",
+        "size": 397713
+      },
+      "digital-shamans-artur-perzyna-battlezone-presentation-c02-impr-denoised-m.jpg": {
+        "blob": "591e27285d23012ede975e6131a71b40457db2c9",
+        "size": 380325
+      },
+      "digital-shamans-artur-perzyna-battlezone-presentation-c06-impr-denoised-m.jpg": {
+        "blob": "358168338821fbfd6069a5f11a5b712b8a16d9bc",
+        "size": 306563
+      }
+    },
     "firearms": {
       "digital-shamans-artur-perzyna-weapon-aw50-compose1.jpg": {
         "blob": "41559265aa865124a92dc1ea08fa795fdfe06835",

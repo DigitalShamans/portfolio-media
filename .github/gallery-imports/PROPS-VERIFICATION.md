@@ -1,33 +1,44 @@
 # Props verification
 
-Scope: Props only, ArtStation ba253a. One gallery release; final live acceptance remains pending.
+Completed 19 November 2026. One gallery release; both routes published and verified. This is the sixth converted Full Portfolio gallery.
 
-Planned routes: /galleries/props/ and /artur/galleries/props/.
+- [Studio](https://digitalshamans.co.uk/galleries/props/)
+- [Personal](https://digitalshamans.co.uk/artur/galleries/props/)
+- [Editable manifest](https://digitalshamans.co.uk/galleries/props/gallery.json)
+- [ArtStation source](https://www.artstation.com/artwork/ba253a)
 
-## Source and preparation — passed
+## Source and preparation
 
-Rendered source contains43asset containers:42JPGs,one empty record atposition2,no embeds. Empty record is documented and omitted. Exact image order,filename case,source captions and genuine download links including dl=1 are preserved in source evidence. No higher-resolution URLs were invented.
+Rendered source contains 43 containers: 42 JPGs, one empty record at position 2, no embeds. Empty record is documented and omitted. Exact image order/case, source captions and actual download links including dl=1 are preserved in source evidence. No high-resolution URL was invented.
 
-Original dimensions:7×3840×2160,10×2560×1440,6×2560×1366,19×1920×1080;22,566,756original bytes. All42originals and42WebPs match staged hash/size/blob/decode/dimension facts. Derivatives use Lanczos/q92/method6,EXIF/ICC,and no cropping/upscaling. Editable gallery.json retains42original JPG references. No companion manifest is required.
+Originals: seven at 3840×2160, ten at 2560×1440, six at 2560×1366 and nineteen at 1920×1080; 22,566,756 bytes. All 42 original hash/size/blob/decode/dimension checks pass. WebPs:17 at 2560×1440, six at 2560×1366 and 19 at 1920×1080; 15,665,332 bytes. Lanczos/q92/method6, EXIF/ICC, no crop/upscale. Every WebP matches staged bytes and decodes. gallery.json retains 42 original JPG references in source order/case; no companion is required.
 
-Download10.333s;prepare9.836s. PrivatePR6 merged atde815cfb10a0ab016e63bb93f7cb0da658620b39; all42approved blobs/sizes match that exact tree. Public checkpoints:browserguard3a8d9f1 andmedia/pagesb676519. Previous approved inventories and delivery revisions remain intact.
+Private PR6 merged at `de815cfb10a0ab016e63bb93f7cb0da658620b39`; all 42 approved blobs/sizes match that exact tree. Public checkpoints: browser guard `3a8d9f1`, media/pages `b676519`, metadata `107f7ae`. Existing approvals and delivery revisions are preserved.
 
-## Native editor — passed
+## Actual native editor
 
-Actual DS Gallery Editor v0.11 rendered each of42individual previews. Adjacent reorder→Save→reopen persisted; canonical order was restored and explicitly saved. Exact-case references/order and alloriginal SHA-256 values match stage. The final isolated scratch manifest is byte-identical to canonical stage after formatting restoration. No production files were changed by the UI; no embeds generated; no timeouts or blockers.
+DS Gallery Editor v0.11 individually rendered all 42 previews. Adjacent reorder → Save → reopen persisted; canonical order was restored and explicitly saved. All original hashes and exact-case references/order match stage. Canonical bytes were restored after the successful semantic round-trip. Isolated scratch only; no production files changed by the UI, no embeds generated, no timeout or blocker.
 
-## Original service — passed
+## Service and website
 
-Catalog-only v10 sourceb2515911703e45c82d32113883e9c2ef4da9b723; deploymentappgdep_6aff11b6d8908191a31ed9ec418b386b succeeded15:12:04Z,environment15. OnlyProps is added under a new immutable revision; six prior catalog/active revisions remain. Gateway14/14 tests and build pass.
+Sites v10 source `b2515911703e45c82d32113883e9c2ef4da9b723`; deployment `appgdep_6aff11b6d8908191a31ed9ec418b386b` succeeded 15:12:04Z, environment revision 15. Only Props is added under its new revision; six prior catalogs/active revisions remain. Gateway tests 14/14 and build pass.
 
-Live service:42/42newJPGs exactbyte/SHA-256/Gitblob/fullJPEGdecode/dimensions/orientation. Three retained NFS/Aircrafts/Phantom samples pass; four unknown-revision/missing-file/wrong-case/video-endpoint probes return404. Actual49GETs:45HTTP200+4HTTP404,25.95s,10s per-request timeout,Windows certificate validation.
+Actual service: 42 new originals match exact bytes/SHA-256/Git blob/full JPEG decode/dimensions/orientation; three retained NFS/Aircrafts/Phantom samples pass; four unknown-revision/missing-file/wrong-case/video-endpoint probes return 404. Total 49 GETs:45 HTTP 200 +4 HTTP 404, 25.95s. Windows certificate validation and 10s request deadlines retained.
 
-## Website and browser — pending
+[PR70](https://github.com/DigitalShamans/portfolio-media/pull/70) merged as `82e2723b9d21f6d9c7bb01cc76c421c6ccd7a1cb`. [Pages run44552731651](https://github.com/DigitalShamans/portfolio-media/actions/runs/44552731651) validation/build/deployment succeeded 15:17:13Z. Both actual HTML routes report that exact revision.
 
-Record successful Pages revision/run, public file/metadata/unlisted checks and both-route browser results after deployment. No live acceptance claim is made yet.
+Public delivery: 55 HTTP 200 responses cover 42 WebPs, canonical manifest, both route HTML documents, seven actual dependencies, both homes and sitemap. Exact hashes/decode/dimensions, title/h1/noindex, approved revision and 42 asset versions pass. Both routes remain absent from sitemap and homepage/main-navigation links. Existing external ArtStation cards remain. Production parser/order, version generation, embed checks and 55 maintained guard/resolution/header/prefetch/arrival tests pass. Full Ruby/Jekyll checks passed in CI. Concurrent handoff changes through d7c4604 remain preserved; this import adds no viewer behavior.
 
-## Browser timeout policy — tested
+## Interactive browser
 
-In-app browser first. Five-second observation deadlines; one fresh in-app retry; two-second delivery fallback. Inputs use five-second locator timeouts and15-second CUA calls. Native Chrome is not automatically launched. HTTP fallback remains explicitly noninteractive/unverified. The guard bounds in-session checks, but cannot cancel underlying UI input or an unresponsive tool transport.
+Supported in-app browser on BOTH routes at 390×844 and 2800×1500: 42 images, correct portfolio/title, no horizontal overflow, decoded mobile WebPs and original desktop JPGs. Studio 1280×900 also uses decoded WebPs. Screenshot 14 loads the actual 3840×2160 JPG wide and its 2560×1440 WebP on mobile.
 
-All7guard tests pass, including never-resolving primary/retry/fallback callbacks and late-result rejection. Actual Props source open exercised a five-second timeout then succeeded on the automatic fresh in-app retry in0.972s. Source inspection and final interactive acceptance remain separate checks. Native Gallery Editor requirement is retained.
+Fullscreen/counters/next/previous/return pass: studio 1→2→1 mobile and 14→15→14 wide; personal 14→15→14 mobile and 42→41→42 wide. Escape and Back to gallery close the viewer. Desktop/mobile screenshots visually inspected. Temporary viewport override reset. No native Chrome use, user prompts, or physical touch/iOS/Safari testing.
+
+## Timeout policy and measured time
+
+In-app first; five-second observation deadline; one fresh in-app retry; two-second delivery fallback. Inputs use 5s locator limits and 15s CUA calls. HTTP fallback stays noninteractive/unverified. Guard tests 7/7 pass, including never-resolving callbacks and late-result rejection. Actual source opening exercised a 5s timeout then automatic recovery in 0.972s. A live hydration check also recovered automatically. A guard cannot cancel underlying UI input or an unresponsive external tool transport; unknown action outcomes require fresh observation.
+
+Downloads 10.333s; preparation 9.836s. Request 14:59:56.265Z → publication 15:17:13Z. Full acceptance completed in 25.45min, 60.5% below the 64m23s Firearms baseline: the half-time target was met for this supported JPG-only run. Exact timestamps and scope are in PROPS-TIMINGS.json. This is a measured run, not a guarantee for unknown formats.
+
+Final acceptance/STATUS/timings stay on the working branch to avoid a second website release. Working evidence retains source/download/staging facts, editor hashes, HTTP records and browser-verification.json. Prior Sniper final evidence is also carried forward.

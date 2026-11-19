@@ -1,0 +1,29 @@
+{
+  "source_complete_utc": "2026-11-19T15:03:57.489042+00:00",
+  "request_start_utc": "2026-11-19T14:59:56.265Z",
+  "preparation_complete_utc": "2026-11-19T15:06:57.660914+00:00",
+  "download_seconds": 10.333,
+  "prepare_seconds": 9.836,
+  "service_succeeded_utc": "2026-11-19T15:12:04.085769+00:00",
+  "pages_succeeded_utc": "2026-11-19T15:17:13+00:00",
+  "acceptance_complete_utc": "2026-11-19T15:25:23.533860+00:00",
+  "request_to_pages_seconds": 1036.735,
+  "request_to_acceptance_seconds": 1527.269,
+  "prior_full_import_baseline_seconds": 3863,
+  "half_time_threshold_seconds": 1931.5,
+  "half_time_target_met": true,
+  "baseline_reduction_percent": 60.5,
+  "service_http_seconds": 25.95,
+  "public_http_seconds": 13.99,
+  "browser_policy": {
+    "primary": "in-app",
+    "attempt_deadline_ms": 5000,
+    "fresh_in_app_retries": 1,
+    "delivery_fallback_deadline_ms": 2000,
+    "locator_timeout_ms": 5000,
+    "tool_timeout_ms": 15000,
+    "native_chrome_used": false,
+    "source_open_timeout_recovered": true
+  },
+  "scope": "Request to completed delivery/editor/browser acceptance; final checkpoint push follows. Supported JPG-only gallery; not a guarantee for unknown formats."
+}
