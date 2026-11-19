@@ -80,6 +80,9 @@ finalization/finally step owned by the release owner. It is not a scheduled job.
    outstanding UI work; each capture owner resets its native editor/browser tool
    session. Reset the `node_repl` and `cua_repl` sessions that were used. Do not
    initialize a fresh capture client just to perform cleanup.
+   Record helper IDs, exact paths, parent identities and UTC creation times while
+   the checks are active. Compare normalized timestamps during cleanup: PowerShell
+   may deserialize JSON ISO dates as DateTime objects rather than literal strings.
 2. Inspect current running helper process identities using the authorized native
    process tools. The known helpers are `codex-computer-use.exe` and
    `codex-computer-use-swift.exe`. Verify exact executable path belongs to the

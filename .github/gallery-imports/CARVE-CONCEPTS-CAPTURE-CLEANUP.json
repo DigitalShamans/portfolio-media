@@ -1,0 +1,47 @@
+{
+  "passed": true,
+  "completed_utc": "2026-11-19T16:47:16.7166704Z",
+  "native_editor_session_reset": true,
+  "root_cua_session_reset": true,
+  "root_node_repl_session_reset": true,
+  "original_processes_recorded": 3,
+  "actions": [
+    {
+      "id": 7888,
+      "name": "codex-computer-use.exe",
+      "result": "already-exited"
+    },
+    {
+      "id": 46448,
+      "name": "codex-computer-use.exe",
+      "result": "already-exited"
+    },
+    {
+      "id": 45188,
+      "name": "codex-computer-use-swift.exe",
+      "result": "stopped-original",
+      "identity_verified": true
+    },
+    {
+      "id": 15008,
+      "name": "codex-computer-use-swift.exe",
+      "result": "stopped-automatic-restart-once",
+      "identity_verified": true
+    }
+  ],
+  "original_processes_still_running": [],
+  "background_helpers_after_bounded_retry": [
+    {
+      "ProcessId": 49436,
+      "Name": "codex-computer-use-swift.exe",
+      "ParentProcessId": 38608
+    }
+  ],
+  "errors": [],
+  "visual_indicator": "No post-cleanup desktop screenshot was taken; visual disappearance is not claimed from process counts.",
+  "privacy_settings_changed": false,
+  "resolved_identity_check": "Recorded JSON ISO timestamps deserialize as DateTime; matching UTC ticks verified the unchanged helper identity before termination.",
+  "resolved_errors": [
+    "Identity changed for recorded process 45188; not stopped."
+  ]
+}

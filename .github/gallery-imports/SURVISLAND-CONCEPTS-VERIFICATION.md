@@ -1,0 +1,17 @@
+# Survisland - Concept Art verification
+
+Scope: ArtStation48bED2 only, one gallery release on both studio and personal portfolio routes. Source/media/private/service gates passed. Source/media/native/private/service gates passed; website deployment and live browser acceptance remain pending.
+
+Rendered source contains48 JPGs and a genuinely empty second container, omitted from publication. No video or embedded viewer exists. Actual original download URLs are39 /4k/ and9 /8k/ links, all retaining dl=1. Original case/order, full description and Shelly Menville/Ricardo Caria credits preserved. Source title Concept Art is contextualized as Survisland - Concept Art, using the documented game name and ASCII separator.
+
+Originals54,836,501 bytes:38x3840x2160,9x7680x4320,1x3820x2160. WebPs12,758,354 bytes:47x2560x1440,1x2547x1440. All48 originals and48 derivatives passed exact size/SHA-256/Git blob/full decode. Lanczos/q92/method6, EXIF/ICC, no crop/upscale. Exact image-only source order parsed by production GalleryData; no companion invented. Downloads12.690s; preparation14.093s.
+
+Actual installed DS Gallery Editor v0.11 resolved48 Included entries. Adjacent reorder, explicit Save, reopen and canonical restoration/Save passed before original archiving. All48 individual previews rendered. Final canonical data/order/case and all48 original hashes match stage/baseline; scratch canonical bytes restored. Native CUA reset passed and no further capture call was made. UI stayed in isolated scratch.
+
+Private PR10 merged03e99d896b7e6fe8814ca35c72470cf4864eafe3; all48 immutable Git tree blobs/sizes match approved inventory. Previous approvals/private PNG archive preserved. Public prepared-source checkpoint8305d8a. Existing public main's PNG migration and other changes preserved rather than repeated/reverted.
+
+Catalog-only media-service v13 source80552d13137e056f3ea25f688f2e6774c494af0a. Deployment appgdep_6aff407dbe30819192920b09ce7b542d succeeded2026-11-19T18:31:38.968534Z,environment18. Nine earlier catalogs/active revisions retained. Runtime/audience/access controls unchanged. Build and14/14 gateway tests passed. All55 actual service GETs passed:48 new originals,3 retained samples,4 denials;51x200+4x404,35.71s,10s/request,Windows TLS. Each new image matched exact bytes/hash/blob/full decode/dimensions/orientation, including all9 actual8K originals.
+
+Website patches add only incoming approval and its immutable revision; all old approvals/overrides/global fallback retained. Both pages noindex/sitemapfalse, unlisted from home/navigation. Existing external ArtStation card remains. Maintained local browser/resolution/prefetch/arrival/embed tests51/51 passed; production version generation and existing embed validation next. Ruby/Jekyll validation will run in Pages CI.
+
+Remaining gates: one successful Pages release with exact served implementation, all public WebPs/manifest/dependencies/route exclusions and in-app mobile/wide image delivery/viewer/exit checks. HTTP evidence never substitutes for interaction. Screenshots must be saved/visually inspected before automatic capture release. Final cleanup resets used sessions and verifies/terminates only recorded Codex capture helpers, one bounded restart retry, no fresh desktop screenshot afterward. Physical touch/iOS/Safari and native Fullscreen API grant are not automatically claimed. No Chrome or routine permission prompt.
