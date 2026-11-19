@@ -17,14 +17,20 @@
   {% unless page.portfolio == 'personal' %}{% include site-favicon.html %}{% endunless %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
   <link rel="stylesheet" href="{{ '/assets/portfolio.css' | relative_url }}?v=7">
+  {% unless page.portfolio == 'personal' %}
+    <link rel="stylesheet" href="{{ '/assets/about.css' | relative_url }}?v=3">
+    <link rel="stylesheet" href="{{ '/assets/home-sections.css' | relative_url }}?v=1">
+    <script src="{{ '/assets/home-sections.js' | relative_url }}?v=1" defer></script>
+  {% endunless %}
   {% if site.data.portfolio_gallery_preloads %}
     <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=6" defer></script>
     <script src="{{ '/assets/portfolio-preload.js' | relative_url }}?v=3" defer></script>
   {% endif %}
 </head>
-<body class="portfolio-page">
+<body class="portfolio-page{% unless page.portfolio == 'personal' %} portfolio-home{% endunless %}">
   {% include site-header.html %}
   <main class="site-shell portfolio-main">
+    {% unless page.portfolio == 'personal' %}<div id="portfolio" data-home-section="portfolio">{% endunless %}
     <section id="recent-work" aria-label="Recent Work">
       <!-- Evenly spaced samples of a spline through the Photoshop RGB points (0, 0), (45, 48), (191, 205), (255, 255). -->
       {% assign hover_curve = '0 0.06584 0.1324 0.20036 0.27006 0.34088 0.41207 0.48286 0.55253 0.6203 0.68544 0.74718 0.80479 0.85785 0.90725 0.95424 1' %}
@@ -79,6 +85,12 @@
         {% endfor %}
       </ul>
     </section>
+    {% unless page.portfolio == 'personal' %}
+    </div>
+    <section id="about-us" class="homepage-about" data-home-section="about" aria-labelledby="about-title">
+      {% include studio-about.html heading='h2' detail_heading='h3' %}
+    </section>
+    {% endunless %}
   </main>
   {% include copyright-footer.html owner=copyright_owner %}
 </body>

@@ -15,49 +15,12 @@ seo_image: hb-egypt
   {% include site-favicon.html %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
   <link rel="stylesheet" href="{{ '/assets/portfolio.css' | relative_url }}?v=7">
-  <link rel="stylesheet" href="{{ '/assets/about.css' | relative_url }}?v=2">
+  <link rel="stylesheet" href="{{ '/assets/about.css' | relative_url }}?v=3">
 </head>
 <body class="portfolio-page about-page">
   {% include site-header.html %}
   <main class="site-shell about-main">
-    <article class="about-content" aria-labelledby="about-title">
-      <div class="about-intro">
-        <h1 id="about-title">About Us</h1>
-        <p class="about-location">London, United Kingdom</p>
-        <p>Digital Shamans is a game art outsourcing studio. Our team of game developers and freelance artists works alongside studios to raise the visual quality of their games and help meet production targets.</p>
-        <p>We develop concept art, environments and game-ready 3D assets, and help integrate and optimise them in-engine. Our work spans PC, console, mobile and VR.</p>
-        <p class="about-motto">Nothing done well is insignificant.</p>
-        <ul class="about-links">
-          <li><a href="mailto:contact@digitalshamans.co.uk">contact@digitalshamans.co.uk</a></li>
-          <li><a href="https://digital_shamans.artstation.com/resume">Studio profile and presentation on ArtStation</a></li>
-        </ul>
-      </div>
-      <div class="about-details">
-        <section aria-labelledby="about-services">
-          <h2 id="about-services">Services</h2>
-          <ul>
-            <li>Art direction</li>
-            <li>Concept design</li>
-            <li>Environment design</li>
-            <li>Game art development</li>
-            <li>Look development</li>
-          </ul>
-        </section>
-        <section aria-labelledby="about-software">
-          <h2 id="about-software">Software</h2>
-          <ul>
-            <li>Maya</li>
-            <li>Unreal Engine</li>
-            <li>Unity</li>
-            <li>Substance 3D Painter</li>
-            <li>Substance 3D Designer</li>
-            <li>Houdini</li>
-            <li>ZBrush</li>
-            <li>3ds Max</li>
-          </ul>
-        </section>
-      </div>
-    </article>
+    {% include studio-about.html %}
   </main>
   {% include copyright-footer.html %}
 </body>

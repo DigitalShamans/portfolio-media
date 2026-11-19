@@ -13,8 +13,13 @@
         <img src="{{ '/assets/DS_Logo_White_Transparent_With_Tagline_1200.png' | relative_url }}?v={{ site.github.build_revision | escape }}" width="1200" height="320" alt="Digital Shamans">
       </a>
       <nav class="site-nav" aria-label="Main navigation">
+        {% if page.layout == 'portfolio' %}
+        <a href="#portfolio" data-home-link="portfolio" aria-current="location">Portfolio</a>
+        <a href="#about-us" data-home-link="about">About Us</a>
+        {% else %}
         <a href="{{ '/' | relative_url }}"{% unless page.url == '/resume/' %} aria-current="true"{% endunless %}>Portfolio</a>
         <a href="{{ '/resume/' | relative_url }}"{% if page.url == '/resume/' %} aria-current="page"{% endif %}>About Us</a>
+        {% endif %}
         <a href="https://tally.so/r/3Ey0V4">Contact</a>
         <a href="https://digital_shamans.artstation.com/blog">Jobs</a>
       </nav>

@@ -1,0 +1,21 @@
+.portfolio-home .site-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 20;
+}
+
+.portfolio-home #portfolio,
+.portfolio-home #about-us {
+  scroll-margin-block-start: calc(var(--home-header-height, 9rem) + 1rem);
+}
+
+.homepage-about {
+  margin-block-start: clamp(2.5rem, 6vw, 5rem);
+  border-block-start: 1px solid var(--border);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.portfolio-home) { scroll-behavior: smooth; }
+  .homepage-about .about-content { transition: opacity 420ms ease, transform 420ms ease; }
+  .homepage-about.is-reveal-pending .about-content { opacity: 0; transform: translateY(1.5rem); }
+}
