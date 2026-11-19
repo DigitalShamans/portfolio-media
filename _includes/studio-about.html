@@ -1,42 +1,60 @@
 <article class="about-content" aria-labelledby="about-title">
   <div class="about-intro">
-    <{{ include.heading | default: 'h1' }} id="about-title" class="about-title">About Us</{{ include.heading | default: 'h1' }}>
-    <p class="about-location">London, United Kingdom</p>
+    <div class="about-intro-top">
+      <div class="about-heading">
+        <{{ include.heading | default: 'h1' }} id="about-title" class="about-title">About Us</{{ include.heading | default: 'h1' }}>
+        <p class="about-location">London, United Kingdom</p>
+      </div>
+      <p class="about-motto">Nothing done well is insignificant.</p>
+    </div>
     <p>Digital Shamans is a game art outsourcing studio. Our team of game developers and freelance artists works alongside studios to raise the visual quality of their games and help meet production targets.</p>
     <p>We develop concept art, environments and game-ready 3D assets, and help integrate and optimise them in-engine. Our work spans PC, console, mobile and VR.</p>
-    <p class="about-motto">Nothing done well is insignificant.</p>
     <ul class="about-links">
       <li><a href="mailto:contact@digitalshamans.co.uk">contact@digitalshamans.co.uk</a></li>
-      <li><a href="https://digital_shamans.artstation.com/resume">Studio profile and presentation on ArtStation</a></li>
+      <li><a href="mailto:jobs@digitalshamans.co.uk">jobs@digitalshamans.co.uk</a></li>
     </ul>
   </div>
   <div class="about-details">
     <section aria-labelledby="about-services">
       <{{ include.detail_heading | default: 'h2' }} id="about-services">Services</{{ include.detail_heading | default: 'h2' }}>
+      <p class="about-services-intro">Game Development Support and LookDev</p>
       <ul>
-        <li>Art direction</li>
-        <li>Concept design</li>
-        <li>Environment design</li>
-        <li>Game art development</li>
-        <li>Look development</li>
+        <li>Level Prototyping and Concept Design</li>
+        <li>Environment Creation and Level Art</li>
+        <li>Asset Pack and Hero Assets Creation</li>
+        <li>Art Development Pipeline Setup and Art Direction Consultation</li>
       </ul>
     </section>
-    <section aria-labelledby="about-software">
-      <{{ include.detail_heading | default: 'h2' }} id="about-software">Software</{{ include.detail_heading | default: 'h2' }}>
+    <section aria-labelledby="about-platforms">
+      <{{ include.detail_heading | default: 'h2' }} id="about-platforms">Platforms</{{ include.detail_heading | default: 'h2' }}>
       <ul>
-        <li>Maya</li>
+        <li>PC</li>
+        <li>VR (Oculus Quest, PSVR and more)</li>
+        <li>PlayStation and Xbox</li>
+      </ul>
+    </section>
+    <section aria-labelledby="about-engines">
+      <{{ include.detail_heading | default: 'h2' }} id="about-engines">Engines</{{ include.detail_heading | default: 'h2' }}>
+      <ul>
         <li>Unreal Engine</li>
         <li>Unity</li>
-        <li>Substance 3D Painter</li>
-        <li>Substance 3D Designer</li>
-        <li>Houdini</li>
-        <li>ZBrush</li>
-        <li>3ds Max</li>
+        <li>Frostbite</li>
+        <li>Other proprietary engines</li>
       </ul>
     </section>
   </div>
-  <div class="about-actions">
-    <a class="about-action" href="https://tally.so/r/3Ey0V4">Contact Us</a>
-    <a class="about-action" href="https://digital_shamans.artstation.com/blog">Jobs Openings</a>
+  <div class="about-footer">
+    <div class="about-actions">
+      <a class="about-action" href="https://tally.so/r/3Ey0V4">Contact Us</a>
+      <a class="about-action" href="https://digital_shamans.artstation.com/blog">Jobs Openings</a>
+    </div>
+    <nav class="about-socials" aria-label="Digital Shamans social profiles">
+      <a class="about-social-link about-social-link--artstation" href="https://digital_shamans.artstation.com/" target="_blank" rel="noopener noreferrer" aria-label="Digital Shamans on ArtStation (opens in a new tab)" title="Digital Shamans on ArtStation">
+        <span class="about-social-icon"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc. --><path fill="currentColor" d="M2.1 377.4l43 74.3c4.3 8.5 10.8 15.7 18.9 20.7s17.4 7.6 27 7.6l285.4 0-59.2-102.6-315.1 0zM501.9 350L335.7 59.3c-4.4-8.2-10.9-15.1-18.9-20S299.7 32 290.4 32l-88.4 0 257.3 447.6 40.7-70.5c1.9-3.2 21-29.7 2-59.1zM275.2 304.5l-115.5-200-115.5 200 231 0z"/></svg></span>
+      </a>
+      <a class="about-social-link about-social-link--linkedin" href="https://uk.linkedin.com/company/digitalshamans" target="_blank" rel="noopener noreferrer" aria-label="Digital Shamans on LinkedIn (opens in a new tab)" title="Digital Shamans on LinkedIn">
+        <span class="about-social-icon"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc. --><path fill="currentColor" d="M100.3 448l-92.9 0 0-299.1 92.9 0 0 299.1zM53.8 108.1C24.1 108.1 0 83.5 0 53.8 0 39.5 5.7 25.9 15.8 15.8s23.8-15.8 38-15.8 27.9 5.7 38 15.8 15.8 23.8 15.8 38c0 29.7-24.1 54.3-53.8 54.3zM447.9 448l-92.7 0 0-145.6c0-34.7-.7-79.2-48.3-79.2-48.3 0-55.7 37.7-55.7 76.7l0 148.1-92.8 0 0-299.1 89.1 0 0 40.8 1.3 0c12.4-23.5 42.7-48.3 87.9-48.3 94 0 111.3 61.9 111.3 142.3l0 164.3-.1 0z"/></svg></span>
+      </a>
+    </nav>
   </div>
 </article>
