@@ -21,4 +21,6 @@ Scope: Phantom only. Checked 19 November 2026. Page deployment and live acceptan
 
 ## Remaining live checks
 
-Actual native Gallery Editor save/reopen is in progress. Pages build/deployment, both deployed routes, all public WebPs, responsive original/WebP selection, fullscreen/navigation, actual YouTube playback, sitemap/navigation exclusions and existing-gallery smoke checks remain pending. Parser tests are not represented as an editor UI test, and a commit is not represented as a deployment.
+Actual native DS Gallery Editor v0.10 round-trip **passed** on an isolated copy: 23 included JPG entries, rendered previews, first-image reorder, save/reopen with persisted order, then canonical order restored and saved. All 23 JPG references exist. The shipped companion remained byte-identical (SHA-256 `7CB12F21FBD4B6CC768E2AA8984AA74C569593A60BAA80580575BDFC5818A282`), preserving the video ID, exact title and original JPG anchor. The first two previews were inspected; all 23 individual previews were not exhaustively inspected. This is an actual UI test, separate from parser tests.
+
+Pages build/deployment, both deployed routes, all public WebPs, responsive original/WebP selection, fullscreen/navigation, actual YouTube playback, sitemap/navigation exclusions and existing-gallery smoke checks remain pending. A commit is not represented as a deployment.
