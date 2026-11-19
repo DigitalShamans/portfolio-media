@@ -1765,6 +1765,100 @@
         "blob": "563b825553e4f928f0e26c6dc380989e6a5e3f9b",
         "size": 462937
       }
+    },
+    "phantom-covert-ops": {
+      "digital-shamans-promo-screen-09-impr.jpg": {
+        "blob": "8eb2ab4cffac5947041bcaa46b658a090a93983c",
+        "size": 433924
+      },
+      "digital-shamans-chinook-vfx-01-impr04.jpg": {
+        "blob": "822048ecfe39f5ce39a21b24da7968886339cf40",
+        "size": 441471
+      },
+      "digital-shamans-chinook-vfx-06-impr04.jpg": {
+        "blob": "6975b056f58225d5c8f0381e64bf4bbcba0f5477",
+        "size": 452335
+      },
+      "digital-shamans-chinook-vfx-07-impr04.jpg": {
+        "blob": "563b825553e4f928f0e26c6dc380989e6a5e3f9b",
+        "size": 462937
+      },
+      "digital-shamans-digital-shamans-sm-central-hub-tower-srgb.jpg": {
+        "blob": "8de9824f83c378d53cbb3a096d76ee9d87ac3a65",
+        "size": 446854
+      },
+      "digital-shamans-digital-shamans-sm-warehouse-boat-hoist.jpg": {
+        "blob": "ed734485d9da6538f7f614b7c5ea9951f30e5d87",
+        "size": 408844
+      },
+      "digital-shamans-digital-shamans-sm-pontoon-jack-01.jpg": {
+        "blob": "2c8fa23360957c23265fae04099bbdbcbc5b436e",
+        "size": 517085
+      },
+      "digital-shamans-digital-shamans-digital-shamans-sm-concrete-blocks-and-razowire-fence-and-power-generators.jpg": {
+        "blob": "d94d30be222b585985baab9390ab9f160ddcbb60",
+        "size": 473225
+      },
+      "digital-shamans-digital-shamans-digital-shamans-nets.jpg": {
+        "blob": "31a27ceb98d78c27b65092dc01ea37bd1f8d80ea",
+        "size": 580192
+      },
+      "digital-shamans-digital-shamans-phantom-aksm-unreal4-impr-04.jpg": {
+        "blob": "d5738f47fb2c21e0aaf45103fd76923979293a4a",
+        "size": 502332
+      },
+      "digital-shamans-digital-shamans-phantom-aksm-01-impr-denoised-srgb-02.jpg": {
+        "blob": "26ff6f04d89a08a7aa109bfa6fec2ae2fb671ed9",
+        "size": 263920
+      },
+      "digital-shamans-digital-shamans-phantom-aksm-02-impr-denoised-srgb.jpg": {
+        "blob": "de41d832e62a646455e78e489f06b56b5069a2fe",
+        "size": 445746
+      },
+      "digital-shamans-digital-shamans-phantom-aksm-13-impr.jpg": {
+        "blob": "1e24dc605e0199235d49a07e20cf1b25036e26bc",
+        "size": 253822
+      },
+      "digital-shamans-digital-shamans-noise-maker-01.jpg": {
+        "blob": "39bd907830dc95f878970a49edc7845a5a966edb",
+        "size": 387510
+      },
+      "digital-shamans-digital-shamans-noise-maker-03.jpg": {
+        "blob": "cddfe69b2d98d1bb10ae93e0d75e4b491994d771",
+        "size": 534210
+      },
+      "digital-shamans-unreal4-phantom-environments-08b-srgb.jpg": {
+        "blob": "cc035011431411236dae2d0d51a91ccea0ee9aec",
+        "size": 630927
+      },
+      "digital-shamans-unreal4-phantom-environments-11-srgb.jpg": {
+        "blob": "f644b6d6ccb4d357a19117fed2638f4d173459fb",
+        "size": 345123
+      },
+      "digital-shamans-unreal4-phantom-environments-10-srgb.jpg": {
+        "blob": "c415215f72ebc41852ffbfac1836594107e79ec1",
+        "size": 474740
+      },
+      "digital-shamans-unreal4-phantom-environments-02-srgb.jpg": {
+        "blob": "d8e4bd56e42dc58fb5829856ef4b441de84c496c",
+        "size": 476150
+      },
+      "digital-shamans-unreal4-phantom-environments-05-srgb.jpg": {
+        "blob": "f8375ebc7462caef3bcfd9bc6593e2179c9ed031",
+        "size": 525175
+      },
+      "digital-shamans-unreal4-phantom-environments-12-srgb.jpg": {
+        "blob": "7bcab62ece68eded1cc4f9938b222a4d20bffb61",
+        "size": 450518
+      },
+      "digital-shamans-unreal4-phantom-environments-16-srgb.jpg": {
+        "blob": "dd2b9474757f9ca6a1fb67f0f8797df3eafd562b",
+        "size": 463854
+      },
+      "digital-shamans-unreal4-phantom-environments-14-srgb.jpg": {
+        "blob": "afa1da5486b2ec1cbaeb390c2478c122836aed8f",
+        "size": 483874
+      }
     }
   }
 }
