@@ -31,6 +31,8 @@ If the delivery revision is unset, 4K continues to come from the Pages checkout.
 
 ## Interactive gallery maps
 
+The user-accepted interactive map [working baseline](INTERACTIVE_MAP_BASELINE.md) records the verified commit, behaviour and regression checks.
+
 Open `https://digitalshamans.co.uk/_tools/gallery-editor.html` in desktop Chrome or Edge, or open `_tools/gallery-editor.html` from your checkout. Choose `galleries/<gallery>` with **Open gallery folder**, then select **Interactive map**. The editor supports both original images and the repository's `1440p` WebP subfolder. Files stay on your computer.
 
 1. Choose the overview image and give it a description.
