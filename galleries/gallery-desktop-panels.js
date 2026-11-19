@@ -11,7 +11,7 @@
   const interactive = 'a, button, input, textarea, select, label, iframe, video, audio, summary, '
     + '[contenteditable]:not([contenteditable="false"]), [role="button"], [role="link"], [role="slider"]';
   const holdDelay = 180;
-  const slideDuration = 750;
+  const slideDuration = 420;
   const editable = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])';
   let direction = null;
   let hovering = false;
