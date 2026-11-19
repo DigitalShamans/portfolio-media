@@ -1,0 +1,25 @@
+name: Probe ArtStation gallery media
+on:
+  push:
+    branches: [codex/artstation-three-galleries-20261119]
+    paths:
+      - .github/workflows/artstation-probe.yml
+      - .github/scripts/probe-artstation.py
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Inspect ArtStation source projects
+        run: python3 .github/scripts/probe-artstation.py
+      - name: Save source availability report
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/artstation-probe.json
+          git diff --cached --quiet || (git commit -m 'Record ArtStation gallery source metadata' && git push)
