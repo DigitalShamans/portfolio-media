@@ -1,18 +1,15 @@
 # Gallery publication status
 
-Current task: reduce future ArtStation import time while keeping **one gallery per release**. Aircrafts, Phantom and Firearms remain published; no additional gallery or shared runtime change is part of this task.
+Current task: Sniper Elite 4 - Environment Art only, source https://www.artstation.com/artwork/gJYL2Z. One gallery per release; use the reusable importer from PR #64. Both routes must be published and verified before completion.
 
-## Current bounded checkpoints
+## Bounded checkpoints
 
-1. **Audit complete.** Firearms request-to-final baseline 64m23s; downloads 6.270s, media preparation 14.536s. Most elapsed time was outside these operations, including new MP4 support, script authoring, integration, setup and release/report orchestration. These phase gaps are not measured exclusive CPU or idle time.
-2. **Reusable preparation complete.** Branch `codex/gallery-import-pipeline-20261119`, initially based on main `f8edbe5`, integrated through `e7ee3da`. `gallery-import.py` stages one new gallery from normalized or historical source evidence, preserves original bytes and exact WebP settings, emits image-only data, stable ordered embeds and both unlisted page stubs. `private-plan` and `plan` emit hash-bound reviewable patches; they never apply or deploy. Sparse service additions preserve prior catalogs/approvals/revision overrides. Pinned-Pillow offline tests pass 9/9.
-3. **Golden replay complete.** Actual Firearms originals produced 20 byte-identical WebPs and the unchanged MP4; image order and video anchors match production. Cold process 3.756s; resumed 1.443s, 20 verified cache hits. Acquisition, UI and deployment are excluded. Detailed compact evidence: `IMPORT-BENCHMARK.json`.
-4. **Downloader and integration verification complete.** 75 offline assertions pass in Windows PowerShell5.1/7. Actual JPG transport/decode/hash/dimensions pass (0.413s); verified resume makes zero transfers (0.103s). A genuine download-link parameter prevents CDN container substitution; the mismatched alternative was correctly rejected. Production manifest parsers accept the replay. Independent bounded review passed after correcting process-only PowerShell invocation. Core checkpoint `0e22bdf` and transport checkpoint `25d681f` pushed; tooling/runbook available in PR #64. No further importer implementation remains; check the PR for terminal integration/CI status. No source/service/gallery data changed. Live redirect/retry/cancellation/MP4-transfer branches were not exercised.
+1. Source verified in rendered ArtStation DOM: 26 asset containers, consisting of one empty leading container and 25 JPGs; no video/model embeds. Exact image order and genuine download links, including dl=1, captured once. One source link is 4k, 24 large; actual dimensions are pending decoding. Do not invent higher-resolution URLs or publish the empty container.
+2. Preparation underway: public branch `codex/sniper-elite-4-20261119` starts at main `107880e`. Private branch `codex/import-sniper-elite-4-20261119` starts at current main. Routes `/galleries/sniper-elite-4/` and `/artur/galleries/sniper-elite-4/` have no conflicts. Existing external ArtStation homepage cards remain unchanged.
+3. Native editor verification delegated as a bounded independent scratch-only task; staged files will be passed when ready. Source/checksum verification, existing media service update and publication have a single owner.
 
-Workflow/commands/acceptance: `IMPORT-WORKFLOW.md`. Target 25–30 minutes for the next comparable supported-format import; this is a forecast. Measure all four checkpoints on the next gallery against the 32m11.5s half-time threshold. Keep actual native editor and both-route browser acceptance, full new-file integrity and terminal deployments.
+Next: finish downloads, run prepare/private-plan, checkpoint originals and approvals, then publish approved originals before website metadata/pages. Retain all previous revision catalogs and active revisions. Keep existing shared runtime, protected media/access, comparisons/maps, navigation and caching unchanged.
 
-## Completed publication references
+Acceptance remains: every new original/WebP hash/decode/dimensions, exact source order/case, actual editor round-trip, successful service/Pages deployment, both live routes at mobile/wide sizes with navigation/fullscreen, noindex/sitemap/navigation exclusions. Record actual timing; 25–30 minutes is a target, not a guaranteed result. Detailed evidence stays under `.github/gallery-imports/` or private imports rather than the published artifact.
 
-- Aircrafts: public implementation `dd84935`; 23 images + four Sketchfab; final evidence `AIRCRAFTS-VERIFICATION.md`.
-- Phantom: publication `4c6bcf4`; 23 images + leading YouTube; evidence `PHANTOM-VERIFICATION.md` records limitations.
-- Firearms: PR #56, merge `87bb41b`; successful Pages run `44529823521`; 20 images + native MP4. Evidence PR #59 / `FIREARMS-VERIFICATION.md` records both routes, original/WebP/MP4 integrity, real native editor and both-route playback/fullscreen acceptance. No Firearms publication work remains.
+Completed Aircrafts, Phantom and Firearms reports and importer benchmark/workflow remain retained in this directory. No earlier-gallery reimport is required.
