@@ -226,6 +226,16 @@ dialog {
 /* Hard Bullet gallery destinations remain in the DOM for navigation, but have no boxes/arrows. */
 .gallery-navigation { display: none !important; }
 
+/* Preserve the actual site header, including its accent stripe, while the
+   new gallery panel slides beneath it. position:sticky preserves layout height:
+   there is no replacement header, duplicate logo or DOM rearrangement. */
+body.gallery-edge-header-visible > .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 31;
+  pointer-events: none;
+}
+
 /* Edge hover animates an entire panel; it has no clickable surface. */
 .gallery-desktop-edge-panel {
   position: fixed;
