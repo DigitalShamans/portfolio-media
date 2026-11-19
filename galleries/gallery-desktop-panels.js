@@ -11,7 +11,7 @@
   const interactive = 'a, button, input, textarea, select, label, iframe, video, audio, summary, '
     + '[contenteditable]:not([contenteditable="false"]), [role="button"], [role="link"], [role="slider"]';
   const holdDelay = 180;
-  const slideDuration = 420;
+  const slideDuration = 120;
   const editable = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])';
   let direction = null;
   let hovering = false;
@@ -50,6 +50,30 @@
   content.append(eyebrow, heading);
   panel.append(content);
   document.body.append(panel);
+
+  // Keep the shared logo, navigation and accent stripe visually stationary
+  // while the content underneath slides. Clone only for the short transition,
+  // leaving the source header and document layout untouched.
+  const siteHeader = document.querySelector('body > .site-header');
+  const transitionHeader = siteHeader?.cloneNode(true);
+  if (transitionHeader) {
+    transitionHeader.className += ' gallery-desktop-edge-header';
+    transitionHeader.setAttribute('aria-hidden', 'true');
+    transitionHeader.inert = true;
+    transitionHeader.hidden = true;
+    document.body.append(transitionHeader);
+  }
+
+  function showHeader() {
+    if (!transitionHeader) return;
+    transitionHeader.hidden = false;
+    panel.style.top = Math.ceil(transitionHeader.getBoundingClientRect().height) + 'px';
+  }
+
+  function hideHeader() {
+    if (transitionHeader) transitionHeader.hidden = true;
+    panel.style.top = '';
+  }
 
   // Avoid chaining through multiple galleries while the pointer remains on the edge.
   try {
@@ -96,14 +120,27 @@
         window.gsap.to(panel, {
           xPercent: old === 'next' ? 100 : -100,
           duration: .18, ease: 'power1.out', overwrite: true,
-          onComplete: () => { if (id === animationId) panel.hidden = true; }
+          onComplete: () => {
+            if (id === animationId) {
+              panel.hidden = true;
+              hideHeader();
+            }
+          }
         });
       } else {
         panel.style.transition = 'transform 180ms ease-out';
         panel.style.transform = 'translate3d(' + (old === 'next' ? '100%' : '-100%') + ',0,0)';
-        hideTimer = setTimeout(() => { if (id === animationId) panel.hidden = true; }, 185);
+        hideTimer = setTimeout(() => {
+          if (id === animationId) {
+            panel.hidden = true;
+            hideHeader();
+          }
+        }, 185);
       }
-    } else panel.hidden = true;
+    } else {
+      panel.hidden = true;
+      hideHeader();
+    }
   }
 
   function navigate(which, id) {
@@ -131,8 +168,10 @@
     panel.hidden = false;
     if (reducedMotion.matches) {
       panel.hidden = true;
-      finishTimer = setTimeout(() => navigate(which, id), 250);
-    } else if (window.gsap?.fromTo) {
+      finishTimer = setTimeout(() => navigate(which, id), slideDuration);
+    } else {
+      showHeader();
+      if (window.gsap?.fromTo) {
       window.gsap.killTweensOf(panel);
       window.gsap.fromTo(panel,
         { xPercent: offset, autoAlpha: 1 },
@@ -153,6 +192,7 @@
         });
       });
       finishTimer = setTimeout(() => navigate(which, id), slideDuration + 40);
+      }
     }
   }
 
