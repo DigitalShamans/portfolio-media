@@ -1,6 +1,12 @@
 # Firearms verification
 
-Scope: Firearms only. Checked 19 November 2026. Website deployment/live acceptance remain pending until recorded below.
+Scope: Firearms only. Checked 19 November 2026. Published and verified on both portfolio routes.
+
+Studio: https://digitalshamans.co.uk/galleries/firearms/
+
+Personal: https://digitalshamans.co.uk/artur/galleries/firearms/
+
+Implementation `87bb41b30d636eb1ecaccd02129be927a927fb69`, PR #56. Full Pages validation, Ruby/Jekyll build and deployment completed successfully: https://github.com/DigitalShamans/portfolio-media/actions/runs/44529823521
 
 ## Bounded checkpoints and source
 
@@ -25,10 +31,26 @@ Scope: Firearms only. Checked 19 November 2026. Website deployment/live acceptan
 - Twenty-one maintained embed tests and all 17 controlled delivery browser tests passed. Broader maintained tests pass 87 cases; two existing public-route cases are blocked locally by unavailable Ruby and will run in normal Pages CI. Coverage includes native video URLs/controls/responsive layout/fullscreen/failure isolation and existing JPG retry/WebP fallback, previous-image preservation, stale navigation/comparison and protected gallery behavior.
 - A separate isolated-browser test loaded the actual MP4, decoded 2560×1440/18.5 seconds, advanced playback, sought to 9.25 seconds and entered/exited native fullscreen with zero page errors. Its fixture honors byte ranges; actual deployed hosting/range/playback remain a separate live check.
 
-## Remaining acceptance
+## Integration and actual editor — passed
 
 - Real tracked Firearms/Phantom/Aircrafts embed validation, existing map validation and complete asset-version generation passed. The real MP4 version equals its exact Git blob `cc7798d6711514dac3a4a4ec8ddf08e4b79f10e1`; all 20 original JPG version references remain present. Missing unchanged JSON/frontmatter files in the sparse checkout were materialized from exact tracked blobs for these checks; no unrelated source content changed.
 - Actual DS Gallery Editor v0.10 UI round-trip passed on an isolated source copy: 20 Included JPGs, rendered lead preview, reorder, save, reopen with persisted order, restore canonical order and save. All 21 media hashes remained unchanged. The native-video companion stayed byte-identical (SHA-256 `E40DFE783C8E8F3A60206DBFDB2951C8E173AC69682482D7E7E323EC5FC9AF44`), retaining exact filename/anchors. Editor JSON formatting changed, while canonical image data was restored. A minimized wrapper limitation was resolved through the skill's documented window activation API; no app/settings/source changes were needed.
 - Current main `ece5bc6` navigation/RZ exit/map-fullscreen updates were merged and retained in checkpoint `3a73a5f`. The shared viewer include is preserved; public viewer cache key advances to v42 to avoid colliding with main's already-published v41. Only the controlled test fixture was adapted to the extracted include. Post-merge browser tests pass 17/17; targeted embeds/desktop/RZ/navigation/maps pass 71/71. No runtime rollback was needed.
 
-Terminal Pages build/deployment, both real portfolio routes, all public media/range/hash checks, actual live video playback/fullscreen, responsive original/WebP delivery, sitemap/navigation exclusions and existing-gallery smoke checks remain pending. Local playback is not represented as deployed playback.
+## Deployed acceptance — passed
+
+- Public delivery: 38 successful requests (36 HTTP 200, two HTTP 206). All 20 public WebPs fully decode and match exact merged bytes/SHA-256/Git blobs and source dimensions. The full MP4 response matches the exact 27,253,962 source bytes, SHA-256, Git blob and parsed 2560×1440/18.5-second metadata. Ten checked shared scripts/styles/manifests match the merged implementation.
+- Video byte ranges: exact 1,024-byte responses with HTTP 206 and `Content-Range: bytes 0-1023/27253962` and `bytes 27252938-27253961/27253962`. Both range bodies match the source bytes, supporting deployed seeking/metadata reads.
+- Both real aliases: HTTP 200, correct portfolio headers/title, 20 images and one native video after the lead, correct source image order, noindex, 23 per-asset versions including MP4 blob `cc7798d6711514dac3a4a4ec8ddf08e4b79f10e1`, originals revision `3b580d05…`, viewer v42, embed script v3 and embed CSS v2. Both homepages/main navigation and sitemap omit the Firearms gallery route URLs; existing external ArtStation cards are preserved. Unlisted routes remain directly and anonymously accessible; access/security settings were not changed.
+- Responsive checks on both aliases: 390 CSS-pixel viewport uses the matching decoded WebP; 2800 CSS-pixel desktop uses the actual decoded approved original JPG. Lead image is genuinely 2560×1366, not upscaled 4K. Image fullscreen/dialog, counters, next/previous and return worked. Mobile native video fits its 16:9 frame with controls and playsinline, without horizontal overflow.
+- Actual native Chrome studio video: rendered moving shooting frames/timer, native fullscreen at `0:05 / 0:18`, Escape return, midpoint seek to `9.106s`, native play/pause toggles.
+- Actual native Chrome personal video: independently rendered moving frames/timer, native fullscreen/Escape, pause held `10.337s`, seek to `8.475s`, resume advanced to `14.583s`. Personal image fullscreen also navigated `2/20 → 3/20` and Escape returned. Tests used only a new owned Chrome window, which was closed afterward; existing user windows/tabs stayed untouched.
+- Existing-gallery live smoke checks: Aircrafts retains 23 images and four correctly ordered Sketchfab iframes after its lead; Phantom retains 23 images and its original leading YouTube iframe. NFS image fullscreen decoded and navigated `1/6 → 2/6`; Egypt retains 36 image groups, with correctly decoded wireframe/checker variant switching. Full normal Pages build checks passed, resolving the earlier local Ruby environment limitation.
+
+## Explicit test limits
+
+- Mobile checks use responsive browser viewport emulation and maintained gesture tests; no physical touch-device or iOS/Safari run was performed.
+- Native editor preview inspection covered the rendered lead and saved image list/data, not every individual preview. Independent decode/hash checks cover every image and exact video file.
+- No audio-quality or frame-by-frame/full-length video review is claimed. Actual live playback, pause/resume, seeking and fullscreen were separately exercised on both routes.
+
+Recoverable checkpoints: baseline `87caa40`, private source `5a01cc0`, approved private merge `3b580d05`, public media `7a08fa4`, page/video integration `e55a283`, editor/version checks `cf391c2`, current-main integration `3a73a5f`, post-merge regression checkpoint `901e983`, published implementation above. Completed Aircrafts and Phantom reports remain unchanged.
