@@ -61,11 +61,11 @@
     track.dataset.timelineState = 'static';
   }
 
-  function drawCurve(width, height, narrow) {
+  function drawCurve(width, height, narrow, scale) {
     const span = narrow ? Math.min(132, width * .34) : width;
     const offset = narrow ? 8 : 0;
     const x = value => offset + value * span;
-    const y = value => 56 + value * (height - 80);
+    const y = value => 56 * scale + value * (height - 80 * scale);
     const d = 'M ' + x(.10) + ' ' + y(0) +
       ' C ' + x(.51) + ' ' + y(.015) + ', ' + x(.40) + ' ' + y(.12) + ', ' + x(.29) + ' ' + y(.23) +
       ' C ' + x(.11) + ' ' + y(.40) + ', ' + x(.12) + ' ' + y(.47) + ', ' + x(.26) + ' ' + y(.58) +
@@ -111,15 +111,15 @@
     return minimum;
   }
 
-  function placeLabels(points, metrics, width, narrow) {
+  function placeLabels(points, metrics, width, narrow, scale) {
     const placed = [];
     entries.forEach((entry, i) => {
       const point = points[i];
       const above = entry.dataset.curveSide === 'above';
       const side = above ? 'above' : narrow ? 'right' : entry.dataset.curveSide;
-      const preferredWidth = narrow ? Math.min(240, width - 24) : Math.min(270, width * .28);
+      const preferredWidth = narrow ? Math.min(240, width - 24) : Math.min(300 * scale, width * .30);
       entry.style.width = preferredWidth + 'px';
-      let top = above ? Math.max(0, point.y - entry.offsetHeight - 12) : point.y - 16;
+      let top = above ? Math.max(0, point.y - entry.offsetHeight - 12 * scale) : point.y - 16 * scale;
       let left = 0, labelWidth = preferredWidth, labelHeight = entry.offsetHeight;
 
       // Keep whole text blocks clear of the curve, not only their first line.
@@ -133,21 +133,21 @@
           maxX = Math.max(maxX, sample.x);
         }
         if (side === 'above') {
-          left = Math.max(0, Math.min(width - preferredWidth, point.x - 32));
+          left = Math.max(0, Math.min(width - preferredWidth, point.x - 32 * scale));
         } else if (side === 'right') {
-          left = maxX + 18;
+          left = maxX + 18 * scale;
           labelWidth = Math.max(60, Math.min(preferredWidth, width - left));
         } else {
-          labelWidth = Math.max(60, Math.min(preferredWidth, minX - 18));
-          left = Math.max(0, minX - 18 - labelWidth);
+          labelWidth = Math.max(60, Math.min(preferredWidth, minX - 18 * scale));
+          left = Math.max(0, minX - 18 * scale - labelWidth);
         }
         entry.style.width = labelWidth + 'px';
         labelHeight = entry.offsetHeight;
         let nextTop = top;
         for (const other of placed) {
-          const horizontalOverlap = left < other.right + 8 && left + labelWidth > other.left - 8;
-          if (horizontalOverlap && nextTop < other.bottom + 12 && nextTop + labelHeight > other.top - 12) {
-            nextTop = other.bottom + 12;
+          const horizontalOverlap = left < other.right + 8 * scale && left + labelWidth > other.left - 8 * scale;
+          if (horizontalOverlap && nextTop < other.bottom + 12 * scale && nextTop + labelHeight > other.top - 12 * scale) {
+            nextTop = other.bottom + 12 * scale;
           }
         }
         if (Math.abs(nextTop - top) < .5 && pass > 0) break;
@@ -165,7 +165,8 @@
     const viewport = window.innerHeight;
     if (!width || !viewport) return;
     const narrow = width < 720;
-    const nextSignature = [width, viewport, reducedMotion.matches].join(':');
+    const scale = parseFloat(getComputedStyle(track).getPropertyValue('--career-layout-scale')) || 1;
+    const nextSignature = [width, viewport, scale, reducedMotion.matches].join(':');
     if (nextSignature === signature) return;
     signature = nextSignature;
     reset();
@@ -179,12 +180,12 @@
     let height = Math.round(available * 2);
     let metrics, visibleFraction;
     for (let i = 0; i < 9; i++) {
-      metrics = drawCurve(width, height, narrow);
+      metrics = drawCurve(width, height, narrow, scale);
       visibleFraction = minimumVisibleFraction(metrics, height, available);
       if (visibleFraction >= .42) break;
       height = Math.round(height * .9);
     }
-    const compact = narrow || height < 1100;
+    const compact = narrow || height < 1100 * scale;
     track.classList.toggle('career-track--compact', compact);
     track.dataset.visibleCurveFraction = visibleFraction.toFixed(3);
     track.dataset.curveHeight = String(height);
@@ -195,14 +196,14 @@
       const exact = path.getPointAtLength(at * metrics.length);
       return { x: exact.x, y: exact.y, progress: at };
     });
-    const labels = placeLabels(points, metrics, width, narrow);
+    const labels = placeLabels(points, metrics, width, narrow, scale);
     guides.replaceChildren(...points.flatMap((point, i) => {
       const box = labels[i];
       if (box.side === 'above') return [];
       const right = box.side === 'right';
-      const endX = right ? box.left - 6 : box.right + 6;
-      const endY = box.top + 9;
-      const startX = point.x + (right ? 6 : -6);
+      const endX = right ? box.left - 6 * scale : box.right + 6 * scale;
+      const endY = box.top + 9 * scale;
+      const startX = point.x + (right ? 6 * scale : -6 * scale);
       const middle = (startX + endX) / 2;
       return [element('polyline', {
         points: startX + ',' + point.y + ' ' + middle + ',' + point.y + ' ' + endX + ',' + endY,
@@ -210,11 +211,11 @@
       })];
     }));
     stops.replaceChildren(...points.map((point, i) => {
-      const circle = element('circle', { cx: point.x, cy: point.y, r: narrow ? 6 : 8, class: 'career-stop' });
+      const circle = element('circle', { cx: point.x, cy: point.y, r: narrow ? 6 : 8 * scale, class: 'career-stop' });
       circle.addEventListener('click', () => showDetails(entries[i]));
       return circle;
     }));
-    pointer.setAttribute('r', narrow ? '5' : '7');
+    pointer.setAttribute('r', String(narrow ? 5 : 7 * scale));
     track.style.height = Math.ceil(Math.max(height, ...labels.map(box => box.bottom)) + 24) + 'px';
 
     if (!canAnimate || reducedMotion.matches) return;
@@ -237,8 +238,8 @@
     points.forEach((point, i) => {
       const at = point.progress;
       const duration = Math.min(.025, (1 - at) * .8);
-      animation.fromTo(stops.children[i], { attr: { r: 3 }, autoAlpha: .4 }, {
-        attr: { r: narrow ? 6 : 8 }, autoAlpha: 1, duration,
+      animation.fromTo(stops.children[i], { attr: { r: 3 * scale }, autoAlpha: .4 }, {
+        attr: { r: narrow ? 6 : 8 * scale }, autoAlpha: 1, duration,
         ease: 'back.out(2.5)'
       }, at);
       animation.fromTo(entries[i].querySelectorAll('.career-year, .career-copy'), {
