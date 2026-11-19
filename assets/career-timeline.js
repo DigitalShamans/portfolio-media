@@ -8,6 +8,7 @@
   // tutorial. This second layout follows the user's broad S-curve sketch.
   const svg = track.querySelector('svg');
   const rail = track.querySelector('.career-rail');
+  const canvas = track.querySelector('.career-canvas');
   const path = track.querySelector('[data-career-path]');
   const background = track.querySelector('[data-career-background]');
   const pointer = track.querySelector('[data-career-pointer]');
@@ -23,6 +24,7 @@
   const canAnimate = Boolean(window.gsap && window.ScrollTrigger && window.DrawSVGPlugin && window.MotionPathPlugin);
   let animation;
   let mobileReveals = [];
+  let mobileCamera;
   let signature = '';
   let resizeTimer;
 
@@ -62,6 +64,7 @@
   });
 
   function reset() {
+    mobileCamera = null;
     if (animation) {
       animation.scrollTrigger.kill();
       animation.kill();
@@ -69,8 +72,23 @@
     }
     mobileReveals.forEach(reveal => reveal.animation.kill());
     mobileReveals = [];
+    canvas.style.removeProperty('transform');
+    track.classList.remove('career-track--slow');
     if (canAnimate) gsap.set([...texts, pointer, path, ...stops.children], { clearProps: 'all' });
     track.dataset.timelineState = 'static';
+  }
+
+  function updateMobileCamera() {
+    if (!mobileCamera || !animation) return;
+    const c = mobileCamera;
+    const scroll = window.scrollY;
+    const progress = animation.progress();
+    const virtualScroll = scroll < c.start ? scroll : c.start + progress * c.normalDistance + Math.max(0, scroll - c.end);
+    const stageTop = Math.min(Math.max(c.documentTop - scroll, 0), c.documentTop + c.outerHeight - c.viewport - scroll);
+    const point = path.getPointAtLength(progress * c.length);
+    const x = c.anchor - c.left - point.x;
+    const y = c.documentTop - virtualScroll - stageTop;
+    canvas.style.transform = 'translate3d(' + x.toFixed(3) + 'px,' + y.toFixed(3) + 'px,0)';
   }
 
   function updateMobileReveals() {
@@ -135,7 +153,7 @@
     return minimum;
   }
 
-  function placeLabels(points, metrics, width, narrow, scale) {
+  function placeLabels(points, metrics, width, narrow, scale, cameraAnchor, trackLeft) {
     const placed = [];
     entries.forEach((entry, i) => {
       const point = points[i];
@@ -160,7 +178,9 @@
           left = Math.max(0, Math.min(width - preferredWidth, point.x - 32 * scale));
         } else if (side === 'right') {
           left = maxX + 18 * scale;
-          labelWidth = Math.max(60, Math.min(preferredWidth, width - left));
+          // Leave room for a previous card as the S-curve turns back left.
+          const availableWidth = cameraAnchor ? width + trackLeft - cameraAnchor - 18 * scale - (maxX - point.x) - 24 : width - left;
+          labelWidth = Math.max(60, Math.min(preferredWidth, availableWidth));
         } else {
           labelWidth = Math.max(60, Math.min(preferredWidth, minX - 18 * scale));
           left = Math.max(0, minX - 18 * scale - labelWidth);
@@ -222,7 +242,10 @@
       const exact = path.getPointAtLength(at * metrics.length);
       return { x: exact.x, y: exact.y, progress: at };
     });
-    const labels = placeLabels(points, metrics, width, narrow, scale);
+    const slowMobile = narrow && canAnimate && !reducedMotion.matches;
+    const trackLeft = track.getBoundingClientRect().left;
+    const cameraAnchor = slowMobile ? Math.max(64, Math.min(96, window.innerWidth * .22)) : 0;
+    const labels = placeLabels(points, metrics, width, narrow, scale, cameraAnchor, trackLeft);
     guides.replaceChildren(...points.flatMap((point, i) => {
       const box = labels[i];
       if (box.side === 'above') return [];
@@ -242,19 +265,37 @@
       return circle;
     }));
     pointer.setAttribute('r', String(narrow ? 7 : 7 * scale));
-    track.style.height = Math.ceil(Math.max(height, ...labels.map(box => box.bottom)) + 24) + 'px';
+    const contentHeight = Math.ceil(Math.max(height, ...labels.map(box => box.bottom)) + 24);
+    canvas.style.height = contentHeight + 'px';
+    track.style.height = contentHeight + 'px';
+    track.dataset.scrollMultiplier = slowMobile ? '3' : '1';
+    delete track.dataset.cameraAnchor;
 
     if (!canAnimate || reducedMotion.matches) return;
     const revealLine = Math.round(viewport * (narrow ? .65 : .5));
+    const normalStart = Math.max(0, documentTop - revealLine);
+    const normalDistance = Math.max(1, documentTop + height - revealLine - normalStart);
+    const scrollDistance = normalDistance * (slowMobile ? 3 : 1);
+    track.dataset.normalScrollDistance = normalDistance.toFixed(3);
+    track.dataset.scrollDistance = scrollDistance.toFixed(3);
+    if (slowMobile) {
+      const end = normalStart + scrollDistance;
+      const outerHeight = Math.max(contentHeight, end - documentTop + viewport);
+      track.classList.add('career-track--slow');
+      track.style.setProperty('--career-stage-height', viewport + 'px');
+      track.style.height = outerHeight + 'px';
+      track.dataset.cameraAnchor = cameraAnchor.toFixed(3);
+      mobileCamera = { documentTop, viewport, start: normalStart, end, outerHeight, normalDistance, left: trackLeft, anchor: cameraAnchor, length: metrics.length };
+    }
     animation = gsap.timeline({
       defaults: { ease: 'none' },
-      onUpdate: updateMobileReveals,
+      onUpdate: () => { updateMobileCamera(); updateMobileReveals(); },
       scrollTrigger: {
         id: 'artur-career-timeline',
-        trigger: rail,
+        trigger: slowMobile ? track : rail,
         // Fixed small-viewport pixels also keep later refreshes stable on phones.
-        start: 'clamp(top ' + revealLine + 'px)',
-        end: 'clamp(bottom ' + revealLine + 'px)',
+        start: slowMobile ? normalStart : 'clamp(top ' + revealLine + 'px)',
+        end: slowMobile ? normalStart + scrollDistance : 'clamp(bottom ' + revealLine + 'px)',
         scrub: narrow ? .35 : true
       }
     });
@@ -294,6 +335,7 @@
     track.dataset.timelineState = 'animated';
     animation.scrollTrigger.refresh();
     animation.progress(animation.scrollTrigger.progress);
+    updateMobileCamera();
     updateMobileReveals();
   }
 

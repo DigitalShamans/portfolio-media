@@ -39,6 +39,15 @@
 .career-intro__hint { grid-area: hint; margin: 0; color: var(--muted); font-size: calc(1rem * var(--career-layout-scale)); }
 
 .career-track { position: relative; }
+.career-canvas { position: relative; }
+.career-track--slow .career-stage {
+  position: sticky;
+  top: 0;
+  height: var(--career-stage-height);
+  overflow: hidden;
+  overflow: clip;
+}
+.career-track--slow .career-canvas { will-change: transform; }
 .career-rail { display: none; pointer-events: none; }
 .career-track--positioned .career-rail {
   display: block;
@@ -127,6 +136,10 @@
 .career-track--narrow .career-copy--media {
   grid-template-columns: minmax(0, 1fr) clamp(56px, 20vw, 80px);
   gap: .5rem;
+}
+.career-track--slow .career-copy--media {
+  grid-template-columns: minmax(0, 1fr) clamp(48px, 17.5vw, 72px);
+  gap: .375rem;
 }
 .career-copy h2 {
   margin: 0;
@@ -221,6 +234,8 @@
 @media (prefers-reduced-motion: reduce) { .career-pointer { display: none; } }
 @media print {
   .career-track { height: auto !important; }
+  .career-track--slow .career-stage { position: static; height: auto; overflow: visible; }
+  .career-canvas { height: auto !important; transform: none !important; will-change: auto !important; }
   .career-rail { display: none !important; }
   .career-track--positioned .career-milestone {
     position: static; display: grid; width: auto !important;
