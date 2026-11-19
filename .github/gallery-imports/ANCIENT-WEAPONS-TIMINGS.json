@@ -1,0 +1,29 @@
+{
+  "processing_start_utc": "2026-11-19T20:01:21Z",
+  "source_captured_utc": "2026-11-19T20:02:45.731Z",
+  "download_seconds": 3.084,
+  "measure_seconds": 0.36,
+  "prepare_seconds": 4.368,
+  "local_verify_seconds": 1.408,
+  "service_succeeded_utc": "2026-11-19T20:11:14.892460Z",
+  "service_http_seconds": 10.909,
+  "checkpoint_prepared_utc": "2026-11-19T20:13:21.686607+00:00",
+  "pages_succeeded_utc": "2026-11-19T20:19:14Z",
+  "browser_completed_utc": "2026-11-19T20:24:36.871Z",
+  "verification_and_capture_release_complete_utc": "2026-11-19T20:24:56.4374869Z",
+  "verification_and_capture_release_seconds": 1415.437,
+  "final_checkpoint_prepared_utc": "2026-11-19T20:26:55.155920+00:00",
+  "elapsed_through_checkpoint_preparation_seconds": 1534.156,
+  "public_http_seconds": 5.56,
+  "baseline_firearms_seconds": 3863,
+  "half_time_target_seconds": 1931.5,
+  "half_time_target_met_at_checkpoint_preparation": true,
+  "checkpoint_preparation_reduction_percent": 60.29,
+  "push_and_next_gallery_start_excluded_from_preparation_duration": true,
+  "notes": [
+    "One incoming gallery only, one media release and one Pages publication.",
+    "Ruby was unavailable locally; unchanged Ruby/Jekyll validation passed in Pages CI.",
+    "One old IAB tab navigation timed out; one fresh IAB tab succeeded. No Chrome or user browser/editor prompt.",
+    "Exact source caption newlines and approved actual2560x1440 originals verified on both routes."
+  ]
+}
