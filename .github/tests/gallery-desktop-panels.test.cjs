@@ -169,7 +169,7 @@ test('moving mouse into right or left edge starts the slide and navigates automa
       assert.equal(b.panel.hidden, false);
       assert.equal(b.panel.dataset.direction, which);
       assert.equal(b.calls.length, 0, 'animation must be visible before navigation');
-      b.advance(749);
+      b.advance(419);
       assert.equal(b.calls.length, 0);
       b.advance(1);
       assert.deepEqual(b.calls, [which === 'next' ? b.next.href : b.previous.href]);
@@ -180,7 +180,7 @@ test('moving mouse into right or left edge starts the slide and navigates automa
 test('approaching within five percent of an edge works without touching screen border', () => {
   const b = browser();
   b.pointer(75);
-  b.advance(930);
+  b.advance(600);
   assert.deepEqual(b.calls, [b.previous.href]);
 });
 
@@ -201,7 +201,7 @@ test('moving between edges changes direction instead of leaving a stale navigati
   b.pointer(1439);
   b.advance(200);
   b.pointer(0);
-  b.advance(180 + 750);
+  b.advance(180 + 420);
   assert.deepEqual(b.calls, [b.previous.href]);
 });
 
@@ -212,7 +212,7 @@ test('page visits do not automatically chain to another gallery until the mouse 
   assert.equal(b.calls.length, 0);
   b.pointer(700);
   b.pointer(1439);
-  b.advance(930);
+  b.advance(600);
   assert.deepEqual(b.calls, [b.next.href]);
 });
 
@@ -258,7 +258,7 @@ test('mouse button press cancels an active edge transition', () => {
 test('keyboard arrows remain a click-free fallback outside interactive elements', () => {
   const b = browser();
   assert.equal(b.keydown('ArrowRight').prevented, true);
-  b.advance(750);
+  b.advance(420);
   assert.deepEqual(b.calls, [b.next.href]);
   const c = browser();
   assert.equal(c.keydown('ArrowLeft', new c.Element('input')).prevented, false);
@@ -273,7 +273,7 @@ test('reduced motion and GSAP failure both preserve auto navigation', () => {
   assert.deepEqual(reduced.calls, [reduced.next.href]);
   const css = browser({ gsap: false });
   css.pointer(1439);
-  css.advance(180 + 790);
+  css.advance(180 + 460);
   assert.deepEqual(css.calls, [css.next.href]);
 });
 
@@ -301,7 +301,7 @@ test('RZ Start password focus does not trap edge navigation on either portfolio'
     for (const [x, expected] of [[1, options.previousHref], [1439, options.nextHref]]) {
       const b = browser(options);
       b.pointer(x);
-      b.advance(930);
+      b.advance(600);
       assert.deepEqual(b.calls, [expected], 'RZ Start escape must work: ' + expected);
     }
   }
@@ -328,7 +328,7 @@ test('Back/Forward history restoration stays disarmed until mouse leaves edge', 
     assert.deepEqual(b.calls, [], 'history restore must not automatically advance');
     b.pointer(700);
     b.pointer(1439);
-    b.advance(930);
+    b.advance(600);
     assert.deepEqual(b.calls, [b.next.href]);
   }
 });
@@ -355,4 +355,21 @@ test('Alt+Back/Forward are not intercepted while the fullscreen image viewer is 
   const e = b.keydown('ArrowLeft', new b.Element('body'), { altKey: true });
   assert.equal(e.prevented, false);
   assert.deepEqual(b.historyCalls, []);
+});
+
+test('loading gallery status overlays without shifting the first image during hydration', () => {
+  const content = styles.match(/\.gallery-content\s*\{([^}]*)\}/)?.[1] || '';
+  const status = styles.match(/\.gallery-content\s*>\s*#gallery-status:not\(\[hidden\]\)\s*\{([^}]*)\}/)?.[1] || '';
+  assert.match(content, /position:\s*relative/);
+  assert.match(status, /position:\s*absolute/);
+  assert.match(status, /pointer-events:\s*none/);
+  assert.doesNotMatch(status, /(?:min-)?height:|top:\s*[-\d]/);
+});
+
+test('faster handoff keeps the exact edge initiation, cancellation and easing unchanged', () => {
+  assert.match(script, /const holdDelay = 180;/);
+  assert.match(script, /const slideDuration = 420;/);
+  assert.match(script, /Math\.max\(52, Math\.min\(96, width \* \.06\)\)/);
+  assert.match(script, /ease: 'power2\.inOut'/);
+  assert.match(script, /clear\(true\)/);
 });
