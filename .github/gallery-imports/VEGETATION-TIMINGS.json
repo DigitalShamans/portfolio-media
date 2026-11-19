@@ -1,0 +1,20 @@
+{
+  "processing_start_utc": "2026-11-19T20:27:31.778280+00:00",
+  "download_seconds": 2.268,
+  "measure_seconds": 0.427,
+  "prepare_seconds": 3.789,
+  "local_verify_seconds": 2.029,
+  "service_http_seconds": 13.788,
+  "service_succeeded_utc": "2026-11-19T20:34:27.764199+00:00",
+  "pages_succeeded_utc": "2026-11-19T20:41:25Z",
+  "browser_completed_utc": "2026-11-19T20:44:11.812Z",
+  "capture_release_utc": "2026-11-19T20:44:47.4958552Z",
+  "verification_and_capture_release_seconds": 1035.718,
+  "checkpoint_prepared_utc": "2026-11-19T20:45:53.353311+00:00",
+  "elapsed_through_checkpoint_preparation_seconds": 1101.575,
+  "baseline_firearms_seconds": 3863,
+  "half_time_target_seconds": 1931.5,
+  "half_time_target_met_at_preparation": true,
+  "reduction_percent_at_preparation": 71.48,
+  "push_and_final_response_excluded_from_preparation_duration": true
+}
