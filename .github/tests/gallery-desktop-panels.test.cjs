@@ -49,7 +49,14 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
       this.hidden = false;
       this.style = {};
       this.className = '';
+      this.classes = new Set();
+      this.classList = {
+        add: name => this.classes.add(name),
+        remove: name => this.classes.delete(name),
+        contains: name => this.classes.has(name)
+      };
     }
+    getBoundingClientRect() { return { height: 96 }; }
     append(...nodes) { this.children.push(...nodes); }
     setAttribute(name, value) { this[name] = value; }
     closest(selector) {
@@ -67,6 +74,9 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
   const navigation = { querySelector: key => key.endsWith('--next') ? next : previous };
   let dialog = false;
   const body = new Element('body');
+  const siteHeader = new Element('header');
+  siteHeader.className = 'site-header';
+  body.append(siteHeader);
   const activeElement = activeTag === 'body' ? body : new Element(activeTag);
   const document = {
     currentScript: { src: 'https://example.test/galleries/gallery-desktop-panels.js?v=3' },
@@ -75,6 +85,7 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
     createElement(tag) { return new Element(tag); },
     querySelector(key) {
       if (key === '.gallery-navigation') return navigation;
+      if (key === 'body > .site-header') return siteHeader;
       if (key === 'dialog[open]' && dialog) return {};
       return null;
     },
@@ -140,7 +151,7 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
     return e;
   }
   return {
-    window, document, events, calls, historyCalls, tweens, pointer, advance, keydown, next, previous, Element,
+    window, document, siteHeader, events, calls, historyCalls, tweens, pointer, advance, keydown, next, previous, Element,
     setDialog(value) { dialog = value; },
     get panel() { return body.children.find(node => node.className === 'gallery-desktop-edge-panel'); },
     event(type, payload = {}) { events['window:' + type]?.(payload); }
@@ -372,4 +383,70 @@ test('faster handoff keeps the exact edge initiation, cancellation and easing un
   assert.match(script, /Math\.max\(52, Math\.min\(96, width \* \.06\)\)/);
   assert.match(script, /ease: 'power2\.inOut'/);
   assert.match(script, /clear\(true\)/);
+});
+
+
+test('the original logo/navigation/accent header stays above the panel without cloning or reflow', () => {
+  for (const prefix of ['', '/artur']) {
+    const b = browser({ prefix });
+    const originalHeader = b.siteHeader;
+    const childrenBefore = b.document.body.children.length;
+    assert.equal(b.document.body.classList.contains('gallery-edge-header-visible'), false);
+    b.pointer(1439);
+    b.advance(179);
+    assert.equal(b.document.body.classList.contains('gallery-edge-header-visible'), false,
+      'hover initiation remains unchanged');
+    b.advance(1);
+    assert.equal(b.panel.hidden, false);
+    assert.equal(b.document.body.classList.contains('gallery-edge-header-visible'), true);
+    assert.equal(b.panel.style.top, '96px', 'only the slide panel is inset below header');
+    assert.strictEqual(b.document.body.children[0], originalHeader);
+    assert.equal(b.document.body.children.length, childrenBefore, 'no duplicate header was inserted');
+    b.advance(419);
+    assert.equal(b.document.body.classList.contains('gallery-edge-header-visible'), true);
+    b.advance(1);
+    assert.deepEqual(b.calls, [b.next.href], 'baseline 420ms navigation remains unchanged');
+  }
+});
+
+test('cancelled edge slide restores original header and panel geometry after reverse animation', () => {
+  for (const gsap of [true, false]) {
+    const b = browser({ gsap });
+    b.pointer(1439);
+    b.advance(200);
+    assert.equal(b.document.body.classList.contains('gallery-edge-header-visible'), true);
+    b.pointer(700);
+    // Header stays visible during the 180ms reverse animation.
+    assert.equal(b.document.body.classList.contains('gallery-edge-header-visible'), true);
+    b.advance(190);
+    assert.equal(b.document.body.classList.contains('gallery-edge-header-visible'), false);
+    assert.equal(b.panel.style.top, '');
+    assert.equal(b.panel.hidden, true);
+    b.advance(800);
+    assert.deepEqual(b.calls, [], 'cancelled animation never navigates');
+  }
+});
+
+test('original header is sticky above panel, with no clones, altered document height or pointer capture', () => {
+  const rule = styles.match(/body\.gallery-edge-header-visible > \.site-header\s*\{([^}]*)\}/s)?.[1] || '';
+  assert.match(rule, /position:\s*sticky/);
+  assert.match(rule, /top:\s*0/);
+  assert.match(rule, /z-index:\s*31/);
+  assert.match(rule, /pointer-events:\s*none/);
+  assert.doesNotMatch(rule, /position:\s*fixed/);
+  assert.doesNotMatch(script, /cloneNode|outerHTML|replaceWith/);
+  assert.match(script, /const slideDuration = 420;/);
+  assert.match(script, /const holdDelay = 180;/);
+});
+
+test('mobile and reduced-motion navigation never enable floating original header', () => {
+  const mobile = browser({ desktop: false });
+  assert.equal(mobile.events['window:pointermove'], undefined);
+  assert.equal(mobile.document.body.classList.contains('gallery-edge-header-visible'), false);
+  const reduced = browser({ reduced: true });
+  reduced.pointer(1439);
+  reduced.advance(200);
+  assert.equal(reduced.document.body.classList.contains('gallery-edge-header-visible'), false);
+  reduced.advance(300);
+  assert.deepEqual(reduced.calls, [reduced.next.href]);
 });
