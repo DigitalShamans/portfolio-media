@@ -152,6 +152,7 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
   }
   return {
     window, document, siteHeader, events, calls, historyCalls, tweens, pointer, advance, keydown, next, previous, Element,
+    storedArrival() { return JSON.parse(storage.get('gallery-desktop-edge-arrival') || 'null'); },
     setDialog(value) { dialog = value; },
     get panel() { return body.children.find(node => node.className === 'gallery-desktop-edge-panel'); },
     event(type, payload = {}) { events['window:' + type]?.(payload); }
@@ -161,7 +162,7 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
 test('no desktop boxes/arrows and no scroll stage; fullscreen screenshot controls remain', () => {
   assert.match(markup, /gallery-navigation[^>]+hidden/);
   assert.doesNotMatch(markup, /gallery-navigation__arrow|gallery-navigation__details/);
-  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=6/);
+  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=7/);
   assert.match(styles, /\.gallery-navigation\s*\{\s*display:\s*none !important/);
   assert.match(styles, /\.viewer-arrows button/);
   assert.doesNotMatch(styles, /gallery-desktop-scroll-stage/);
@@ -407,6 +408,22 @@ test('the original logo/navigation/accent header stays above the panel without c
     b.advance(1);
     assert.deepEqual(b.calls, [b.next.href], 'baseline 420ms navigation remains unchanged');
   }
+});
+
+test('navigation retains an identical cover for document snapshots and records stationary title', () => {
+  const b = browser();
+  b.pointer(1439);
+  b.advance(600);
+  assert.deepEqual(b.calls, [b.next.href]);
+  const marker = b.storedArrival();
+  assert.equal(marker.pathname, '/galleries/hb-helipad/');
+  assert.equal(marker.title, 'Helipad');
+  assert.equal(marker.headerHeight, 96);
+  b.event('pagehide');
+  assert.equal(b.panel.hidden, false, 'old cover stays painted for Chrome snapshot');
+  assert.equal(b.document.body.classList.contains('gallery-edge-header-visible'), true);
+  b.event('pageshow', { persisted: true });
+  assert.equal(b.panel.hidden, true, 'restoring BFCache removes the cover');
 });
 
 test('cancelled edge slide restores original header and panel geometry after reverse animation', () => {
