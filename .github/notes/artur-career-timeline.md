@@ -8,6 +8,12 @@ The broad S-curve and alternating checkpoint placement follow the user's annotat
 
 The original résumé dates and game details remain for the other entries. This experiment sets `seo_noindex: true` and `sitemap: false` and is not linked from the main navigation.
 
+## Wider desktop composition
+
+The paired before/after screenshots supplied later on 19 November set the desktop composition: move the complete timeline left and stretch its spline horizontally. The canvas now grows to 1800px instead of 1100px, with its left edge positioned relative to the 2000px site shell. At 3840px viewport width its left edge is 848.5px instead of 1362.5px. The site header stays in its existing position.
+
+Large screens scale the timeline text, marker radii, stroke width, label spacing and top clearance together (1.25 at 1920px and 1.6 at 2560px). Label widths grow with the text; narrow screens retain their existing compact layout. No career wording or checkpoint positions changed in this revision.
+
 ## Curve visibility and positioning
 
 - Curve height adapts to the viewport, reserving space for the header and introduction.
@@ -28,8 +34,12 @@ One scrubbed GSAP timeline drives DrawSVG, MotionPath, marker growth and label e
 - [DrawSVG](https://gsap.com/docs/v3/Plugins/DrawSVGPlugin/)
 - [MotionPath](https://gsap.com/docs/v3/Plugins/MotionPathPlugin/)
 
-## Validation of this revision
+## Earlier S-curve validation
 
 JavaScript syntax and the updated checkpoint inventory were checked. Browser QA covered 1363×936, 1100×844, 390×844 and 320×844 layouts. The minimum fitted arc fractions were 42.4%, 42.3%, 49.0% and 48.8% respectively; no checkpoint label overlaps or horizontal overflow were detected. Resizing while scrolled, complete details and dismissal, and forward/reverse scrolling were checked. All 12 checkpoints and the complete bright path were reached at the end.
+
+## Wider-layout validation
+
+Syntax and the 12-checkpoint inventory pass. Browser QA at 3840×2040, 1363×936, 390×844 and 320×844 found minimum fitted arc fractions of 45.0%, 46.2%, 49.0% and 48.8% respectively, with no label overlaps or horizontal overflow. Wide-layout forward/reverse scroll reached the complete path and all 12 checkpoints.
 
 The existing Pages workflow performs the final repository validation and Jekyll build.
