@@ -2222,6 +2222,52 @@
         "size": 944286
       }
     },
+    "slag": {
+      "artur-perzyna-2014-compose10.jpg": {
+        "blob": "f4dc68893f06fe91e9e5a5a790a627332e3a960d",
+        "size": 717325
+      },
+      "artur-perzyna-2014-compose4-canyon.jpg": {
+        "blob": "92661d7e3d086b0541ed1cc431f68e4cc4c71b72",
+        "size": 307773
+      },
+      "artur-perzyna-2014-compose6.jpg": {
+        "blob": "dc07474e6ef687dbcddd15d7cfe9c33875a72a4d",
+        "size": 346374
+      },
+      "artur-perzyna-2014-compose7.jpg": {
+        "blob": "8939359e89698e72c221381614041d21897d02bb",
+        "size": 325845
+      },
+      "artur-perzyna-2014-compose9-day.jpg": {
+        "blob": "600a0bdab812c00f5ded1c4c435dd5a4403a6143",
+        "size": 477396
+      },
+      "artur-perzyna-artur-perzyna-2014-compose1-denoised.jpg": {
+        "blob": "587886a2b72790f39006065ad78fd3affcb6b6dd",
+        "size": 1052457
+      },
+      "artur-perzyna-artur-perzyna-2014-compose2-blue-denoised.jpg": {
+        "blob": "c938f0cc8f4a4bbfc0acb7eafdeb82329540dc5e",
+        "size": 371528
+      },
+      "artur-perzyna-artur-perzyna-2014-compose3-denoised.jpg": {
+        "blob": "ee899d4a84dd5926c138902c1c746d80605fdaa5",
+        "size": 270931
+      },
+      "artur-perzyna-artur-perzyna-2014-compose4-abstract-denoised.jpg": {
+        "blob": "b26f9f164634adbf9288bb6219b6f0094d3da024",
+        "size": 451603
+      },
+      "artur-perzyna-artur-perzyna-2014-compose5-bw-new-denoised.jpg": {
+        "blob": "48024e8ce1c6294b41aff1a0ecbe231966c556d9",
+        "size": 186358
+      },
+      "artur-perzyna-artur-perzyna-2014-compose8-night-denoised.jpg": {
+        "blob": "f9da307dc5987b9878fc817ae05afbbb2a331cdb",
+        "size": 313352
+      }
+    },
     "sniper-elite-4": {
       "digital-shamans-artur-perzyna-dockyard-map-4k-clean-impr-srgb.jpg": {
         "blob": "e3d2f672a9f8a9ed68369a9ab2ef851b94bcc693",
