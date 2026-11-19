@@ -1,0 +1,164 @@
+---
+layout: none
+portfolio: personal
+title: Career timeline
+permalink: /artur/experiments/career-timeline/
+seo_title: "Career Timeline Test | Artur Perzyna"
+seo_description: "Artur Perzyna's career in game art, from his first steps in CG in 2004 to art direction in 2023."
+seo_noindex: true
+sitemap: false
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  {% include seo.html %}
+  <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
+  <link rel="stylesheet" href="{{ '/assets/career-timeline.css' | relative_url }}?v=1">
+  <script src="{{ '/assets/vendor/gsap/3.15.1/gsap.min.js' | relative_url }}" defer></script>
+  <script src="{{ '/assets/vendor/gsap/3.15.1/ScrollTrigger.min.js' | relative_url }}" defer></script>
+  <script src="{{ '/assets/vendor/gsap/3.15.1/DrawSVGPlugin.min.js' | relative_url }}" defer></script>
+  <script src="{{ '/assets/vendor/gsap/3.15.1/MotionPathPlugin.min.js' | relative_url }}" defer></script>
+  <script src="{{ '/assets/career-timeline.js' | relative_url }}?v=1" defer></script>
+</head>
+<body class="career-page">
+  {% include site-header.html %}
+  <main class="career-shell">
+    <header class="career-intro">
+      <p class="career-eyebrow">2004 — 2023</p>
+      <h1>Career timeline</h1>
+      <p class="career-intro__hint">Scroll to follow my journey in game art.</p>
+    </header>
+
+    <section class="career-track" data-career-timeline aria-label="Career milestones, in chronological order">
+      <div class="career-rail" aria-hidden="true">
+        <svg class="career-svg" xmlns="http://www.w3.org/2000/svg" focusable="false">
+          <g data-career-guides></g>
+          <path class="career-path" data-career-path fill="none"></path>
+          <g data-career-stops></g>
+          <circle class="career-pointer" data-career-pointer cx="0" cy="0" r="8"></circle>
+        </svg>
+      </div>
+      <!-- Dates and career details follow the supplied résumé screenshot, including same-year entries. -->
+      <ol class="career-list">
+        <li class="career-milestone" id="career-2004">
+          <time class="career-year" datetime="2004">2004</time>
+          <div class="career-copy">
+            <h2>First steps in CG</h2>
+          </div>
+        </li>
+        <li class="career-milestone" id="career-2006">
+          <time class="career-year" datetime="2006">2006</time>
+          <div class="career-copy">
+            <h2>First freelance work</h2>
+          </div>
+        </li>
+        <li class="career-milestone" id="career-2010">
+          <time class="career-year" datetime="2010">2010</time>
+          <div class="career-copy">
+            <h2>CI Games</h2>
+            <p class="career-role">3D artist</p>
+            <ul class="career-projects">
+              <li><strong>Sniper Ghost Warrior 2</strong><span>FPP stealth shooter</span></li>
+            </ul>
+          </div>
+        </li>
+        <li class="career-milestone" id="career-2012">
+          <time class="career-year" datetime="2012">2012</time>
+          <div class="career-copy">
+            <h2>Back to freelance</h2>
+          </div>
+        </li>
+        <li class="career-milestone" id="career-2015-jujubee">
+          <time class="career-year" datetime="2015">2015</time>
+          <div class="career-copy">
+            <h2>Jujubee</h2>
+            <p class="career-role">Freelance Vehicle 3D Artist</p>
+            <ul class="career-projects">
+              <li><strong>Take Off</strong><span>Flight simulator</span></li>
+            </ul>
+          </div>
+        </li>
+        <li class="career-milestone" id="career-2015-rebellion">
+          <time class="career-year" datetime="2015">2015</time>
+          <div class="career-copy">
+            <h2>Rebellion Developments</h2>
+            <p class="career-role">Environment &amp; indoor lighting artist</p>
+            <ul class="career-projects">
+              <li><strong>2015 · Sniper Elite 4</strong><span>TPP stealth shooter</span></li>
+              <li><strong>2016 · Battlezone</strong><span>VR sci-fi battle tanks</span></li>
+              <li><strong>2017 · Strange Brigade</strong><span>TPP adventure shooter</span></li>
+            </ul>
+          </div>
+        </li>
+        <li class="career-milestone" id="career-2018">
+          <time class="career-year" datetime="2018">2018</time>
+          <div class="career-copy">
+            <h2>nDreams Ltd</h2>
+            <p class="career-role">Environment artist</p>
+            <ul class="career-projects">
+              <li><strong>Phantom: Covert Ops</strong><span>VR stealth shooter</span></li>
+            </ul>
+          </div>
+        </li>
+        <li class="career-milestone" id="career-2020-chuhai">
+          <time class="career-year" datetime="2020">2020</time>
+          <div class="career-copy">
+            <h2>Chuhai Labs</h2>
+            <p class="career-role">Art Director</p>
+            <ul class="career-projects">
+              <li><strong>Carve: Snowboarding</strong></li>
+            </ul>
+          </div>
+        </li>
+        <li class="career-milestone" id="career-2020-super-trumpers">
+          <time class="career-year" datetime="2020">2020</time>
+          <div class="career-copy">
+            <h2>Super Trumpers</h2>
+            <p class="career-role">Freelancer</p>
+            <ul class="career-projects">
+              <li><strong>SurvIsland</strong></li>
+            </ul>
+          </div>
+        </li>
+        <li class="career-milestone" id="career-2021">
+          <time class="career-year" datetime="2021">2021</time>
+          <div class="career-copy">
+            <h2>Digital Shamans</h2>
+            <p class="career-role">Lead Artist</p>
+            <ul class="career-projects">
+              <li><strong>MerCorp: The Retrieval</strong></li>
+              <li><strong>Hex Journey</strong></li>
+              <li><strong>Carve: Snowboarding</strong></li>
+            </ul>
+          </div>
+        </li>
+        <li class="career-milestone" id="career-2022">
+          <time class="career-year" datetime="2022">2022</time>
+          <div class="career-copy">
+            <h2>Realtime UK &amp; EA</h2>
+            <p class="career-role">3D Artist</p>
+            <ul class="career-projects">
+              <li><strong>The Need For Speed: Unbound</strong></li>
+            </ul>
+          </div>
+        </li>
+        <li class="career-milestone" id="career-2023">
+          <time class="career-year" datetime="2023">2023</time>
+          <div class="career-copy">
+            <h2>Couch Heroes</h2>
+            <p class="career-role">Art Direction</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <div class="career-outro">
+      <a class="career-portfolio-link" href="{{ '/artur/' | relative_url }}">View portfolio</a>
+    </div>
+  </main>
+  {% include copyright-footer.html owner='Artur Perzyna' %}
+</body>
+</html>
