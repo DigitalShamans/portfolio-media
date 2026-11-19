@@ -128,12 +128,7 @@ test('invalid or cross-portfolio links are not prefetched', () => {
     b.pointer(1430);
     b.warm();
     const result = b.sources();
-    if (bad.includes('sideEffect')) {
-      // URL validation is path-based, but prefetch must retain the declared same-origin URL.
-      assert(result.includes(bad));
-    } else {
-      assert.deepEqual(result, [b.previous.href]);
-    }
+    assert.deepEqual(result, [b.previous.href]);
   }
 });
 
