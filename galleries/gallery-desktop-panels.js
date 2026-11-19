@@ -69,7 +69,7 @@
 
   function edgeAt(x) {
     const width = window.innerWidth;
-    const edge = Math.max(52, Math.min(96, width * .05));
+    const edge = Math.max(52, Math.min(96, width * .06));
     if (x < 0 || x > width) return null;
     return x <= edge ? 'previous' : x >= width - edge ? 'next' : null;
   }
