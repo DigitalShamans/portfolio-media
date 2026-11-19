@@ -21,6 +21,7 @@
   const ns = 'http://www.w3.org/2000/svg';
   const canAnimate = Boolean(window.gsap && window.ScrollTrigger && window.DrawSVGPlugin && window.MotionPathPlugin);
   let animation;
+  let mobileReveals = [];
   let signature = '';
   let resizeTimer;
 
@@ -45,6 +46,10 @@
   }
 
   entries.forEach(entry => entry.querySelector('button').addEventListener('click', () => showDetails(entry)));
+  entries.forEach(entry => {
+    entry.addEventListener('focusin', updateMobileReveals);
+    entry.addEventListener('focusout', () => window.requestAnimationFrame(updateMobileReveals));
+  });
   dialog.addEventListener('click', event => {
     if (event.target !== dialog) return;
     const box = dialog.getBoundingClientRect();
@@ -57,8 +62,22 @@
       animation.kill();
       animation = null;
     }
+    mobileReveals.forEach(reveal => reveal.animation.kill());
+    mobileReveals = [];
     if (canAnimate) gsap.set([...texts, pointer, path, ...stops.children], { clearProps: 'all' });
     track.dataset.timelineState = 'static';
+  }
+
+  function updateMobileReveals() {
+    if (!animation) return;
+    const progress = animation.progress();
+    mobileReveals.forEach(reveal => {
+      const reached = progress + .0001 >= reveal.at || reveal.entry.contains(document.activeElement);
+      if (reached === reveal.reached) return;
+      reveal.reached = reached;
+      if (reached) reveal.animation.play();
+      else reveal.animation.reverse();
+    });
   }
 
   function drawCurve(width, height, narrow, scale) {
@@ -215,18 +234,19 @@
       circle.addEventListener('click', () => showDetails(entries[i]));
       return circle;
     }));
-    pointer.setAttribute('r', String(narrow ? 5 : 7 * scale));
+    pointer.setAttribute('r', String(narrow ? 7 : 7 * scale));
     track.style.height = Math.ceil(Math.max(height, ...labels.map(box => box.bottom)) + 24) + 'px';
 
     if (!canAnimate || reducedMotion.matches) return;
     animation = gsap.timeline({
       defaults: { ease: 'none' },
+      onUpdate: updateMobileReveals,
       scrollTrigger: {
         id: 'artur-career-timeline',
         trigger: rail,
-        start: 'top center',
-        end: 'bottom center',
-        scrub: true
+        start: narrow ? 'top 65%' : 'top center',
+        end: narrow ? 'bottom 65%' : 'bottom center',
+        scrub: narrow ? .35 : true
       }
     });
     animation.fromTo(path, { drawSVG: 0 }, { drawSVG: '100%', duration: 1 }, 0);
@@ -237,6 +257,22 @@
     }, 0);
     points.forEach((point, i) => {
       const at = point.progress;
+      if (narrow) {
+        // Give each entrance a real duration even during a quick touch swipe.
+        // The scrubbed travelling dot decides when to play or reverse it.
+        const reveal = gsap.timeline({ paused: true });
+        reveal.fromTo(entries[i].querySelector('.career-year'), {
+          opacity: .35, x: -8
+        }, { opacity: 1, x: 0, duration: .4, ease: 'power2.out' }, 0);
+        reveal.fromTo(entries[i].querySelector('.career-copy'), {
+          opacity: 0, x: -24, y: 8
+        }, { opacity: 1, x: 0, y: 0, duration: .6, ease: 'power3.out' }, .06);
+        reveal.fromTo(stops.children[i], {
+          attr: { r: 2.5 }, autoAlpha: .3
+        }, { attr: { r: 6.5 }, autoAlpha: 1, duration: .5, ease: 'back.out(2)' }, 0);
+        mobileReveals.push({ entry: entries[i], at, animation: reveal, reached: false });
+        return;
+      }
       const duration = Math.min(.025, (1 - at) * .8);
       animation.fromTo(stops.children[i], { attr: { r: 3 * scale }, autoAlpha: .4 }, {
         attr: { r: narrow ? 6 : 8 * scale }, autoAlpha: 1, duration,
@@ -249,6 +285,7 @@
     track.dataset.timelineState = 'animated';
     animation.scrollTrigger.refresh();
     animation.progress(animation.scrollTrigger.progress);
+    updateMobileReveals();
   }
 
   function scheduleRebuild() {

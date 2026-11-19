@@ -49,6 +49,15 @@
 .career-guide { stroke: var(--career-white); stroke-width: 1; opacity: .25; fill: none; }
 .career-stop { fill: var(--career-white); cursor: pointer; pointer-events: all; }
 .career-pointer { fill: var(--career-white); opacity: 0; }
+.career-track--narrow .career-path-background { opacity: .18; }
+.career-track--narrow .career-path { stroke: var(--accent); stroke-width: 4; }
+.career-track--narrow .career-stop { fill: var(--accent); }
+.career-track--narrow .career-pointer {
+  fill: var(--accent);
+  stroke: var(--career-white);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 6px var(--accent));
+}
 
 .career-list { margin: 0; padding: 0; list-style: none; }
 .career-milestone {
