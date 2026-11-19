@@ -223,6 +223,17 @@ dialog {
   .viewer-bar button, .counter { padding-inline: .45rem; }
 }
 
+/* Chrome captures the fully covered outgoing document and the matching
+   incoming cover. Suppress the browser's default cross-fade: the existing
+   420ms GSAP edge slide remains the only animation in this handoff. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none !important; }
+}
+
+#gallery-edge-arrival { display: contents; }
+
 /* Hard Bullet gallery destinations remain in the DOM for navigation, but have no boxes/arrows. */
 .gallery-navigation { display: none !important; }
 
