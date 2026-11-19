@@ -2,26 +2,34 @@
 
 Unlisted test route: `/artur/experiments/career-timeline/`.
 
-The 12 career entries are transcribed from the résumé timeline screenshot supplied on 19 November 2026. Keep both 2015 entries and both 2020 entries. The source ends at Couch Heroes in 2023; later career history has not been inferred. This experiment is not linked from the homepage or main navigation and sets `seo_noindex: true` and `sitemap: false`.
+## Current layout
 
-## Animation contract
+The broad S-curve and alternating checkpoint placement follow the user's annotated screenshot supplied on 19 November 2026. The 2012 "Back to freelance" checkpoint is removed. A new final Digital Shamans checkpoint reuses the supplied draft wording and displays "Present"; its wording and precise dates are for later refinement. There are still 12 checkpoints.
 
-- One vertical winding SVG path, a travelling dot and growing milestone circles. No horizontal panel navigation or snapping.
-- One GSAP timeline with `scrub: true`, `start: 'top center'` and `end: 'bottom center'` drives the path drawing, dot and text reveals in both scroll directions.
-- The SVG is measured from the semantic HTML rows, so wrapped text changes spacing without detaching the markers. A monotonic-Y path allows each milestone's actual path-length fraction to be found by binary search.
-- ResizeObserver and viewport/font updates rebuild the MotionPath tween because its alignment is calculated at initialization. Existing scroll position supplies the rebuilt progress.
-- Circle radius is animated around its fixed centre, avoiding SVG transform-origin offsets. Text remains in the accessibility tree during opacity reveals.
-- Reduced-motion preference or unavailable GSAP libraries leaves the complete career readable as a static timeline. The HTML also remains readable with JavaScript disabled.
-- Reuses the existing GSAP and ScrollTrigger 3.15.1. DrawSVGPlugin and MotionPathPlugin 3.15.1 are vendored from `greensock/GSAP` tag `3.15.1`, with their original license headers retained. All scripts are served from this site and only loaded by the experiment.
+The original résumé dates and game details remain for the other entries. This experiment sets `seo_noindex: true` and `sitemap: false` and is not linked from the main navigation.
 
-## References studied
+## Curve visibility and positioning
 
-- Supplied video: [snorklTV — GreenSock Scroll-Driven SVG Path Follower](https://www.youtube.com/watch?v=ersN5fk8py0), especially path/dot alignment, milestone timing and final ScrollTrigger setup.
-- [Author's accompanying demo](https://codepen.io/snorkltv/pen/KKmZYGy)
-- [ScrollTrigger documentation](https://gsap.com/docs/v3/Plugins/ScrollTrigger/)
-- [DrawSVG documentation](https://gsap.com/docs/v3/Plugins/DrawSVGPlugin/)
-- [MotionPath documentation](https://gsap.com/docs/v3/Plugins/MotionPathPlugin/), including its resize/alignment caveat.
+- Curve height adapts to the viewport, reserving space for the header and introduction.
+- Actual SVG arc-length samples calibrate the curve to fit at least 40% in a viewport. The implementation targets 42% as a safety margin and checks windows along the whole curve, rather than estimating from vertical height alone.
+- A faint complete path keeps the upcoming shape visible; the bright stroke and travelling dot advance and reverse with scrolling.
+- Normalized checkpoint positions and sides are stored in the HTML as `data-curve-at` and `data-curve-side`. Changing text does not change the intended checkpoint location.
+- Text blocks are kept clear of the curve and each other, with short connectors back to their fixed markers.
+- Narrow screens use a compact S-curve and checkpoint labels. Selecting a label or marker opens its complete date, role and project details in a keyboard-accessible native dialog. Compact layouts preserve readable text instead of shrinking a full desktop canvas.
+- Resizing rebuilds MotionPath alignment from current geometry. Reduced motion or missing animation libraries keeps a static, readable version; without JavaScript the semantic career list remains available.
 
-## Validation
+## Animation and references
 
-JavaScript syntax and the 12 chronological dates were checked. Browser QA covered desktop scrolling and reverse playback, all 12 milestones at the end, 390px and 320px layouts, and resizing while scrolled. Milestone centres remained aligned with the SVG path to within one CSS pixel. The normal Pages workflow performs the final Jekyll build and repository checks when merged.
+One scrubbed GSAP timeline drives DrawSVG, MotionPath, marker growth and label emphasis, with `start: 'top center'` and `end: 'bottom center'`. The existing vendored GSAP, ScrollTrigger, DrawSVG and MotionPath 3.15.1 remain unchanged.
+
+- [Supplied snorklTV tutorial](https://www.youtube.com/watch?v=ersN5fk8py0)
+- [Accompanying demo](https://codepen.io/snorkltv/pen/KKmZYGy)
+- [ScrollTrigger](https://gsap.com/docs/v3/Plugins/ScrollTrigger/)
+- [DrawSVG](https://gsap.com/docs/v3/Plugins/DrawSVGPlugin/)
+- [MotionPath](https://gsap.com/docs/v3/Plugins/MotionPathPlugin/)
+
+## Validation of this revision
+
+JavaScript syntax and the updated checkpoint inventory were checked. Browser QA covered 1363×936, 1100×844, 390×844 and 320×844 layouts. The minimum fitted arc fractions were 42.4%, 42.3%, 49.0% and 48.8% respectively; no checkpoint label overlaps or horizontal overflow were detected. Resizing while scrolled, complete details and dismissal, and forward/reverse scrolling were checked. All 12 checkpoints and the complete bright path were reached at the end.
+
+The existing Pages workflow performs the final repository validation and Jekyll build.
