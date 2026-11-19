@@ -100,3 +100,37 @@ test('only offloaded 4K gallery images have a same-variant WebP fallback', () =>
   assert.equal(desktop.publicImageSource(`${serviceOrigin}/outside.jpg`, '4k').fallbackUrl, undefined);
   assert.equal(desktop.publicImageSource('/projects/image.jpg', '4k').fallbackUrl, undefined);
 });
+
+test('a new gallery uses its own revision without invalidating existing image URLs', () => {
+  const newCommit = 'abcdef1234567890abcdef1234567890abcdef12';
+  const delivery = {
+    galleryOriginalsOrigin: serviceOrigin,
+    galleryOriginalsRevision: commit,
+    galleryOriginalsGalleryRevisions: JSON.stringify({ 'nfs-unbound': newCommit }),
+  };
+  for (const base of ['https://digitalshamans.co.uk/', 'https://digitalshamans.co.uk/artur/',
+    'https://digitalshamans.co.uk/galleries/nfs-unbound/',
+    'https://digitalshamans.co.uk/galleries/hb-egypt/']) {
+    const mapper = resolution(base, true, delivery);
+    const nfs = mapper.publicImageSource('/galleries/nfs-unbound/shot.jpg?v=image-hash', '4k');
+    assert.equal(nfs.url, `${serviceOrigin}/public-media/${newCommit}/nfs-unbound/shot.jpg`);
+    assert.equal(nfs.fallbackUrl,
+      'https://digitalshamans.co.uk/galleries/nfs-unbound/1440p/shot.webp?v=image-hash&webp=q92-m6');
+    assert.equal(mapper.publicImageUrl('/galleries/hb-egypt/shot.jpg?v=unchanged', '4k'),
+      `${serviceOrigin}/public-media/${commit}/hb-egypt/shot.jpg`);
+    assert.equal(mapper.publicImageUrl('/galleries/nfs-unbound/shot.jpg?v=image-hash', '1440p'),
+      nfs.fallbackUrl);
+  }
+});
+
+test('missing or malformed optional revision maps retain the established delivery revision', () => {
+  for (const value of [undefined, 'null', '[]', '{bad json',
+    JSON.stringify({ 'nfs-unbound': 'invalid' }), JSON.stringify({ 'nfs-unbound': 123 })]) {
+    const mapper = resolution('https://digitalshamans.co.uk/', true, {
+      galleryOriginalsOrigin: serviceOrigin, galleryOriginalsRevision: commit,
+      galleryOriginalsGalleryRevisions: value,
+    });
+    assert.equal(mapper.publicImageUrl('/galleries/nfs-unbound/shot.jpg', '4k'),
+      `${serviceOrigin}/public-media/${commit}/nfs-unbound/shot.jpg`);
+  }
+});

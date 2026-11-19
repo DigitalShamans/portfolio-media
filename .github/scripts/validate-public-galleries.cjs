@@ -33,6 +33,14 @@ const publicFolders = JSON.parse(execFileSync('ruby', [resolve(__dirname, 'publi
   input: pagePaths.join('\0'),
   encoding: 'utf8',
 }));
+if (delivery.gallery_revisions !== undefined) {
+  const revisions = delivery.gallery_revisions;
+  if (!revisions || typeof revisions !== 'object' || Array.isArray(revisions) ||
+      Object.entries(revisions).some(([folder, revision]) =>
+        !publicFolders.includes(folder) || !/^[a-f0-9]{40}$/.test(revision || ''))) {
+    throw new Error('Gallery revision overrides must name a public gallery and an immutable 40-character revision.');
+  }
+}
 const filesByFolder = new Map(publicFolders.map(folder => [folder, new Set()]));
 const previewsByFolder = new Map(publicFolders.map(folder => [folder, new Set()]));
 for (const path of trackedPaths) {

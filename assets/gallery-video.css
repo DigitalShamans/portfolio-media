@@ -1,0 +1,14 @@
+.gallery-video {
+  margin-top: 2rem;
+}
+.gallery-video h2 {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+}
+.gallery-video iframe {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border: 0;
+}
