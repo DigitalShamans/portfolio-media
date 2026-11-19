@@ -2706,6 +2706,72 @@
         "size": 913148
       }
     },
+    "vegetation": {
+      "digital-shamans-artur-perzyna-red-flowers-01impr.jpg": {
+        "blob": "676c616b6e785c47e15607674696859783831aa6",
+        "size": 1762639
+      },
+      "digital-shamans-digital-shamans-sniper-elite4-environment01.jpg": {
+        "blob": "69be550a454ded6a2acea573bb561f26c5f80b74",
+        "size": 568865
+      },
+      "digital-shamans-digital-shamans-sniper-elite4-environment02.jpg": {
+        "blob": "242d510f124b312ee6df1904438348835f8ce0ee",
+        "size": 567496
+      },
+      "digital-shamans-digital-shamans-sniper-elite4-environment03.jpg": {
+        "blob": "e2d0f2b3d578b563909d23126ba2149c88a61d9e",
+        "size": 818140
+      },
+      "digital-shamans-digitalshamans-vegetation-phantom-speedtree.jpg": {
+        "blob": "5affc77b8c920d6aff39b55a61cd8acdfbf5b049",
+        "size": 2284612
+      },
+      "digital-shamans-ds-vegetation-survisland-papaya-4k.jpg": {
+        "blob": "674591fcc929a9a7d107bc489b2cc66ad977ce7b",
+        "size": 842892
+      },
+      "digital-shamans-ds-vegetation-survisland-pineapple-4k.jpg": {
+        "blob": "7fa760da74bc7b97f08f15448a55b5716effa61e",
+        "size": 847535
+      },
+      "digital-shamans-ds-vegetation-survisland-seaweed-4k.jpg": {
+        "blob": "154b287c84edbf4d6f30ff1366560ea7e91ef621",
+        "size": 1817579
+      },
+      "digital-shamans-ds-vegetation-survisland-wheat01-4k.jpg": {
+        "blob": "9c5fabaee96abeede1bdb0d3bd94d81022c91b85",
+        "size": 774695
+      },
+      "digital-shamans-ds-vegetation-survisland-wheat02-4k.jpg": {
+        "blob": "1acd1452f4b9a9b27e8fb669b469ae44048721cc",
+        "size": 629706
+      },
+      "digital-shamans-unreal4-phantom-environments-05-srgb.jpg": {
+        "blob": "f8375ebc7462caef3bcfd9bc6593e2179c9ed031",
+        "size": 525175
+      },
+      "digital-shamans-unreal4-phantom-environments-08b-srgb.jpg": {
+        "blob": "cc035011431411236dae2d0d51a91ccea0ee9aec",
+        "size": 630927
+      },
+      "digital-shamans-unreal4-phantom-environments-10-srgb.jpg": {
+        "blob": "c415215f72ebc41852ffbfac1836594107e79ec1",
+        "size": 474740
+      },
+      "digital-shamans-unreal4-phantom-environments-11-srgb.jpg": {
+        "blob": "f644b6d6ccb4d357a19117fed2638f4d173459fb",
+        "size": 345123
+      },
+      "digital-shamans-unreal4-phantom-environments-13-srgb.jpg": {
+        "blob": "e93cea29ae17e93657e00313b58e406184842cf6",
+        "size": 587991
+      },
+      "digital-shamans-unreal4-phantom-environments-14-srgb.jpg": {
+        "blob": "afa1da5486b2ec1cbaeb390c2478c122836aed8f",
+        "size": 483874
+      }
+    },
     "vehicles-aircrafts": {
       "digital-shamans-artur-perzyna-cockpit-01-impr-02-4k.jpg": {
         "blob": "77d435f2a3bdde4105fe582fa0225c4e4ed7c444",
