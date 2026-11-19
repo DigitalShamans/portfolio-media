@@ -1645,6 +1645,32 @@
         "blob": "460f9297d2aa52e8ae9a4833152570a3badd120d",
         "size": 2008643
       }
+    },
+    "nfs-unbound": {
+      "digital-shamans-nfs-unbound-announce-trailer-04.jpg": {
+        "blob": "443335514c46dd22e6262f4fbdc0365952b0d8c0",
+        "size": 612856
+      },
+      "digital-shamans-nfs-unbound-announce-trailer-03.jpg": {
+        "blob": "1d0a7ba1ac76786f736e0624851b0c89779f757c",
+        "size": 550346
+      },
+      "digital-shamans-nfs-unbound-announce-trailer-02.jpg": {
+        "blob": "7ae6947dbb1575ed82a447e5d0a242380f53b30c",
+        "size": 661836
+      },
+      "digital-shamans-nfs-unbound-announce-trailer-06.jpg": {
+        "blob": "871041b324021cc98c360110457307b7c2043b19",
+        "size": 587392
+      },
+      "digital-shamans-nfs-unbound-announce-trailer-05.jpg": {
+        "blob": "43e1ce5fb444c7d6f78b2e802cc581a9865b690c",
+        "size": 580648
+      },
+      "digital-shamans-nfs-unbound-announce-trailer-01.jpg": {
+        "blob": "6378c12399f72e54dea6eb74a55b1587e2458da9",
+        "size": 907707
+      }
     }
   }
 }

@@ -13,11 +13,12 @@
   {% assign gallery_seo_description = page.gallery_description %}
 {% endif %}
 {% assign gallery_folder = gallery_page.url | remove_first: '/galleries/' | split: '/' | first %}
+{% assign gallery_originals_revision = site.data.gallery_delivery.gallery_revisions[gallery_folder] | default: site.data.gallery_delivery.revision %}
 {% assign gallery_asset_versions = site.data.gallery_asset_versions[gallery_folder] %}
 {% assign first_image_url = site.data.portfolio_gallery_preloads[gallery_folder] | first %}
 {% assign gallery_seo_title = gallery_page.gallery_title | append: ' Environment Art | ' | append: portfolio_name %}
 <!doctype html>
-<html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}" data-gallery-webp-revision="{{ site.gallery_webp_revision | escape }}"{% if site.data.gallery_delivery.revision %} data-gallery-originals-origin="{{ site.data.gallery_delivery.service_origin | escape }}" data-gallery-originals-revision="{{ site.data.gallery_delivery.revision | escape }}"{% endif %}>
+<html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}" data-gallery-webp-revision="{{ site.gallery_webp_revision | escape }}"{% if site.data.gallery_delivery.revision %} data-gallery-originals-origin="{{ site.data.gallery_delivery.service_origin | escape }}" data-gallery-originals-revision="{{ site.data.gallery_delivery.revision | escape }}" data-gallery-originals-gallery-revisions="{{ site.data.gallery_delivery.gallery_revisions | jsonify | escape }}"{% endif %}>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -30,6 +31,7 @@
   {% endif %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
   <link rel="stylesheet" href="../gallery.css?v=21">
+  {% if gallery_page.gallery_youtube_id %}<link rel="stylesheet" href="{{ '/assets/gallery-video.css' | relative_url }}?v=1">{% endif %}
 </head>
 <body data-gallery-revision="{{ site.github.build_revision | escape }}"{% if gallery_asset_versions %} data-gallery-asset-versions="{{ gallery_asset_versions | jsonify | escape }}"{% endif %}>
   {% include site-header.html %}
@@ -53,7 +55,7 @@
           {% assign reduced_image_url = image_parts[0] | slice: 0, image_stem_length | replace_first: image_dir, reduced_dir | append: '.webp?' | append: image_parts[1] | append: '&webp=' | append: site.gallery_webp_revision | relative_url | escape %}
           {% if site.data.gallery_delivery.revision %}
             {% assign image_route = image_parts[0] | remove_first: '/galleries/' %}
-            {% assign first_image_url = site.data.gallery_delivery.service_origin | append: '/public-media/' | append: site.data.gallery_delivery.revision | append: '/' | append: image_route %}
+            {% assign first_image_url = site.data.gallery_delivery.service_origin | append: '/public-media/' | append: gallery_originals_revision | append: '/' | append: image_route %}
           {% else %}
             {% assign first_image_url = first_image_url | relative_url %}
           {% endif %}
@@ -65,6 +67,16 @@
           </a>
         {% endif %}
       </section>
+      {% if gallery_page.gallery_youtube_id %}
+      <section class="gallery-video" aria-labelledby="gallery-video-title">
+        <h2 id="gallery-video-title">Reveal trailer</h2>
+        <iframe src="https://www.youtube-nocookie.com/embed/{{ gallery_page.gallery_youtube_id | escape }}?rel=0"
+          title="{{ gallery_page.gallery_youtube_title | escape }}" loading="lazy"
+          width="1280" height="720" referrerpolicy="strict-origin-when-cross-origin"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
+      </section>
+      {% endif %}
     </div>
     <footer class="site-footer"><a class="back" href="{{ portfolio_url | relative_url }}#recent-work">Back to portfolio</a></footer>
   </main>
@@ -90,9 +102,8 @@
     </div>
   </dialog>
 
-  <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=5"></script>
+  <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=6"></script>
   <script src="../gallery-data.js?v=3"></script>
   <script src="../gallery-viewer.js?v=39"></script>
 </body>
 </html>
-
