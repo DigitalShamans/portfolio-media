@@ -1,0 +1,26 @@
+{% comment %}
+  Last gallery's unobtrusive escape routes. The hidden gallery-navigation
+  contains the same routes for cursor hover and mobile swipes. These plain
+  links remain available if scripting or browser history is unavailable.
+{% endcomment %}
+{% assign rz_gallery_items = site.data.portfolio.recent %}
+{% assign rz_gallery_count = rz_gallery_items | size %}
+{% for rz_gallery_item in rz_gallery_items %}
+  {% if rz_gallery_item.folder == 'hb-rzstart' %}
+    {% assign rz_previous_index = forloop.index0 | minus: 1 %}
+    {% assign rz_next_index = forloop.index0 | plus: 1 %}
+    {% if rz_previous_index < 0 %}
+      {% assign rz_previous_index = rz_gallery_count | minus: 1 %}
+    {% endif %}
+    {% if rz_next_index >= rz_gallery_count %}
+      {% assign rz_next_index = 0 %}
+    {% endif %}
+    {% assign rz_previous = rz_gallery_items[rz_previous_index] %}
+    {% assign rz_next = rz_gallery_items[rz_next_index] %}
+    <nav class="gallery-access__escape" aria-label="Leave RZ Start gallery">
+      <a href="{{ include.portfolio_url | append: 'galleries/' | append: rz_previous.folder | append: '/' | relative_url }}">Previous gallery: {{ rz_previous.title | escape }}</a>
+      <a href="{{ include.portfolio_url | append: 'galleries/' | append: rz_next.folder | append: '/' | relative_url }}">Next gallery: {{ rz_next.title | escape }}</a>
+    </nav>
+    {% break %}
+  {% endif %}
+{% endfor %}

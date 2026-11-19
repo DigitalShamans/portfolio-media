@@ -1,12 +1,12 @@
 'use strict';
 
-const galleryContent = document.querySelector('.gallery-content');
+const galleryContent = document.querySelector('.gallery-content, .gallery-map-page');
 const gallery = document.querySelector('.gallery');
 const galleryRevision = document.body.dataset.galleryRevision;
 const galleryAccess = window.galleryAccess;
 const imageResolution = galleryAccess?.resolution ?? GalleryResolution.current();
 const galleryAssetVersions = JSON.parse(document.body.dataset.galleryAssetVersions || '{}');
-const title = document.querySelector('.intro h1').textContent;
+const title = document.querySelector('.intro h1, #map-title').textContent;
 
 const finePointer = window.matchMedia('(pointer: fine)');
 let displaySize = `${screen.width}x${screen.height}`;
@@ -75,6 +75,7 @@ let nextBackgroundIndex = 0;
 let backgroundLoading = false;
 
 function setupClassicGalleryScroll() {
+  if (gallery.hasAttribute('data-native-gallery-scroll')) return;
   const desktopScrolling = window.matchMedia('(any-hover: hover) and (any-pointer: fine)');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const scroller = document.scrollingElement;
@@ -441,7 +442,7 @@ function showImage(index, initialVariant = 0) {
   previousSide.disabled = nextSide.disabled = shots.length < 2;
   counter.textContent = (index + 1) + ' / ' + shots.length;
   showStatus('Loading image…');
-  const selectedImage = initialVariant === 0 ? image : shot.comparison.getImage(initialVariant);
+  const selectedImage = initialVariant === 0 ? image : shot.comparison.getImage(initialVariant, true);
   if (selectedImage?.naturalWidth) {
     displayOriginal(selectedImage);
   } else if (!sources[0].fallbackUrl) {
@@ -471,6 +472,9 @@ function imageLoaded() {
     return image?.naturalWidth && imageUrl(image) === source;
   });
   if (displayed < 0) return;
+  viewer.dispatchEvent(new CustomEvent('gallery-imagechange', {
+    detail: { filename: shot.filenames[displayed], index: current, variant: displayed }
+  }));
   showStatus('');
   if (viewerIndicator) {
     displayedComparison = displayed;
@@ -714,6 +718,7 @@ function setupGalleryComparison(entry, link, sources, shotIndex) {
 
   return {
     getImage,
+    select,
     primaryLoaded() {
       if (requested === 0 && displayed !== 0) show(0);
     },
@@ -726,7 +731,7 @@ function setupGalleryComparison(entry, link, sources, shotIndex) {
 }
 
 function galleryAssetUrl(filename) {
-  const url = new URL(encodeURIComponent(filename), document.baseURI);
+  const url = new URL(encodeURIComponent(filename), gallery.dataset.galleryRoot || document.baseURI);
   const revision = galleryAssetVersions[filename] ?? galleryRevision;
   if (revision) url.searchParams.set('v', revision);
   return url.href;
@@ -821,7 +826,8 @@ function loadVisibleShotsFirst() {
 
 function createShot(entry, index, firstImage) {
   const label = title + ' screenshot ' + (index + 1);
-  const sources = GalleryData.images(entry).map(filename => galleryAccess
+  const filenames = GalleryData.images(entry);
+  const sources = filenames.map(filename => galleryAccess
     ? { url: filename }
     : GalleryResolution.publicImageSource(galleryAssetUrl(filename), imageResolution));
   const existing = index === 0 && firstImage?.source.url === sources[0].url &&
@@ -852,16 +858,10 @@ function createShot(entry, index, firstImage) {
     link.addEventListener('click', event => {
       if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
-      opener = link;
-      pointerOpened = event.detail > 0;
-      const initialVariant = comparison?.finishPreview() ?? 0;
-      openingPointer = { x: event.screenX, y: event.screenY };
-      showImage(index, initialVariant);
-      viewer.showModal();
-      void setFullscreen(true);
+      openViewer(index, comparison?.finishPreview() ?? 0, link, event);
     });
   }
-  return { element, image, link, sources, comparison, initialLoad: existing?.load };
+  return { element, image, link, filenames, sources, comparison, initialLoad: existing?.load };
 }
 
 async function loadGallery() {
@@ -889,6 +889,10 @@ async function loadGallery() {
     }
     if (restoreFocus) shots[0].link.focus({ preventScroll: true });
     galleryStatus.hidden = true;
+    return {
+      entries,
+      items: shots.map(shot => ({ element: shot.element, link: shot.link, image: shot.image, filenames: shot.filenames }))
+    };
   } catch (error) {
     if (fallback && fallback.parentNode !== gallery) gallery.replaceChildren(fallback);
     console.error('Gallery could not be loaded', error);
@@ -1001,4 +1005,39 @@ viewer.addEventListener('close', () => {
   }
 });
 
-void loadGallery();
+function openViewer(index, variant = 0, source = shots[index].link, event) {
+  if (typeof viewer.showModal !== 'function') return false;
+  if (!viewer.open) {
+    opener = source;
+    pointerOpened = event?.detail > 0;
+    openingPointer = event ? { x: event.screenX, y: event.screenY } : null;
+  }
+  showImage(index, variant);
+  if (!viewer.open) viewer.showModal();
+  if (document.fullscreenElement !== frame) void setFullscreen(true);
+  return true;
+}
+
+function findGalleryImage(filename) {
+  for (let index = 0; index < shots.length; index++) {
+    const variant = shots[index].filenames.indexOf(filename);
+    if (variant >= 0) return { index, variant, shot: shots[index] };
+  }
+  return null;
+}
+
+// The map uses the same renderer, image loading and fullscreen controls as a normal gallery.
+window.GalleryViewer = {
+  ready: loadGallery(),
+  openImage(filename, { opener: source, event } = {}) {
+    const found = findGalleryImage(filename);
+    return found ? openViewer(found.index, found.variant, source || found.shot.link, event) : false;
+  },
+  selectImage(filename) {
+    const found = findGalleryImage(filename);
+    if (!found) return false;
+    found.shot.comparison?.select(found.variant);
+    return true;
+  },
+  close() { viewer.close(); }
+};

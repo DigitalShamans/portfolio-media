@@ -30,7 +30,7 @@
     {% include site-favicon.html %}
   {% endif %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
-  <link rel="stylesheet" href="../gallery.css?v=21">
+  <link rel="stylesheet" href="../gallery.css?v=23">
   {% if gallery_page.gallery_embeds %}<link rel="stylesheet" href="../gallery-embeds.css?v=2">{% endif %}
   {% if gallery_page.gallery_youtube_id %}<link rel="stylesheet" href="{{ '/assets/gallery-video.css' | relative_url }}?v=1">{% endif %}
 </head>
@@ -82,30 +82,11 @@
     <footer class="site-footer"><a class="back" href="{{ portfolio_url | relative_url }}#recent-work">Back to portfolio</a></footer>
   </main>
 
-  <dialog id="viewer" aria-label="Fullscreen image viewer">
-    <div id="viewer-frame" class="viewer-frame">
-      <div id="stage" class="stage" tabindex="0" aria-label="Image viewing area">
-        <img id="original" alt="" draggable="false">
-      </div>
-      <div class="viewer-arrows" role="group" aria-label="Side navigation">
-        <button id="previous-side" type="button" aria-label="Previous image (left)">←</button>
-        <button id="next-side" type="button" aria-label="Next image (right)">→</button>
-      </div>
-      <div class="viewer-bar">
-        <div class="viewer-group">
-          <output id="counter" class="counter" aria-live="polite"></output>
-        </div>
-        <div class="viewer-group">
-          <button id="fullscreen" type="button" autofocus>Back to gallery</button>
-        </div>
-      </div>
-      <p id="status" class="status" role="status" hidden></p>
-    </div>
-  </dialog>
+  {% include gallery-viewer.html %}
 
   <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=6"></script>
   <script src="../gallery-data.js?v=3"></script>
   {% if gallery_page.gallery_embeds %}<script src="../gallery-embeds.js?v=3"></script>{% endif %}
-  <script src="../gallery-viewer.js?v=41"></script>
+  <script src="../gallery-viewer.js?v=42"></script>
 </body>
 </html>
