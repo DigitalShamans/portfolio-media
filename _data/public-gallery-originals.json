@@ -2324,6 +2324,140 @@
         "size": 377053
       }
     },
+    "strange-brigade-environment-art": {
+      "digital-shamans-1-impr-03-srgb.jpg": {
+        "blob": "8f208b2683af51164180ce3e794bbc2097f71db1",
+        "size": 1155853
+      },
+      "digital-shamans-12-impr-srgb-denoised.jpg": {
+        "blob": "55ffac15a32f04f750faefeb854d97de3535d08a",
+        "size": 1045915
+      },
+      "digital-shamans-13-impr-srgb-denoised.jpg": {
+        "blob": "68751f74624805d889e0135a0d795f5d4cf55cf2",
+        "size": 716921
+      },
+      "digital-shamans-14-impr02-srgb.jpg": {
+        "blob": "c62f4ffe9465054d3a148541d0d3f445ab09457e",
+        "size": 882572
+      },
+      "digital-shamans-15.jpg": {
+        "blob": "32c0dbd620ddd4590ec0bd64197317e912bdd6e6",
+        "size": 1140582
+      },
+      "digital-shamans-16.jpg": {
+        "blob": "21d3a02012ba1cae601e7bafbba26ff9e80d21ec",
+        "size": 1344814
+      },
+      "digital-shamans-17.jpg": {
+        "blob": "945859b2dd18b0b5ce447e92da3b4fbc1f1d5319",
+        "size": 1385281
+      },
+      "digital-shamans-2-impr-03-srgb.jpg": {
+        "blob": "adef897d6d3e15d2d1017de29052940662037b3b",
+        "size": 1360023
+      },
+      "digital-shamans-3-impr02-srgb.jpg": {
+        "blob": "dc14a42f97ea080da59c2fe29fc54a49b7846c22",
+        "size": 1126845
+      },
+      "digital-shamans-4-impr02-srgb.jpg": {
+        "blob": "9deb04dfc9d751bf73251845bb79d713eac831f6",
+        "size": 1346964
+      },
+      "digital-shamans-5-impr04-srgb.jpg": {
+        "blob": "617a355312ed4668e51046922050fb64316fa039",
+        "size": 1220637
+      },
+      "digital-shamans-7-impr-srgb.jpg": {
+        "blob": "5c679791e6aa1844289f2951ac2154a5cd96b4c8",
+        "size": 1444546
+      },
+      "digital-shamans-checkpoint-before-passage-of-death-07-impr-denoised-srgb3.jpg": {
+        "blob": "a6a109e51c1dd4ff1f591483bcdec375888e38fd",
+        "size": 828188
+      },
+      "digital-shamans-circle-room-01-impr4-denoised-srgb.jpg": {
+        "blob": "ce70345983e983b2601e9fa8ab2c5a309cba8a2f",
+        "size": 632457
+      },
+      "digital-shamans-corridor-01-srgb.jpg": {
+        "blob": "dda78ed481d343165c1711aa5cde143f7cbb39b6",
+        "size": 628229
+      },
+      "digital-shamans-corridor-04b-srgb.jpg": {
+        "blob": "880c267d6ea1b797408cad88b423fd8e40f375f9",
+        "size": 546588
+      },
+      "digital-shamans-corridor-05m-too-orangy-impr04-srgb.jpg": {
+        "blob": "98467eb8526e9fb9a46baf2f8d4f8e114a8a467f",
+        "size": 763169
+      },
+      "digital-shamans-corridor-06-mirror-impr02-srgb.jpg": {
+        "blob": "83f68658888fcac096b10e4bbe41fb707641ddb8",
+        "size": 650611
+      },
+      "digital-shamans-entry-room-to-corridor-01c-impr02-srgb.jpg": {
+        "blob": "f6f0a241f7761547342c844d25144610481a9dbb",
+        "size": 793575
+      },
+      "digital-shamans-entry-room-to-corridor-08impr-denoised-srgb.jpg": {
+        "blob": "b1dce523058e5b5d36431cebd5336029a149259b",
+        "size": 613523
+      },
+      "digital-shamans-entry-room-to-corridor-09m-impr-srgb.jpg": {
+        "blob": "c559c49d1a95fa174d34603dce525d45d4375c81",
+        "size": 465201
+      },
+      "digital-shamans-entry-room-to-corridor-10-impr03-denoised-srgb.jpg": {
+        "blob": "fca5de8c806ec3dfcf46873e632b1340b5aa8ecc",
+        "size": 1011122
+      },
+      "digital-shamans-main-hall-01-impr-denoised-srgb.jpg": {
+        "blob": "b2525e10a989ac92abceb33279166f2c1b015573",
+        "size": 957713
+      },
+      "digital-shamans-main-hall-03-impr-srgb.jpg": {
+        "blob": "f933868f573a36b77639e6385ebf92a76e4050f1",
+        "size": 636102
+      },
+      "digital-shamans-outdoor-02-impr-denoised-srgb.jpg": {
+        "blob": "793700d2622a55d5a708e4c1b498a71994b56312",
+        "size": 714518
+      },
+      "digital-shamans-rightwing-room-02-srgb.jpg": {
+        "blob": "c9f011ea37464c0b6610a4aa4c89b6007e41375a",
+        "size": 924186
+      },
+      "digital-shamans-rightwing-room-03-impr-srgb.jpg": {
+        "blob": "2d80602cf37fbda376fbdc7eedbf63f888c6b80f",
+        "size": 851087
+      },
+      "digital-shamans-starting-corridor-03-impr-denoised-impr-srgb.jpg": {
+        "blob": "7197377078ccade32ff5a21054062564385e5007",
+        "size": 611110
+      },
+      "digital-shamans-starting-corridor-05-impr02-srgb.jpg": {
+        "blob": "dd46b6b67bd6a773fec4c7fc7dc92f954abc7a79",
+        "size": 736944
+      },
+      "digital-shamans-the-moon-corridor-02-srgb.jpg": {
+        "blob": "9dc5816f45b15cbee92d647cdc8f79081add0c94",
+        "size": 597869
+      },
+      "digital-shamans-the-moon-corridor-04m-mirror-impr-srgb.jpg": {
+        "blob": "27ec985675bdbd3af0b5e2a106ffe640739f1642",
+        "size": 595702
+      },
+      "digital-shamans-the-moon-corridor-10-impr03-srgb.jpg": {
+        "blob": "6619ec52b60185156e0938b712254a98c42beef9",
+        "size": 521218
+      },
+      "digital-shamans-the-moon-corridor-12b-impr-srgb.jpg": {
+        "blob": "adba6a4827d7c70d9e3d4eaf24c745e7e3f09982",
+        "size": 565565
+      }
+    },
     "survisland-concept-art": {
       "digital-shamans-digital-shamans-color-animal-traps-02.jpg": {
         "blob": "5f385597f3ccdda377276aa8e66c68e4a9ea4acf",

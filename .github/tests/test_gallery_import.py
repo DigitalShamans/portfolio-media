@@ -41,6 +41,31 @@ def payload(names=("First.jpg", "Second.jpg")):
 
 
 class NormalizationTests(unittest.TestCase):
+    def test_image_captions_are_filename_keyed_page_metadata_not_editor_rows(self):
+        raw = payload()
+        raw["media"][0]["caption"] = "Before."
+        raw["media"][1]["caption"] = "After <text>."
+        source = tool.normalize(raw)
+        rows, embeds = tool.manifests(source)
+        self.assertEqual(rows, [{"image": "First.jpg"}, {"image": "Second.jpg"}])
+        self.assertEqual(embeds, [])
+        line = next(line for line in tool.page(source).decode().splitlines()
+                    if line.startswith("gallery_captions:"))
+        self.assertEqual(json.loads(line.split(": ", 1)[1]),
+                         {"First.jpg": "Before.", "Second.jpg": "After <text>."})
+        self.assertNotIn(b"gallery_captions:", tool.page(source, personal=True))
+        self.assertNotIn(b"gallery_captions:", tool.page(tool.normalize(payload())))
+        raw["media"][0]["caption"] = None
+        raw["media"][1]["caption"] = ""
+        self.assertNotIn(b"gallery_captions:", tool.page(tool.normalize(raw)))
+
+    def test_non_text_image_captions_are_rejected(self):
+        for invalid in (5, {}, []):
+            raw = payload()
+            raw["media"][0]["caption"] = invalid
+            with self.subTest(caption=invalid), self.assertRaisesRegex(ValueError, "Image caption"):
+                tool.normalize(raw)
+
     def test_mixed_order_and_historical_fields_preserve_metadata(self):
         raw = payload()
         first, second = raw.pop("media")
