@@ -50,7 +50,7 @@ const GalleryMap = (() => {
 
     const hover = matchMedia('(hover: hover) and (pointer: fine)');
     const blocked = new Set();
-    let active = null, mode = null, interiorEntered = false, pointer = null;
+    let active = null, mode = null, pointer = null;
     const hoverDelay = 400;
     let pendingCard = null, hoverTimer;
     function cancelPendingHover() {
@@ -61,7 +61,7 @@ const GalleryMap = (() => {
       if (!help) return;
       help.textContent = navigationEnabled
         ? (hover.matches ? 'Hover to enlarge. Click to scroll to the screenshot below.' : 'Tap to preview. Tap the enlarged screenshot again to scroll to it.')
-        : (hover.matches ? 'Hover a screenshot to enlarge it. Move towards its edge to return.' : 'Tap a screenshot to enlarge it. Tap again or outside it to return.');
+        : (hover.matches ? 'Hover a screenshot to enlarge it. Move away from its thumbnail position to return.' : 'Tap a screenshot to enlarge it. Tap again or outside it to return.');
     };
     function geometry(card) {
       const width = stage.clientWidth, height = stage.clientHeight;
@@ -72,21 +72,23 @@ const GalleryMap = (() => {
       const panelWidth = thumbWidth * scale, panelHeight = thumbHeight * scale;
       const x = width / 2, y = height / 2;
       const board = stage.getBoundingClientRect(), left = board.left + stage.clientLeft, top = board.top + stage.clientTop;
+      // Keep the hover area centred on the original thumbnail, matching the reference.
+      // Clip it at the map edges without shifting its centre towards the image centre.
+      const hoverLeft = Math.max(0, anchorX - width * .225);
+      const hoverTop = Math.max(0, anchorY - height * .27);
+      const hoverRight = Math.min(width, anchorX + width * .225);
+      const hoverBottom = Math.min(height, anchorY + height * .27);
       return { scale, shiftX: x - anchorX, shiftY: y - anchorY,
         expanded: { left: left + x - panelWidth / 2, top: top + y - panelHeight / 2, width: panelWidth, height: panelHeight },
+        hoverArea: { left: left + hoverLeft, top: top + hoverTop, width: hoverRight - hoverLeft, height: hoverBottom - hoverTop },
         thumb: { left: left + anchorX - thumbWidth / 2, top: top + anchorY - thumbHeight / 2, width: thumbWidth, height: thumbHeight } };
     }
     const edgeDistance = (point, rect) => Math.min(point.x - rect.left, rect.left + rect.width - point.x, point.y - rect.top, rect.top + rect.height - point.y);
-    function closingMargin(rect) {
-      const margin = 4 * Math.max(12, Math.min(40, rect.height * .12));
-      // Preserve a central hover area even in an unusually small window.
-      return Math.min(margin, Math.min(rect.width, rect.height) * .49);
-    }
     function close(block = false) {
       cancelPendingHover();
       if (!active) return;
       const card = active; if (block) blocked.add(card);
-      active = null; mode = null; interiorEntered = false;
+      active = null; mode = null;
       card.classList.remove('is-open'); card.setAttribute('aria-expanded', 'false');
       for (const property of ['--scale', '--shift-x', '--shift-y']) card.style.removeProperty(property);
       stage.classList.remove('has-open-region'); if (caption) caption.textContent = 'Whole-level overview';
@@ -97,8 +99,7 @@ const GalleryMap = (() => {
     }
     function open(card, inputMode) {
       if (active === card) return; close(); active = card; mode = inputMode;
-      const layout = place(card), margin = closingMargin(layout.expanded);
-      interiorEntered = inputMode === 'pointer' && pointer && edgeDistance(pointer, layout.expanded) > margin;
+      place(card);
       card.classList.add('is-open'); card.setAttribute('aria-expanded', 'true'); stage.classList.add('has-open-region');
       if (caption) caption.textContent = map.regions[cards.indexOf(card)].label;
     }
@@ -112,15 +113,18 @@ const GalleryMap = (() => {
         if (hover.matches && !active && pointer && !blocked.has(card) && edgeDistance(pointer, geometry(card).thumb) >= 0) open(card, 'pointer');
       }, hoverDelay);
     }
+    function checkHoverPosition() {
+      if (!pointer) return;
+      if (pendingCard && edgeDistance(pointer, geometry(pendingCard).thumb) < 0) cancelPendingHover();
+      if (active && mode === 'pointer' && edgeDistance(pointer, geometry(active).hoverArea) <= 0) close(true);
+    }
     listen(stage, 'pointermove', event => {
       if (!hover.matches || event.pointerType === 'touch') return;
       pointer = { x: event.clientX, y: event.clientY };
       for (const card of blocked) if (edgeDistance(pointer, geometry(card).thumb) < 0) blocked.delete(card);
       if (active) {
         if (mode !== 'pointer') return;
-        const rect = geometry(active).expanded, distance = edgeDistance(pointer, rect), margin = closingMargin(rect);
-        if (distance > margin) interiorEntered = true;
-        if (distance < 0 || (interiorEntered && distance <= margin)) close(true);
+        checkHoverPosition();
       } else {
         const card = cards.find(item => !blocked.has(item) && edgeDistance(pointer, geometry(item).thumb) >= 0);
         scheduleHover(card);
@@ -147,7 +151,8 @@ const GalleryMap = (() => {
     listen(stage, 'click', event => { if (!event.target.closest('.gallery-map-region')) close(); });
     listen(document, 'keydown', event => { if (event.key === 'Escape' && active) { event.preventDefault(); close(true); } });
     listen(stage, 'focusout', event => { if (mode === 'keyboard' && !stage.contains(event.relatedTarget)) close(); });
-    const resize = new ResizeObserver(() => { if (active) place(active); }); resize.observe(stage);
+    const resize = new ResizeObserver(() => { if (active) place(active); checkHoverPosition(); }); resize.observe(stage);
+    listen(document, 'scroll', checkHoverPosition);
     listen(hover, 'change', () => { close(); blocked.clear(); updateHelp(); }); updateHelp();
     return { cards, close, picture, destroy() { close(); resize.disconnect(); cleanup.forEach(remove => remove()); stage.replaceChildren(); } };
   }
