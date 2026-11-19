@@ -16,16 +16,19 @@ sitemap: false
   <meta name="color-scheme" content="dark">
   {% include seo.html %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
-  <link rel="stylesheet" href="{{ '/assets/career-timeline.css' | relative_url }}?v=6">
+  <link rel="stylesheet" href="{{ '/assets/career-timeline.css' | relative_url }}?v=7">
   <script src="{{ '/assets/vendor/gsap/3.15.1/gsap.min.js' | relative_url }}" defer></script>
   <script src="{{ '/assets/vendor/gsap/3.15.1/ScrollTrigger.min.js' | relative_url }}" defer></script>
+  <script src="{{ '/assets/vendor/gsap/3.15.1/ScrollSmoother.min.js' | relative_url }}" defer></script>
   <script src="{{ '/assets/vendor/gsap/3.15.1/DrawSVGPlugin.min.js' | relative_url }}" defer></script>
   <script src="{{ '/assets/vendor/gsap/3.15.1/MotionPathPlugin.min.js' | relative_url }}" defer></script>
-  <script src="{{ '/assets/career-timeline.js' | relative_url }}?v=6" defer></script>
+  <script src="{{ '/assets/career-timeline.js' | relative_url }}?v=7" defer></script>
 </head>
 <body class="career-page">
-  {% include site-header.html %}
   <div class="career-viewport" aria-hidden="true"></div>
+  <div id="career-scroll-wrapper">
+  <div id="career-scroll-content">
+  {% include site-header.html %}
   <main class="career-shell">
     <header class="career-intro">
       <p class="career-eyebrow">2004 — Present</p>
@@ -229,10 +232,12 @@ sitemap: false
       <a class="career-portfolio-link" href="{{ '/artur/' | relative_url }}">View portfolio</a>
     </div>
   </main>
+  {% include copyright-footer.html owner='Artur Perzyna' %}
+  </div>
+  </div>
   <dialog class="career-details" id="career-details" aria-labelledby="career-details-title">
     <form method="dialog"><button class="career-details-close" type="submit">Close</button></form>
     <div data-career-details-body></div>
   </dialog>
-  {% include copyright-footer.html owner='Artur Perzyna' %}
 </body>
 </html>
