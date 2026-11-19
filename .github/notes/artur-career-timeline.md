@@ -26,7 +26,18 @@ Large screens scale the timeline text, marker radii, stroke width, label spacing
 
 ## Animation and references
 
-One scrubbed GSAP timeline drives DrawSVG, MotionPath, marker growth and label emphasis, with `start: 'top center'` and `end: 'bottom center'`. The existing vendored GSAP, ScrollTrigger, DrawSVG and MotionPath 3.15.1 remain unchanged.
+On desktop, one scrubbed GSAP timeline drives DrawSVG, MotionPath, marker growth and label emphasis, with `start: 'top center'` and `end: 'bottom center'`. The existing vendored GSAP, ScrollTrigger, DrawSVG and MotionPath 3.15.1 remain unchanged.
+
+## Mobile reveal revision
+
+The supplied mobile recording showed the current v3 page: upcoming labels began at 80% opacity, making the scroll reveal almost imperceptible. Version 4 changes the narrow-screen presentation:
+
+- Upcoming dates and the complete route stay faintly visible, while employer labels enter from transparent with a 24px outward movement and an 8px rise.
+- Each entrance runs for 0.66 seconds independently of swipe speed, rather than completing within a few pixels of scrolling. The travelling dot determines when each entrance plays or reverses.
+- A thicker orange completed path, a larger glowing travelling dot with a white outline, and growing orange checkpoint markers distinguish progress from the faint upcoming route.
+- The mobile scroll trigger follows the 65% viewport line with 0.35-second scrub smoothing. Scrolling back reverses the reveals; keyboard focus also reveals its checkpoint.
+- The accepted desktop composition, original checkpoint positions and minimum curve visibility are retained. Static fallbacks show complete text without animation.
+- Both asset URLs use `?v=4` so a normal page reload fetches this revision.
 
 - [Supplied snorklTV tutorial](https://www.youtube.com/watch?v=ersN5fk8py0)
 - [Accompanying demo](https://codepen.io/snorkltv/pen/KKmZYGy)
@@ -41,5 +52,11 @@ JavaScript syntax and the updated checkpoint inventory were checked. Browser QA 
 ## Wider-layout validation
 
 Syntax and the 12-checkpoint inventory pass. Browser QA at 3840×2040, 1363×936, 390×844 and 320×844 found minimum fitted arc fractions of 45.0%, 46.2%, 49.0% and 48.8% respectively, with no label overlaps or horizontal overflow. Wide-layout forward/reverse scroll reached the complete path and all 12 checkpoints.
+
+## Mobile-reveal validation
+
+Version 4 passes JavaScript syntax and the 12-checkpoint inventory. Browser QA at 390×844 and 320×844 retains 49.0% and 48.8% minimum curve visibility, with no label overlaps or horizontal overflow. A checkpoint initially at zero copy opacity becomes fully visible after advancing the travelling dot. A fast scroll to the end reveals all 12 entries and completes the path; returning to the top hides the eight future labels again. Resizing while scrolled rebuilds the mobile/desktop presentation, and the final checkpoint still opens complete details and closes normally.
+
+The 1363×936 desktop check retains its 46.2% minimum curve fraction, white completed path and existing label emphasis, with no overlaps or horizontal overflow. With GSAP omitted, all 12 copies remain fully visible in the static fallback. No application console errors were observed.
 
 The existing Pages workflow performs the final repository validation and Jekyll build.
