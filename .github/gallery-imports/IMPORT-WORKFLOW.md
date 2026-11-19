@@ -1,0 +1,169 @@
+# One gallery per release
+
+Use this workflow for a **new** ArtStation gallery using JPG originals, native MP4,
+YouTube or Sketchfab. Existing galleries, comparisons, maps and unsupported media
+need their own bounded change; these helpers deliberately refuse to overwrite a
+published gallery. This is preparation tooling, not a new viewer or hosting system.
+
+## Four bounded checkpoints
+
+1. **Source**: inspect current main/instructions and route conflicts once. Open the
+   rendered ArtStation project through the supported browser. Capture its exact
+   mixed-media sequence, real download links, identifiers, captions and dimensions
+   in one JSON. Prefer the actual original download links; do not invent a 4K URL.
+   Stop and isolate a feature task for an unsupported media type. Keep acquisition
+   to the established three materially different legitimate approaches if blocked.
+2. **Prepared**: download once, verify every file, run the importer below, review its
+   generated manifests/pages and private approval patch. Perform the native editor
+   reorder/save/reopen/restore cycle on a scratch copy; check image order and unchanged
+   companion bytes. Commit/push source, originals and the reviewed private approval
+   inventory together. Record the immutable private revision after that commit.
+3. **Published**: generate the release plan against current website/service metadata.
+   Review and apply only patches whose expected hashes still match; integrate once.
+   Use the existing Sites release process, retain old active revisions, and verify
+   all new JPGs at the approved immutable revision before updating the website.
+   Commit generated pages/media and website metadata together. Run required CI and
+   publish **one** gallery through **one** Pages release. Verify terminal deployment.
+4. **Verified**: run file/HTTP checks and native acceptance in parallel independent
+   lanes after publication. Test both portfolio routes. Commit/push final evidence
+   and STATUS on the working branch; it can be included with the next content
+   release rather than immediately merging a documentation-only second deployment.
+
+Use at most two independent workers. Shared metadata, integrations and deployments
+have one owner. Checkpoint after each gate; resume files rather than reacquiring
+source or rebuilding reviewed code. Keep STATUS concise; put detailed results in
+separate evidence files. Do not treat checkpoints as a chat-length reset.
+
+## Input and commands
+
+Requires Python with **Pillow 13.0.0**, including WebP support, and Windows PowerShell
+5.1 or later for the TLS-validating downloader. The bundled Codex Python used for
+the benchmark provides Pillow 13. Discover that runtime through the workspace
+dependencies tool instead of assuming the system Python has it.
+
+Example normalized input (replace every sample value with verified source data):
+
+```json
+{
+  "schema_version": 1,
+  "slug": "example",
+  "title": "Game - Gallery",
+  "description": "Reviewed portfolio description.",
+  "source_project": "https://www.artstation.com/artwork/PROJECT_ID",
+  "media": [
+    {"type": "image", "id": 123, "filename": "Exact-Name.jpg",
+     "source_url": "https://cdnb.artstation.com/p/assets/images/images/000/000/123/large/Exact-Name.jpg?1234567890",
+     "width": 1920, "height": 1080},
+    {"type": "youtube", "id": "eWHDcWZnTMY", "title": "Verified trailer"}
+  ]
+}
+```
+
+Supported entries are `image`, `video` (safe local `.mp4` basename), `youtube`,
+`sketchfab` and an explicitly observed `empty` container. Images require original
+`.jpg` basenames and stable HTTPS source URLs. Preserve letter case. Signed,
+credential-bearing or temporary access URLs must never enter a committed manifest.
+Historical `entries` manifests from the completed imports are also accepted.
+Provide `--slug` and `--title` when those fields are absent.
+
+From the website checkout, with task-specific paths outside the checkout:
+
+```powershell
+$GalleryPython = 'ABSOLUTE_PATH_TO_PILLOW13_PYTHON'
+$GallerySource = 'C:\task\source.json'
+$GalleryOriginals = 'C:\task\originals'
+$GalleryStage = 'C:\task\stage'
+
+powershell -NoProfile -File .github/scripts/download-gallery-assets.ps1 `
+  -InputFile $GallerySource -OutputDir $GalleryOriginals `
+  -ReportPath 'C:\task\downloads.json'
+
+& $GalleryPython .github/scripts/gallery-import.py prepare `
+  --input $GallerySource --source-dir $GalleryOriginals `
+  --cache 'C:\task\cache' --output $GalleryStage
+
+& $GalleryPython .github/scripts/gallery-import.py private-plan `
+  --stage $GalleryStage --private-source 'C:\task\portfolio-media-private' `
+  --plan 'C:\task\private-plan.json'
+
+# Review/apply the private patch; copy staged private files; commit and push.
+# Resolve the actual full private commit SHA, then:
+& $GalleryPython .github/scripts/gallery-import.py plan `
+  --stage $GalleryStage --revision FULL_PRIVATE_COMMIT_SHA `
+  --website . --service-source 'C:\task\service-checkout' `
+  --plan 'C:\task\release-plan.json'
+```
+
+`prepare` writes originals/provenance under `stage/private`, WebPs, image-only
+`gallery.json`, stable image-anchored embeds, native MP4 and both page stubs under
+`stage/public`. It also emits measured sizes, SHA-256/Git blob IDs, approval entries,
+an artifact inventory and a timing report. WebPs fit 2560×1440 with Lanczos,
+quality 92/method 6, EXIF orientation and ICC handling, without cropping/upscaling.
+Add `--resume` to repeat preparation with the same input/stage. Source hashes and
+cached derivative hashes are rechecked; a filename alone is never a cache hit.
+
+The downloader accepts the same input (or emitted `download-plan.json`), preserves
+the downloaded bytes, validates Windows names/public ArtStation CDN URLs and uses
+at most four transfers. Its successful report is the resume record; retain it
+beside the originals. Conflicting or corrupt existing files block rather than being
+overwritten. The Python core does no network access, Git actions or publication.
+
+Both planning commands emit replacement JSONs and expected input/output hashes.
+They do **not** modify repository metadata, apply patches, commit or deploy. Review
+the plan and preserve all prior approvals, including excluded images. Each new
+service revision contains only the incoming gallery; retain every prior catalog
+and active environment revision. Keep the global website fallback revision and add
+only the incoming gallery's override. MP4 stays outside the JPG-only service.
+
+## Acceptance retained
+
+- Check every original's size/hash/Git blob, format and actual dimensions; every
+  WebP's recipe/decode/hash; MP4 container/duration/dimensions and exact bytes.
+  Source order, case, duplicate checks and embed anchors must all agree.
+- Perform the real native editor round-trip, with unchanged companion bytes and
+  restored canonical image order. Parser tests alone do not satisfy this check.
+- Fetch/decode/hash every new service JPG, retain an old-gallery sample and denial
+  probes, then verify every published WebP/MP4. For MP4 check exact byte ranges too.
+- On **both** deployed routes, verify real content, mobile WebP and qualifying wide
+  desktop original requests, image navigation/fullscreen, and every embed. Native
+  MP4 needs actual play/pause/resume/seek/fullscreen; container parsing is separate.
+  Prepare one owned browser window and editor scratch folder to avoid repeated setup.
+- Confirm noindex, sitemap and homepage/navigation exclusions, applicable build and
+  deploy checks. Run shared fallback/stale-request/failure regression and appropriate
+  existing-gallery smoke coverage whenever shared runtime/schema code changes.
+  A new data-only gallery does not require repeating unrelated exhaustive tests.
+
+Generate asset versions after the new files are tracked at the intended revision,
+or use existing CI. Several validators read `HEAD`, not merely working-tree files.
+Local Ruby-dependent checks require the established Pages CI environment if Ruby
+is unavailable; record that distinction. Report passed, failed and unverified
+checks separately. Keep protected RZ media/access controls unchanged.
+
+## Timing target and evidence
+
+Firearms took **64m23s** using the recorded request/final timestamps. Its source
+downloads took **6.270s**, media preparation **14.536s**. Encoding alone cannot save
+half the elapsed import time. Reusable preparation/planning, existing native video
+support, one integration gate and prepared parallel acceptance remove repeated
+authoring/setup/handoffs. One gallery per release remains the user's chosen scope.
+
+Replay of the actual Firearms originals through this importer took **3.756s cold**
+and **1.443s resumed** (wall time including Python startup). All 20 WebPs were
+byte-identical to the published files; MP4 bytes, JPG order and video anchors also
+matched. This replay excludes acquisition, editor/browser work and deployment.
+See `IMPORT-BENCHMARK.json` for compact measured results.
+
+For a comparable gallery using supported formats and healthy services, target
+**25–30 minutes end to end**: source/preflight 4m; acquisition/preparation/private
+checkpoint 4m; pages/service/integration 7m; Pages 3m; editor/live acceptance 8m;
+final evidence 3m = **29m**. These are planning estimates, not a measured 2× result.
+Record UTC start/end/result per checkpoint on the next import and compare against
+the 32m11.5s half-time threshold. Report unexpected source/feature/CI blockers
+separately instead of omitting required media or checks to meet the target.
+
+Offline verification:
+
+```powershell
+& $GalleryPython -m unittest discover -s .github/tests -p test_gallery_import.py
+powershell -NoProfile -File .github/tests/download-gallery-assets.tests.ps1
+```

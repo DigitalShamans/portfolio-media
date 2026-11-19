@@ -22,6 +22,10 @@ Adding new originals or replacing image bytes uses the media publication workflo
 
 ## Publish gallery image updates
 
+For a new ArtStation gallery, use the [single-gallery import workflow](.github/gallery-imports/IMPORT-WORKFLOW.md).
+It provides resumable downloads, cached WebP preparation, both route stubs and reviewable
+private/service/website metadata plans. Each gallery still has its own release and acceptance checks.
+
 - Add or replace the original in the private media repository and update the approved list for new filenames or changed file contents. Keep the original's filename and the ordering of primary, comparison and additional images in the public gallery manifest.
 - Export the approved public WebPs at up to 2560 × 1440 using the existing q92-m6 settings. The Pages workflow publishes these reviewed files as committed. It validates the matching WebP for every primary and comparison variant.
 - Verify the delivery service at the new private media commit before updating `_data/gallery_delivery.json`. Update the public-only approved originals in `_data/public-gallery-originals.json` from the same revision. Commit both together with any changed WebPs and gallery manifests.
