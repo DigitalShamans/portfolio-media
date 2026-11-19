@@ -1,0 +1,241 @@
+{
+  "passed": true,
+  "browser": "ChatGPT in-app browser",
+  "tab": "25",
+  "checks": [
+    {
+      "build": "211bd9d8cf0494a874fbb70b951b9a8bc2d45933",
+      "captions": 0,
+      "first": {
+        "complete": true,
+        "natural": 1920,
+        "src": "https://digitalshamans.co.uk/galleries/slag/1440p/artur-perzyna-artur-perzyna-2014-compose4-abstract-denoised.webp?v=6b0359334e45cb6ecefd2c9332bf0a35e774b246&webp=q92-m6"
+      },
+      "height": 844,
+      "horizontalOverflow": false,
+      "path": "/galleries/slag/",
+      "shots": 11,
+      "width": 390,
+      "captionPairsVerified": 0,
+      "sourceOrderVerified": true,
+      "viewer": {
+        "height": 844,
+        "image": {
+          "complete": true,
+          "natural": 1920,
+          "src": "https://digitalshamans.co.uk/galleries/slag/1440p/artur-perzyna-artur-perzyna-2014-compose2-blue-denoised.webp?v=71cdbbd870b163b8aadc2dba442904c63f97f999&webp=q92-m6"
+        },
+        "width": 390
+      },
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "escapeClosed": true
+    },
+    {
+      "build": "211bd9d8cf0494a874fbb70b951b9a8bc2d45933",
+      "captions": 0,
+      "first": {
+        "complete": true,
+        "natural": 1920,
+        "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/ddbb5d1a9b9aad396debb1c5b11f66db8b08a8a4/slag/artur-perzyna-artur-perzyna-2014-compose4-abstract-denoised.jpg"
+      },
+      "height": 1600,
+      "horizontalOverflow": false,
+      "path": "/galleries/slag/",
+      "shots": 11,
+      "width": 2800,
+      "captionPairsVerified": 0,
+      "sourceOrderVerified": true,
+      "viewer": {
+        "height": 1600,
+        "image": {
+          "complete": true,
+          "natural": 1920,
+          "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/ddbb5d1a9b9aad396debb1c5b11f66db8b08a8a4/slag/artur-perzyna-artur-perzyna-2014-compose2-blue-denoised.jpg"
+        },
+        "width": 2800
+      },
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "escapeClosed": true
+    },
+    {
+      "build": "211bd9d8cf0494a874fbb70b951b9a8bc2d45933",
+      "captions": 0,
+      "first": {
+        "complete": true,
+        "natural": 1920,
+        "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/ddbb5d1a9b9aad396debb1c5b11f66db8b08a8a4/slag/artur-perzyna-artur-perzyna-2014-compose4-abstract-denoised.jpg"
+      },
+      "height": 1600,
+      "horizontalOverflow": false,
+      "path": "/artur/galleries/slag/",
+      "shots": 11,
+      "width": 2800,
+      "captionPairsVerified": 0,
+      "sourceOrderVerified": true,
+      "viewer": {
+        "height": 1600,
+        "image": {
+          "complete": true,
+          "natural": 1920,
+          "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/ddbb5d1a9b9aad396debb1c5b11f66db8b08a8a4/slag/artur-perzyna-artur-perzyna-2014-compose2-blue-denoised.jpg"
+        },
+        "width": 2800
+      },
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "escapeClosed": true
+    },
+    {
+      "build": "211bd9d8cf0494a874fbb70b951b9a8bc2d45933",
+      "captions": 0,
+      "first": {
+        "complete": true,
+        "natural": 1920,
+        "src": "https://digitalshamans.co.uk/galleries/slag/1440p/artur-perzyna-artur-perzyna-2014-compose4-abstract-denoised.webp?v=6b0359334e45cb6ecefd2c9332bf0a35e774b246&webp=q92-m6"
+      },
+      "height": 844,
+      "horizontalOverflow": false,
+      "path": "/artur/galleries/slag/",
+      "shots": 11,
+      "width": 390,
+      "captionPairsVerified": 0,
+      "sourceOrderVerified": true,
+      "viewer": {
+        "height": 844,
+        "image": {
+          "complete": true,
+          "natural": 1920,
+          "src": "https://digitalshamans.co.uk/galleries/slag/1440p/artur-perzyna-artur-perzyna-2014-compose2-blue-denoised.webp?v=71cdbbd870b163b8aadc2dba442904c63f97f999&webp=q92-m6"
+        },
+        "width": 390
+      },
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "escapeClosed": true
+    }
+  ],
+  "normalDesktop": {
+    "build": "211bd9d8cf0494a874fbb70b951b9a8bc2d45933",
+    "captions": 0,
+    "first": {
+      "complete": true,
+      "natural": 1920,
+      "src": "https://digitalshamans.co.uk/galleries/slag/1440p/artur-perzyna-artur-perzyna-2014-compose4-abstract-denoised.webp?v=6b0359334e45cb6ecefd2c9332bf0a35e774b246&webp=q92-m6"
+    },
+    "height": 1000,
+    "horizontalOverflow": false,
+    "path": "/galleries/slag/",
+    "shots": 11,
+    "width": 1280,
+    "captionPairsVerified": 0,
+    "sourceOrderVerified": true
+  },
+  "modelChecks": [
+    {
+      "path": "/artur/galleries/slag/",
+      "width": 390,
+      "height": 844,
+      "modelId": "364b9214850549f29d2400b733f95693",
+      "loaded": true,
+      "playActivated": true,
+      "interaction": "semantic canvas double-click zoom",
+      "interactionVerified": true,
+      "visualChange": "closer model view",
+      "embed": {
+        "afterLastImage": true,
+        "embedCount": 1,
+        "rect": {
+          "height": 197.4375,
+          "left": 16,
+          "top": 508.46875,
+          "width": 351
+        },
+        "src": "https://sketchfab.com/models/364b9214850549f29d2400b733f95693/embed"
+      },
+      "proof": "outputs/slag-model-mobile.jpg"
+    },
+    {
+      "path": "/galleries/slag/",
+      "width": 1280,
+      "height": 1000,
+      "modelId": "364b9214850549f29d2400b733f95693",
+      "loaded": true,
+      "playActivated": true,
+      "interaction": "semantic canvas double-click zoom",
+      "interactionVerified": true,
+      "visualChange": "closer model view",
+      "embed": {
+        "afterLastImage": true,
+        "embedCount": 1,
+        "rect": {
+          "height": 648,
+          "left": 56.484375,
+          "top": 213.40625,
+          "width": 1152
+        },
+        "src": "https://sketchfab.com/models/364b9214850549f29d2400b733f95693/embed"
+      },
+      "proof": "outputs/slag-model-desktop.jpg"
+    }
+  ],
+  "logs": [
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T22:27:28.960Z"
+    },
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T22:27:52.035Z"
+    },
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T22:28:04.611Z"
+    },
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T22:28:18.305Z"
+    }
+  ],
+  "opening": {
+    "status": "interactive-verified",
+    "backend": "fresh-in-app-tab",
+    "elapsedMs": 6060,
+    "chromeUsed": false
+  },
+  "diagnostics": [
+    "Direct source model orbit passed visually before publication.",
+    "Root-coordinate orbit input in an embedded frame was refused for fractional iframe coordinates. Used documented semantic canvas double-click zoom, visibly confirmed on both routes.",
+    "Mobile Help locator was unavailable and ended at its5s deadline; no action was performed.",
+    "Sketchfab DOM includes loading/heavy-device text even when rendered; actual model screenshots were inspected."
+  ],
+  "limitations": [
+    "In-page orbit drag was not verified; source model orbit was verified, and in-page play/render/zoom passed on both routes.",
+    "Physical touch/iOS/Safari and native Fullscreen API grant are not claimed."
+  ],
+  "proof": {
+    "mobile": "outputs/slag-mobile.jpg",
+    "desktop": "outputs/slag-desktop.jpg",
+    "modelMobile": "outputs/slag-model-mobile.jpg",
+    "modelDesktop": "outputs/slag-model-desktop.jpg",
+    "visuallyInspected": true
+  },
+  "completedAtUtc": "2026-11-19T22:34:53.929Z"
+}
