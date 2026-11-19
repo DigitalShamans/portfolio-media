@@ -16,6 +16,7 @@
   const entries = [...track.querySelectorAll('.career-milestone')];
   const texts = entries.flatMap(entry => [...entry.querySelectorAll('.career-year, .career-copy')]);
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const viewportMeasure = document.querySelector('.career-viewport');
   const dialog = document.querySelector('#career-details');
   const dialogBody = dialog.querySelector('[data-career-details-body]');
   const ns = 'http://www.w3.org/2000/svg';
@@ -25,7 +26,11 @@
   let signature = '';
   let resizeTimer;
 
-  if (canAnimate) gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin, MotionPathPlugin);
+  if (canAnimate) {
+    gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin, MotionPathPlugin);
+    // Collapsing mobile browser controls must not refresh the scroll journey.
+    ScrollTrigger.config({ ignoreMobileResize: true });
+  }
 
   function element(name, attributes) {
     const node = document.createElementNS(ns, name);
@@ -136,7 +141,7 @@
       const point = points[i];
       const above = entry.dataset.curveSide === 'above';
       const side = above ? 'above' : narrow ? 'right' : entry.dataset.curveSide;
-      const preferredWidth = narrow ? Math.min(240, width - 24) : Math.min(300 * scale, width * .30);
+      const preferredWidth = narrow ? Math.min(300, width - 24) : Math.min(420 * scale, width * .36);
       entry.style.width = preferredWidth + 'px';
       let top = above ? Math.max(0, point.y - entry.offsetHeight - 12 * scale) : point.y - 16 * scale;
       let left = 0, labelWidth = preferredWidth, labelHeight = entry.offsetHeight;
@@ -181,9 +186,11 @@
 
   function rebuild() {
     const width = track.clientWidth;
-    const viewport = window.innerHeight;
-    if (!width || !viewport) return;
     const narrow = width < 720;
+    // The small viewport stays constant when a phone's address bar folds away.
+    // Actual viewport/orientation changes still recalculate the geometry.
+    const viewport = narrow && viewportMeasure ? Math.round(viewportMeasure.getBoundingClientRect().height) : window.innerHeight;
+    if (!width || !viewport) return;
     const scale = parseFloat(getComputedStyle(track).getPropertyValue('--career-layout-scale')) || 1;
     const nextSignature = [width, viewport, scale, reducedMotion.matches].join(':');
     if (nextSignature === signature) return;
@@ -238,14 +245,16 @@
     track.style.height = Math.ceil(Math.max(height, ...labels.map(box => box.bottom)) + 24) + 'px';
 
     if (!canAnimate || reducedMotion.matches) return;
+    const revealLine = Math.round(viewport * (narrow ? .65 : .5));
     animation = gsap.timeline({
       defaults: { ease: 'none' },
       onUpdate: updateMobileReveals,
       scrollTrigger: {
         id: 'artur-career-timeline',
         trigger: rail,
-        start: narrow ? 'top 65%' : 'top center',
-        end: narrow ? 'bottom 65%' : 'bottom center',
+        // Fixed small-viewport pixels also keep later refreshes stable on phones.
+        start: 'clamp(top ' + revealLine + 'px)',
+        end: 'clamp(bottom ' + revealLine + 'px)',
         scrub: narrow ? .35 : true
       }
     });
@@ -296,5 +305,5 @@
   window.addEventListener('resize', scheduleRebuild, { passive: true });
   reducedMotion.addEventListener('change', scheduleRebuild);
   if (window.ResizeObserver) new ResizeObserver(scheduleRebuild).observe(track);
-  if (document.fonts) document.fonts.ready.then(() => { signature = ''; scheduleRebuild(); });
+  if (document.fonts && document.fonts.status === 'loading') document.fonts.ready.then(() => { signature = ''; scheduleRebuild(); });
 })();
