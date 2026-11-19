@@ -10,6 +10,8 @@ const root = resolve(__dirname, '../..');
 const read = path => readFileSync(resolve(root, path), 'utf8');
 const galleryLayout = read('_layouts/gallery.html');
 const lockedLayout = read('_layouts/locked-gallery.html');
+const galleryViewer = read('_includes/gallery-viewer.html')
+  .replace(/{% if include\.map %}[\s\S]*?{% endif %}/, '');
 const portfolio = 'http://localhost:3000';
 const media = 'https://media.example.test';
 const revision = 'a'.repeat(40);
@@ -54,7 +56,7 @@ function pageHtml(path, { embeds, assetVersions = {} } = {}) {
           .replace('{{ site.gallery_4k_media | escape }}', desktopQuery)
           .replace('{{ first_image_url | escape }}', originals('First'))
           .replaceAll('{{ gallery_page.gallery_title | escape }}', 'Hard Bullet - Egypt')}</section></div>
-        ${galleryLayout.match(/<dialog id="viewer"[\s\S]*?<\/dialog>/)[0]}${scripts(galleryLayout)}`;
+        ${galleryViewer}${scripts(galleryLayout)}`;
   return `<!doctype html><html data-gallery4k-media="${desktopQuery}" ${settings}>
     <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">${base}
     <link rel="stylesheet" href="/galleries/gallery.css">
