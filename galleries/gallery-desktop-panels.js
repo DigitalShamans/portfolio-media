@@ -51,6 +51,21 @@
   panel.append(content);
   document.body.append(panel);
 
+  // Use the existing header, not a clone. Sticky positioning keeps it in
+  // document flow while drawing the logo/nav/accent above the sliding panel.
+  const siteHeader = document.querySelector('body > .site-header');
+
+  function showHeaderDuringSlide() {
+    if (!siteHeader) return;
+    document.body.classList.add('gallery-edge-header-visible');
+    panel.style.top = Math.ceil(siteHeader.getBoundingClientRect().height) + 'px';
+  }
+
+  function restoreHeader() {
+    document.body.classList.remove('gallery-edge-header-visible');
+    panel.style.top = '';
+  }
+
   // Avoid chaining through multiple galleries while the pointer remains on the edge.
   try {
     const arrival = JSON.parse(window.sessionStorage.getItem('gallery-desktop-edge-arrival') || 'null');
@@ -96,14 +111,27 @@
         window.gsap.to(panel, {
           xPercent: old === 'next' ? 100 : -100,
           duration: .18, ease: 'power1.out', overwrite: true,
-          onComplete: () => { if (id === animationId) panel.hidden = true; }
+          onComplete: () => {
+            if (id === animationId) {
+              panel.hidden = true;
+              restoreHeader();
+            }
+          }
         });
       } else {
         panel.style.transition = 'transform 180ms ease-out';
         panel.style.transform = 'translate3d(' + (old === 'next' ? '100%' : '-100%') + ',0,0)';
-        hideTimer = setTimeout(() => { if (id === animationId) panel.hidden = true; }, 185);
+        hideTimer = setTimeout(() => {
+          if (id === animationId) {
+            panel.hidden = true;
+            restoreHeader();
+          }
+        }, 185);
       }
-    } else panel.hidden = true;
+    } else {
+      panel.hidden = true;
+      restoreHeader();
+    }
   }
 
   function navigate(which, id) {
@@ -133,6 +161,7 @@
       panel.hidden = true;
       finishTimer = setTimeout(() => navigate(which, id), 250);
     } else if (window.gsap?.fromTo) {
+      showHeaderDuringSlide();
       window.gsap.killTweensOf(panel);
       window.gsap.fromTo(panel,
         { xPercent: offset, autoAlpha: 1 },
@@ -141,6 +170,7 @@
           onComplete: () => navigate(which, id) });
     } else {
       // If GSAP fails to load, CSS still performs a timed slide and navigation.
+      showHeaderDuringSlide();
       panel.style.transition = 'none';
       panel.style.transform = 'translate3d(' + offset + '%,0,0)';
       panel.style.opacity = '1';
