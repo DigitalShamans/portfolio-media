@@ -35,9 +35,7 @@ have one owner. Checkpoint after each gate; resume files rather than reacquiring
 source or rebuilding reviewed code. Keep STATUS concise; put detailed results in
 separate evidence files. Do not treat checkpoints as a chat-length reset.
 
-## Input and commands
-
-### Browser deadlines and automatic fallback
+## Browser deadlines and automatic fallback
 
 Use the in-app browser first for source capture and both-route acceptance. Do not
 automatically launch native Chrome: its API stalled for 24 minutes on the Sniper
@@ -64,6 +62,8 @@ check; do not claim gallery acceptance from HTTP alone. This policy does not rem
 the native Gallery Editor round-trip requirement.
 
 Guard verification: `node --test .github/tests/gallery-browser-check.test.mjs`.
+
+## Input and commands
 
 Requires Python with **Pillow 13.0.0**, including WebP support, and Windows PowerShell
 5.1 or later for the TLS-validating downloader. The bundled Codex Python used for

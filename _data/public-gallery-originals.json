@@ -1848,6 +1848,176 @@
         "size": 463854
       }
     },
+    "props": {
+      "digital-shamans-airship-01.jpg": {
+        "blob": "d84e1a1dea3b1df662bf58abfb0e3d10545e3f2e",
+        "size": 320018
+      },
+      "digital-shamans-airship-02.jpg": {
+        "blob": "a0c9fb76ef67dd87ce281252f1c9eece9d62fd6a",
+        "size": 850439
+      },
+      "digital-shamans-artur-perzyna-5-beauty-shot-4k-only-denoised-srgb.jpg": {
+        "blob": "6d7178ed7fb48ad6c293db892b94fb511e956c58",
+        "size": 495990
+      },
+      "digital-shamans-artur-perzyna-6-beauty-technical-4k-denoised-srgb.jpg": {
+        "blob": "0649aded4b38674218b65706ec4dd17669366a5c",
+        "size": 576010
+      },
+      "digital-shamans-artur-perzyna-barriers-compose1-srgb.jpg": {
+        "blob": "5d3a63a21eaac8cb5281dcefec9f9f68073d1406",
+        "size": 466498
+      },
+      "digital-shamans-artur-perzyna-barriers-compose3-srgb.jpg": {
+        "blob": "e7311380f0299c3c0bb0691e9629f6bcd30a4fcc",
+        "size": 503906
+      },
+      "digital-shamans-artur-perzyna-barriers-compose5-srgb.jpg": {
+        "blob": "4279f38cfa8e71e98c61aa8fe9575c7351500152",
+        "size": 658172
+      },
+      "digital-shamans-artur-perzyna-barriers-compose6-srgb.jpg": {
+        "blob": "bd0bab713afb08181344685d94bef918490ae0fc",
+        "size": 653309
+      },
+      "digital-shamans-cargo-nets.jpg": {
+        "blob": "c3f3e85ac2f6b2937886b0e3c7ea211bbf2fd275",
+        "size": 587234
+      },
+      "digital-shamans-digital-shamans-digital-shamans-legacy-priloom-spindle-linenroll-unity2560.jpg": {
+        "blob": "b66a9165d1f78aef72cceaf97082a5c3784ea6e4",
+        "size": 713593
+      },
+      "digital-shamans-digital-shamans-rat-lair2560.jpg": {
+        "blob": "a3bede22efc5c854217827aa089ce7be76bf2a4d",
+        "size": 625065
+      },
+      "digital-shamans-digital-shamans-sm-central-hub-tower-srgb.jpg": {
+        "blob": "8de9824f83c378d53cbb3a096d76ee9d87ac3a65",
+        "size": 446854
+      },
+      "digital-shamans-digital-shamans-sm-concrete-blocks-and-razowire-fence-and-power-generators.jpg": {
+        "blob": "d94d30be222b585985baab9390ab9f160ddcbb60",
+        "size": 473225
+      },
+      "digital-shamans-digital-shamans-sm-pontoon-jack-01.jpg": {
+        "blob": "2c8fa23360957c23265fae04099bbdbcbc5b436e",
+        "size": 517085
+      },
+      "digital-shamans-digital-shamans-sm-warehouse-boat-hoist.jpg": {
+        "blob": "f9ca07f32b4f4a2a9a32d7b9e8825c1df2c13b86",
+        "size": 433348
+      },
+      "digital-shamans-digitalshamans-powder-cabin-props-01.jpg": {
+        "blob": "06397a7ddf9f6efd475b283d1103d5aa00715948",
+        "size": 492197
+      },
+      "digital-shamans-digitalshamans-powder-cabin-props-02.jpg": {
+        "blob": "f0c876fe108c24703e61ab6c8bbcbd7e1f3a3870",
+        "size": 541700
+      },
+      "digital-shamans-digitalshamans-powder-cabin-props-03.jpg": {
+        "blob": "209c7de2f57ea87719f8fb09bf537c4379ab7c25",
+        "size": 469544
+      },
+      "digital-shamans-digitalshamans-powder-cabin-props-04.jpg": {
+        "blob": "c1e6ef09029406ab3907d074af20aa6607205717",
+        "size": 505475
+      },
+      "digital-shamans-digitalshamans-powder-props-01.jpg": {
+        "blob": "e3fa642ef61352dd0e24398ef7715056a22dc0f0",
+        "size": 381579
+      },
+      "digital-shamans-digitalshamans-powder-props-02.jpg": {
+        "blob": "1aa9673312a2c948a9d4a589c82354cb7f29b0ed",
+        "size": 413101
+      },
+      "digital-shamans-digitalshamans-powder-props-03.jpg": {
+        "blob": "2ab158e8cd471d7c75e2914ec683b23f35ef1bb3",
+        "size": 354568
+      },
+      "digital-shamans-mine-cart-01.jpg": {
+        "blob": "84cb3861c8a768c740fd276fb7c9be6c98e29a07",
+        "size": 645065
+      },
+      "digital-shamans-mine-cart-04.jpg": {
+        "blob": "2c0239dd882c82478d5e9c4fc32c6edaf278e940",
+        "size": 745286
+      },
+      "digital-shamans-non-pbr.jpg": {
+        "blob": "0021d1849820dea7e5beef4f7458a59488ae8917",
+        "size": 115319
+      },
+      "digital-shamans-nonpbr-props-compose-01.jpg": {
+        "blob": "a13e957a5a7dbe89e2ec6fce3dbf7e5d307988a3",
+        "size": 484219
+      },
+      "digital-shamans-nonpbr-props-compose-02.jpg": {
+        "blob": "d2252a33325296ca2264c826af309afd66353fa3",
+        "size": 744015
+      },
+      "digital-shamans-nonpbr-props-compose-03.jpg": {
+        "blob": "55e709e80caec41388b40009e054be9154a40062",
+        "size": 536468
+      },
+      "digital-shamans-nonpbr-props-compose-03b.jpg": {
+        "blob": "3db00e9b07a30f6cd3bf153fdba01de213c371a5",
+        "size": 434023
+      },
+      "digital-shamans-nonpbr-props-compose-04.jpg": {
+        "blob": "11947c745f245f244d1dafb3712a215a12d7fb67",
+        "size": 458104
+      },
+      "digital-shamans-nonpbr-props-compose-07.jpg": {
+        "blob": "fbaea10763adac88073c1633c128b0c022c63c61",
+        "size": 472248
+      },
+      "digital-shamans-nonpbr-props-compose-08.jpg": {
+        "blob": "f312eff328cf51f2c65cd2cafa3af7658e639fd5",
+        "size": 581198
+      },
+      "digital-shamans-nonpbr-props-compose-09.jpg": {
+        "blob": "3a7f10653e5912b364756e4c402cf4c63c74a43d",
+        "size": 518615
+      },
+      "digital-shamans-nonpbr-props-compose-10.jpg": {
+        "blob": "e7cbd4cf2a5a14ffe04cc06050a59689d80e63e1",
+        "size": 467830
+      },
+      "digital-shamans-nonpbr-props-compose-11.jpg": {
+        "blob": "8b1ce6fb907cc7edc5549948dfb2d37154c5e10e",
+        "size": 665090
+      },
+      "digital-shamans-nonpbr-props-compose-12.jpg": {
+        "blob": "6a65b1ed53712a70a7f0b34555a9984c3ed07014",
+        "size": 513732
+      },
+      "digital-shamans-nonpbr-props-compose-13.jpg": {
+        "blob": "05dd2cf401665bbd317c1633f6d5e68c59a00c5c",
+        "size": 568203
+      },
+      "digital-shamans-nonpbr-props-compose-14.jpg": {
+        "blob": "99eac89d2069063d148224eec2600c728a71dd57",
+        "size": 450256
+      },
+      "digital-shamans-nonpbr-props-compose-15.jpg": {
+        "blob": "f46959d1c8f1c258c355d03c7a5fc69720096a8e",
+        "size": 437127
+      },
+      "digital-shamans-nonpbr-props-compose-17.jpg": {
+        "blob": "4472226a60e2c09455c76dca43fb515fda0fa445",
+        "size": 540218
+      },
+      "digital-shamans-radio-01.jpg": {
+        "blob": "d1e4208ec5de27cb02434f050e73a719c4819cee",
+        "size": 766544
+      },
+      "digital-shamans-radio-02.jpg": {
+        "blob": "dfe15d4623626ae7831d3722a85a2726d8e6819c",
+        "size": 944286
+      }
+    },
     "sniper-elite-4": {
       "digital-shamans-artur-perzyna-dockyard-map-4k-clean-impr-srgb.jpg": {
         "blob": "e3d2f672a9f8a9ed68369a9ab2ef851b94bcc693",
