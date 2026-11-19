@@ -13,23 +13,19 @@
       {% endif %}
       {% assign navigation_previous = navigation_items[navigation_previous_index] %}
       {% assign navigation_next = navigation_items[navigation_next_index] %}
-      <nav class="gallery-navigation" aria-label="Hard Bullet galleries">
-        <a class="gallery-navigation__link gallery-navigation__link--previous" href="{{ include.portfolio_url | append: 'galleries/' | append: navigation_previous.folder | append: '/' | relative_url }}" aria-label="Previous gallery: {{ navigation_previous.title | escape }}{% if navigation_previous.locked %} (password required){% endif %}">
-          <span class="gallery-navigation__arrow" aria-hidden="true">‹</span>
-          <span class="gallery-navigation__details" aria-hidden="true">
-            <span class="gallery-navigation__direction">Previous gallery</span>
-            <span class="gallery-navigation__name">{{ navigation_previous.title | escape }}{% if navigation_previous.locked %} · Password{% endif %}</span>
-          </span>
-        </a>
-        <a class="gallery-navigation__link gallery-navigation__link--next" href="{{ include.portfolio_url | append: 'galleries/' | append: navigation_next.folder | append: '/' | relative_url }}" aria-label="Next gallery: {{ navigation_next.title | escape }}{% if navigation_next.locked %} (password required){% endif %}">
-          <span class="gallery-navigation__arrow" aria-hidden="true">›</span>
-          <span class="gallery-navigation__details" aria-hidden="true">
-            <span class="gallery-navigation__direction">Next gallery</span>
-            <span class="gallery-navigation__name">{{ navigation_next.title | escape }}{% if navigation_next.locked %} · Password{% endif %}</span>
-          </span>
-        </a>
+      {% comment %}Route data for mobile swipes and desktop scroll panels; no visible desktop arrows.{% endcomment %}
+      <nav class="gallery-navigation" aria-label="Hard Bullet galleries" hidden>
+        <a class="gallery-navigation__link gallery-navigation__link--previous"
+           href="{{ include.portfolio_url | append: 'galleries/' | append: navigation_previous.folder | append: '/' | relative_url }}"
+           data-gallery-name="{{ navigation_previous.title | escape }}{% if navigation_previous.locked %} (password required){% endif %}"
+           aria-label="Previous gallery: {{ navigation_previous.title | escape }}{% if navigation_previous.locked %} (password required){% endif %}"></a>
+        <a class="gallery-navigation__link gallery-navigation__link--next"
+           href="{{ include.portfolio_url | append: 'galleries/' | append: navigation_next.folder | append: '/' | relative_url }}"
+           data-gallery-name="{{ navigation_next.title | escape }}{% if navigation_next.locked %} (password required){% endif %}"
+           aria-label="Next gallery: {{ navigation_next.title | escape }}{% if navigation_next.locked %} (password required){% endif %}"></a>
       </nav>
       <script src="{{ '/galleries/gallery-navigation.js' | relative_url }}?v=2" defer></script>
+      <script src="{{ '/galleries/gallery-desktop-panels.js' | relative_url }}?v=1" defer></script>
       {% break %}
     {% endif %}
   {% endfor %}
