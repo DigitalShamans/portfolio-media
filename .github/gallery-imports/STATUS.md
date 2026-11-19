@@ -1,14 +1,16 @@
 # Gallery publication status
 
-Current scope: Phantom: Covert Ops only. Firearms is not started by this continuation.
+Current scope: Phantom: Covert Ops only — published and verified, with explicit test limits below. Firearms was not started by this continuation.
 
-## Phantom bounded tasks
+## Bounded checkpoints
 
-1. Baseline/source checkpoint — verified. Public baseline `0edd077d195d3678407a5d46e1adad95caea7c2a`; working branch `codex/phantom-covert-ops-20261119-desktop`. Both proposed Phantom routes are available. Existing shared gallery, embed representation and image editor schema will be reused.
-2. Acquisition — existing recoverable originals reused from immutable revision `bcd1d7f7086e3745dcefffc49a25de804bf5fca6`. Live rendered ArtStation `A9VRrq` confirms YouTube `eWHDcWZnTMY` before 23 screenshots. The empty ArtStation container is recorded in source evidence and contains no publishable media. Source counts, order, exact names and approved blob metadata are verified.
-3. Media preparation — passed. All 23 delivered JPGs decode and match approved dimensions, byte counts, SHA-256 and Git blob hashes. All 23 recovered WebPs match fresh Lanczos/q92/method6 exports byte-for-byte and fit 2560×1440 without upscaling; image-only `gallery.json` matches exact source order. Original dimensions: one 1920×1080, three 1920×905, nineteen 2560×1366. No verified 3840×2160 originals. Invalid revision/path return 404; existing Aircraft media still passes.
-4. Page integration — passed. Recovered implementation `6f2d6c2b4e7db29c953a83c30ff88dcfba1dd3da` integrated with current main in `120f0b8` on `codex/publish-phantom-covert-ops-20261119` (PR #47); source-only checkpoint `03fc93c` remains separate. Both unlisted routes, before-image YouTube companion and manifests reviewed; actual source video title corrected. Twelve embed tests and eleven controlled browser delivery tests pass, plus 39 resolution/mobile/navigation tests. Before-only anchor exclusion and existing Aircrafts fallback behavior are covered. Main's completed Aircrafts evidence is retained.
-5. Publication — ready for Pages merge. Existing media-service v7 source `47c824a78234983338e61f7d728ca94d69438b98` deployment `appgdep_6afee1a1ffc0819184913c5c2447f99a` succeeded and all 23 approved originals pass actual anonymous delivery checks. Await terminal Pages results after merge.
-6. Live acceptance — actual native Gallery Editor v0.10 save/reopen passed: 23 JPG entries, reorder persistence and unchanged shipped video companion; canonical order restored. Pages/live media/video, responsive resolution and fullscreen/navigation, unlisted status and existing-gallery smoke checks remain pending. Evidence is checkpointed in `PHANTOM-VERIFICATION.md`.
+1. Source: existing private PR #3 and immutable originals revision `bcd1d7f7086e3745dcefffc49a25de804bf5fca6` reused. Rendered source verified: one leading YouTube trailer, 23 screenshots, one empty non-media container. Public source/status checkpoint `03fc93c`.
+2. Media: all 23 originals pass anonymous HTTP/decode/dimensions/byte/hash checks; all 23 public WebPs match fresh Lanczos/q92/method6 exports. No upscale/crop. Actual dimensions: one 1920×1080, three 1920×905, nineteen 2560×1366. No verified 4K original. Media/integration checkpoint `120f0b8`.
+3. Pages: both unlisted/noindex routes and filename-anchored leading trailer integrated; exact video title corrected. Before-only missing-anchor fallback and existing Aircrafts behavior covered. Page/test checkpoint `f42ba24`; 62 maintained unit/browser tests pass.
+4. Editor: actual DS Gallery Editor v0.10 open/reorder/save/reopen passed with all 23 JPG references and byte-identical shipped companion. Canonical order restored. Checkpoint `5bbfaaf`.
+5. Publication: PR #47 merged as `4c6bcf49ff9ff2f528e62edafa2a74a7ac0017e9`; Pages run `44520062181` completed successfully. Existing media v7 source `47c824a78234983338e61f7d728ca94d69438b98` deployment `appgdep_6afee1a1ffc0819184913c5c2447f99a` succeeded; originals delivery verified.
+6. Live: both routes, all public files, exact source order, 390px WebP/2800px original-JPG selection, image fullscreen/navigation, noindex/sitemap/homepage exclusions, native studio trailer playback/pause/resume/fullscreen and existing-gallery smoke checks passed. Public verification returned 38/38 HTTP200 and exact matches for 23 WebPs plus ten shared assets/manifests.
 
-No current external blocker. Prior Aircrafts delivery remains complete; its evidence is in `AIRCRAFTS-VERIFICATION.md`.
+Limits: personal trailer started, but its separate elapsed-timeline/fullscreen cycle was not completed after the user switched Chrome tabs; input stopped. Physical touch swipes are unverified; maintained gesture tests pass. Native editor preview inspection covered the first two previews; decode/hash checks cover all 23 files.
+
+Evidence: `PHANTOM-VERIFICATION.md`. No further Phantom implementation or publication work is pending. Completed Aircrafts evidence remains in `AIRCRAFTS-VERIFICATION.md`. No automatic next-gallery action is authorized by this Phantom-only continuation.
