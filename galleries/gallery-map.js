@@ -62,17 +62,20 @@ const GalleryMap = (() => {
       const thumbWidth = width * .2, thumbHeight = thumbWidth * 9 / 16;
       const anchorX = width * Math.max(10, Math.min(90, Number(card.dataset.x))) / 100;
       const anchorY = height * Math.max(10, Math.min(90, Number(card.dataset.y))) / 100;
-      const gap = Math.min(12, width * .025);
-      const scale = Math.min(4.5, (width - 2 * gap) / thumbWidth, (height - 2 * gap) / thumbHeight);
+      const scale = Math.min(5, width / thumbWidth, height / thumbHeight);
       const panelWidth = thumbWidth * scale, panelHeight = thumbHeight * scale;
-      const x = Math.max(gap + panelWidth / 2, Math.min(width - gap - panelWidth / 2, anchorX));
-      const y = Math.max(gap + panelHeight / 2, Math.min(height - gap - panelHeight / 2, anchorY));
+      const x = width / 2, y = height / 2;
       const board = stage.getBoundingClientRect(), left = board.left + stage.clientLeft, top = board.top + stage.clientTop;
       return { scale, shiftX: x - anchorX, shiftY: y - anchorY,
         expanded: { left: left + x - panelWidth / 2, top: top + y - panelHeight / 2, width: panelWidth, height: panelHeight },
         thumb: { left: left + anchorX - thumbWidth / 2, top: top + anchorY - thumbHeight / 2, width: thumbWidth, height: thumbHeight } };
     }
     const edgeDistance = (point, rect) => Math.min(point.x - rect.left, rect.left + rect.width - point.x, point.y - rect.top, rect.top + rect.height - point.y);
+    function closingMargin(rect) {
+      const margin = 4 * Math.max(12, Math.min(40, rect.height * .12));
+      // Preserve a central hover area even in an unusually small window.
+      return Math.min(margin, Math.min(rect.width, rect.height) * .49);
+    }
     function close(block = false) {
       if (!active) return;
       const card = active; if (block) blocked.add(card);
@@ -87,7 +90,7 @@ const GalleryMap = (() => {
     }
     function open(card, inputMode) {
       if (active === card) return; close(); active = card; mode = inputMode;
-      const layout = place(card), margin = Math.max(12, Math.min(40, layout.expanded.height * .12));
+      const layout = place(card), margin = closingMargin(layout.expanded);
       interiorEntered = inputMode === 'pointer' && pointer && edgeDistance(pointer, layout.expanded) > margin;
       card.classList.add('is-open'); card.setAttribute('aria-expanded', 'true'); stage.classList.add('has-open-region');
       if (caption) caption.textContent = map.regions[cards.indexOf(card)].label;
@@ -98,7 +101,7 @@ const GalleryMap = (() => {
       for (const card of blocked) if (edgeDistance(pointer, geometry(card).thumb) < 0) blocked.delete(card);
       if (active) {
         if (mode !== 'pointer') return;
-        const rect = geometry(active).expanded, distance = edgeDistance(pointer, rect), margin = Math.max(12, Math.min(40, rect.height * .12));
+        const rect = geometry(active).expanded, distance = edgeDistance(pointer, rect), margin = closingMargin(rect);
         if (distance > margin) interiorEntered = true;
         if (distance < 0 || (interiorEntered && distance <= margin)) close(true);
       } else {

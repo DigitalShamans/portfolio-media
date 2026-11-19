@@ -168,15 +168,15 @@ function mapRenderer(hoverEnabled = true) {
   return { mount: options => renderer.mount(stage, map, name => ({ src: name }), options), stage };
 }
 
-test('hover preview fills 90 percent of the overview and stays inside its edges', () => {
+test('hover preview fills 100 percent of the overview and stays inside its edges', () => {
   const { mount, stage } = mapRenderer();
   const view = mount({});
   const card = view.cards[0];
   card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 163 });
   const scale = Number(card.style.getPropertyValue('--scale'));
   const width = stage.clientWidth * .2 * scale, height = stage.clientHeight * .2 * scale;
-  assert.equal(width, stage.clientWidth * .9);
-  assert.equal(height, stage.clientHeight * .9);
+  assert.equal(width, stage.clientWidth);
+  assert.equal(height, stage.clientHeight);
   const x = stage.clientWidth * .25 + Number.parseFloat(card.style.getPropertyValue('--shift-x'));
   const y = stage.clientHeight * .29 + Number.parseFloat(card.style.getPropertyValue('--shift-y'));
   assert.ok(x - width / 2 >= 0 && x + width / 2 <= stage.clientWidth);
@@ -220,5 +220,37 @@ test('standalone editor preview keeps its existing toggle behavior without a nav
   card.fire('click', { detail: 1 });
   assert.equal(card.getAttribute('aria-expanded'), 'false');
   assert.equal(stage.classList.contains('has-gallery-links'), false);
+  view.destroy();
+});
+
+test('hover closing band is four times wider on every edge', () => {
+  for (const edge of ['left', 'right', 'top', 'bottom']) {
+    const { mount, stage } = mapRenderer();
+    const view = mount({}), card = view.cards[0];
+    card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 163 });
+    stage.fire('pointermove', { pointerType: 'mouse', clientX: 500, clientY: 281.25 });
+    const point = distance => ({
+      pointerType: 'mouse',
+      clientX: edge === 'left' ? distance : edge === 'right' ? stage.clientWidth - distance : 500,
+      clientY: edge === 'top' ? distance : edge === 'bottom' ? stage.clientHeight - distance : 281.25
+    });
+    // The previous 40px band becomes 160px at this overview size.
+    stage.fire('pointermove', point(161));
+    assert.equal(card.getAttribute('aria-expanded'), 'true', edge + ': stays open outside band');
+    stage.fire('pointermove', point(159));
+    assert.equal(card.getAttribute('aria-expanded'), 'false', edge + ': closes inside band');
+    view.destroy();
+  }
+});
+
+test('opening inside the wider edge band waits for entry into the image interior', () => {
+  const { mount, stage } = mapRenderer();
+  const view = mount({}), card = view.cards[0];
+  card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 100 });
+  stage.fire('pointermove', { pointerType: 'mouse', clientX: 250, clientY: 110 });
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  stage.fire('pointermove', { pointerType: 'mouse', clientX: 500, clientY: 281.25 });
+  stage.fire('pointermove', { pointerType: 'mouse', clientX: 250, clientY: 110 });
+  assert.equal(card.getAttribute('aria-expanded'), 'false');
   view.destroy();
 });
