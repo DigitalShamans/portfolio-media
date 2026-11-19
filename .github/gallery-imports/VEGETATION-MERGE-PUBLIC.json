@@ -1,0 +1,2230 @@
+{
+  "checked_at_utc": "2026-11-19T23:11:00.128379+00:00",
+  "passed": true,
+  "implementation_ref": "41fd9d764958e759ea70ada0d518722e7b18d0ac",
+  "media_revision": "0f32e45b4ec85c19aa0527ce5725256787dafbbf",
+  "pillow_version": "13.0.0",
+  "deployment_evidence": {
+    "id": 44635100948,
+    "name": "Publish portfolio",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "41fd9d764958e759ea70ada0d518722e7b18d0ac",
+    "event": "push",
+    "created_at": "2026-11-19T23:08:57Z",
+    "updated_at": "2026-11-19T23:10:13Z",
+    "html_url": "https://github.com/DigitalShamans/portfolio-media/actions/runs/44635100948"
+  },
+  "publication_evidence": {},
+  "actual_build_revisions": [
+    "41fd9d764958e759ea70ada0d518722e7b18d0ac"
+  ],
+  "counts": {
+    "webps": 29,
+    "webps_passed": 29,
+    "webp_bytes": 14175214,
+    "routes_passed": 2,
+    "dependencies": 9,
+    "dependencies_passed": 9,
+    "homes_passed": 2,
+    "http_requests": 44
+  },
+  "elapsed_ms": 8094,
+  "webps": [
+    {
+      "name": "digital-shamans-ds-vegetation-survisland-seaweed-4k.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-seaweed-4k.webp",
+      "expected": {
+        "bytes": 602002,
+        "sha256": "b5383d34a6b10672cd18cf236c1626fb905d9c03b97a5a52acfa5215372638c6",
+        "git_blob_sha": "1e7b1cc86e883d8b44e7b9c8b54c221e9df36d23",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "digital-shamans-ds-vegetation-survisland-seaweed-4k.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-seaweed-4k.webp",
+        "acquired_at_utc": "2026-11-19T23:10:31.7151424Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\digital-shamans-ds-vegetation-survisland-seaweed-4k.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-seaweed-4k.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 602002,
+        "response_bytes": 602002,
+        "etag": "\"6aff81cd-92f92\"",
+        "elapsed_ms": 459
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 602002,
+        "sha256": "b5383d34a6b10672cd18cf236c1626fb905d9c03b97a5a52acfa5215372638c6",
+        "git_blob_sha": "1e7b1cc86e883d8b44e7b9c8b54c221e9df36d23",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "digital-shamans-ds-vegetation-survisland-wheat01-4k.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-wheat01-4k.webp",
+      "expected": {
+        "bytes": 216806,
+        "sha256": "21dbcc2fedada1c9ef6063ba57c633ce2682b9314a393e8891ec2bee1afb2ce6",
+        "git_blob_sha": "f307bd6001eacfd0dde37a4de09d8af0ac53806d",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "digital-shamans-ds-vegetation-survisland-wheat01-4k.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-wheat01-4k.webp",
+        "acquired_at_utc": "2026-11-19T23:10:32.1864313Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\digital-shamans-ds-vegetation-survisland-wheat01-4k.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-wheat01-4k.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 216806,
+        "response_bytes": 216806,
+        "etag": "\"6aff81cd-34ee6\"",
+        "elapsed_ms": 178
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 216806,
+        "sha256": "21dbcc2fedada1c9ef6063ba57c633ce2682b9314a393e8891ec2bee1afb2ce6",
+        "git_blob_sha": "f307bd6001eacfd0dde37a4de09d8af0ac53806d",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "digital-shamans-ds-vegetation-survisland-wheat02-4k.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-wheat02-4k.webp",
+      "expected": {
+        "bytes": 180330,
+        "sha256": "952413987d5a6ff16633775c75e907b51b71e9485e9cc2271f19f821e08ce8a8",
+        "git_blob_sha": "bd0f366fda0784b3a7806098364edd533789075e",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "digital-shamans-ds-vegetation-survisland-wheat02-4k.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-wheat02-4k.webp",
+        "acquired_at_utc": "2026-11-19T23:10:32.3662247Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\digital-shamans-ds-vegetation-survisland-wheat02-4k.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-wheat02-4k.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 180330,
+        "response_bytes": 180330,
+        "etag": "\"6aff81cd-2c06a\"",
+        "elapsed_ms": 177
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 180330,
+        "sha256": "952413987d5a6ff16633775c75e907b51b71e9485e9cc2271f19f821e08ce8a8",
+        "git_blob_sha": "bd0f366fda0784b3a7806098364edd533789075e",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "digital-shamans-ds-vegetation-survisland-papaya-4k.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-papaya-4k.webp",
+      "expected": {
+        "bytes": 234258,
+        "sha256": "d63a297430910847d920e5967c75faf1dfc8ab1dfdb7480b9824d343598ae22f",
+        "git_blob_sha": "986daf577094b103a1a16bc282e47365fff0fca9",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "digital-shamans-ds-vegetation-survisland-papaya-4k.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-papaya-4k.webp",
+        "acquired_at_utc": "2026-11-19T23:10:32.5457090Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\digital-shamans-ds-vegetation-survisland-papaya-4k.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-papaya-4k.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 234258,
+        "response_bytes": 234258,
+        "etag": "\"6aff81cd-39312\"",
+        "elapsed_ms": 177
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 234258,
+        "sha256": "d63a297430910847d920e5967c75faf1dfc8ab1dfdb7480b9824d343598ae22f",
+        "git_blob_sha": "986daf577094b103a1a16bc282e47365fff0fca9",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "digital-shamans-ds-vegetation-survisland-pineapple-4k.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-pineapple-4k.webp",
+      "expected": {
+        "bytes": 253560,
+        "sha256": "fef7ad3c1f555d334d8b80f9330af0080a50ebe0304776a5b5faf2ebef56632e",
+        "git_blob_sha": "fd6b00d2d87a044a238a2d1ae1ba81a08e3d89c0",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "digital-shamans-ds-vegetation-survisland-pineapple-4k.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-pineapple-4k.webp",
+        "acquired_at_utc": "2026-11-19T23:10:32.7254455Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\digital-shamans-ds-vegetation-survisland-pineapple-4k.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-pineapple-4k.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 253560,
+        "response_bytes": 253560,
+        "etag": "\"6aff81cd-3de78\"",
+        "elapsed_ms": 157
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 253560,
+        "sha256": "fef7ad3c1f555d334d8b80f9330af0080a50ebe0304776a5b5faf2ebef56632e",
+        "git_blob_sha": "fd6b00d2d87a044a238a2d1ae1ba81a08e3d89c0",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "digital-shamans-digital-shamans-sniper-elite4-environment02.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-digital-shamans-sniper-elite4-environment02.webp",
+      "expected": {
+        "bytes": 469252,
+        "sha256": "ee908a2572edba850e2795f00007acd28449f6223f2f802107ebe85c9c3d40b6",
+        "git_blob_sha": "54cfa3002bd983d7342e7f6dcbda5a80dda84ebb",
+        "format": "WEBP",
+        "width": 1920,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "digital-shamans-digital-shamans-sniper-elite4-environment02.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-digital-shamans-sniper-elite4-environment02.webp",
+        "acquired_at_utc": "2026-11-19T23:10:32.8848302Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\digital-shamans-digital-shamans-sniper-elite4-environment02.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-digital-shamans-sniper-elite4-environment02.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 469252,
+        "response_bytes": 469252,
+        "etag": "\"6aff81cd-72904\"",
+        "elapsed_ms": 185
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 469252,
+        "sha256": "ee908a2572edba850e2795f00007acd28449f6223f2f802107ebe85c9c3d40b6",
+        "git_blob_sha": "54cfa3002bd983d7342e7f6dcbda5a80dda84ebb",
+        "format": "WEBP",
+        "width": 1920,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "digital-shamans-digital-shamans-sniper-elite4-environment01.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-digital-shamans-sniper-elite4-environment01.webp",
+      "expected": {
+        "bytes": 485966,
+        "sha256": "7a24f60e0ab89fc3562dadd16bfce066d43451c6521124744ee49cbfd6d6c183",
+        "git_blob_sha": "58cedf99dbaee4b9534c3de79a9337de17dfeec8",
+        "format": "WEBP",
+        "width": 1920,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "digital-shamans-digital-shamans-sniper-elite4-environment01.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-digital-shamans-sniper-elite4-environment01.webp",
+        "acquired_at_utc": "2026-11-19T23:10:33.0714393Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\digital-shamans-digital-shamans-sniper-elite4-environment01.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-digital-shamans-sniper-elite4-environment01.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 485966,
+        "response_bytes": 485966,
+        "etag": "\"6aff81cd-76a4e\"",
+        "elapsed_ms": 188
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 485966,
+        "sha256": "7a24f60e0ab89fc3562dadd16bfce066d43451c6521124744ee49cbfd6d6c183",
+        "git_blob_sha": "58cedf99dbaee4b9534c3de79a9337de17dfeec8",
+        "format": "WEBP",
+        "width": 1920,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "digital-shamans-digital-shamans-sniper-elite4-environment03.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-digital-shamans-sniper-elite4-environment03.webp",
+      "expected": {
+        "bytes": 649410,
+        "sha256": "93bb166736aa05353db42ca5aa908fdeefa2fd26d744901d3d33d528b92a2733",
+        "git_blob_sha": "88aa8b967e8e263ef3bbabe0f4c6585e97e01492",
+        "format": "WEBP",
+        "width": 1920,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "digital-shamans-digital-shamans-sniper-elite4-environment03.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-digital-shamans-sniper-elite4-environment03.webp",
+        "acquired_at_utc": "2026-11-19T23:10:33.2611684Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\digital-shamans-digital-shamans-sniper-elite4-environment03.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-digital-shamans-sniper-elite4-environment03.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 649410,
+        "response_bytes": 649410,
+        "etag": "\"6aff81cd-9e8c2\"",
+        "elapsed_ms": 200
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 649410,
+        "sha256": "93bb166736aa05353db42ca5aa908fdeefa2fd26d744901d3d33d528b92a2733",
+        "git_blob_sha": "88aa8b967e8e263ef3bbabe0f4c6585e97e01492",
+        "format": "WEBP",
+        "width": 1920,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "digital-shamans-artur-perzyna-red-flowers-01impr.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-artur-perzyna-red-flowers-01impr.webp",
+      "expected": {
+        "bytes": 1476566,
+        "sha256": "24fedf848b07ca07644699c27906b95f53fd616e7b1937497bb60c4f1f323568",
+        "git_blob_sha": "c41fc80b07daec16f1cc14e30bb34e3996d3a70d",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "digital-shamans-artur-perzyna-red-flowers-01impr.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-artur-perzyna-red-flowers-01impr.webp",
+        "acquired_at_utc": "2026-11-19T23:10:33.4625278Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\digital-shamans-artur-perzyna-red-flowers-01impr.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-artur-perzyna-red-flowers-01impr.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 1476566,
+        "response_bytes": 1476566,
+        "etag": "\"6aff81cd-1687d6\"",
+        "elapsed_ms": 257
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 1476566,
+        "sha256": "24fedf848b07ca07644699c27906b95f53fd616e7b1937497bb60c4f1f323568",
+        "git_blob_sha": "c41fc80b07daec16f1cc14e30bb34e3996d3a70d",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "digital-shamans-digitalshamans-vegetation-phantom-speedtree.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-digitalshamans-vegetation-phantom-speedtree.webp",
+      "expected": {
+        "bytes": 759848,
+        "sha256": "66152bd91bcee0545a0e9e7ba6a692d953514725a0fc4e528a3830836c2e5fe4",
+        "git_blob_sha": "92322accb33b8df6c7820f9593b99e8d019ace60",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "digital-shamans-digitalshamans-vegetation-phantom-speedtree.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-digitalshamans-vegetation-phantom-speedtree.webp",
+        "acquired_at_utc": "2026-11-19T23:10:33.7212657Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\digital-shamans-digitalshamans-vegetation-phantom-speedtree.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-digitalshamans-vegetation-phantom-speedtree.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 759848,
+        "response_bytes": 759848,
+        "etag": "\"6aff81cd-b9828\"",
+        "elapsed_ms": 177
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 759848,
+        "sha256": "66152bd91bcee0545a0e9e7ba6a692d953514725a0fc4e528a3830836c2e5fe4",
+        "git_blob_sha": "92322accb33b8df6c7820f9593b99e8d019ace60",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "digital-shamans-unreal4-phantom-environments-14-srgb.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-14-srgb.webp",
+      "expected": {
+        "bytes": 281010,
+        "sha256": "f170b7a429691329f3f0817aefc0b40ec88eff62d8386ab50d7fea9f0a6ebb11",
+        "git_blob_sha": "677e211f0b10e0ae9252c527e3a11fc00e875c30",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1366,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "digital-shamans-unreal4-phantom-environments-14-srgb.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-14-srgb.webp",
+        "acquired_at_utc": "2026-11-19T23:10:33.8999754Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\digital-shamans-unreal4-phantom-environments-14-srgb.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-14-srgb.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 281010,
+        "response_bytes": 281010,
+        "etag": "\"6aff81cd-449b2\"",
+        "elapsed_ms": 170
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 281010,
+        "sha256": "f170b7a429691329f3f0817aefc0b40ec88eff62d8386ab50d7fea9f0a6ebb11",
+        "git_blob_sha": "677e211f0b10e0ae9252c527e3a11fc00e875c30",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1366,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "digital-shamans-unreal4-phantom-environments-13-srgb.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-13-srgb.webp",
+      "expected": {
+        "bytes": 353980,
+        "sha256": "086e181375d88174bd86529e75abeeba18a7ffb69d33cffa329defc371052fe2",
+        "git_blob_sha": "50b4a9cf980e7c3fda8af237d2b32b79eaecbb31",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1366,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "digital-shamans-unreal4-phantom-environments-13-srgb.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-13-srgb.webp",
+        "acquired_at_utc": "2026-11-19T23:10:34.0721619Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\digital-shamans-unreal4-phantom-environments-13-srgb.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-13-srgb.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 353980,
+        "response_bytes": 353980,
+        "etag": "\"6aff81cd-566bc\"",
+        "elapsed_ms": 182
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 353980,
+        "sha256": "086e181375d88174bd86529e75abeeba18a7ffb69d33cffa329defc371052fe2",
+        "git_blob_sha": "50b4a9cf980e7c3fda8af237d2b32b79eaecbb31",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1366,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "digital-shamans-unreal4-phantom-environments-11-srgb.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-11-srgb.webp",
+      "expected": {
+        "bytes": 175528,
+        "sha256": "6123eee365c839ee521a42f6bcd265b01aebaa5ddfd868f37ececdbb1c032205",
+        "git_blob_sha": "9f4f322145dcc6771332fc155383886fee73816d",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1366,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "digital-shamans-unreal4-phantom-environments-11-srgb.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-11-srgb.webp",
+        "acquired_at_utc": "2026-11-19T23:10:34.2555461Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\digital-shamans-unreal4-phantom-environments-11-srgb.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-11-srgb.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 175528,
+        "response_bytes": 175528,
+        "etag": "\"6aff81cd-2ada8\"",
+        "elapsed_ms": 169
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 175528,
+        "sha256": "6123eee365c839ee521a42f6bcd265b01aebaa5ddfd868f37ececdbb1c032205",
+        "git_blob_sha": "9f4f322145dcc6771332fc155383886fee73816d",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1366,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "digital-shamans-unreal4-phantom-environments-10-srgb.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-10-srgb.webp",
+      "expected": {
+        "bytes": 255720,
+        "sha256": "1fceefba80e3a0c8fb2b3faa70b1efb2f44fa7df9726d256a8fc71d62becc614",
+        "git_blob_sha": "c04075ec44d9c4f2c6f65a9657bb3fb6226da420",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1366,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "digital-shamans-unreal4-phantom-environments-10-srgb.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-10-srgb.webp",
+        "acquired_at_utc": "2026-11-19T23:10:34.4275486Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\digital-shamans-unreal4-phantom-environments-10-srgb.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-10-srgb.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 255720,
+        "response_bytes": 255720,
+        "etag": "\"6aff81cd-3e6e8\"",
+        "elapsed_ms": 163
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 255720,
+        "sha256": "1fceefba80e3a0c8fb2b3faa70b1efb2f44fa7df9726d256a8fc71d62becc614",
+        "git_blob_sha": "c04075ec44d9c4f2c6f65a9657bb3fb6226da420",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1366,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "digital-shamans-unreal4-phantom-environments-08b-srgb.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-08b-srgb.webp",
+      "expected": {
+        "bytes": 391968,
+        "sha256": "734bf0f1a506a0592aea020616c9bdff150435f75e8dcdbbcad1af8865e6d816",
+        "git_blob_sha": "914b4c3a95085eaefcf5a5fdbd5215605d78fa7a",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1366,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "digital-shamans-unreal4-phantom-environments-08b-srgb.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-08b-srgb.webp",
+        "acquired_at_utc": "2026-11-19T23:10:34.5921280Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\digital-shamans-unreal4-phantom-environments-08b-srgb.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-08b-srgb.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 391968,
+        "response_bytes": 391968,
+        "etag": "\"6aff81cd-5fb20\"",
+        "elapsed_ms": 181
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 391968,
+        "sha256": "734bf0f1a506a0592aea020616c9bdff150435f75e8dcdbbcad1af8865e6d816",
+        "git_blob_sha": "914b4c3a95085eaefcf5a5fdbd5215605d78fa7a",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1366,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "digital-shamans-unreal4-phantom-environments-05-srgb.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-05-srgb.webp",
+      "expected": {
+        "bytes": 283904,
+        "sha256": "33513bd0a826772a0a4bb3f8f23b3285dc7ca70b8f7f99bb3623f1e9a8c5533b",
+        "git_blob_sha": "4dedb7e76c4afc656452013a980e41c59bada192",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1366,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "digital-shamans-unreal4-phantom-environments-05-srgb.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-05-srgb.webp",
+        "acquired_at_utc": "2026-11-19T23:10:34.7746033Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\digital-shamans-unreal4-phantom-environments-05-srgb.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-05-srgb.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 283904,
+        "response_bytes": 283904,
+        "etag": "\"6aff81cd-45500\"",
+        "elapsed_ms": 223
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 283904,
+        "sha256": "33513bd0a826772a0a4bb3f8f23b3285dc7ca70b8f7f99bb3623f1e9a8c5533b",
+        "git_blob_sha": "4dedb7e76c4afc656452013a980e41c59bada192",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1366,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-palms-019b-4k.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-019b-4k.webp",
+      "expected": {
+        "bytes": 435054,
+        "sha256": "36a5617c5eae7c3ff8e729857ee0ac92786996ff094b6564397014db420ff903",
+        "git_blob_sha": "772fe5b34efa284e9b5b7e0655053636edbc2423",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-palms-019b-4k.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-019b-4k.webp",
+        "acquired_at_utc": "2026-11-19T23:10:34.9994840Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\the-digital-shaman-palms-019b-4k.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-019b-4k.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 435054,
+        "response_bytes": 435054,
+        "etag": "\"6aff81cd-6a36e\"",
+        "elapsed_ms": 197
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 435054,
+        "sha256": "36a5617c5eae7c3ff8e729857ee0ac92786996ff094b6564397014db420ff903",
+        "git_blob_sha": "772fe5b34efa284e9b5b7e0655053636edbc2423",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-palms-004-4k.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-004-4k.webp",
+      "expected": {
+        "bytes": 362234,
+        "sha256": "9c7de34593ac442e6424c54241c9be6800130e6044998a9eba1a650a5c0c34ab",
+        "git_blob_sha": "8cd45bfb5ce212afc6acc0b20cd6603fe121dcc7",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-palms-004-4k.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-004-4k.webp",
+        "acquired_at_utc": "2026-11-19T23:10:35.1988735Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\the-digital-shaman-palms-004-4k.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-004-4k.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 362234,
+        "response_bytes": 362234,
+        "etag": "\"6aff81cd-586fa\"",
+        "elapsed_ms": 171
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 362234,
+        "sha256": "9c7de34593ac442e6424c54241c9be6800130e6044998a9eba1a650a5c0c34ab",
+        "git_blob_sha": "8cd45bfb5ce212afc6acc0b20cd6603fe121dcc7",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-palms-005-4k.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-005-4k.webp",
+      "expected": {
+        "bytes": 689514,
+        "sha256": "964f43966fd3eb3e9bc8f2d80c1c59e1f22ec620b3e32becb7b9077642b3dafb",
+        "git_blob_sha": "1751d0c85dc22e46b03f48f6f7e5bc12fa6069eb",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-palms-005-4k.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-005-4k.webp",
+        "acquired_at_utc": "2026-11-19T23:10:35.3723284Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\the-digital-shaman-palms-005-4k.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-005-4k.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 689514,
+        "response_bytes": 689514,
+        "etag": "\"6aff81cd-a856a\"",
+        "elapsed_ms": 187
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 689514,
+        "sha256": "964f43966fd3eb3e9bc8f2d80c1c59e1f22ec620b3e32becb7b9077642b3dafb",
+        "git_blob_sha": "1751d0c85dc22e46b03f48f6f7e5bc12fa6069eb",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-papaya-series-v1-unreal5.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-papaya-series-v1-unreal5.webp",
+      "expected": {
+        "bytes": 248690,
+        "sha256": "fa5944ccab85d806feb281b39915068d1f8620fc1b093ba75c443c9c6f929b87",
+        "git_blob_sha": "39cc93cc5ab66d935c2f3d2491779dc15ca8524d",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-papaya-series-v1-unreal5.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-papaya-series-v1-unreal5.webp",
+        "acquired_at_utc": "2026-11-19T23:10:35.5619293Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\the-digital-shaman-papaya-series-v1-unreal5.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-papaya-series-v1-unreal5.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 248690,
+        "response_bytes": 248690,
+        "etag": "\"6aff81cd-3cb72\"",
+        "elapsed_ms": 164
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 248690,
+        "sha256": "fa5944ccab85d806feb281b39915068d1f8620fc1b093ba75c443c9c6f929b87",
+        "git_blob_sha": "39cc93cc5ab66d935c2f3d2491779dc15ca8524d",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-digital-shamans-digital-shamans-pineapple-series-v4more-srgb.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-digital-shamans-digital-shamans-pineapple-series-v4more-srgb.webp",
+      "expected": {
+        "bytes": 481202,
+        "sha256": "8cdb32f18ad58c72181e7c525f1f41c6d368a1f7aaf47569a4c41b599f2307e5",
+        "git_blob_sha": "4ab4a1105892b97071876ebe298c5602c7b0b4cb",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-digital-shamans-digital-shamans-pineapple-series-v4more-srgb.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-digital-shamans-digital-shamans-pineapple-series-v4more-srgb.webp",
+        "acquired_at_utc": "2026-11-19T23:10:35.7283737Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\the-digital-shaman-digital-shamans-digital-shamans-pineapple-series-v4more-srgb.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-digital-shamans-digital-shamans-pineapple-series-v4more-srgb.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 481202,
+        "response_bytes": 481202,
+        "etag": "\"6aff81cd-757b2\"",
+        "elapsed_ms": 152
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 481202,
+        "sha256": "8cdb32f18ad58c72181e7c525f1f41c6d368a1f7aaf47569a4c41b599f2307e5",
+        "git_blob_sha": "4ab4a1105892b97071876ebe298c5602c7b0b4cb",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-palms-008-4k.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-008-4k.webp",
+      "expected": {
+        "bytes": 408814,
+        "sha256": "60594f428a54699b671f02757cfb6aa5af1ecd317e1b20894e011ad7f11dcbcb",
+        "git_blob_sha": "dd1041feb5433d6f0eeef2783a7646bc15081ec1",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-palms-008-4k.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-008-4k.webp",
+        "acquired_at_utc": "2026-11-19T23:10:35.8821218Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\the-digital-shaman-palms-008-4k.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-008-4k.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 408814,
+        "response_bytes": 408814,
+        "etag": "\"6aff81cd-63cee\"",
+        "elapsed_ms": 168
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 408814,
+        "sha256": "60594f428a54699b671f02757cfb6aa5af1ecd317e1b20894e011ad7f11dcbcb",
+        "git_blob_sha": "dd1041feb5433d6f0eeef2783a7646bc15081ec1",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-palms-009-4k.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-009-4k.webp",
+      "expected": {
+        "bytes": 828476,
+        "sha256": "b55ed7dfb3dd665c9be34b86f6079667af27d2eef7caff44f2a752ef9fef75a9",
+        "git_blob_sha": "db3532eba5c7722993f138673cca258dee36e805",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-palms-009-4k.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-009-4k.webp",
+        "acquired_at_utc": "2026-11-19T23:10:36.0525091Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\the-digital-shaman-palms-009-4k.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-009-4k.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 828476,
+        "response_bytes": 828476,
+        "etag": "\"6aff81cd-ca43c\"",
+        "elapsed_ms": 188
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 828476,
+        "sha256": "b55ed7dfb3dd665c9be34b86f6079667af27d2eef7caff44f2a752ef9fef75a9",
+        "git_blob_sha": "db3532eba5c7722993f138673cca258dee36e805",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-palms-002-4k.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-002-4k.webp",
+      "expected": {
+        "bytes": 465672,
+        "sha256": "f4cae01eb0fce2180d3de93e8a8d692c14903cd9a0f0e11a5bea7e4ae2214d05",
+        "git_blob_sha": "d4358c3e9f9c061ad1a4ae57526f8d4da0a0db25",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-palms-002-4k.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-002-4k.webp",
+        "acquired_at_utc": "2026-11-19T23:10:36.2430743Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\the-digital-shaman-palms-002-4k.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-002-4k.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 465672,
+        "response_bytes": 465672,
+        "etag": "\"6aff81cd-71b08\"",
+        "elapsed_ms": 176
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 465672,
+        "sha256": "f4cae01eb0fce2180d3de93e8a8d692c14903cd9a0f0e11a5bea7e4ae2214d05",
+        "git_blob_sha": "d4358c3e9f9c061ad1a4ae57526f8d4da0a0db25",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-palms-001b-4k.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-001b-4k.webp",
+      "expected": {
+        "bytes": 1239896,
+        "sha256": "fc7486e926d99938c23a7fd6ea6f445171f644f5738b91e578228bee312380a5",
+        "git_blob_sha": "7df411a2bd7273f383c636982c6d7f60fd0ea882",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-palms-001b-4k.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-001b-4k.webp",
+        "acquired_at_utc": "2026-11-19T23:10:36.4206049Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\the-digital-shaman-palms-001b-4k.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-001b-4k.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 1239896,
+        "response_bytes": 1239896,
+        "etag": "\"6aff81cd-12eb58\"",
+        "elapsed_ms": 205
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 1239896,
+        "sha256": "fc7486e926d99938c23a7fd6ea6f445171f644f5738b91e578228bee312380a5",
+        "git_blob_sha": "7df411a2bd7273f383c636982c6d7f60fd0ea882",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-palms-014-4k.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-014-4k.webp",
+      "expected": {
+        "bytes": 711974,
+        "sha256": "41b2e4bc4514d893882b56cfceadfa81241fed4cbbbc83c05f91a40995bb65d7",
+        "git_blob_sha": "b685fdbf405f9da1154e60ce4ec152f20f533379",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-palms-014-4k.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-014-4k.webp",
+        "acquired_at_utc": "2026-11-19T23:10:36.6272857Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\the-digital-shaman-palms-014-4k.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-014-4k.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 711974,
+        "response_bytes": 711974,
+        "etag": "\"6aff81cd-add26\"",
+        "elapsed_ms": 178
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 711974,
+        "sha256": "41b2e4bc4514d893882b56cfceadfa81241fed4cbbbc83c05f91a40995bb65d7",
+        "git_blob_sha": "b685fdbf405f9da1154e60ce4ec152f20f533379",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-palms-006-4k.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-006-4k.webp",
+      "expected": {
+        "bytes": 458310,
+        "sha256": "3ee55535be788d5b5afd0a6fcf3249b026df4d33738fb30bbf8fd802bc3b0579",
+        "git_blob_sha": "987926041b0f79f49849b8b16c072749d1fe8255",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-palms-006-4k.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-006-4k.webp",
+        "acquired_at_utc": "2026-11-19T23:10:36.8074391Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\the-digital-shaman-palms-006-4k.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-006-4k.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 458310,
+        "response_bytes": 458310,
+        "etag": "\"6aff81cd-6fe46\"",
+        "elapsed_ms": 187
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 458310,
+        "sha256": "3ee55535be788d5b5afd0a6fcf3249b026df4d33738fb30bbf8fd802bc3b0579",
+        "git_blob_sha": "987926041b0f79f49849b8b16c072749d1fe8255",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-mobile.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-mobile.webp",
+      "expected": {
+        "bytes": 19134,
+        "sha256": "3e0630f3c4f3d536eb41ed47f9be5d75b9e243a1b60b712453ed44788d33eaea",
+        "git_blob_sha": "7cec807bd9b838c06a587edb3f6984dea2761eb4",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-mobile.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-mobile.webp",
+        "acquired_at_utc": "2026-11-19T23:10:36.9970625Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\the-digital-shaman-mobile.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-mobile.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 19134,
+        "response_bytes": 19134,
+        "etag": "\"6aff81cd-4abe\"",
+        "elapsed_ms": 162
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 19134,
+        "sha256": "3e0630f3c4f3d536eb41ed47f9be5d75b9e243a1b60b712453ed44788d33eaea",
+        "git_blob_sha": "7cec807bd9b838c06a587edb3f6984dea2761eb4",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.webp",
+      "expected": {
+        "bytes": 756136,
+        "sha256": "497dffe2c55909cf619c0d051e7751fdec3cf8b2c85913f962313a3841a62f7c",
+        "git_blob_sha": "69c46d2a830ef39c6395ae81ff9e3dc1c55bad85",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.webp",
+        "acquired_at_utc": "2026-11-19T23:10:37.1611134Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\vegetation-merge\\http-cache\\public\\webps\\the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 756136,
+        "response_bytes": 756136,
+        "etag": "\"6aff81cd-b89a8\"",
+        "elapsed_ms": 186
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 756136,
+        "sha256": "497dffe2c55909cf619c0d051e7751fdec3cf8b2c85913f962313a3841a62f7c",
+        "git_blob_sha": "69c46d2a830ef39c6395ae81ff9e3dc1c55bad85",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    }
+  ],
+  "gallery_manifest": {
+    "url": "https://digitalshamans.co.uk/galleries/vegetation/gallery.json",
+    "checks": {
+      "http_200": true,
+      "exact_url": true,
+      "windows_system_tls": true,
+      "no_request_error": true,
+      "exact_staged_bytes": true,
+      "canonical_order_and_schema": true
+    },
+    "passed": true,
+    "sha256": "cfc185098e1421171ff6a2f96f8f0d8280bb3f7a060358e9b7a6e2f14573773e"
+  },
+  "companions": [],
+  "routes": [
+    {
+      "name": "studio_route",
+      "url": "https://digitalshamans.co.uk/galleries/vegetation/",
+      "robots": [
+        "noindex"
+      ],
+      "title": "Vegetation | Digital Shamans",
+      "heading": "Vegetation",
+      "base": null,
+      "build_revision": "41fd9d764958e759ea70ada0d518722e7b18d0ac",
+      "resolved_scripts": [
+        "https://digitalshamans.co.uk/galleries/gallery-arrival.js?v=1",
+        "https://digitalshamans.co.uk/assets/gallery-resolution.js?v=6",
+        "https://digitalshamans.co.uk/galleries/gallery-data.js?v=3",
+        "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43",
+        "https://digitalshamans.co.uk/galleries/gallery-captions.js?v=1"
+      ],
+      "resolved_styles": [
+        "https://digitalshamans.co.uk/assets/site.css?v=12",
+        "https://digitalshamans.co.uk/galleries/gallery.css?v=27",
+        "https://digitalshamans.co.uk/galleries/gallery-captions.css?v=1"
+      ],
+      "initial_merge_revision_exact_match": true,
+      "caption_template_count": 1,
+      "caption_records": [
+        {
+          "filename": "digital-shamans-ds-vegetation-survisland-seaweed-4k.jpg",
+          "text": "Survisland - SeaWeed - Speed Tree - Unity"
+        },
+        {
+          "filename": "digital-shamans-ds-vegetation-survisland-wheat01-4k.jpg",
+          "text": "Survisland - Wheat - Speed Tree - Unity"
+        },
+        {
+          "filename": "digital-shamans-ds-vegetation-survisland-wheat02-4k.jpg",
+          "text": "Survisland - Wheat - Speed Tree - Unity"
+        },
+        {
+          "filename": "digital-shamans-ds-vegetation-survisland-papaya-4k.jpg",
+          "text": "Survisland - Papaya Series"
+        },
+        {
+          "filename": "digital-shamans-ds-vegetation-survisland-pineapple-4k.jpg",
+          "text": "Survisland - Pineapple - Speed Tree Unity"
+        },
+        {
+          "filename": "digital-shamans-digital-shamans-sniper-elite4-environment02.jpg",
+          "text": "Sniper Elite 4 - Stone Pine Tree"
+        },
+        {
+          "filename": "digital-shamans-digital-shamans-sniper-elite4-environment01.jpg",
+          "text": "Sniper Elite 4 - Stone Pine Tree"
+        },
+        {
+          "filename": "digital-shamans-digital-shamans-sniper-elite4-environment03.jpg",
+          "text": "Sniper Elite 4 - Olive Tree."
+        },
+        {
+          "filename": "digital-shamans-artur-perzyna-red-flowers-01impr.jpg",
+          "text": "Strange Brigade - Red Flowers"
+        },
+        {
+          "filename": "digital-shamans-digitalshamans-vegetation-phantom-speedtree.jpg",
+          "text": "Various vegetation assets made for Phantom: Covert Ops in Speed Tree 8."
+        },
+        {
+          "filename": "digital-shamans-unreal4-phantom-environments-14-srgb.jpg",
+          "text": "UE4 - Phantom: Covert Ops - Environment and Vegetation."
+        },
+        {
+          "filename": "digital-shamans-unreal4-phantom-environments-13-srgb.jpg",
+          "text": "UE4 - Phantom: Covert Ops - Environment and Vegetation"
+        },
+        {
+          "filename": "digital-shamans-unreal4-phantom-environments-11-srgb.jpg",
+          "text": "UE4 - Phantom: Covert Ops - Environment and Vegetation"
+        },
+        {
+          "filename": "digital-shamans-unreal4-phantom-environments-10-srgb.jpg",
+          "text": "UE4 - Phantom: Covert Ops - Environment and Vegetation"
+        },
+        {
+          "filename": "digital-shamans-unreal4-phantom-environments-08b-srgb.jpg",
+          "text": "UE4 - Phantom: Covert Ops - Environment and Vegetation"
+        },
+        {
+          "filename": "digital-shamans-unreal4-phantom-environments-05-srgb.jpg",
+          "text": "UE4 - Phantom: Covert Ops - Environment and Vegetation"
+        },
+        {
+          "filename": "the-digital-shaman-palms-019b-4k.jpg",
+          "text": "High Fidelity Foliage - Speed Tree 9 - Unreal 5"
+        },
+        {
+          "filename": "the-digital-shaman-palms-004-4k.jpg",
+          "text": "High Fidelity Foliage - Speed Tree 9 - Unreal 5"
+        },
+        {
+          "filename": "the-digital-shaman-palms-005-4k.jpg",
+          "text": "High Fidelity Foliage - Speed Tree 9 - Unreal 5 - Stylised"
+        },
+        {
+          "filename": "the-digital-shaman-papaya-series-v1-unreal5.jpg",
+          "text": "Survisland - Papaya Series - Unreal"
+        },
+        {
+          "filename": "the-digital-shaman-digital-shamans-digital-shamans-pineapple-series-v4more-srgb.jpg",
+          "text": "Survisland - Pineapple - Speed Tree Unity"
+        },
+        {
+          "filename": "the-digital-shaman-palms-008-4k.jpg",
+          "text": "High Fidelity Foliage - Speed Tree 9 - Unreal 5"
+        },
+        {
+          "filename": "the-digital-shaman-palms-009-4k.jpg",
+          "text": "High Fidelity Foliage - Speed Tree 9 - Unreal 5"
+        },
+        {
+          "filename": "the-digital-shaman-palms-002-4k.jpg",
+          "text": "High Fidelity Foliage - Speed Tree 9 - Unreal 5"
+        },
+        {
+          "filename": "the-digital-shaman-palms-001b-4k.jpg",
+          "text": "High Fidelity Foliage - Unreal 5"
+        },
+        {
+          "filename": "the-digital-shaman-palms-014-4k.jpg",
+          "text": "High Fidelity Foliage - Unreal 5"
+        },
+        {
+          "filename": "the-digital-shaman-palms-006-4k.jpg",
+          "text": "High Fidelity Foliage - Speed Tree 9 - Unreal 5"
+        },
+        {
+          "filename": "the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.jpg",
+          "text": "Phantom: Covert Ops - Speed Tree 8."
+        }
+      ],
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "noindex": true,
+        "title_exact": true,
+        "heading_exact": true,
+        "seo_description": true,
+        "gallery_section": true,
+        "grouped_image_marker": true,
+        "viewer_controls_included": true,
+        "caption_template_exactly_one": true,
+        "all_caption_records_unique": true,
+        "exact_filename_caption_source_mapping": true,
+        "caption_script_present": true,
+        "caption_styles_present": true,
+        "companion_opt_in_matches": true,
+        "no_video_or_iframe": true,
+        "all_scripts_styles_reachable": true,
+        "expected_main_scripts": true,
+        "expected_styles": true,
+        "companion_script_present": true,
+        "companion_style_present": true,
+        "originals_origin": true,
+        "originals_revision_override": true,
+        "default_originals_revision": true,
+        "all_source_images_versioned": true,
+        "exact_asset_versions": true,
+        "fallback_lead_original": true,
+        "navigation_excludes_unlisted_gallery": true,
+        "personal_uses_shared_base": true,
+        "published_build_revision": true
+      },
+      "passed": true
+    },
+    {
+      "name": "personal_route",
+      "url": "https://digitalshamans.co.uk/artur/galleries/vegetation/",
+      "robots": [
+        "noindex"
+      ],
+      "title": "Vegetation | Artur Perzyna",
+      "heading": "Vegetation",
+      "base": "/galleries/vegetation/",
+      "build_revision": "41fd9d764958e759ea70ada0d518722e7b18d0ac",
+      "resolved_scripts": [
+        "https://digitalshamans.co.uk/galleries/gallery-arrival.js?v=1",
+        "https://digitalshamans.co.uk/assets/gallery-resolution.js?v=6",
+        "https://digitalshamans.co.uk/galleries/gallery-data.js?v=3",
+        "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43",
+        "https://digitalshamans.co.uk/galleries/gallery-captions.js?v=1"
+      ],
+      "resolved_styles": [
+        "https://digitalshamans.co.uk/assets/site.css?v=12",
+        "https://digitalshamans.co.uk/galleries/gallery.css?v=27",
+        "https://digitalshamans.co.uk/galleries/gallery-captions.css?v=1"
+      ],
+      "initial_merge_revision_exact_match": true,
+      "caption_template_count": 1,
+      "caption_records": [
+        {
+          "filename": "digital-shamans-ds-vegetation-survisland-seaweed-4k.jpg",
+          "text": "Survisland - SeaWeed - Speed Tree - Unity"
+        },
+        {
+          "filename": "digital-shamans-ds-vegetation-survisland-wheat01-4k.jpg",
+          "text": "Survisland - Wheat - Speed Tree - Unity"
+        },
+        {
+          "filename": "digital-shamans-ds-vegetation-survisland-wheat02-4k.jpg",
+          "text": "Survisland - Wheat - Speed Tree - Unity"
+        },
+        {
+          "filename": "digital-shamans-ds-vegetation-survisland-papaya-4k.jpg",
+          "text": "Survisland - Papaya Series"
+        },
+        {
+          "filename": "digital-shamans-ds-vegetation-survisland-pineapple-4k.jpg",
+          "text": "Survisland - Pineapple - Speed Tree Unity"
+        },
+        {
+          "filename": "digital-shamans-digital-shamans-sniper-elite4-environment02.jpg",
+          "text": "Sniper Elite 4 - Stone Pine Tree"
+        },
+        {
+          "filename": "digital-shamans-digital-shamans-sniper-elite4-environment01.jpg",
+          "text": "Sniper Elite 4 - Stone Pine Tree"
+        },
+        {
+          "filename": "digital-shamans-digital-shamans-sniper-elite4-environment03.jpg",
+          "text": "Sniper Elite 4 - Olive Tree."
+        },
+        {
+          "filename": "digital-shamans-artur-perzyna-red-flowers-01impr.jpg",
+          "text": "Strange Brigade - Red Flowers"
+        },
+        {
+          "filename": "digital-shamans-digitalshamans-vegetation-phantom-speedtree.jpg",
+          "text": "Various vegetation assets made for Phantom: Covert Ops in Speed Tree 8."
+        },
+        {
+          "filename": "digital-shamans-unreal4-phantom-environments-14-srgb.jpg",
+          "text": "UE4 - Phantom: Covert Ops - Environment and Vegetation."
+        },
+        {
+          "filename": "digital-shamans-unreal4-phantom-environments-13-srgb.jpg",
+          "text": "UE4 - Phantom: Covert Ops - Environment and Vegetation"
+        },
+        {
+          "filename": "digital-shamans-unreal4-phantom-environments-11-srgb.jpg",
+          "text": "UE4 - Phantom: Covert Ops - Environment and Vegetation"
+        },
+        {
+          "filename": "digital-shamans-unreal4-phantom-environments-10-srgb.jpg",
+          "text": "UE4 - Phantom: Covert Ops - Environment and Vegetation"
+        },
+        {
+          "filename": "digital-shamans-unreal4-phantom-environments-08b-srgb.jpg",
+          "text": "UE4 - Phantom: Covert Ops - Environment and Vegetation"
+        },
+        {
+          "filename": "digital-shamans-unreal4-phantom-environments-05-srgb.jpg",
+          "text": "UE4 - Phantom: Covert Ops - Environment and Vegetation"
+        },
+        {
+          "filename": "the-digital-shaman-palms-019b-4k.jpg",
+          "text": "High Fidelity Foliage - Speed Tree 9 - Unreal 5"
+        },
+        {
+          "filename": "the-digital-shaman-palms-004-4k.jpg",
+          "text": "High Fidelity Foliage - Speed Tree 9 - Unreal 5"
+        },
+        {
+          "filename": "the-digital-shaman-palms-005-4k.jpg",
+          "text": "High Fidelity Foliage - Speed Tree 9 - Unreal 5 - Stylised"
+        },
+        {
+          "filename": "the-digital-shaman-papaya-series-v1-unreal5.jpg",
+          "text": "Survisland - Papaya Series - Unreal"
+        },
+        {
+          "filename": "the-digital-shaman-digital-shamans-digital-shamans-pineapple-series-v4more-srgb.jpg",
+          "text": "Survisland - Pineapple - Speed Tree Unity"
+        },
+        {
+          "filename": "the-digital-shaman-palms-008-4k.jpg",
+          "text": "High Fidelity Foliage - Speed Tree 9 - Unreal 5"
+        },
+        {
+          "filename": "the-digital-shaman-palms-009-4k.jpg",
+          "text": "High Fidelity Foliage - Speed Tree 9 - Unreal 5"
+        },
+        {
+          "filename": "the-digital-shaman-palms-002-4k.jpg",
+          "text": "High Fidelity Foliage - Speed Tree 9 - Unreal 5"
+        },
+        {
+          "filename": "the-digital-shaman-palms-001b-4k.jpg",
+          "text": "High Fidelity Foliage - Unreal 5"
+        },
+        {
+          "filename": "the-digital-shaman-palms-014-4k.jpg",
+          "text": "High Fidelity Foliage - Unreal 5"
+        },
+        {
+          "filename": "the-digital-shaman-palms-006-4k.jpg",
+          "text": "High Fidelity Foliage - Speed Tree 9 - Unreal 5"
+        },
+        {
+          "filename": "the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.jpg",
+          "text": "Phantom: Covert Ops - Speed Tree 8."
+        }
+      ],
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "noindex": true,
+        "title_exact": true,
+        "heading_exact": true,
+        "seo_description": true,
+        "gallery_section": true,
+        "grouped_image_marker": true,
+        "viewer_controls_included": true,
+        "caption_template_exactly_one": true,
+        "all_caption_records_unique": true,
+        "exact_filename_caption_source_mapping": true,
+        "caption_script_present": true,
+        "caption_styles_present": true,
+        "companion_opt_in_matches": true,
+        "no_video_or_iframe": true,
+        "all_scripts_styles_reachable": true,
+        "expected_main_scripts": true,
+        "expected_styles": true,
+        "companion_script_present": true,
+        "companion_style_present": true,
+        "originals_origin": true,
+        "originals_revision_override": true,
+        "default_originals_revision": true,
+        "all_source_images_versioned": true,
+        "exact_asset_versions": true,
+        "fallback_lead_original": true,
+        "navigation_excludes_unlisted_gallery": true,
+        "personal_uses_shared_base": true,
+        "published_build_revision": true
+      },
+      "passed": true
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "dependency_00",
+      "url": "https://digitalshamans.co.uk/assets/gallery-resolution.js?v=6",
+      "kind": "script",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "104a8dbe30f2f7d7c9333f1b5101da4de06d242eb836141ed8d6e8daafcf0810"
+    },
+    {
+      "name": "dependency_01",
+      "url": "https://digitalshamans.co.uk/assets/site.css?v=12",
+      "kind": "style",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "c7d2da1cb83aa62046386138240035d54fe0d58594d1af7b7320997603f47772"
+    },
+    {
+      "name": "dependency_02",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-arrival.js?v=1",
+      "kind": "script",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "aa4ba207b480a7335059cdd47bb2bc8631fca538fbc8e8ca2e39a8b6d677aa4d"
+    },
+    {
+      "name": "dependency_03",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-captions.css?v=1",
+      "kind": "style",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "4c6c224203c6dbeeb4b5dbaf4002eb838848f53725ce304ad89b82fb0ff562bf"
+    },
+    {
+      "name": "dependency_04",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-captions.js?v=1",
+      "kind": "script",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "26396c12d13ce01bc16df0a6dc810270823e67772debc62053f0b60648e0c054"
+    },
+    {
+      "name": "dependency_05",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-data.js?v=3",
+      "kind": "script",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "5a9c94958e07d8a47bee6e3e32d7f1fa61ae154ed2d57413c1cfafef13be4379"
+    },
+    {
+      "name": "dependency_06",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-mobile-scroll.js?v=1",
+      "kind": "script",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "634d5de4e78d41c9a824a5c5b243b21e57eb42cd062975677f7fe206435d2da1"
+    },
+    {
+      "name": "dependency_07",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43",
+      "kind": "script",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "8bbc565ce8b37758759071f5c6f4370558636eff85d155dcd6ee7536adf01614"
+    },
+    {
+      "name": "dependency_08",
+      "url": "https://digitalshamans.co.uk/galleries/gallery.css?v=27",
+      "kind": "style",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "9e9b6c5355be74a18b83368735233eaeac90879ea6173d6506845bbbdc23dbbd"
+    }
+  ],
+  "homes": [
+    {
+      "name": "studio_home",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "no_unlisted_gallery_link": true,
+        "no_unlisted_gallery_nav": true
+      },
+      "passed": true
+    },
+    {
+      "name": "personal_home",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "no_unlisted_gallery_link": true,
+        "no_unlisted_gallery_nav": true
+      },
+      "passed": true
+    }
+  ],
+  "sitemap": {
+    "checks": {
+      "http_200": true,
+      "exact_url": true,
+      "windows_system_tls": true,
+      "no_request_error": true,
+      "excludes_both_unlisted_routes": true
+    },
+    "passed": true
+  },
+  "scope": "Root-released actual public GETs with Windows system TLS. No full historical media redownload; no browser/interaction/CI claims."
+}
