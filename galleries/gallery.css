@@ -246,18 +246,6 @@ dialog {
 }
 .gallery-desktop-edge-panel[hidden],
 body:has(dialog[open]) .gallery-desktop-edge-panel { display: none !important; }
-/* The shared header remains visually fixed above the switching panel.
-   The decorative clone is inert and only exists during the animation. */
-.gallery-desktop-edge-header {
-  position: fixed;
-  inset: 0 0 auto;
-  z-index: 31;
-  width: 100%;
-  pointer-events: none;
-}
-.gallery-desktop-edge-header[hidden],
-body:has(dialog[open]) .gallery-desktop-edge-header { display: none !important; }
-
 .gallery-desktop-edge-panel__content { max-width: min(90vw, 60rem); }
 .gallery-desktop-edge-panel__content p {
   margin: 0 0 .8rem;
