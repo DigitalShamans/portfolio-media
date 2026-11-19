@@ -1,5 +1,87 @@
 {
   "galleries": {
+    "firearms": {
+      "digital-shamans-artur-perzyna-weapon-aw50-compose1.jpg": {
+        "blob": "41559265aa865124a92dc1ea08fa795fdfe06835",
+        "size": 394697
+      },
+      "digital-shamans-artur-perzyna-weapon-aw50-compose2.jpg": {
+        "blob": "721434b79473110a7e75a59076525183b848f371",
+        "size": 396847
+      },
+      "digital-shamans-artur-perzyna-weapon-barrett-compose1.jpg": {
+        "blob": "904e0c3e16cf33fcdd6e9a564ae862357d33fd84",
+        "size": 447874
+      },
+      "digital-shamans-artur-perzyna-weapon-cheytac-compose.jpg": {
+        "blob": "741c4ee62556dbaa951224309fb33e35bfd12795",
+        "size": 422979
+      },
+      "digital-shamans-artur-perzyna-weapon-dsr50-compose1.jpg": {
+        "blob": "0156860403fdee6d424410a0cdc29a04fd325ae8",
+        "size": 425569
+      },
+      "digital-shamans-artur-perzyna-weapon-dsr50-compose2.jpg": {
+        "blob": "e9d1e38743ed3a4aa730adb74c65cff30e25d11a",
+        "size": 400647
+      },
+      "digital-shamans-artur-perzyna-weapon-m24-compose.jpg": {
+        "blob": "552f8994c18978b9d6fc4993b852828219445c81",
+        "size": 600707
+      },
+      "digital-shamans-artur-perzyna-weapon-remington-compose1.jpg": {
+        "blob": "f75bd34b495781ce3e7f012a09d729d72d5f8436",
+        "size": 561481
+      },
+      "digital-shamans-artur-perzyna-weapon-remington-compose2.jpg": {
+        "blob": "26b1162206e5eb80b232ddfb5385ded2a0ff2921",
+        "size": 464730
+      },
+      "digital-shamans-artur-perzyna-weapon-vintorez-compose.jpg": {
+        "blob": "564db836aec18e1ef697e0f6aa025faa4b4b6117",
+        "size": 436935
+      },
+      "digital-shamans-artur-perzyna-weapon-vintorez-night-compose1.jpg": {
+        "blob": "c2b38d5424d3973af1fc74a09df73d2938da101f",
+        "size": 421272
+      },
+      "digital-shamans-artur-perzyna-weapon-xm312-compose.jpg": {
+        "blob": "b15b1dcb6b4a9889f037cdc56510c9b0b6a845d0",
+        "size": 488759
+      },
+      "digital-shamans-m5-phalanx-compose1.jpg": {
+        "blob": "ef9485cf036bcce911dfa7b0c3669753417ccb01",
+        "size": 499364
+      },
+      "digital-shamans-m5-phalanx-compose2.jpg": {
+        "blob": "c485308f05a499510bedf48290735c511200fccf",
+        "size": 504312
+      },
+      "digital-shamans-noise-maker-01.jpg": {
+        "blob": "e6acaac94ef2a7ab20d5aa1347d13d40e22276ae",
+        "size": 392883
+      },
+      "digital-shamans-noise-maker-03.jpg": {
+        "blob": "002b228db87809056ef30f6f3c894dbc186a0f9a",
+        "size": 540912
+      },
+      "digital-shamans-non-pbr.jpg": {
+        "blob": "0021d1849820dea7e5beef4f7458a59488ae8917",
+        "size": 115319
+      },
+      "digital-shamans-phantom-aksm-01-impr-denoised-srgb-02.jpg": {
+        "blob": "704fcacd5346987a6fe0358cf98487ded14ce179",
+        "size": 269219
+      },
+      "digital-shamans-phantom-aksm-02-impr-denoised-srgb.jpg": {
+        "blob": "9635526296997c165a9acfbda92e21134f00e21f",
+        "size": 450778
+      },
+      "digital-shamans-phantom-aksm-unreal4-impr-04.jpg": {
+        "blob": "d5738f47fb2c21e0aaf45103fd76923979293a4a",
+        "size": 502332
+      }
+    },
     "hb-airplanes": {
       "SandboxLab_Airplanes_4k_A_01.jpg": {
         "blob": "7340b158a9b0cf7c3ebdff80be88a486ded12d02",
@@ -1647,63 +1729,231 @@
       }
     },
     "nfs-unbound": {
-      "digital-shamans-nfs-unbound-announce-trailer-04.jpg": {
-        "blob": "443335514c46dd22e6262f4fbdc0365952b0d8c0",
-        "size": 612856
-      },
-      "digital-shamans-nfs-unbound-announce-trailer-03.jpg": {
-        "blob": "1d0a7ba1ac76786f736e0624851b0c89779f757c",
-        "size": 550346
+      "digital-shamans-nfs-unbound-announce-trailer-01.jpg": {
+        "blob": "6378c12399f72e54dea6eb74a55b1587e2458da9",
+        "size": 907707
       },
       "digital-shamans-nfs-unbound-announce-trailer-02.jpg": {
         "blob": "7ae6947dbb1575ed82a447e5d0a242380f53b30c",
         "size": 661836
       },
-      "digital-shamans-nfs-unbound-announce-trailer-06.jpg": {
-        "blob": "871041b324021cc98c360110457307b7c2043b19",
-        "size": 587392
+      "digital-shamans-nfs-unbound-announce-trailer-03.jpg": {
+        "blob": "1d0a7ba1ac76786f736e0624851b0c89779f757c",
+        "size": 550346
+      },
+      "digital-shamans-nfs-unbound-announce-trailer-04.jpg": {
+        "blob": "443335514c46dd22e6262f4fbdc0365952b0d8c0",
+        "size": 612856
       },
       "digital-shamans-nfs-unbound-announce-trailer-05.jpg": {
         "blob": "43e1ce5fb444c7d6f78b2e802cc581a9865b690c",
         "size": 580648
       },
-      "digital-shamans-nfs-unbound-announce-trailer-01.jpg": {
-        "blob": "6378c12399f72e54dea6eb74a55b1587e2458da9",
-        "size": 907707
+      "digital-shamans-nfs-unbound-announce-trailer-06.jpg": {
+        "blob": "871041b324021cc98c360110457307b7c2043b19",
+        "size": 587392
+      }
+    },
+    "phantom-covert-ops": {
+      "digital-shamans-chinook-vfx-01-impr04.jpg": {
+        "blob": "822048ecfe39f5ce39a21b24da7968886339cf40",
+        "size": 441471
+      },
+      "digital-shamans-chinook-vfx-06-impr04.jpg": {
+        "blob": "6975b056f58225d5c8f0381e64bf4bbcba0f5477",
+        "size": 452335
+      },
+      "digital-shamans-chinook-vfx-07-impr04.jpg": {
+        "blob": "563b825553e4f928f0e26c6dc380989e6a5e3f9b",
+        "size": 462937
+      },
+      "digital-shamans-digital-shamans-digital-shamans-nets.jpg": {
+        "blob": "31a27ceb98d78c27b65092dc01ea37bd1f8d80ea",
+        "size": 580192
+      },
+      "digital-shamans-digital-shamans-digital-shamans-sm-concrete-blocks-and-razowire-fence-and-power-generators.jpg": {
+        "blob": "d94d30be222b585985baab9390ab9f160ddcbb60",
+        "size": 473225
+      },
+      "digital-shamans-digital-shamans-noise-maker-01.jpg": {
+        "blob": "39bd907830dc95f878970a49edc7845a5a966edb",
+        "size": 387510
+      },
+      "digital-shamans-digital-shamans-noise-maker-03.jpg": {
+        "blob": "cddfe69b2d98d1bb10ae93e0d75e4b491994d771",
+        "size": 534210
+      },
+      "digital-shamans-digital-shamans-phantom-aksm-01-impr-denoised-srgb-02.jpg": {
+        "blob": "26ff6f04d89a08a7aa109bfa6fec2ae2fb671ed9",
+        "size": 263920
+      },
+      "digital-shamans-digital-shamans-phantom-aksm-02-impr-denoised-srgb.jpg": {
+        "blob": "de41d832e62a646455e78e489f06b56b5069a2fe",
+        "size": 445746
+      },
+      "digital-shamans-digital-shamans-phantom-aksm-13-impr.jpg": {
+        "blob": "1e24dc605e0199235d49a07e20cf1b25036e26bc",
+        "size": 253822
+      },
+      "digital-shamans-digital-shamans-phantom-aksm-unreal4-impr-04.jpg": {
+        "blob": "d5738f47fb2c21e0aaf45103fd76923979293a4a",
+        "size": 502332
+      },
+      "digital-shamans-digital-shamans-sm-central-hub-tower-srgb.jpg": {
+        "blob": "8de9824f83c378d53cbb3a096d76ee9d87ac3a65",
+        "size": 446854
+      },
+      "digital-shamans-digital-shamans-sm-pontoon-jack-01.jpg": {
+        "blob": "2c8fa23360957c23265fae04099bbdbcbc5b436e",
+        "size": 517085
+      },
+      "digital-shamans-digital-shamans-sm-warehouse-boat-hoist.jpg": {
+        "blob": "ed734485d9da6538f7f614b7c5ea9951f30e5d87",
+        "size": 408844
+      },
+      "digital-shamans-promo-screen-09-impr.jpg": {
+        "blob": "8eb2ab4cffac5947041bcaa46b658a090a93983c",
+        "size": 433924
+      },
+      "digital-shamans-unreal4-phantom-environments-02-srgb.jpg": {
+        "blob": "d8e4bd56e42dc58fb5829856ef4b441de84c496c",
+        "size": 476150
+      },
+      "digital-shamans-unreal4-phantom-environments-05-srgb.jpg": {
+        "blob": "f8375ebc7462caef3bcfd9bc6593e2179c9ed031",
+        "size": 525175
+      },
+      "digital-shamans-unreal4-phantom-environments-08b-srgb.jpg": {
+        "blob": "cc035011431411236dae2d0d51a91ccea0ee9aec",
+        "size": 630927
+      },
+      "digital-shamans-unreal4-phantom-environments-10-srgb.jpg": {
+        "blob": "c415215f72ebc41852ffbfac1836594107e79ec1",
+        "size": 474740
+      },
+      "digital-shamans-unreal4-phantom-environments-11-srgb.jpg": {
+        "blob": "f644b6d6ccb4d357a19117fed2638f4d173459fb",
+        "size": 345123
+      },
+      "digital-shamans-unreal4-phantom-environments-12-srgb.jpg": {
+        "blob": "7bcab62ece68eded1cc4f9938b222a4d20bffb61",
+        "size": 450518
+      },
+      "digital-shamans-unreal4-phantom-environments-14-srgb.jpg": {
+        "blob": "afa1da5486b2ec1cbaeb390c2478c122836aed8f",
+        "size": 483874
+      },
+      "digital-shamans-unreal4-phantom-environments-16-srgb.jpg": {
+        "blob": "dd2b9474757f9ca6a1fb67f0f8797df3eafd562b",
+        "size": 463854
+      }
+    },
+    "sniper-elite-4": {
+      "digital-shamans-artur-perzyna-dockyard-map-4k-clean-impr-srgb.jpg": {
+        "blob": "e3d2f672a9f8a9ed68369a9ab2ef851b94bcc693",
+        "size": 1738263
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-043-impr-srgb.jpg": {
+        "blob": "dc7a79e9df015169b88cdb86d8d565ac9631dbc0",
+        "size": 302606
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-046-impr-srgb.jpg": {
+        "blob": "2ba70fe64b416989d6de405c8b21c0bfd09045ea",
+        "size": 384415
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-050-impr-srgb.jpg": {
+        "blob": "4684171363a86188e706e5c7f0c16cfbe356cd48",
+        "size": 365297
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-051-impr-srgb.jpg": {
+        "blob": "4bdbbe94a876dce1124ef024162d02cd01417a2d",
+        "size": 282433
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-053-impr-srgb.jpg": {
+        "blob": "b2fd1627298c6047882b203ca4a6d426c3ae952d",
+        "size": 225947
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-058-impr-srgb.jpg": {
+        "blob": "ba02276a184c81fcd19e0035afb46d0dba7fb79f",
+        "size": 318706
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-059-impr-srgb.jpg": {
+        "blob": "75ee784f26fcbf46e304dbaee905f5245b78fd0e",
+        "size": 328413
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-060-impr-srgb.jpg": {
+        "blob": "6b7f5d799b95a21f5e21e34bc9628d8d7b9cf109",
+        "size": 263372
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-068-impr-srgb.jpg": {
+        "blob": "9f2caf9c8dfa6649f2b709a61d6313501c642479",
+        "size": 358464
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-069b-impr-srgb.jpg": {
+        "blob": "ca0e279b0f5b94d286cbd556e7e7b7af6bac72a5",
+        "size": 252199
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-071-impr-srgb.jpg": {
+        "blob": "d8ee74064b91a366d97da9231c7834fac521957a",
+        "size": 302280
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-072-impr-srgb.jpg": {
+        "blob": "c6b36ddfc4a672c9ff190607b2f8316fc398e50d",
+        "size": 411420
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-072b-impr-srgb.jpg": {
+        "blob": "89d894091a035c97ebbe93eff25cde3daac32fc5",
+        "size": 288894
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-073-impr02-srgb.jpg": {
+        "blob": "fee3a83c7ca2ed1b5b7e97c10e69925da89275f7",
+        "size": 325761
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-077-impr-srgb.jpg": {
+        "blob": "64db5a60d3ea416ec318142854630936d355b66f",
+        "size": 323917
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-083-impr-srgb.jpg": {
+        "blob": "5c9730f8741efbe67460c4933834dcf732e0123f",
+        "size": 391703
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-084-impr-srgb.jpg": {
+        "blob": "2fa4873849b21f3ab095f3b12bb16d5b55a90c97",
+        "size": 430955
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-084a-impr-srgb.jpg": {
+        "blob": "62c93b5799f94832fc5d9ce298883b3a48a0def4",
+        "size": 483113
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-086-impr-srgb02.jpg": {
+        "blob": "20cc933d48e93fc6da1068ec4bfb9df23cd526ce",
+        "size": 378000
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-090-impr-srgb.jpg": {
+        "blob": "2ad4aa8679f8f4226519441277fc8600b29bd0b1",
+        "size": 386898
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-094-impr-srgb03.jpg": {
+        "blob": "da320389ca56a3eea362567f8042c0f5ec285091",
+        "size": 337909
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-200-impr-srgb.jpg": {
+        "blob": "9b2fda21095a115060be8170fe4972d2f7d20eba",
+        "size": 660162
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-202-impr-srgb.jpg": {
+        "blob": "8b3b114e3bc66a967c3a577b4193e1458637b9ed",
+        "size": 875183
+      },
+      "digital-shamans-artur-perzyna-sniper-elite4-dockyard-environment-art-84b-impr-srgb.jpg": {
+        "blob": "82891f54407ad906af52723c250c4080a19e11b9",
+        "size": 377053
       }
     },
     "vehicles-aircrafts": {
-      "digital-shamans-cessna206-painter03-impr06-4k.jpg": {
-        "blob": "7239c1f7255d8772e823b27a414720cdca708328",
-        "size": 2224327
-      },
-      "digital-shamans-cessna206-painter07m-impr05m-4k.jpg": {
-        "blob": "b15fefa290facc8f9c1feaa61ae8790db388f07c",
-        "size": 2364747
-      },
-      "digital-shamans-cessna206-final-interior1-impr03-4k.jpg": {
-        "blob": "fc664033fe6e53d1ca2f01db7fa28e827b8171bc",
-        "size": 1925374
-      },
-      "digital-shamans-cessna206-painter08-impr02-4k.jpg": {
-        "blob": "f2f0fa0f80bce79fb522fff61aaf135a1a74185f",
-        "size": 2603925
-      },
-      "digital-shamans-cessna206-painter10b-impr01.jpg": {
-        "blob": "dc00eea0ded156883acc07bc9a4bf0d8d16496ca",
-        "size": 3098957
-      },
-      "digital-shamans-sketchfab-cessna340-landed-01.jpg": {
-        "blob": "230779201d44d362374a09fd4ae9200bfdd57c09",
-        "size": 243430
-      },
-      "digital-shamans-sketchfab-cessna340-01.jpg": {
-        "blob": "e78ec134e35e6d53f1dc8e37ed1921605cd7a237",
-        "size": 276626
-      },
-      "digital-shamans-sketchfab-cessna340-02c.jpg": {
-        "blob": "79e2bf5372716683d854ba2c29a3418b89648fa8",
-        "size": 256163
+      "digital-shamans-artur-perzyna-cockpit-01-impr-02-4k.jpg": {
+        "blob": "77d435f2a3bdde4105fe582fa0225c4e4ed7c444",
+        "size": 2241752
       },
       "digital-shamans-artur-perzyna-final-interior-whole1-wire.jpg": {
         "blob": "3a6ca240329458bfb47787421c9d73a69cc1060b",
@@ -1729,29 +1979,45 @@
         "blob": "c5dbdae2d91e8e051248b9b044eaa3456848dd1a",
         "size": 253901
       },
-      "digital-shamans-artur-perzyna-final5-impr.jpg": {
-        "blob": "b550f00fd8273fdbe06adfee36176d7bfe5b861e",
-        "size": 219655
-      },
       "digital-shamans-artur-perzyna-final4-impr2.jpg": {
         "blob": "d4ba3142a191994dff8b89e410464d75af06d1e7",
         "size": 199545
       },
-      "digital-shamans-artur-perzyna-unity-scr21-impr02-4k.jpg": {
-        "blob": "9eaed45f898c5984a211003ca557c4d9f0867e0e",
-        "size": 2795731
+      "digital-shamans-artur-perzyna-final5-impr.jpg": {
+        "blob": "b550f00fd8273fdbe06adfee36176d7bfe5b861e",
+        "size": 219655
       },
       "digital-shamans-artur-perzyna-unity-scr20-impr02-4k.jpg": {
         "blob": "8eeae33d6e6858ced1c0f3d979ca7766f9164178",
         "size": 632597
       },
+      "digital-shamans-artur-perzyna-unity-scr21-impr02-4k.jpg": {
+        "blob": "9eaed45f898c5984a211003ca557c4d9f0867e0e",
+        "size": 2795731
+      },
       "digital-shamans-artur-perzyna-unity-scr23m-impr.jpg": {
         "blob": "74d3ad594eb5dc996772510c7478fed0861dba81",
         "size": 230389
       },
-      "digital-shamans-artur-perzyna-cockpit-01-impr-02-4k.jpg": {
-        "blob": "77d435f2a3bdde4105fe582fa0225c4e4ed7c444",
-        "size": 2241752
+      "digital-shamans-cessna206-final-interior1-impr03-4k.jpg": {
+        "blob": "fc664033fe6e53d1ca2f01db7fa28e827b8171bc",
+        "size": 1925374
+      },
+      "digital-shamans-cessna206-painter03-impr06-4k.jpg": {
+        "blob": "7239c1f7255d8772e823b27a414720cdca708328",
+        "size": 2224327
+      },
+      "digital-shamans-cessna206-painter07m-impr05m-4k.jpg": {
+        "blob": "b15fefa290facc8f9c1feaa61ae8790db388f07c",
+        "size": 2364747
+      },
+      "digital-shamans-cessna206-painter08-impr02-4k.jpg": {
+        "blob": "f2f0fa0f80bce79fb522fff61aaf135a1a74185f",
+        "size": 2603925
+      },
+      "digital-shamans-cessna206-painter10b-impr01.jpg": {
+        "blob": "dc00eea0ded156883acc07bc9a4bf0d8d16496ca",
+        "size": 3098957
       },
       "digital-shamans-chinook-vfx-01-impr04.jpg": {
         "blob": "822048ecfe39f5ce39a21b24da7968886339cf40",
@@ -1764,182 +2030,18 @@
       "digital-shamans-chinook-vfx-07-impr04.jpg": {
         "blob": "563b825553e4f928f0e26c6dc380989e6a5e3f9b",
         "size": 462937
-      }
-    },
-    "phantom-covert-ops": {
-      "digital-shamans-promo-screen-09-impr.jpg": {
-        "blob": "8eb2ab4cffac5947041bcaa46b658a090a93983c",
-        "size": 433924
       },
-      "digital-shamans-chinook-vfx-01-impr04.jpg": {
-        "blob": "822048ecfe39f5ce39a21b24da7968886339cf40",
-        "size": 441471
+      "digital-shamans-sketchfab-cessna340-01.jpg": {
+        "blob": "e78ec134e35e6d53f1dc8e37ed1921605cd7a237",
+        "size": 276626
       },
-      "digital-shamans-chinook-vfx-06-impr04.jpg": {
-        "blob": "6975b056f58225d5c8f0381e64bf4bbcba0f5477",
-        "size": 452335
+      "digital-shamans-sketchfab-cessna340-02c.jpg": {
+        "blob": "79e2bf5372716683d854ba2c29a3418b89648fa8",
+        "size": 256163
       },
-      "digital-shamans-chinook-vfx-07-impr04.jpg": {
-        "blob": "563b825553e4f928f0e26c6dc380989e6a5e3f9b",
-        "size": 462937
-      },
-      "digital-shamans-digital-shamans-sm-central-hub-tower-srgb.jpg": {
-        "blob": "8de9824f83c378d53cbb3a096d76ee9d87ac3a65",
-        "size": 446854
-      },
-      "digital-shamans-digital-shamans-sm-warehouse-boat-hoist.jpg": {
-        "blob": "ed734485d9da6538f7f614b7c5ea9951f30e5d87",
-        "size": 408844
-      },
-      "digital-shamans-digital-shamans-sm-pontoon-jack-01.jpg": {
-        "blob": "2c8fa23360957c23265fae04099bbdbcbc5b436e",
-        "size": 517085
-      },
-      "digital-shamans-digital-shamans-digital-shamans-sm-concrete-blocks-and-razowire-fence-and-power-generators.jpg": {
-        "blob": "d94d30be222b585985baab9390ab9f160ddcbb60",
-        "size": 473225
-      },
-      "digital-shamans-digital-shamans-digital-shamans-nets.jpg": {
-        "blob": "31a27ceb98d78c27b65092dc01ea37bd1f8d80ea",
-        "size": 580192
-      },
-      "digital-shamans-digital-shamans-phantom-aksm-unreal4-impr-04.jpg": {
-        "blob": "d5738f47fb2c21e0aaf45103fd76923979293a4a",
-        "size": 502332
-      },
-      "digital-shamans-digital-shamans-phantom-aksm-01-impr-denoised-srgb-02.jpg": {
-        "blob": "26ff6f04d89a08a7aa109bfa6fec2ae2fb671ed9",
-        "size": 263920
-      },
-      "digital-shamans-digital-shamans-phantom-aksm-02-impr-denoised-srgb.jpg": {
-        "blob": "de41d832e62a646455e78e489f06b56b5069a2fe",
-        "size": 445746
-      },
-      "digital-shamans-digital-shamans-phantom-aksm-13-impr.jpg": {
-        "blob": "1e24dc605e0199235d49a07e20cf1b25036e26bc",
-        "size": 253822
-      },
-      "digital-shamans-digital-shamans-noise-maker-01.jpg": {
-        "blob": "39bd907830dc95f878970a49edc7845a5a966edb",
-        "size": 387510
-      },
-      "digital-shamans-digital-shamans-noise-maker-03.jpg": {
-        "blob": "cddfe69b2d98d1bb10ae93e0d75e4b491994d771",
-        "size": 534210
-      },
-      "digital-shamans-unreal4-phantom-environments-08b-srgb.jpg": {
-        "blob": "cc035011431411236dae2d0d51a91ccea0ee9aec",
-        "size": 630927
-      },
-      "digital-shamans-unreal4-phantom-environments-11-srgb.jpg": {
-        "blob": "f644b6d6ccb4d357a19117fed2638f4d173459fb",
-        "size": 345123
-      },
-      "digital-shamans-unreal4-phantom-environments-10-srgb.jpg": {
-        "blob": "c415215f72ebc41852ffbfac1836594107e79ec1",
-        "size": 474740
-      },
-      "digital-shamans-unreal4-phantom-environments-02-srgb.jpg": {
-        "blob": "d8e4bd56e42dc58fb5829856ef4b441de84c496c",
-        "size": 476150
-      },
-      "digital-shamans-unreal4-phantom-environments-05-srgb.jpg": {
-        "blob": "f8375ebc7462caef3bcfd9bc6593e2179c9ed031",
-        "size": 525175
-      },
-      "digital-shamans-unreal4-phantom-environments-12-srgb.jpg": {
-        "blob": "7bcab62ece68eded1cc4f9938b222a4d20bffb61",
-        "size": 450518
-      },
-      "digital-shamans-unreal4-phantom-environments-16-srgb.jpg": {
-        "blob": "dd2b9474757f9ca6a1fb67f0f8797df3eafd562b",
-        "size": 463854
-      },
-      "digital-shamans-unreal4-phantom-environments-14-srgb.jpg": {
-        "blob": "afa1da5486b2ec1cbaeb390c2478c122836aed8f",
-        "size": 483874
-      }
-    },
-    "firearms": {
-      "digital-shamans-artur-perzyna-weapon-aw50-compose1.jpg": {
-        "blob": "41559265aa865124a92dc1ea08fa795fdfe06835",
-        "size": 394697
-      },
-      "digital-shamans-artur-perzyna-weapon-aw50-compose2.jpg": {
-        "blob": "721434b79473110a7e75a59076525183b848f371",
-        "size": 396847
-      },
-      "digital-shamans-artur-perzyna-weapon-barrett-compose1.jpg": {
-        "blob": "904e0c3e16cf33fcdd6e9a564ae862357d33fd84",
-        "size": 447874
-      },
-      "digital-shamans-artur-perzyna-weapon-cheytac-compose.jpg": {
-        "blob": "741c4ee62556dbaa951224309fb33e35bfd12795",
-        "size": 422979
-      },
-      "digital-shamans-artur-perzyna-weapon-dsr50-compose1.jpg": {
-        "blob": "0156860403fdee6d424410a0cdc29a04fd325ae8",
-        "size": 425569
-      },
-      "digital-shamans-artur-perzyna-weapon-dsr50-compose2.jpg": {
-        "blob": "e9d1e38743ed3a4aa730adb74c65cff30e25d11a",
-        "size": 400647
-      },
-      "digital-shamans-artur-perzyna-weapon-m24-compose.jpg": {
-        "blob": "552f8994c18978b9d6fc4993b852828219445c81",
-        "size": 600707
-      },
-      "digital-shamans-artur-perzyna-weapon-remington-compose1.jpg": {
-        "blob": "f75bd34b495781ce3e7f012a09d729d72d5f8436",
-        "size": 561481
-      },
-      "digital-shamans-artur-perzyna-weapon-remington-compose2.jpg": {
-        "blob": "26b1162206e5eb80b232ddfb5385ded2a0ff2921",
-        "size": 464730
-      },
-      "digital-shamans-artur-perzyna-weapon-vintorez-compose.jpg": {
-        "blob": "564db836aec18e1ef697e0f6aa025faa4b4b6117",
-        "size": 436935
-      },
-      "digital-shamans-artur-perzyna-weapon-vintorez-night-compose1.jpg": {
-        "blob": "c2b38d5424d3973af1fc74a09df73d2938da101f",
-        "size": 421272
-      },
-      "digital-shamans-artur-perzyna-weapon-xm312-compose.jpg": {
-        "blob": "b15b1dcb6b4a9889f037cdc56510c9b0b6a845d0",
-        "size": 488759
-      },
-      "digital-shamans-m5-phalanx-compose1.jpg": {
-        "blob": "ef9485cf036bcce911dfa7b0c3669753417ccb01",
-        "size": 499364
-      },
-      "digital-shamans-m5-phalanx-compose2.jpg": {
-        "blob": "c485308f05a499510bedf48290735c511200fccf",
-        "size": 504312
-      },
-      "digital-shamans-noise-maker-01.jpg": {
-        "blob": "e6acaac94ef2a7ab20d5aa1347d13d40e22276ae",
-        "size": 392883
-      },
-      "digital-shamans-noise-maker-03.jpg": {
-        "blob": "002b228db87809056ef30f6f3c894dbc186a0f9a",
-        "size": 540912
-      },
-      "digital-shamans-non-pbr.jpg": {
-        "blob": "0021d1849820dea7e5beef4f7458a59488ae8917",
-        "size": 115319
-      },
-      "digital-shamans-phantom-aksm-01-impr-denoised-srgb-02.jpg": {
-        "blob": "704fcacd5346987a6fe0358cf98487ded14ce179",
-        "size": 269219
-      },
-      "digital-shamans-phantom-aksm-02-impr-denoised-srgb.jpg": {
-        "blob": "9635526296997c165a9acfbda92e21134f00e21f",
-        "size": 450778
-      },
-      "digital-shamans-phantom-aksm-unreal4-impr-04.jpg": {
-        "blob": "d5738f47fb2c21e0aaf45103fd76923979293a4a",
-        "size": 502332
+      "digital-shamans-sketchfab-cessna340-landed-01.jpg": {
+        "blob": "230779201d44d362374a09fd4ae9200bfdd57c09",
+        "size": 243430
       }
     }
   }
