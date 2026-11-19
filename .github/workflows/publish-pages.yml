@@ -40,6 +40,8 @@ jobs:
         run: |
           node --test .github/tests/public-gallery-routes.test.cjs .github/tests/gallery-resolution.test.cjs .github/tests/gallery-mobile-scroll.test.cjs .github/tests/gallery-navigation.test.cjs
           node .github/scripts/validate-public-galleries.cjs
+          node --test .github/tests/gallery-embeds.test.cjs
+          node .github/scripts/validate-gallery-embeds.cjs
           node --test .github/tests/gallery-map.test.cjs
           node .github/scripts/validate-gallery-maps.cjs
       - name: Test gallery publication cleanup
