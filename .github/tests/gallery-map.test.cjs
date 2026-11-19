@@ -160,19 +160,67 @@ function mapRenderer(hoverEnabled = true) {
   }
   const document = new Element(), hover = new Element(); hover.matches = hoverEnabled;
   document.createElement = tag => new Element(tag);
+  let now = 0, nextTimer = 0;
+  const timers = new Map();
+  function advance(ms) {
+    const end = now + ms;
+    while (true) {
+      const due = [...timers].filter(([, timer]) => timer.at <= end).sort((a, b) => a[1].at - b[1].at)[0];
+      if (!due) break;
+      timers.delete(due[0]); now = due[1].at; due[1].run();
+    }
+    now = end;
+  }
   const renderer = runInNewContext(readFileSync(join(root, 'galleries/gallery-map.js'), 'utf8') + '\nGalleryMap', {
-    document, matchMedia: () => hover, ResizeObserver: class { observe() {} disconnect() {} }
+    document, matchMedia: () => hover, ResizeObserver: class { observe() {} disconnect() {} },
+    setTimeout(run, delay) { const id = ++nextTimer; timers.set(id, { run, at: now + delay }); return id; },
+    clearTimeout(id) { timers.delete(id); }
   });
   const stage = new Element();
   const map = { overview: { image: 'Overview.jpg', alt: 'Overview' }, regions: [{ image: 'Office.jpg', label: 'Offices', x: 25, y: 29 }] };
-  return { mount: options => renderer.mount(stage, map, name => ({ src: name }), options), stage };
+  return { mount: options => renderer.mount(stage, map, name => ({ src: name }), options), stage, advance };
 }
 
+test('hover requires a continuous 400ms stay without restarting on small cursor movements', () => {
+  const { mount, stage, advance } = mapRenderer();
+  const view = mount({}), card = view.cards[0];
+  card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 163 });
+  advance(200);
+  stage.fire('pointermove', { pointerType: 'mouse', clientX: 260, clientY: 165 });
+  advance(199);
+  assert.equal(card.getAttribute('aria-expanded'), 'false');
+  advance(1);
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  view.destroy();
+});
+
+test('leaving a thumbnail cancels the dwell and re-entry starts a fresh delay', () => {
+  const { mount, stage, advance } = mapRenderer();
+  const view = mount({}), card = view.cards[0];
+  card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 163 });
+  advance(300);
+  stage.fire('pointermove', { pointerType: 'mouse', clientX: 500, clientY: 281 });
+  advance(400);
+  assert.equal(card.getAttribute('aria-expanded'), 'false');
+  card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 163 });
+  advance(399);
+  assert.equal(card.getAttribute('aria-expanded'), 'false');
+  advance(1);
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  view.close();
+  card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 163 });
+  advance(200);
+  view.destroy();
+  advance(200);
+  assert.equal(card.getAttribute('aria-expanded'), 'false');
+});
+
 test('hover preview fills 100 percent of the overview and stays inside its edges', () => {
-  const { mount, stage } = mapRenderer();
+  const { mount, stage, advance } = mapRenderer();
   const view = mount({});
   const card = view.cards[0];
   card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 163 });
+  advance(400);
   const scale = Number(card.style.getPropertyValue('--scale'));
   const width = stage.clientWidth * .2 * scale, height = stage.clientHeight * .2 * scale;
   assert.equal(width, stage.clientWidth);
@@ -225,9 +273,10 @@ test('standalone editor preview keeps its existing toggle behavior without a nav
 
 test('hover closing band is four times wider on every edge', () => {
   for (const edge of ['left', 'right', 'top', 'bottom']) {
-    const { mount, stage } = mapRenderer();
+    const { mount, stage, advance } = mapRenderer();
     const view = mount({}), card = view.cards[0];
     card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 163 });
+    advance(400);
     stage.fire('pointermove', { pointerType: 'mouse', clientX: 500, clientY: 281.25 });
     const point = distance => ({
       pointerType: 'mouse',
@@ -244,9 +293,10 @@ test('hover closing band is four times wider on every edge', () => {
 });
 
 test('opening inside the wider edge band waits for entry into the image interior', () => {
-  const { mount, stage } = mapRenderer();
+  const { mount, stage, advance } = mapRenderer();
   const view = mount({}), card = view.cards[0];
-  card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 100 });
+  card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 120 });
+  advance(400);
   stage.fire('pointermove', { pointerType: 'mouse', clientX: 250, clientY: 110 });
   assert.equal(card.getAttribute('aria-expanded'), 'true');
   stage.fire('pointermove', { pointerType: 'mouse', clientX: 500, clientY: 281.25 });
@@ -254,3 +304,4 @@ test('opening inside the wider edge band waits for entry into the image interior
   assert.equal(card.getAttribute('aria-expanded'), 'false');
   view.destroy();
 });
+
