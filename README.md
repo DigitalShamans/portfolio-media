@@ -12,9 +12,17 @@ Website media and shared Digital Shamans branding and marketing assets. This rep
 
 GitHub Pages excludes the source PNG folders, branding and marketing folders, and Photoshop masters from the site. Put public gallery WebPs in `galleries/<gallery>/1440p/` and public cards and banners in `projects/` as regular Git files.
 
+## Edit existing galleries in DS Gallery Editor
+
+Pull both local checkouts in Fork, then open `portfolio-media/galleries/<gallery>/` in DS Gallery Editor v0.10 or later. The editor resolves originals in a sibling `portfolio-media-private/public/<gallery>/`; **Image folder…** remembers another location for that gallery. Save, then commit and push the website's changed `gallery.json` in Fork.
+
+Reordering, comparison groups, and excluding or restoring already-approved images only change `gallery.json`. A gallery may use any selection of its approved originals. The approval inventory and original files stay intact when an image is excluded. Exclusion controls gallery visibility and does not revoke public approval. Every included primary and comparison still needs its committed matching WebP, and unapproved images remain blocked.
+
+Adding new originals or replacing image bytes uses the media publication workflow below. The desktop editor does not generate WebPs or publish the image service.
+
 ## Publish gallery image updates
 
-- Add or replace the original in the private media repository and update the approved list for any public gallery changes. Keep the original's filename and the ordering of primary, comparison and additional images in the public gallery manifest.
+- Add or replace the original in the private media repository and update the approved list for new filenames or changed file contents. Keep the original's filename and the ordering of primary, comparison and additional images in the public gallery manifest.
 - Export the approved public WebPs at up to 2560 × 1440 using the existing q92-m6 settings. The Pages workflow publishes these reviewed files as committed. It validates the matching WebP for every primary and comparison variant.
 - Verify the delivery service at the new private media commit before updating `_data/gallery_delivery.json`. Update the public-only approved originals in `_data/public-gallery-originals.json` from the same revision. Commit both together with any changed WebPs and gallery manifests.
 - Publish through the existing GitHub Pages workflow. Check public 4K on a wide desktop and 1440p on mobile in both portfolios. For rollback, revert the Pages update and retain service access to the prior media revision until the new Pages deployment is verified.
@@ -38,3 +46,4 @@ The editor checks for external file changes before saving and prompts before dis
 ## Git LFS
 
 PSD and PSB files use Git LFS throughout the repository. In each local clone, run `git lfs install --local` before staging or pulling LFS assets. Use `git lfs ls-files` to check which files are stored in LFS. PNGs use regular Git. Add a specific LFS rule when another source format needs it.
+
