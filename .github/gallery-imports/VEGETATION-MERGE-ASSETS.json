@@ -1,0 +1,553 @@
+{
+  "passed": true,
+  "checked_at_utc": "2026-11-19T23:00:24.079104+00:00",
+  "images": 29,
+  "preserved_old_prefix": 16,
+  "additions": 13,
+  "captions": 28,
+  "null_captions": 1,
+  "embeds": 0,
+  "artifacts": 64,
+  "originals_dimensions": {
+    "3840x2160": 19,
+    "1920x1200": 3,
+    "2560x1440": 1,
+    "2560x1366": 6
+  },
+  "webp_dimensions": {
+    "2560x1440": 20,
+    "1920x1200": 3,
+    "2560x1366": 6
+  },
+  "original_bytes": 35910131,
+  "webp_bytes": 14175214,
+  "old_16_jpgs_bit_identical": true,
+  "old_16_webps_bit_identical": true,
+  "old_16_order_captions_exact": true,
+  "historic_provenance_bit_identical": true,
+  "merge_provenance_path": "private/imports/vegetation-merge-20261120.json",
+  "all_original_and_webp_sha256_bytes_blobs_full_decodes": true,
+  "all_icc_preserved": true,
+  "no_crop_or_upscale": true,
+  "manifest": {
+    "bytes": 2187,
+    "sha256": "cfc185098e1421171ff6a2f96f8f0d8280bb3f7a060358e9b7a6e2f14573773e",
+    "git_blob_sha": "e31addd4c1fb3ff446873a5c778f1d96d462b09d"
+  },
+  "final_filename": "the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.jpg",
+  "expected_order": [
+    "digital-shamans-ds-vegetation-survisland-seaweed-4k.jpg",
+    "digital-shamans-ds-vegetation-survisland-wheat01-4k.jpg",
+    "digital-shamans-ds-vegetation-survisland-wheat02-4k.jpg",
+    "digital-shamans-ds-vegetation-survisland-papaya-4k.jpg",
+    "digital-shamans-ds-vegetation-survisland-pineapple-4k.jpg",
+    "digital-shamans-digital-shamans-sniper-elite4-environment02.jpg",
+    "digital-shamans-digital-shamans-sniper-elite4-environment01.jpg",
+    "digital-shamans-digital-shamans-sniper-elite4-environment03.jpg",
+    "digital-shamans-artur-perzyna-red-flowers-01impr.jpg",
+    "digital-shamans-digitalshamans-vegetation-phantom-speedtree.jpg",
+    "digital-shamans-unreal4-phantom-environments-14-srgb.jpg",
+    "digital-shamans-unreal4-phantom-environments-13-srgb.jpg",
+    "digital-shamans-unreal4-phantom-environments-11-srgb.jpg",
+    "digital-shamans-unreal4-phantom-environments-10-srgb.jpg",
+    "digital-shamans-unreal4-phantom-environments-08b-srgb.jpg",
+    "digital-shamans-unreal4-phantom-environments-05-srgb.jpg",
+    "the-digital-shaman-palms-019b-4k.jpg",
+    "the-digital-shaman-palms-004-4k.jpg",
+    "the-digital-shaman-palms-005-4k.jpg",
+    "the-digital-shaman-papaya-series-v1-unreal5.jpg",
+    "the-digital-shaman-digital-shamans-digital-shamans-pineapple-series-v4more-srgb.jpg",
+    "the-digital-shaman-palms-008-4k.jpg",
+    "the-digital-shaman-palms-009-4k.jpg",
+    "the-digital-shaman-palms-002-4k.jpg",
+    "the-digital-shaman-palms-001b-4k.jpg",
+    "the-digital-shaman-palms-014-4k.jpg",
+    "the-digital-shaman-palms-006-4k.jpg",
+    "the-digital-shaman-mobile.jpg",
+    "the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.jpg"
+  ],
+  "encoder": {
+    "bounds": [
+      2560,
+      1440
+    ],
+    "exif_transpose": true,
+    "icc": true,
+    "method": 6,
+    "pillow": "13.0.0",
+    "quality": 92,
+    "resampling": "LANCZOS"
+  },
+  "original_facts": [
+    {
+      "filename": "digital-shamans-ds-vegetation-survisland-seaweed-4k.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 1817579,
+      "sha256": "3e89cf1d0aebaac05b8fbe95ee6011dd58fc77883ae423af99b81f9bde56b1be",
+      "git_blob_sha": "154b287c84edbf4d6f30ff1366560ea7e91ef621"
+    },
+    {
+      "filename": "digital-shamans-ds-vegetation-survisland-wheat01-4k.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 774695,
+      "sha256": "127350dc1349d7e159c7383c80d34ef82f844f27219690d36c791b17050e3786",
+      "git_blob_sha": "9c5fabaee96abeede1bdb0d3bd94d81022c91b85"
+    },
+    {
+      "filename": "digital-shamans-ds-vegetation-survisland-wheat02-4k.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 629706,
+      "sha256": "33c93608578436c6792e51082daccbc5effd434d2ebe9011b1a132acf8f72274",
+      "git_blob_sha": "1acd1452f4b9a9b27e8fb669b469ae44048721cc"
+    },
+    {
+      "filename": "digital-shamans-ds-vegetation-survisland-papaya-4k.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 842892,
+      "sha256": "431f84f23e1fda0020ce447a3b2e415f64db62dee51fbe2935e4d7a0a1ce8cc4",
+      "git_blob_sha": "674591fcc929a9a7d107bc489b2cc66ad977ce7b"
+    },
+    {
+      "filename": "digital-shamans-ds-vegetation-survisland-pineapple-4k.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 847535,
+      "sha256": "1f922e432798d3d3fb720f21068c00fbfec6db605ab2f513b459c207b953820e",
+      "git_blob_sha": "7fa760da74bc7b97f08f15448a55b5716effa61e"
+    },
+    {
+      "filename": "digital-shamans-digital-shamans-sniper-elite4-environment02.jpg",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 567496,
+      "sha256": "e7ade3652e8ecb47710060e89941fa8fe4f1db4503e65f6bef80f44d7fb354ef",
+      "git_blob_sha": "242d510f124b312ee6df1904438348835f8ce0ee"
+    },
+    {
+      "filename": "digital-shamans-digital-shamans-sniper-elite4-environment01.jpg",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 568865,
+      "sha256": "db78b173cba40a2f33fe51118f8c8f095a758a1028729e1fbf15f67bbef7daee",
+      "git_blob_sha": "69be550a454ded6a2acea573bb561f26c5f80b74"
+    },
+    {
+      "filename": "digital-shamans-digital-shamans-sniper-elite4-environment03.jpg",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 818140,
+      "sha256": "4fe5afe244e77f792e480a34a2b6cdf2cc095841cb9e2eeae6ca915bff8ee411",
+      "git_blob_sha": "e2d0f2b3d578b563909d23126ba2149c88a61d9e"
+    },
+    {
+      "filename": "digital-shamans-artur-perzyna-red-flowers-01impr.jpg",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 1762639,
+      "sha256": "4e531b22f155d6120aa44500bd3761cd6b4aeb29bdfe8807acd78a0ab4b24c13",
+      "git_blob_sha": "676c616b6e785c47e15607674696859783831aa6"
+    },
+    {
+      "filename": "digital-shamans-digitalshamans-vegetation-phantom-speedtree.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 2284612,
+      "sha256": "960259161c3ba81cb6b051430d1d4b9540598eda57625f1d06852a23d4f4e57e",
+      "git_blob_sha": "5affc77b8c920d6aff39b55a61cd8acdfbf5b049"
+    },
+    {
+      "filename": "digital-shamans-unreal4-phantom-environments-14-srgb.jpg",
+      "width": 2560,
+      "height": 1366,
+      "bytes": 483874,
+      "sha256": "059ec8e1323b9954b8461008eab9ff080d16ea52d09fdf50eb92f45253d0b3ef",
+      "git_blob_sha": "afa1da5486b2ec1cbaeb390c2478c122836aed8f"
+    },
+    {
+      "filename": "digital-shamans-unreal4-phantom-environments-13-srgb.jpg",
+      "width": 2560,
+      "height": 1366,
+      "bytes": 587991,
+      "sha256": "2051a8e81bb2918bbd216f6b7c477e41e569d4b209b1b47e491a59ac63f805e4",
+      "git_blob_sha": "e93cea29ae17e93657e00313b58e406184842cf6"
+    },
+    {
+      "filename": "digital-shamans-unreal4-phantom-environments-11-srgb.jpg",
+      "width": 2560,
+      "height": 1366,
+      "bytes": 345123,
+      "sha256": "dc0b2b99d8372eaabcf7d60cb4c965a8a21d7b8524b0117c3e50144caf8dcdc9",
+      "git_blob_sha": "f644b6d6ccb4d357a19117fed2638f4d173459fb"
+    },
+    {
+      "filename": "digital-shamans-unreal4-phantom-environments-10-srgb.jpg",
+      "width": 2560,
+      "height": 1366,
+      "bytes": 474740,
+      "sha256": "6735eb316331dcd42297ee725639bb3c5298947d5acba389e2fde183bf4d1f26",
+      "git_blob_sha": "c415215f72ebc41852ffbfac1836594107e79ec1"
+    },
+    {
+      "filename": "digital-shamans-unreal4-phantom-environments-08b-srgb.jpg",
+      "width": 2560,
+      "height": 1366,
+      "bytes": 630927,
+      "sha256": "dd4a4be3573899ccf6aa40e8e82e8340294d8144df1384931795f6d1cbb12463",
+      "git_blob_sha": "cc035011431411236dae2d0d51a91ccea0ee9aec"
+    },
+    {
+      "filename": "digital-shamans-unreal4-phantom-environments-05-srgb.jpg",
+      "width": 2560,
+      "height": 1366,
+      "bytes": 525175,
+      "sha256": "79d426cd23bcb6a877ef897ecad2b1a2a8e1e94c48b333e164877e643ee84546",
+      "git_blob_sha": "f8375ebc7462caef3bcfd9bc6593e2179c9ed031"
+    },
+    {
+      "filename": "the-digital-shaman-palms-019b-4k.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 1384992,
+      "sha256": "23af4a7168a6e6f0533766af7a89b997b43a49ed149a76ec1291b733538009bf",
+      "git_blob_sha": "d160d518b76bdf32e7afd506a7f0179aa02d8bf0"
+    },
+    {
+      "filename": "the-digital-shaman-palms-004-4k.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 1163544,
+      "sha256": "054d007bd4e874e43721ed9dc6193dd73000702bd757d26538a3daf77340685a",
+      "git_blob_sha": "9c5eb9af0bce21c5865438a06941fbca19f4788d"
+    },
+    {
+      "filename": "the-digital-shaman-palms-005-4k.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 2094575,
+      "sha256": "e45b51870e65c143bedb0a62714c3005a276d05977b4e40b234ab8f12c90113a",
+      "git_blob_sha": "32fc2b16819fb2f22f17d73d06949e114612f43e"
+    },
+    {
+      "filename": "the-digital-shaman-papaya-series-v1-unreal5.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 898599,
+      "sha256": "b362606e2978ea6d1e356bc6de20548dd77e6f0b80b1737c97a621d43547bacd",
+      "git_blob_sha": "730468c5996c8523787ae33d757eeacecc411482"
+    },
+    {
+      "filename": "the-digital-shaman-digital-shamans-digital-shamans-pineapple-series-v4more-srgb.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 1366867,
+      "sha256": "5da1d403ae0a4c54dacb5f5f4912b6e1462b866090d1138fac48dbf18bdce1fc",
+      "git_blob_sha": "da7c8e2a6889f5ff90c4a8dd0e4049ebe8ca4ea2"
+    },
+    {
+      "filename": "the-digital-shaman-palms-008-4k.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 1310218,
+      "sha256": "871842572bede0a024dde43113c7e24442443e78eda70e1f7ddbc6a34c249de0",
+      "git_blob_sha": "1fc3f1085e5e57c55d2c8d19d07b85ca329c9bb0"
+    },
+    {
+      "filename": "the-digital-shaman-palms-009-4k.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 2472739,
+      "sha256": "caf022ad442021bdc188d5eeafc9698cec26e7c216a93327623422270b6723d5",
+      "git_blob_sha": "21c4cd7745e7cc032fb20660f0315bb089faeb0a"
+    },
+    {
+      "filename": "the-digital-shaman-palms-002-4k.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 1478823,
+      "sha256": "812a15267ceb1b30741b3ddc9d35b4b455eca2f89175d997e8bd753b177f29cb",
+      "git_blob_sha": "355f25cd33e95c0d6a577609455122cd83508df7"
+    },
+    {
+      "filename": "the-digital-shaman-palms-001b-4k.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 3681095,
+      "sha256": "b015454b8fcd0ae96ed9c71e451d26997a51186197d9a8a29b27b7b4f37ddb6a",
+      "git_blob_sha": "205ac99a92ed7e8bdead15ec1ec0eef13ce98f70"
+    },
+    {
+      "filename": "the-digital-shaman-palms-014-4k.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 2231349,
+      "sha256": "9901717d48f188a948780a76a6ab7f82db4211d258b8d1b95b7f67d5713390f1",
+      "git_blob_sha": "c63e6e177698dff47da8c6e729e545d1e8343196"
+    },
+    {
+      "filename": "the-digital-shaman-palms-006-4k.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 1448007,
+      "sha256": "33c0737205073f26aba24e42e86a01e2b3b6d7414c297e74b80bd138beec0ac3",
+      "git_blob_sha": "c29c53413655322a0f79fab0c450ec0fe4780078"
+    },
+    {
+      "filename": "the-digital-shaman-mobile.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 139985,
+      "sha256": "4be5a8c2cabaacd1739f4d28e06fddf562cc9191b3c04a4857e857badca40860",
+      "git_blob_sha": "cb8ba0ffdd81911816dc162a16ee8f859e42ef84"
+    },
+    {
+      "filename": "the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 2277349,
+      "sha256": "d2c6934f2b27680cb41f2620eb6b5fe33c4f526d401ebcca0cc4c496052616ce",
+      "git_blob_sha": "d11953f8326e2b5ba7e43316f848e74d8bbb4334"
+    }
+  ],
+  "webp_facts": [
+    {
+      "filename": "digital-shamans-ds-vegetation-survisland-seaweed-4k.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 602002,
+      "sha256": "b5383d34a6b10672cd18cf236c1626fb905d9c03b97a5a52acfa5215372638c6",
+      "git_blob_sha": "1e7b1cc86e883d8b44e7b9c8b54c221e9df36d23"
+    },
+    {
+      "filename": "digital-shamans-ds-vegetation-survisland-wheat01-4k.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 216806,
+      "sha256": "21dbcc2fedada1c9ef6063ba57c633ce2682b9314a393e8891ec2bee1afb2ce6",
+      "git_blob_sha": "f307bd6001eacfd0dde37a4de09d8af0ac53806d"
+    },
+    {
+      "filename": "digital-shamans-ds-vegetation-survisland-wheat02-4k.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 180330,
+      "sha256": "952413987d5a6ff16633775c75e907b51b71e9485e9cc2271f19f821e08ce8a8",
+      "git_blob_sha": "bd0f366fda0784b3a7806098364edd533789075e"
+    },
+    {
+      "filename": "digital-shamans-ds-vegetation-survisland-papaya-4k.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 234258,
+      "sha256": "d63a297430910847d920e5967c75faf1dfc8ab1dfdb7480b9824d343598ae22f",
+      "git_blob_sha": "986daf577094b103a1a16bc282e47365fff0fca9"
+    },
+    {
+      "filename": "digital-shamans-ds-vegetation-survisland-pineapple-4k.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 253560,
+      "sha256": "fef7ad3c1f555d334d8b80f9330af0080a50ebe0304776a5b5faf2ebef56632e",
+      "git_blob_sha": "fd6b00d2d87a044a238a2d1ae1ba81a08e3d89c0"
+    },
+    {
+      "filename": "digital-shamans-digital-shamans-sniper-elite4-environment02.webp",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 469252,
+      "sha256": "ee908a2572edba850e2795f00007acd28449f6223f2f802107ebe85c9c3d40b6",
+      "git_blob_sha": "54cfa3002bd983d7342e7f6dcbda5a80dda84ebb"
+    },
+    {
+      "filename": "digital-shamans-digital-shamans-sniper-elite4-environment01.webp",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 485966,
+      "sha256": "7a24f60e0ab89fc3562dadd16bfce066d43451c6521124744ee49cbfd6d6c183",
+      "git_blob_sha": "58cedf99dbaee4b9534c3de79a9337de17dfeec8"
+    },
+    {
+      "filename": "digital-shamans-digital-shamans-sniper-elite4-environment03.webp",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 649410,
+      "sha256": "93bb166736aa05353db42ca5aa908fdeefa2fd26d744901d3d33d528b92a2733",
+      "git_blob_sha": "88aa8b967e8e263ef3bbabe0f4c6585e97e01492"
+    },
+    {
+      "filename": "digital-shamans-artur-perzyna-red-flowers-01impr.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 1476566,
+      "sha256": "24fedf848b07ca07644699c27906b95f53fd616e7b1937497bb60c4f1f323568",
+      "git_blob_sha": "c41fc80b07daec16f1cc14e30bb34e3996d3a70d"
+    },
+    {
+      "filename": "digital-shamans-digitalshamans-vegetation-phantom-speedtree.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 759848,
+      "sha256": "66152bd91bcee0545a0e9e7ba6a692d953514725a0fc4e528a3830836c2e5fe4",
+      "git_blob_sha": "92322accb33b8df6c7820f9593b99e8d019ace60"
+    },
+    {
+      "filename": "digital-shamans-unreal4-phantom-environments-14-srgb.webp",
+      "width": 2560,
+      "height": 1366,
+      "bytes": 281010,
+      "sha256": "f170b7a429691329f3f0817aefc0b40ec88eff62d8386ab50d7fea9f0a6ebb11",
+      "git_blob_sha": "677e211f0b10e0ae9252c527e3a11fc00e875c30"
+    },
+    {
+      "filename": "digital-shamans-unreal4-phantom-environments-13-srgb.webp",
+      "width": 2560,
+      "height": 1366,
+      "bytes": 353980,
+      "sha256": "086e181375d88174bd86529e75abeeba18a7ffb69d33cffa329defc371052fe2",
+      "git_blob_sha": "50b4a9cf980e7c3fda8af237d2b32b79eaecbb31"
+    },
+    {
+      "filename": "digital-shamans-unreal4-phantom-environments-11-srgb.webp",
+      "width": 2560,
+      "height": 1366,
+      "bytes": 175528,
+      "sha256": "6123eee365c839ee521a42f6bcd265b01aebaa5ddfd868f37ececdbb1c032205",
+      "git_blob_sha": "9f4f322145dcc6771332fc155383886fee73816d"
+    },
+    {
+      "filename": "digital-shamans-unreal4-phantom-environments-10-srgb.webp",
+      "width": 2560,
+      "height": 1366,
+      "bytes": 255720,
+      "sha256": "1fceefba80e3a0c8fb2b3faa70b1efb2f44fa7df9726d256a8fc71d62becc614",
+      "git_blob_sha": "c04075ec44d9c4f2c6f65a9657bb3fb6226da420"
+    },
+    {
+      "filename": "digital-shamans-unreal4-phantom-environments-08b-srgb.webp",
+      "width": 2560,
+      "height": 1366,
+      "bytes": 391968,
+      "sha256": "734bf0f1a506a0592aea020616c9bdff150435f75e8dcdbbcad1af8865e6d816",
+      "git_blob_sha": "914b4c3a95085eaefcf5a5fdbd5215605d78fa7a"
+    },
+    {
+      "filename": "digital-shamans-unreal4-phantom-environments-05-srgb.webp",
+      "width": 2560,
+      "height": 1366,
+      "bytes": 283904,
+      "sha256": "33513bd0a826772a0a4bb3f8f23b3285dc7ca70b8f7f99bb3623f1e9a8c5533b",
+      "git_blob_sha": "4dedb7e76c4afc656452013a980e41c59bada192"
+    },
+    {
+      "filename": "the-digital-shaman-palms-019b-4k.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 435054,
+      "sha256": "36a5617c5eae7c3ff8e729857ee0ac92786996ff094b6564397014db420ff903",
+      "git_blob_sha": "772fe5b34efa284e9b5b7e0655053636edbc2423"
+    },
+    {
+      "filename": "the-digital-shaman-palms-004-4k.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 362234,
+      "sha256": "9c7de34593ac442e6424c54241c9be6800130e6044998a9eba1a650a5c0c34ab",
+      "git_blob_sha": "8cd45bfb5ce212afc6acc0b20cd6603fe121dcc7"
+    },
+    {
+      "filename": "the-digital-shaman-palms-005-4k.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 689514,
+      "sha256": "964f43966fd3eb3e9bc8f2d80c1c59e1f22ec620b3e32becb7b9077642b3dafb",
+      "git_blob_sha": "1751d0c85dc22e46b03f48f6f7e5bc12fa6069eb"
+    },
+    {
+      "filename": "the-digital-shaman-papaya-series-v1-unreal5.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 248690,
+      "sha256": "fa5944ccab85d806feb281b39915068d1f8620fc1b093ba75c443c9c6f929b87",
+      "git_blob_sha": "39cc93cc5ab66d935c2f3d2491779dc15ca8524d"
+    },
+    {
+      "filename": "the-digital-shaman-digital-shamans-digital-shamans-pineapple-series-v4more-srgb.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 481202,
+      "sha256": "8cdb32f18ad58c72181e7c525f1f41c6d368a1f7aaf47569a4c41b599f2307e5",
+      "git_blob_sha": "4ab4a1105892b97071876ebe298c5602c7b0b4cb"
+    },
+    {
+      "filename": "the-digital-shaman-palms-008-4k.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 408814,
+      "sha256": "60594f428a54699b671f02757cfb6aa5af1ecd317e1b20894e011ad7f11dcbcb",
+      "git_blob_sha": "dd1041feb5433d6f0eeef2783a7646bc15081ec1"
+    },
+    {
+      "filename": "the-digital-shaman-palms-009-4k.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 828476,
+      "sha256": "b55ed7dfb3dd665c9be34b86f6079667af27d2eef7caff44f2a752ef9fef75a9",
+      "git_blob_sha": "db3532eba5c7722993f138673cca258dee36e805"
+    },
+    {
+      "filename": "the-digital-shaman-palms-002-4k.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 465672,
+      "sha256": "f4cae01eb0fce2180d3de93e8a8d692c14903cd9a0f0e11a5bea7e4ae2214d05",
+      "git_blob_sha": "d4358c3e9f9c061ad1a4ae57526f8d4da0a0db25"
+    },
+    {
+      "filename": "the-digital-shaman-palms-001b-4k.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 1239896,
+      "sha256": "fc7486e926d99938c23a7fd6ea6f445171f644f5738b91e578228bee312380a5",
+      "git_blob_sha": "7df411a2bd7273f383c636982c6d7f60fd0ea882"
+    },
+    {
+      "filename": "the-digital-shaman-palms-014-4k.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 711974,
+      "sha256": "41b2e4bc4514d893882b56cfceadfa81241fed4cbbbc83c05f91a40995bb65d7",
+      "git_blob_sha": "b685fdbf405f9da1154e60ce4ec152f20f533379"
+    },
+    {
+      "filename": "the-digital-shaman-palms-006-4k.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 458310,
+      "sha256": "3ee55535be788d5b5afd0a6fcf3249b026df4d33738fb30bbf8fd802bc3b0579",
+      "git_blob_sha": "987926041b0f79f49849b8b16c072749d1fe8255"
+    },
+    {
+      "filename": "the-digital-shaman-mobile.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 19134,
+      "sha256": "3e0630f3c4f3d536eb41ed47f9be5d75b9e243a1b60b712453ed44788d33eaea",
+      "git_blob_sha": "7cec807bd9b838c06a587edb3f6984dea2761eb4"
+    },
+    {
+      "filename": "the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 756136,
+      "sha256": "497dffe2c55909cf619c0d051e7751fdec3cf8b2c85913f962313a3841a62f7c",
+      "git_blob_sha": "69c46d2a830ef39c6395ae81ff9e3dc1c55bad85"
+    }
+  ],
+  "prepare_seconds": 2.187,
+  "verification_seconds": 5.63,
+  "network_gets": 0,
+  "repository_service_git_mutations": 0
+}

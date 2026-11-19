@@ -1,0 +1,832 @@
+{
+  "title": "Vegetation",
+  "sourceProjects": [
+    "https://www.artstation.com/artwork/kDEvad",
+    "https://cg3d.artstation.com/projects/lV0z8a"
+  ],
+  "slug": "vegetation",
+  "checkedUtc": "2026-11-19T23:06:32.7801181Z",
+  "editorVersion": "0.11",
+  "ownedWindowId": 1580930,
+  "existingWindowIdsPreserved": [
+    270074,
+    7604316,
+    2301318,
+    198164,
+    4922266
+  ],
+  "passed": true,
+  "failed": [],
+  "roundtrip": {
+    "actualNativeUi": true,
+    "openedScratchGallery": true,
+    "originalFolderResolvedAutomatically": true,
+    "includedEntries": 29,
+    "adjacentReorderExplicitlySaved": true,
+    "reopenPersistedReorder": true,
+    "canonicalOrderExplicitlyRestoredAndSaved": true,
+    "savedSchemaImageOnly": true,
+    "savedCount": 29,
+    "uniqueExactCaseNames": 29,
+    "exactCanonicalData": true,
+    "retainedEditorOutputMatchesSavedManifest": true,
+    "editorOutputByteIdenticalToSource": false,
+    "editorOutputSha256": "32304fb2c6c3c74fe4c95350414cb6f95201171e1287c2fc97133dfc4b9f9eef"
+  },
+  "nativePreviews": [
+    {
+      "position": 1,
+      "image": "digital-shamans-ds-vegetation-survisland-seaweed-4k.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 2,
+      "image": "digital-shamans-ds-vegetation-survisland-wheat01-4k.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 3,
+      "image": "digital-shamans-ds-vegetation-survisland-wheat02-4k.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 4,
+      "image": "digital-shamans-ds-vegetation-survisland-papaya-4k.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 5,
+      "image": "digital-shamans-ds-vegetation-survisland-pineapple-4k.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 6,
+      "image": "digital-shamans-digital-shamans-sniper-elite4-environment02.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 7,
+      "image": "digital-shamans-digital-shamans-sniper-elite4-environment01.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 8,
+      "image": "digital-shamans-digital-shamans-sniper-elite4-environment03.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 9,
+      "image": "digital-shamans-artur-perzyna-red-flowers-01impr.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 10,
+      "image": "digital-shamans-digitalshamans-vegetation-phantom-speedtree.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 11,
+      "image": "digital-shamans-unreal4-phantom-environments-14-srgb.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 12,
+      "image": "digital-shamans-unreal4-phantom-environments-13-srgb.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 13,
+      "image": "digital-shamans-unreal4-phantom-environments-11-srgb.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 14,
+      "image": "digital-shamans-unreal4-phantom-environments-10-srgb.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 15,
+      "image": "digital-shamans-unreal4-phantom-environments-08b-srgb.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 16,
+      "image": "digital-shamans-unreal4-phantom-environments-05-srgb.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 17,
+      "image": "the-digital-shaman-palms-019b-4k.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 18,
+      "image": "the-digital-shaman-palms-004-4k.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 19,
+      "image": "the-digital-shaman-palms-005-4k.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 20,
+      "image": "the-digital-shaman-papaya-series-v1-unreal5.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 21,
+      "image": "the-digital-shaman-digital-shamans-digital-shamans-pineapple-series-v4more-srgb.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 22,
+      "image": "the-digital-shaman-palms-008-4k.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 23,
+      "image": "the-digital-shaman-palms-009-4k.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 24,
+      "image": "the-digital-shaman-palms-002-4k.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 25,
+      "image": "the-digital-shaman-palms-001b-4k.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 26,
+      "image": "the-digital-shaman-palms-014-4k.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 27,
+      "image": "the-digital-shaman-palms-006-4k.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 28,
+      "image": "the-digital-shaman-mobile.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 29,
+      "image": "the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.jpg",
+      "nativePreviewRendered": true
+    }
+  ],
+  "integrity": {
+    "allOriginalHashesAndCaseUnchanged": true,
+    "originals": [
+      {
+        "image": "digital-shamans-ds-vegetation-survisland-seaweed-4k.jpg",
+        "exactCaseResolved": true,
+        "bytes": 1817579,
+        "baselineSha256": "3e89cf1d0aebaac05b8fbe95ee6011dd58fc77883ae423af99b81f9bde56b1be",
+        "scratchSha256": "3e89cf1d0aebaac05b8fbe95ee6011dd58fc77883ae423af99b81f9bde56b1be",
+        "stageSha256": "3e89cf1d0aebaac05b8fbe95ee6011dd58fc77883ae423af99b81f9bde56b1be",
+        "hashesMatch": true
+      },
+      {
+        "image": "digital-shamans-ds-vegetation-survisland-wheat01-4k.jpg",
+        "exactCaseResolved": true,
+        "bytes": 774695,
+        "baselineSha256": "127350dc1349d7e159c7383c80d34ef82f844f27219690d36c791b17050e3786",
+        "scratchSha256": "127350dc1349d7e159c7383c80d34ef82f844f27219690d36c791b17050e3786",
+        "stageSha256": "127350dc1349d7e159c7383c80d34ef82f844f27219690d36c791b17050e3786",
+        "hashesMatch": true
+      },
+      {
+        "image": "digital-shamans-ds-vegetation-survisland-wheat02-4k.jpg",
+        "exactCaseResolved": true,
+        "bytes": 629706,
+        "baselineSha256": "33c93608578436c6792e51082daccbc5effd434d2ebe9011b1a132acf8f72274",
+        "scratchSha256": "33c93608578436c6792e51082daccbc5effd434d2ebe9011b1a132acf8f72274",
+        "stageSha256": "33c93608578436c6792e51082daccbc5effd434d2ebe9011b1a132acf8f72274",
+        "hashesMatch": true
+      },
+      {
+        "image": "digital-shamans-ds-vegetation-survisland-papaya-4k.jpg",
+        "exactCaseResolved": true,
+        "bytes": 842892,
+        "baselineSha256": "431f84f23e1fda0020ce447a3b2e415f64db62dee51fbe2935e4d7a0a1ce8cc4",
+        "scratchSha256": "431f84f23e1fda0020ce447a3b2e415f64db62dee51fbe2935e4d7a0a1ce8cc4",
+        "stageSha256": "431f84f23e1fda0020ce447a3b2e415f64db62dee51fbe2935e4d7a0a1ce8cc4",
+        "hashesMatch": true
+      },
+      {
+        "image": "digital-shamans-ds-vegetation-survisland-pineapple-4k.jpg",
+        "exactCaseResolved": true,
+        "bytes": 847535,
+        "baselineSha256": "1f922e432798d3d3fb720f21068c00fbfec6db605ab2f513b459c207b953820e",
+        "scratchSha256": "1f922e432798d3d3fb720f21068c00fbfec6db605ab2f513b459c207b953820e",
+        "stageSha256": "1f922e432798d3d3fb720f21068c00fbfec6db605ab2f513b459c207b953820e",
+        "hashesMatch": true
+      },
+      {
+        "image": "digital-shamans-digital-shamans-sniper-elite4-environment02.jpg",
+        "exactCaseResolved": true,
+        "bytes": 567496,
+        "baselineSha256": "e7ade3652e8ecb47710060e89941fa8fe4f1db4503e65f6bef80f44d7fb354ef",
+        "scratchSha256": "e7ade3652e8ecb47710060e89941fa8fe4f1db4503e65f6bef80f44d7fb354ef",
+        "stageSha256": "e7ade3652e8ecb47710060e89941fa8fe4f1db4503e65f6bef80f44d7fb354ef",
+        "hashesMatch": true
+      },
+      {
+        "image": "digital-shamans-digital-shamans-sniper-elite4-environment01.jpg",
+        "exactCaseResolved": true,
+        "bytes": 568865,
+        "baselineSha256": "db78b173cba40a2f33fe51118f8c8f095a758a1028729e1fbf15f67bbef7daee",
+        "scratchSha256": "db78b173cba40a2f33fe51118f8c8f095a758a1028729e1fbf15f67bbef7daee",
+        "stageSha256": "db78b173cba40a2f33fe51118f8c8f095a758a1028729e1fbf15f67bbef7daee",
+        "hashesMatch": true
+      },
+      {
+        "image": "digital-shamans-digital-shamans-sniper-elite4-environment03.jpg",
+        "exactCaseResolved": true,
+        "bytes": 818140,
+        "baselineSha256": "4fe5afe244e77f792e480a34a2b6cdf2cc095841cb9e2eeae6ca915bff8ee411",
+        "scratchSha256": "4fe5afe244e77f792e480a34a2b6cdf2cc095841cb9e2eeae6ca915bff8ee411",
+        "stageSha256": "4fe5afe244e77f792e480a34a2b6cdf2cc095841cb9e2eeae6ca915bff8ee411",
+        "hashesMatch": true
+      },
+      {
+        "image": "digital-shamans-artur-perzyna-red-flowers-01impr.jpg",
+        "exactCaseResolved": true,
+        "bytes": 1762639,
+        "baselineSha256": "4e531b22f155d6120aa44500bd3761cd6b4aeb29bdfe8807acd78a0ab4b24c13",
+        "scratchSha256": "4e531b22f155d6120aa44500bd3761cd6b4aeb29bdfe8807acd78a0ab4b24c13",
+        "stageSha256": "4e531b22f155d6120aa44500bd3761cd6b4aeb29bdfe8807acd78a0ab4b24c13",
+        "hashesMatch": true
+      },
+      {
+        "image": "digital-shamans-digitalshamans-vegetation-phantom-speedtree.jpg",
+        "exactCaseResolved": true,
+        "bytes": 2284612,
+        "baselineSha256": "960259161c3ba81cb6b051430d1d4b9540598eda57625f1d06852a23d4f4e57e",
+        "scratchSha256": "960259161c3ba81cb6b051430d1d4b9540598eda57625f1d06852a23d4f4e57e",
+        "stageSha256": "960259161c3ba81cb6b051430d1d4b9540598eda57625f1d06852a23d4f4e57e",
+        "hashesMatch": true
+      },
+      {
+        "image": "digital-shamans-unreal4-phantom-environments-14-srgb.jpg",
+        "exactCaseResolved": true,
+        "bytes": 483874,
+        "baselineSha256": "059ec8e1323b9954b8461008eab9ff080d16ea52d09fdf50eb92f45253d0b3ef",
+        "scratchSha256": "059ec8e1323b9954b8461008eab9ff080d16ea52d09fdf50eb92f45253d0b3ef",
+        "stageSha256": "059ec8e1323b9954b8461008eab9ff080d16ea52d09fdf50eb92f45253d0b3ef",
+        "hashesMatch": true
+      },
+      {
+        "image": "digital-shamans-unreal4-phantom-environments-13-srgb.jpg",
+        "exactCaseResolved": true,
+        "bytes": 587991,
+        "baselineSha256": "2051a8e81bb2918bbd216f6b7c477e41e569d4b209b1b47e491a59ac63f805e4",
+        "scratchSha256": "2051a8e81bb2918bbd216f6b7c477e41e569d4b209b1b47e491a59ac63f805e4",
+        "stageSha256": "2051a8e81bb2918bbd216f6b7c477e41e569d4b209b1b47e491a59ac63f805e4",
+        "hashesMatch": true
+      },
+      {
+        "image": "digital-shamans-unreal4-phantom-environments-11-srgb.jpg",
+        "exactCaseResolved": true,
+        "bytes": 345123,
+        "baselineSha256": "dc0b2b99d8372eaabcf7d60cb4c965a8a21d7b8524b0117c3e50144caf8dcdc9",
+        "scratchSha256": "dc0b2b99d8372eaabcf7d60cb4c965a8a21d7b8524b0117c3e50144caf8dcdc9",
+        "stageSha256": "dc0b2b99d8372eaabcf7d60cb4c965a8a21d7b8524b0117c3e50144caf8dcdc9",
+        "hashesMatch": true
+      },
+      {
+        "image": "digital-shamans-unreal4-phantom-environments-10-srgb.jpg",
+        "exactCaseResolved": true,
+        "bytes": 474740,
+        "baselineSha256": "6735eb316331dcd42297ee725639bb3c5298947d5acba389e2fde183bf4d1f26",
+        "scratchSha256": "6735eb316331dcd42297ee725639bb3c5298947d5acba389e2fde183bf4d1f26",
+        "stageSha256": "6735eb316331dcd42297ee725639bb3c5298947d5acba389e2fde183bf4d1f26",
+        "hashesMatch": true
+      },
+      {
+        "image": "digital-shamans-unreal4-phantom-environments-08b-srgb.jpg",
+        "exactCaseResolved": true,
+        "bytes": 630927,
+        "baselineSha256": "dd4a4be3573899ccf6aa40e8e82e8340294d8144df1384931795f6d1cbb12463",
+        "scratchSha256": "dd4a4be3573899ccf6aa40e8e82e8340294d8144df1384931795f6d1cbb12463",
+        "stageSha256": "dd4a4be3573899ccf6aa40e8e82e8340294d8144df1384931795f6d1cbb12463",
+        "hashesMatch": true
+      },
+      {
+        "image": "digital-shamans-unreal4-phantom-environments-05-srgb.jpg",
+        "exactCaseResolved": true,
+        "bytes": 525175,
+        "baselineSha256": "79d426cd23bcb6a877ef897ecad2b1a2a8e1e94c48b333e164877e643ee84546",
+        "scratchSha256": "79d426cd23bcb6a877ef897ecad2b1a2a8e1e94c48b333e164877e643ee84546",
+        "stageSha256": "79d426cd23bcb6a877ef897ecad2b1a2a8e1e94c48b333e164877e643ee84546",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-palms-019b-4k.jpg",
+        "exactCaseResolved": true,
+        "bytes": 1384992,
+        "baselineSha256": "23af4a7168a6e6f0533766af7a89b997b43a49ed149a76ec1291b733538009bf",
+        "scratchSha256": "23af4a7168a6e6f0533766af7a89b997b43a49ed149a76ec1291b733538009bf",
+        "stageSha256": "23af4a7168a6e6f0533766af7a89b997b43a49ed149a76ec1291b733538009bf",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-palms-004-4k.jpg",
+        "exactCaseResolved": true,
+        "bytes": 1163544,
+        "baselineSha256": "054d007bd4e874e43721ed9dc6193dd73000702bd757d26538a3daf77340685a",
+        "scratchSha256": "054d007bd4e874e43721ed9dc6193dd73000702bd757d26538a3daf77340685a",
+        "stageSha256": "054d007bd4e874e43721ed9dc6193dd73000702bd757d26538a3daf77340685a",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-palms-005-4k.jpg",
+        "exactCaseResolved": true,
+        "bytes": 2094575,
+        "baselineSha256": "e45b51870e65c143bedb0a62714c3005a276d05977b4e40b234ab8f12c90113a",
+        "scratchSha256": "e45b51870e65c143bedb0a62714c3005a276d05977b4e40b234ab8f12c90113a",
+        "stageSha256": "e45b51870e65c143bedb0a62714c3005a276d05977b4e40b234ab8f12c90113a",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-papaya-series-v1-unreal5.jpg",
+        "exactCaseResolved": true,
+        "bytes": 898599,
+        "baselineSha256": "b362606e2978ea6d1e356bc6de20548dd77e6f0b80b1737c97a621d43547bacd",
+        "scratchSha256": "b362606e2978ea6d1e356bc6de20548dd77e6f0b80b1737c97a621d43547bacd",
+        "stageSha256": "b362606e2978ea6d1e356bc6de20548dd77e6f0b80b1737c97a621d43547bacd",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-digital-shamans-digital-shamans-pineapple-series-v4more-srgb.jpg",
+        "exactCaseResolved": true,
+        "bytes": 1366867,
+        "baselineSha256": "5da1d403ae0a4c54dacb5f5f4912b6e1462b866090d1138fac48dbf18bdce1fc",
+        "scratchSha256": "5da1d403ae0a4c54dacb5f5f4912b6e1462b866090d1138fac48dbf18bdce1fc",
+        "stageSha256": "5da1d403ae0a4c54dacb5f5f4912b6e1462b866090d1138fac48dbf18bdce1fc",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-palms-008-4k.jpg",
+        "exactCaseResolved": true,
+        "bytes": 1310218,
+        "baselineSha256": "871842572bede0a024dde43113c7e24442443e78eda70e1f7ddbc6a34c249de0",
+        "scratchSha256": "871842572bede0a024dde43113c7e24442443e78eda70e1f7ddbc6a34c249de0",
+        "stageSha256": "871842572bede0a024dde43113c7e24442443e78eda70e1f7ddbc6a34c249de0",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-palms-009-4k.jpg",
+        "exactCaseResolved": true,
+        "bytes": 2472739,
+        "baselineSha256": "caf022ad442021bdc188d5eeafc9698cec26e7c216a93327623422270b6723d5",
+        "scratchSha256": "caf022ad442021bdc188d5eeafc9698cec26e7c216a93327623422270b6723d5",
+        "stageSha256": "caf022ad442021bdc188d5eeafc9698cec26e7c216a93327623422270b6723d5",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-palms-002-4k.jpg",
+        "exactCaseResolved": true,
+        "bytes": 1478823,
+        "baselineSha256": "812a15267ceb1b30741b3ddc9d35b4b455eca2f89175d997e8bd753b177f29cb",
+        "scratchSha256": "812a15267ceb1b30741b3ddc9d35b4b455eca2f89175d997e8bd753b177f29cb",
+        "stageSha256": "812a15267ceb1b30741b3ddc9d35b4b455eca2f89175d997e8bd753b177f29cb",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-palms-001b-4k.jpg",
+        "exactCaseResolved": true,
+        "bytes": 3681095,
+        "baselineSha256": "b015454b8fcd0ae96ed9c71e451d26997a51186197d9a8a29b27b7b4f37ddb6a",
+        "scratchSha256": "b015454b8fcd0ae96ed9c71e451d26997a51186197d9a8a29b27b7b4f37ddb6a",
+        "stageSha256": "b015454b8fcd0ae96ed9c71e451d26997a51186197d9a8a29b27b7b4f37ddb6a",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-palms-014-4k.jpg",
+        "exactCaseResolved": true,
+        "bytes": 2231349,
+        "baselineSha256": "9901717d48f188a948780a76a6ab7f82db4211d258b8d1b95b7f67d5713390f1",
+        "scratchSha256": "9901717d48f188a948780a76a6ab7f82db4211d258b8d1b95b7f67d5713390f1",
+        "stageSha256": "9901717d48f188a948780a76a6ab7f82db4211d258b8d1b95b7f67d5713390f1",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-palms-006-4k.jpg",
+        "exactCaseResolved": true,
+        "bytes": 1448007,
+        "baselineSha256": "33c0737205073f26aba24e42e86a01e2b3b6d7414c297e74b80bd138beec0ac3",
+        "scratchSha256": "33c0737205073f26aba24e42e86a01e2b3b6d7414c297e74b80bd138beec0ac3",
+        "stageSha256": "33c0737205073f26aba24e42e86a01e2b3b6d7414c297e74b80bd138beec0ac3",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-mobile.jpg",
+        "exactCaseResolved": true,
+        "bytes": 139985,
+        "baselineSha256": "4be5a8c2cabaacd1739f4d28e06fddf562cc9191b3c04a4857e857badca40860",
+        "scratchSha256": "4be5a8c2cabaacd1739f4d28e06fddf562cc9191b3c04a4857e857badca40860",
+        "stageSha256": "4be5a8c2cabaacd1739f4d28e06fddf562cc9191b3c04a4857e857badca40860",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.jpg",
+        "exactCaseResolved": true,
+        "bytes": 2277349,
+        "baselineSha256": "d2c6934f2b27680cb41f2620eb6b5fe33c4f526d401ebcca0cc4c496052616ce",
+        "scratchSha256": "d2c6934f2b27680cb41f2620eb6b5fe33c4f526d401ebcca0cc4c496052616ce",
+        "stageSha256": "d2c6934f2b27680cb41f2620eb6b5fe33c4f526d401ebcca0cc4c496052616ce",
+        "hashesMatch": true
+      }
+    ],
+    "stageUntouched": true,
+    "stageFilesChecked": 69,
+    "stageFiles": [
+      {
+        "path": "approved.json",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "artifacts.json",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "download-plan.json",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "normalized-source.json",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "report.json",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "stage.json",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/imports/vegetation-artstation.json",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/imports/vegetation-merge-20261120.json",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/digital-shamans-artur-perzyna-red-flowers-01impr.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/digital-shamans-digital-shamans-sniper-elite4-environment01.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/digital-shamans-digital-shamans-sniper-elite4-environment02.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/digital-shamans-digital-shamans-sniper-elite4-environment03.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/digital-shamans-digitalshamans-vegetation-phantom-speedtree.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/digital-shamans-ds-vegetation-survisland-papaya-4k.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/digital-shamans-ds-vegetation-survisland-pineapple-4k.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/digital-shamans-ds-vegetation-survisland-seaweed-4k.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/digital-shamans-ds-vegetation-survisland-wheat01-4k.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/digital-shamans-ds-vegetation-survisland-wheat02-4k.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/digital-shamans-unreal4-phantom-environments-05-srgb.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/digital-shamans-unreal4-phantom-environments-08b-srgb.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/digital-shamans-unreal4-phantom-environments-10-srgb.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/digital-shamans-unreal4-phantom-environments-11-srgb.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/digital-shamans-unreal4-phantom-environments-13-srgb.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/digital-shamans-unreal4-phantom-environments-14-srgb.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/the-digital-shaman-digital-shamans-digital-shamans-pineapple-series-v4more-srgb.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/the-digital-shaman-mobile.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/the-digital-shaman-palms-001b-4k.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/the-digital-shaman-palms-002-4k.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/the-digital-shaman-palms-004-4k.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/the-digital-shaman-palms-005-4k.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/the-digital-shaman-palms-006-4k.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/the-digital-shaman-palms-008-4k.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/the-digital-shaman-palms-009-4k.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/the-digital-shaman-palms-014-4k.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/the-digital-shaman-palms-019b-4k.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/vegetation/the-digital-shaman-papaya-series-v1-unreal5.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/artur/galleries/vegetation/index.html",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/gallery.json",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/index.html",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/digital-shamans-artur-perzyna-red-flowers-01impr.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/digital-shamans-digital-shamans-sniper-elite4-environment01.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/digital-shamans-digital-shamans-sniper-elite4-environment02.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/digital-shamans-digital-shamans-sniper-elite4-environment03.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/digital-shamans-digitalshamans-vegetation-phantom-speedtree.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-papaya-4k.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-pineapple-4k.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-seaweed-4k.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-wheat01-4k.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-wheat02-4k.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-05-srgb.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-08b-srgb.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-10-srgb.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-11-srgb.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-13-srgb.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/digital-shamans-unreal4-phantom-environments-14-srgb.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/the-digital-shaman-digital-shamans-digital-shamans-pineapple-series-v4more-srgb.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/the-digital-shaman-mobile.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/the-digital-shaman-palms-001b-4k.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/the-digital-shaman-palms-002-4k.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/the-digital-shaman-palms-004-4k.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/the-digital-shaman-palms-005-4k.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/the-digital-shaman-palms-006-4k.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/the-digital-shaman-palms-008-4k.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/the-digital-shaman-palms-009-4k.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/the-digital-shaman-palms-014-4k.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/the-digital-shaman-palms-019b-4k.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/vegetation/1440p/the-digital-shaman-papaya-series-v1-unreal5.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      }
+    ],
+    "original16NamesAndPrefixOrderUnchanged": true,
+    "original16ImageHashesUnchanged": true,
+    "captionEntries": 28,
+    "captionValuesAreStringsWithoutNull": true,
+    "captionNamesResolveToIncludedImages": true,
+    "sourceNullImageCaptionCount": 1,
+    "companionAbsentInScratchAndStage": true,
+    "scratchGalleryFiles": [
+      "gallery.json"
+    ],
+    "scratchManifestCanonicalBytesRestored": true,
+    "scratchManifestSha256": "cfc185098e1421171ff6a2f96f8f0d8280bb3f7a060358e9b7a6e2f14573773e"
+  },
+  "capture": {
+    "finalPreview": "the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.jpg",
+    "completionSummaryImmediatelyAfterFinalScreenshot": true,
+    "cuaKernelResetConfirmed": true,
+    "separateNodeReplUsed": false,
+    "furtherCaptureAfterReset": false,
+    "helperProcessesStoppedByThisLane": false,
+    "releaseOwnerNotified": true,
+    "globalHelperRelease": "Root-owned; unverified by this lane.",
+    "yellowFrameDisappearance": "Unverified; no visual claim."
+  },
+  "recovery": [
+    "One window-bounds rejection before folder input; rebound and freshly observed the same owned window, then succeeded.",
+    "Folder picker targeted by its returned screenshot ID and observed coordinates.",
+    "Four larger previews required bounded reobservation: rows 17,21,25 were revisited and row27 received a fresh observation. All rendered.",
+    "No input timeout, user prompt, native Chrome, or repository/service/source mutation."
+  ],
+  "unverifiedByThisLane": [
+    "Browser/publication/service checks",
+    "Global capture-helper termination",
+    "Yellow-frame disappearance"
+  ]
+}

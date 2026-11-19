@@ -2753,34 +2753,6 @@
       }
     },
     "vegetation": {
-      "digital-shamans-artur-perzyna-red-flowers-01impr.jpg": {
-        "blob": "676c616b6e785c47e15607674696859783831aa6",
-        "size": 1762639
-      },
-      "digital-shamans-digital-shamans-sniper-elite4-environment01.jpg": {
-        "blob": "69be550a454ded6a2acea573bb561f26c5f80b74",
-        "size": 568865
-      },
-      "digital-shamans-digital-shamans-sniper-elite4-environment02.jpg": {
-        "blob": "242d510f124b312ee6df1904438348835f8ce0ee",
-        "size": 567496
-      },
-      "digital-shamans-digital-shamans-sniper-elite4-environment03.jpg": {
-        "blob": "e2d0f2b3d578b563909d23126ba2149c88a61d9e",
-        "size": 818140
-      },
-      "digital-shamans-digitalshamans-vegetation-phantom-speedtree.jpg": {
-        "blob": "5affc77b8c920d6aff39b55a61cd8acdfbf5b049",
-        "size": 2284612
-      },
-      "digital-shamans-ds-vegetation-survisland-papaya-4k.jpg": {
-        "blob": "674591fcc929a9a7d107bc489b2cc66ad977ce7b",
-        "size": 842892
-      },
-      "digital-shamans-ds-vegetation-survisland-pineapple-4k.jpg": {
-        "blob": "7fa760da74bc7b97f08f15448a55b5716effa61e",
-        "size": 847535
-      },
       "digital-shamans-ds-vegetation-survisland-seaweed-4k.jpg": {
         "blob": "154b287c84edbf4d6f30ff1366560ea7e91ef621",
         "size": 1817579
@@ -2793,29 +2765,109 @@
         "blob": "1acd1452f4b9a9b27e8fb669b469ae44048721cc",
         "size": 629706
       },
-      "digital-shamans-unreal4-phantom-environments-05-srgb.jpg": {
-        "blob": "f8375ebc7462caef3bcfd9bc6593e2179c9ed031",
-        "size": 525175
+      "digital-shamans-ds-vegetation-survisland-papaya-4k.jpg": {
+        "blob": "674591fcc929a9a7d107bc489b2cc66ad977ce7b",
+        "size": 842892
       },
-      "digital-shamans-unreal4-phantom-environments-08b-srgb.jpg": {
-        "blob": "cc035011431411236dae2d0d51a91ccea0ee9aec",
-        "size": 630927
+      "digital-shamans-ds-vegetation-survisland-pineapple-4k.jpg": {
+        "blob": "7fa760da74bc7b97f08f15448a55b5716effa61e",
+        "size": 847535
       },
-      "digital-shamans-unreal4-phantom-environments-10-srgb.jpg": {
-        "blob": "c415215f72ebc41852ffbfac1836594107e79ec1",
-        "size": 474740
+      "digital-shamans-digital-shamans-sniper-elite4-environment02.jpg": {
+        "blob": "242d510f124b312ee6df1904438348835f8ce0ee",
+        "size": 567496
       },
-      "digital-shamans-unreal4-phantom-environments-11-srgb.jpg": {
-        "blob": "f644b6d6ccb4d357a19117fed2638f4d173459fb",
-        "size": 345123
+      "digital-shamans-digital-shamans-sniper-elite4-environment01.jpg": {
+        "blob": "69be550a454ded6a2acea573bb561f26c5f80b74",
+        "size": 568865
+      },
+      "digital-shamans-digital-shamans-sniper-elite4-environment03.jpg": {
+        "blob": "e2d0f2b3d578b563909d23126ba2149c88a61d9e",
+        "size": 818140
+      },
+      "digital-shamans-artur-perzyna-red-flowers-01impr.jpg": {
+        "blob": "676c616b6e785c47e15607674696859783831aa6",
+        "size": 1762639
+      },
+      "digital-shamans-digitalshamans-vegetation-phantom-speedtree.jpg": {
+        "blob": "5affc77b8c920d6aff39b55a61cd8acdfbf5b049",
+        "size": 2284612
+      },
+      "digital-shamans-unreal4-phantom-environments-14-srgb.jpg": {
+        "blob": "afa1da5486b2ec1cbaeb390c2478c122836aed8f",
+        "size": 483874
       },
       "digital-shamans-unreal4-phantom-environments-13-srgb.jpg": {
         "blob": "e93cea29ae17e93657e00313b58e406184842cf6",
         "size": 587991
       },
-      "digital-shamans-unreal4-phantom-environments-14-srgb.jpg": {
-        "blob": "afa1da5486b2ec1cbaeb390c2478c122836aed8f",
-        "size": 483874
+      "digital-shamans-unreal4-phantom-environments-11-srgb.jpg": {
+        "blob": "f644b6d6ccb4d357a19117fed2638f4d173459fb",
+        "size": 345123
+      },
+      "digital-shamans-unreal4-phantom-environments-10-srgb.jpg": {
+        "blob": "c415215f72ebc41852ffbfac1836594107e79ec1",
+        "size": 474740
+      },
+      "digital-shamans-unreal4-phantom-environments-08b-srgb.jpg": {
+        "blob": "cc035011431411236dae2d0d51a91ccea0ee9aec",
+        "size": 630927
+      },
+      "digital-shamans-unreal4-phantom-environments-05-srgb.jpg": {
+        "blob": "f8375ebc7462caef3bcfd9bc6593e2179c9ed031",
+        "size": 525175
+      },
+      "the-digital-shaman-palms-019b-4k.jpg": {
+        "blob": "d160d518b76bdf32e7afd506a7f0179aa02d8bf0",
+        "size": 1384992
+      },
+      "the-digital-shaman-palms-004-4k.jpg": {
+        "blob": "9c5eb9af0bce21c5865438a06941fbca19f4788d",
+        "size": 1163544
+      },
+      "the-digital-shaman-palms-005-4k.jpg": {
+        "blob": "32fc2b16819fb2f22f17d73d06949e114612f43e",
+        "size": 2094575
+      },
+      "the-digital-shaman-papaya-series-v1-unreal5.jpg": {
+        "blob": "730468c5996c8523787ae33d757eeacecc411482",
+        "size": 898599
+      },
+      "the-digital-shaman-digital-shamans-digital-shamans-pineapple-series-v4more-srgb.jpg": {
+        "blob": "da7c8e2a6889f5ff90c4a8dd0e4049ebe8ca4ea2",
+        "size": 1366867
+      },
+      "the-digital-shaman-palms-008-4k.jpg": {
+        "blob": "1fc3f1085e5e57c55d2c8d19d07b85ca329c9bb0",
+        "size": 1310218
+      },
+      "the-digital-shaman-palms-009-4k.jpg": {
+        "blob": "21c4cd7745e7cc032fb20660f0315bb089faeb0a",
+        "size": 2472739
+      },
+      "the-digital-shaman-palms-002-4k.jpg": {
+        "blob": "355f25cd33e95c0d6a577609455122cd83508df7",
+        "size": 1478823
+      },
+      "the-digital-shaman-palms-001b-4k.jpg": {
+        "blob": "205ac99a92ed7e8bdead15ec1ec0eef13ce98f70",
+        "size": 3681095
+      },
+      "the-digital-shaman-palms-014-4k.jpg": {
+        "blob": "c63e6e177698dff47da8c6e729e545d1e8343196",
+        "size": 2231349
+      },
+      "the-digital-shaman-palms-006-4k.jpg": {
+        "blob": "c29c53413655322a0f79fab0c450ec0fe4780078",
+        "size": 1448007
+      },
+      "the-digital-shaman-mobile.jpg": {
+        "blob": "cb8ba0ffdd81911816dc162a16ee8f859e42ef84",
+        "size": 139985
+      },
+      "the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.jpg": {
+        "blob": "d11953f8326e2b5ba7e43316f848e74d8bbb4334",
+        "size": 2277349
       }
     },
     "vehicles-aircrafts": {
