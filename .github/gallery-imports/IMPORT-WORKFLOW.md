@@ -26,9 +26,10 @@ published gallery. This is preparation tooling, not a new viewer or hosting syst
    Commit generated pages/media and website metadata together. Run required CI and
    publish **one** gallery through **one** Pages release. Verify terminal deployment.
 4. **Verified**: run file/HTTP checks and native acceptance in parallel independent
-   lanes after publication. Test both portfolio routes. Commit/push final evidence
-   and STATUS on the working branch; it can be included with the next content
-   release rather than immediately merging a documentation-only second deployment.
+   lanes after publication. Test both portfolio routes. Run the mandatory capture
+   cleanup below after the last screenshot. Commit/push final evidence and STATUS
+   on the working branch; it can be included with the next content release rather
+   than immediately merging a documentation-only second deployment.
 
 Use at most two independent workers. Shared metadata, integrations and deployments
 have one owner. Checkpoint after each gate; resume files rather than reacquiring
@@ -55,6 +56,12 @@ UI input or force an unresponsive tool transport to return. Do not race input
 callbacks against further input. After an unknown action outcome, obtain fresh
 state before continuing; reset/rebind the CUA session once if needed.
 
+After a fresh-tab fallback, bind acceptance to the selected tab before applying
+viewport overrides. Read back `innerWidth` after each change; a successful viewport
+API response alone does not prove that the tab being checked changed size. Wait
+for the visible embed after navigation before asserting its asynchronously mounted
+content. Confirm fullscreen through visible player state and geometry.
+
 Delivery fallback can consume independently verified HTTP results. Its status is
 `delivery-only`, with interactive acceptance still unverified. If both in-app
 attempts fail, continue independent work and record the exact missing interaction
@@ -62,6 +69,43 @@ check; do not claim gallery acceptance from HTTP alone. This policy does not rem
 the native Gallery Editor round-trip requirement.
 
 Guard verification: `node --test .github/tests/gallery-browser-check.test.mjs`.
+
+## Mandatory automatic screen-capture cleanup
+
+The user has authorized this cleanup after **every** gallery transfer. Run it
+without another prompt, on success, failure and early exit. Treat it as a
+finalization/finally step owned by the release owner. It is not a scheduled job.
+
+1. Finish all UI acceptance and save required screenshots/evidence first. Stop
+   outstanding UI work; each capture owner resets its native editor/browser tool
+   session. Reset the `node_repl` and `cua_repl` sessions that were used. Do not
+   initialize a fresh capture client just to perform cleanup.
+2. Inspect current running helper process identities using the authorized native
+   process tools. The known helpers are `codex-computer-use.exe` and
+   `codex-computer-use-swift.exe`. Verify exact executable path belongs to the
+   current official Codex installation, parent identity and current process ID
+   before stopping a helper used by these checks. Do not hard-code an earlier
+   run's process IDs. Do not stop the main ChatGPT/Codex app, unrelated sharing or
+   recording apps, generic Node/Chrome processes, or helpers belonging to other
+   ongoing work. If identity cannot be established, record a cleanup blocker.
+3. Stop those verified capture helpers and confirm the original processes exited.
+   A parent app may automatically restart an idle helper. Allow one bounded stop
+   retry for that same verified parent/path, then stop retrying. A replacement
+   helper's presence is not proof of ongoing capture and is not a zero-process
+   acceptance requirement. Never hide the Windows privacy border or change
+   capture/privacy settings to make the frame disappear.
+4. Record session resets, terminated original processes, any automatic restart
+   and unresolved cleanup errors in the gallery acceptance report. Do not take a
+   new desktop screenshot or invoke editor screenshot APIs after this gate: that
+   can start capture again. Do not claim visual disappearance from process counts
+   alone. Ask for a visual check only when an actual unresolved capture issue
+   remains; routine transfers need no extra user prompt.
+
+Battlezone follow-up established the recovery: both original capture helpers were
+terminated, tool sessions reset, one automatic helper restart received a bounded
+retry, and the user confirmed the yellow frame had disappeared. Session resets
+alone did not establish release. Preserve this cleanup in subsequent imports and
+handoffs, even when browser acceptance has a reported limitation.
 
 ## Input and commands
 
