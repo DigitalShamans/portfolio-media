@@ -1,0 +1,173 @@
+{
+  "passed": true,
+  "browser": "ChatGPT in-app browser",
+  "tab": "20",
+  "checks": [
+    {
+      "build": "9e0b1def63343eab9395bf61a33648e292d0de89",
+      "captions": 13,
+      "first": {
+        "complete": true,
+        "natural": 2560,
+        "src": "https://digitalshamans.co.uk/galleries/strange-brigade-ancient-weapons/1440p/digital-shamans-crossbow-03.webp?v=785001b90ba45a838ce4d8af4293aa8e92934977&webp=q92-m6"
+      },
+      "height": 844,
+      "horizontalOverflow": false,
+      "path": "/galleries/strange-brigade-ancient-weapons/",
+      "shots": 13,
+      "width": 390,
+      "captionPairsVerified": 13,
+      "viewer": {
+        "height": 844,
+        "image": {
+          "complete": true,
+          "natural": 2560,
+          "src": "https://digitalshamans.co.uk/galleries/strange-brigade-ancient-weapons/1440p/digital-shamans-melee-spear-01.webp?v=b4dacd6dbf5e393a7cfaca5c58b8c5d52d81fe14&webp=q92-m6"
+        },
+        "width": 390
+      },
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "escapeClosed": true
+    },
+    {
+      "build": "9e0b1def63343eab9395bf61a33648e292d0de89",
+      "captions": 13,
+      "first": {
+        "complete": true,
+        "natural": 2560,
+        "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/19e539dd5bfe0f687926281a5a94b1d7fe144c75/strange-brigade-ancient-weapons/digital-shamans-crossbow-03.jpg"
+      },
+      "height": 1600,
+      "horizontalOverflow": false,
+      "path": "/galleries/strange-brigade-ancient-weapons/",
+      "shots": 13,
+      "width": 2800,
+      "captionPairsVerified": 13,
+      "viewer": {
+        "height": 1600,
+        "image": {
+          "complete": true,
+          "natural": 2560,
+          "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/19e539dd5bfe0f687926281a5a94b1d7fe144c75/strange-brigade-ancient-weapons/digital-shamans-melee-spear-01.jpg"
+        },
+        "width": 2800
+      },
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "escapeClosed": true
+    },
+    {
+      "build": "9e0b1def63343eab9395bf61a33648e292d0de89",
+      "captions": 13,
+      "first": {
+        "complete": true,
+        "natural": 2560,
+        "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/19e539dd5bfe0f687926281a5a94b1d7fe144c75/strange-brigade-ancient-weapons/digital-shamans-crossbow-03.jpg"
+      },
+      "height": 1600,
+      "horizontalOverflow": false,
+      "path": "/artur/galleries/strange-brigade-ancient-weapons/",
+      "shots": 13,
+      "width": 2800,
+      "captionPairsVerified": 13,
+      "viewer": {
+        "height": 1600,
+        "image": {
+          "complete": true,
+          "natural": 2560,
+          "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/19e539dd5bfe0f687926281a5a94b1d7fe144c75/strange-brigade-ancient-weapons/digital-shamans-melee-spear-01.jpg"
+        },
+        "width": 2800
+      },
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "escapeClosed": true
+    },
+    {
+      "build": "9e0b1def63343eab9395bf61a33648e292d0de89",
+      "captions": 13,
+      "first": {
+        "complete": true,
+        "natural": 2560,
+        "src": "https://digitalshamans.co.uk/galleries/strange-brigade-ancient-weapons/1440p/digital-shamans-crossbow-03.webp?v=785001b90ba45a838ce4d8af4293aa8e92934977&webp=q92-m6"
+      },
+      "height": 844,
+      "horizontalOverflow": false,
+      "path": "/artur/galleries/strange-brigade-ancient-weapons/",
+      "shots": 13,
+      "width": 390,
+      "captionPairsVerified": 13,
+      "viewer": {
+        "height": 844,
+        "image": {
+          "complete": true,
+          "natural": 2560,
+          "src": "https://digitalshamans.co.uk/galleries/strange-brigade-ancient-weapons/1440p/digital-shamans-melee-spear-01.webp?v=b4dacd6dbf5e393a7cfaca5c58b8c5d52d81fe14&webp=q92-m6"
+        },
+        "width": 390
+      },
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "escapeClosed": true
+    }
+  ],
+  "normalDesktop": {
+    "build": "9e0b1def63343eab9395bf61a33648e292d0de89",
+    "captions": 13,
+    "first": {
+      "complete": true,
+      "natural": 2560,
+      "src": "https://digitalshamans.co.uk/galleries/strange-brigade-ancient-weapons/1440p/digital-shamans-crossbow-03.webp?v=785001b90ba45a838ce4d8af4293aa8e92934977&webp=q92-m6"
+    },
+    "height": 1000,
+    "horizontalOverflow": false,
+    "path": "/galleries/strange-brigade-ancient-weapons/",
+    "shots": 13,
+    "width": 1280,
+    "captionPairsVerified": 13
+  },
+  "logs": [],
+  "opening": {
+    "status": "interactive-verified",
+    "attempts": [
+      {
+        "backend": "existing-in-app-tab",
+        "result": "transport-timeout",
+        "configuredTimeoutMs": 15000,
+        "returnedAfterMs": 19089
+      },
+      {
+        "backend": "fresh-in-app-tab",
+        "passed": true,
+        "elapsedMs": 5178
+      }
+    ],
+    "chromeUsed": false
+  },
+  "diagnostics": [
+    "Read-only DOM wrapper lacks decodeURIComponent; filename decoding was moved into the owned host helper.",
+    "First screenshot after native fullscreen exit had an incorrect capture scale; reloaded at the verified mobile viewport, observed decoded images and replaced it."
+  ],
+  "limitations": [
+    "Physical touch/iOS/Safari not tested."
+  ],
+  "proof": {
+    "mobile": "outputs/ancient-weapons-mobile.jpg",
+    "desktop": "outputs/ancient-weapons-desktop.jpg",
+    "visuallyInspected": true
+  },
+  "completedAtUtc": "2026-11-19T20:24:36.871Z"
+}
