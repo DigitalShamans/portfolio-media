@@ -6,6 +6,10 @@ seo_image: hb-egypt
 gallery_4k_media: '(min-width: 2560px) and (hover: hover) and (pointer: fine)'
 gallery_webp_revision: q92-m6
 
+# Local-file editing only; no gallery files are uploaded by this browser tool.
+include:
+  - _tools
+
 # Publish the gallery and project media without the shared source assets.
 exclude:
   - README.md

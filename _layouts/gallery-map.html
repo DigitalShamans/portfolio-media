@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{{ page.title | default: 'Interactive Gallery Map' | escape }} | {% if page.portfolio == 'personal' %}{{ site.data.personal_portfolio.name | escape }}{% else %}Digital Shamans{% endif %}</title>
+  {% include site-favicon.html %}
+  <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
+  <link rel="stylesheet" href="{{ '/galleries/gallery-map.css' | relative_url }}?v=1">
+</head>
+<body>
+  {% include site-header.html %}
+  <main class="gallery-map-page">
+    <header class="gallery-map-intro"><h1 id="map-title">Interactive gallery map</h1><p id="map-help" class="gallery-map-help"></p></header>
+    <p id="map-error" role="alert" hidden></p>
+    <section id="public-map" class="gallery-map-stage" aria-label="Interactive level overview" aria-describedby="map-help" hidden></section>
+    <div class="gallery-map-caption"><p id="map-caption" role="status" aria-live="polite">Loading map…</p><a id="map-gallery-link" hidden>View gallery</a></div>
+    <noscript><p>Enable JavaScript to explore this interactive map.</p></noscript>
+  </main>
+  {% assign map_pages = site.pages | where: 'layout', 'gallery' | where_exp: 'entry', "entry.portfolio != 'personal'" %}
+  <script id="gallery-map-options" type="application/json">
+  {
+    "defaultGallery": {{ page.gallery | default: 'hb-atrium' | jsonify }},
+    "personal": {% if page.portfolio == 'personal' %}true{% else %}false{% endif %},
+    "galleryRoot": {{ '/galleries/' | relative_url | jsonify }},
+    "media": {{ site.gallery_4k_media | jsonify }},
+    "webpRevision": {{ site.gallery_webp_revision | jsonify }},
+    "delivery": {{ site.data.gallery_delivery | jsonify }},
+    "galleries": {
+      {% for entry in map_pages %}
+        {% assign folder = entry.url | remove_first: '/galleries/' | split: '/' | first %}
+        {% assign map_path = '/galleries/' | append: folder | append: '/gallery-map.json' %}
+        {% assign map_file = site.static_files | where: 'path', map_path | first %}
+        {{ folder | jsonify }}: { "title": {{ entry.gallery_title | jsonify }}, "hasMap": {% if map_file %}true{% else %}false{% endif %}, "versions": {{ site.data.gallery_asset_versions[folder] | jsonify }} }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    }
+  }
+  </script>
+  <script src="{{ '/galleries/gallery-map-data.js' | relative_url }}?v=1" defer></script>
+  <script src="{{ '/galleries/gallery-map.js' | relative_url }}?v=1" defer></script>
+  <script src="{{ '/galleries/gallery-map-page.js' | relative_url }}?v=1" defer></script>
+</body>
+</html>

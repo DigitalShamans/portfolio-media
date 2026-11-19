@@ -31,6 +31,9 @@ def gallery_versions():
         if len(path.parts) != 3 or path.name != 'gallery.json':
             continue
         files = {'gallery.json': digest}
+        map_path = path.parent / 'gallery-map.json'
+        if map_path in tracked:
+            files['gallery-map.json'] = tracked[map_path]
         entries = json.loads((ROOT / path).read_text(encoding='utf-8-sig'))
         for entry in entries:
             for name in (entry['image'], entry.get('compare'), *(entry.get('additionalImages') or [])):
