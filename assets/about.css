@@ -16,7 +16,7 @@
   padding-block: clamp(2rem, 5vw, 4rem);
 }
 
-.about-intro h1 {
+.about-intro .about-title {
   margin: 0 0 .5rem;
   font-size: clamp(2rem, 3.8vw, 3rem);
   line-height: 1.08;
@@ -59,7 +59,8 @@
 
 .about-details section + section { margin-block-start: 1.5rem; }
 
-.about-details h2 {
+.about-details h2,
+.about-details h3 {
   margin: 0 0 .5rem;
   font-size: 1.125rem;
 }
@@ -68,6 +69,38 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   color: var(--muted);
 }
+
+.about-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.about-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 12rem;
+  padding: .85rem 1.75rem;
+  border: 2px solid var(--accent);
+  border-radius: .25rem;
+  color: var(--accent);
+  font-size: 1.125rem;
+  font-weight: 650;
+  line-height: 1.35;
+  text-align: center;
+  text-decoration: none;
+}
+
+.about-action--contact {
+  background: var(--accent);
+  color: #151415;
+}
+
+.about-action:hover { background: #f09b53; border-color: #f09b53; color: #151415; }
+.about-action:focus-visible { outline-offset: 4px; }
 
 @media (max-width: 720px) {
   .about-content { grid-template-columns: minmax(0, 1fr); }
@@ -78,4 +111,8 @@
     padding-inline-start: 0;
     padding-block-start: 1.5rem;
   }
+}
+
+@media (max-width: 460px) {
+  .about-action { flex: 1 1 12rem; }
 }
