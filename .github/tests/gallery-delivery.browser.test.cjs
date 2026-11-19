@@ -37,7 +37,7 @@ function scripts(layout) {
     .replace("{{ '/assets/gallery-resolution.js' | relative_url }}", '/assets/gallery-resolution.js');
 }
 
-function pageHtml(path) {
+function pageHtml(path, { embeds, assetVersions = {} } = {}) {
   const isLocked = path.endsWith(locked);
   const settings = isLocked ? '' : `data-gallery-webp-revision="q92-m6"
     data-gallery-originals-origin="${media}" data-gallery-originals-revision="${revision}"`;
@@ -48,7 +48,7 @@ function pageHtml(path) {
       .replace('{{ site.data.gallery_delivery.service_origin | jsonify }}', JSON.stringify(media))
     : `<div class="gallery-content"><header class="intro"><h1>Hard Bullet - Egypt</h1></header>
         <p id="gallery-status" hidden></p>
-        <section class="gallery">${galleryLayout.match(/<a class="shot" data-gallery-fallback[\s\S]*?<\/a>/)[0]
+        <section class="gallery"${embeds ? ' data-gallery-embeds="gallery-embeds.json"' : ''}>${galleryLayout.match(/<a class="shot" data-gallery-fallback[\s\S]*?<\/a>/)[0]
           .replace('{{ gallery_original_url | escape }}', `${gallery}First.jpg?v=test`)
           .replaceAll('{{ reduced_image_url }}', preview('First').replace('&', '&amp;'))
           .replace('{{ site.gallery_4k_media | escape }}', desktopQuery)
@@ -57,8 +57,9 @@ function pageHtml(path) {
         ${galleryLayout.match(/<dialog id="viewer"[\s\S]*?<\/dialog>/)[0]}${scripts(galleryLayout)}`;
   return `<!doctype html><html data-gallery4k-media="${desktopQuery}" ${settings}>
     <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">${base}
-    <link rel="stylesheet" href="/galleries/gallery.css"></head>
-    <body data-gallery-revision="test">${body}</body></html>`;
+    <link rel="stylesheet" href="/galleries/gallery.css">
+    <link rel="stylesheet" href="/galleries/gallery-embeds.css"></head>
+    <body data-gallery-revision="test" data-gallery-asset-versions="${JSON.stringify(assetVersions).replaceAll('"', '&quot;')}">${body}</body></html>`;
 }
 
 function signal() {
@@ -67,7 +68,7 @@ function signal() {
   return { reached, release };
 }
 
-async function openPage(t, { route = gallery, width = 2800, intercept } = {}) {
+async function openPage(t, { route = gallery, width = 2800, intercept, embeds, assetVersions } = {}) {
   const page = await browser.newPage({ viewport: { width, height: 900 } });
   t.after(() => page.close());
   page.setDefaultTimeout(5000);
@@ -78,10 +79,11 @@ async function openPage(t, { route = gallery, width = 2800, intercept } = {}) {
     const url = new URL(request.request().url());
     requests.push(url.href);
     if (intercept && await intercept(request, url)) return;
-    if (url.pathname === route) return request.fulfill({ contentType: 'text/html', body: pageHtml(route) });
+    if (url.pathname === route) return request.fulfill({ contentType: 'text/html', body: pageHtml(route, { embeds, assetVersions }) });
     if (url.pathname === `${gallery}gallery.json` || url.pathname === '/media/gallery.json') {
       return request.fulfill({ json: manifest });
     }
+    if (embeds && url.pathname === `${gallery}gallery-embeds.json`) return request.fulfill({ json: embeds });
     if (url.pathname.endsWith('.webp')) return request.fulfill({ contentType: 'image/webp', body: webp });
     if (url.pathname.endsWith('.jpg')) {
       return request.fulfill({ headers: { 'Access-Control-Allow-Origin': '*' }, contentType: 'image/jpeg', body: jpeg });
@@ -120,6 +122,60 @@ function expectFallback(requests, name) {
   const webp = preview(name);
   assert.deepEqual(requests.filter(url => url === original || url === webp), [original, original, webp]);
 }
+
+test('local MP4 uses asset versions, native controls and fullscreen on both gallery routes', async t => {
+  const file = 'shooting-challenge.mp4';
+  const embeds = [{ type: 'video', file, title: 'Shooting challenge', after: 'First_Checker.jpg', before: 'Second.jpg' }];
+  for (const route of [gallery, '/artur' + gallery]) {
+    for (const width of [1000, 2800]) {
+      await t.test(`${route} at ${width}px`, async t => {
+        const { page, requests, errors } = await openPage(t, {
+          route, width, embeds,
+          assetVersions: { 'gallery-embeds.json': 'manifest-blob', [file]: 'mp4-blob' },
+        });
+        const video = page.locator('.gallery-embed video');
+        await video.waitFor();
+        assert.equal(await page.locator('.gallery > :nth-child(2) video').count(), 1);
+        const properties = await video.evaluate(video => ({
+          src: video.src, controls: video.controls, inline: video.playsInline, preload: video.preload,
+          autoplay: video.autoplay, loop: video.loop, title: video.title,
+          noFullscreen: video.controlsList.contains('nofullscreen'),
+          ratio: video.getBoundingClientRect().width / video.getBoundingClientRect().height,
+          fits: video.getBoundingClientRect().width <= document.documentElement.clientWidth,
+        }));
+        assert.deepEqual(properties, {
+          src: `${portfolio}${gallery}${file}?v=mp4-blob`, controls: true, inline: true, preload: 'metadata',
+          autoplay: false, loop: false, title: 'Shooting challenge', noFullscreen: false,
+          ratio: properties.ratio, fits: true,
+        });
+        assert.ok(Math.abs(properties.ratio - 16 / 9) < 0.01);
+        assert.ok(requests.includes(`${portfolio}${gallery}gallery-embeds.json?v=manifest-blob`));
+        // A failed MP4 request stays local to the native player and preserves every image.
+        await page.waitForFunction(() => document.querySelector('video')?.error);
+        assert.equal(await page.locator('.shot').count(), manifest.length);
+        await video.evaluate(video => video.requestFullscreen());
+        assert.equal(await video.evaluate(video => document.fullscreenElement === video), true);
+        await page.evaluate(() => document.exitFullscreen());
+        await page.locator('.shot').first().press('Enter');
+        await displayed(page, '#original', (width === 2800 ? originals : preview)('First'));
+        assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+        assert.deepEqual(errors, []);
+      });
+    }
+  }
+});
+
+test('invalid local video metadata keeps the loaded image gallery usable', async t => {
+  const { page, errors } = await openPage(t, {
+    embeds: [{ type: 'video', file: '../private.mp4', title: 'Invalid video', after: 'First.jpg' }],
+  });
+  await page.locator('.gallery-embed-error').waitFor();
+  assert.equal(await page.locator('.gallery-embed').count(), 0);
+  assert.equal(await page.locator('.shot').count(), manifest.length);
+  await page.locator('.shot').first().press('Enter');
+  await displayed(page, '#original', originals('First'));
+  assert.deepEqual(errors, []);
+});
 
 test('healthy 4K stays in 4K, and 1440p viewports go directly to WebP', async t => {
   for (const width of [2800, 1000]) {
