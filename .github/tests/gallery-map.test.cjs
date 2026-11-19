@@ -137,3 +137,88 @@ test('pre-publish CLI accepts the valid fixture and blocks invalid or protected 
     assert.notEqual(blocked.status, 0); assert.match(blocked.stderr, /protected galleries/);
   } finally { rmSync(temp, { recursive: true, force: true }); }
 });
+
+function mapRenderer(hoverEnabled = true) {
+  class Element {
+    constructor(tag = 'div') {
+      this.tag = tag; this.children = []; this.dataset = {}; this.attributes = new Map(); this.listeners = new Map();
+      this.clientWidth = 1000; this.clientHeight = 562.5; this.clientLeft = 0; this.clientTop = 0;
+      const values = new Map(), classes = new Set();
+      this.style = { setProperty: (name, value) => values.set(name, value), getPropertyValue: name => values.get(name), removeProperty: name => values.delete(name) };
+      this.classList = { add: name => classes.add(name), remove: name => classes.delete(name), contains: name => classes.has(name), toggle: (name, on) => on ? classes.add(name) : classes.delete(name) };
+    }
+    addEventListener(name, handler) { if (!this.listeners.has(name)) this.listeners.set(name, new Set()); this.listeners.get(name).add(handler); }
+    removeEventListener(name, handler) { this.listeners.get(name)?.delete(handler); }
+    fire(name, event = {}) { for (const handler of this.listeners.get(name) || []) handler(event); }
+    append(...children) { this.children.push(...children); }
+    replaceChildren(...children) { this.children = children; }
+    setAttribute(name, value) { this.attributes.set(name, value); }
+    getAttribute(name) { return this.attributes.get(name); }
+    getBoundingClientRect() { return { left: 0, top: 0, width: this.clientWidth, height: this.clientHeight }; }
+    matches() { return false; }
+    contains(element) { return this === element || this.children.some(child => child.contains(element)); }
+  }
+  const document = new Element(), hover = new Element(); hover.matches = hoverEnabled;
+  document.createElement = tag => new Element(tag);
+  const renderer = runInNewContext(readFileSync(join(root, 'galleries/gallery-map.js'), 'utf8') + '\nGalleryMap', {
+    document, matchMedia: () => hover, ResizeObserver: class { observe() {} disconnect() {} }
+  });
+  const stage = new Element();
+  const map = { overview: { image: 'Overview.jpg', alt: 'Overview' }, regions: [{ image: 'Office.jpg', label: 'Offices', x: 25, y: 29 }] };
+  return { mount: options => renderer.mount(stage, map, name => ({ src: name }), options), stage };
+}
+
+test('hover preview fills 90 percent of the overview and stays inside its edges', () => {
+  const { mount, stage } = mapRenderer();
+  const view = mount({});
+  const card = view.cards[0];
+  card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 163 });
+  const scale = Number(card.style.getPropertyValue('--scale'));
+  const width = stage.clientWidth * .2 * scale, height = stage.clientHeight * .2 * scale;
+  assert.equal(width, stage.clientWidth * .9);
+  assert.equal(height, stage.clientHeight * .9);
+  const x = stage.clientWidth * .25 + Number.parseFloat(card.style.getPropertyValue('--shift-x'));
+  const y = stage.clientHeight * .29 + Number.parseFloat(card.style.getPropertyValue('--shift-y'));
+  assert.ok(x - width / 2 >= 0 && x + width / 2 <= stage.clientWidth);
+  assert.ok(y - height / 2 >= 0 && y + height / 2 <= stage.clientHeight);
+  view.destroy();
+});
+
+test('desktop clicks navigate to the exact screenshot and close its preview', () => {
+  const { mount } = mapRenderer();
+  const destinations = [];
+  const view = mount({ onNavigate: region => destinations.push(region.image) });
+  const card = view.cards[0];
+  card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 163 });
+  card.fire('click', { detail: 1 });
+  assert.deepEqual(destinations, ['Office.jpg']);
+  assert.equal(card.getAttribute('aria-expanded'), 'false');
+  view.destroy();
+});
+
+test('touch previews first, then navigates on a second tap; keyboard activates directly', () => {
+  const { mount } = mapRenderer(false);
+  const destinations = [];
+  const view = mount({ onNavigate: region => destinations.push(region.image) });
+  const card = view.cards[0];
+  card.fire('click', { detail: 1 });
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  assert.equal(destinations.length, 0);
+  card.fire('click', { detail: 1 });
+  assert.deepEqual(destinations, ['Office.jpg']);
+  card.fire('click', { detail: 0 });
+  assert.deepEqual(destinations, ['Office.jpg', 'Office.jpg']);
+  view.destroy();
+});
+
+test('standalone editor preview keeps its existing toggle behavior without a navigation target', () => {
+  const { mount, stage } = mapRenderer(false);
+  const view = mount({});
+  const card = view.cards[0];
+  card.fire('click', { detail: 1 });
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  card.fire('click', { detail: 1 });
+  assert.equal(card.getAttribute('aria-expanded'), 'false');
+  assert.equal(stage.classList.contains('has-gallery-links'), false);
+  view.destroy();
+});
