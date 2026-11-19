@@ -130,6 +130,8 @@ def normalize(payload, slug=None, title=None):
         require(kind in {"image", "video", "youtube", "sketchfab", "empty"},
                 f"Unsupported media type at position {position}: {kind!r}")
         item.update(type=kind, position=position)
+        if kind == "image" and "caption" in item:
+            require(item["caption"] is None or isinstance(item["caption"], str), "Image caption must be text or null.")
         if kind in {"image", "video"}:
             name = safe_name(item.get("filename"), kind)
             require(name.casefold() not in filenames, f"Duplicate/case-colliding filename: {name}")
@@ -302,6 +304,10 @@ def page(source, personal=False, embeds=False):
                       personal_gallery_description=source["description"], gallery_label=source["title"])
         if embeds:
             fields["gallery_embeds"] = True
+        captions = {item["filename"]: item["caption"] for item in source.get("media", [])
+                    if item["type"] == "image" and (item.get("caption") or "").strip()}
+        if captions:
+            fields["gallery_captions"] = captions
     # JSON scalars are valid YAML and prevent front-matter injection.
     return ("---\n" + "".join(f"{key}: {json.dumps(value, ensure_ascii=False)}\n" for key, value in fields.items()) + "---\n").encode()
 

@@ -1,0 +1,186 @@
+{
+  "passed": true,
+  "browser": "ChatGPT in-app browser",
+  "tab": "15",
+  "opening": {
+    "status": "interactive-verified",
+    "interactivePassed": true,
+    "needsInteractiveVerification": false,
+    "attempts": [
+      {
+        "backend": "in-app",
+        "passed": true,
+        "elapsedMs": 15
+      }
+    ],
+    "value": {
+      "passed": true,
+      "value": {
+        "count": 48,
+        "embeds": 0,
+        "route": "/galleries/survisland-concept-art/",
+        "title": "Survisland - Concept Art"
+      }
+    }
+  },
+  "checks": [
+    {
+      "check": "studio-mobile",
+      "clientWidth": 375,
+      "complete": true,
+      "count": 48,
+      "first": "https://digitalshamans.co.uk/galleries/survisland-concept-art/1440p/digital-shamans-fishtraps-color-01-portfolio.webp?v=261522726c920f31ee3de6c17f537dc552ba2ddd&webp=q92-m6",
+      "natural": 2560,
+      "route": "/galleries/survisland-concept-art/",
+      "scrollWidth": 375,
+      "width": 390
+    },
+    {
+      "check": "studio-mobile-viewer",
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "height": 844,
+      "images": [
+        {
+          "complete": true,
+          "naturalWidth": 2560,
+          "src": "https://digitalshamans.co.uk/galleries/survisland-concept-art/1440p/digital-shamans-trap-element-tree-02d-portfolio.webp?v=e0196616f694eea348fc5de94990c2c93aa8a259&webp=q92-m6"
+        }
+      ],
+      "width": 390,
+      "closed": true
+    },
+    {
+      "check": "studio-wide",
+      "complete": true,
+      "count": 48,
+      "first": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/03e99d896b7e6fe8814ca35c72470cf4864eafe3/survisland-concept-art/digital-shamans-fishtraps-color-01-portfolio.jpg",
+      "natural": 3840,
+      "route": "/galleries/survisland-concept-art/",
+      "width": 2800
+    },
+    {
+      "check": "studio-wide-8k",
+      "images": [
+        {
+          "alt": "Survisland - Concept Art screenshot 3",
+          "complete": true,
+          "naturalHeight": 4320,
+          "naturalWidth": 7680,
+          "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/03e99d896b7e6fe8814ca35c72470cf4864eafe3/survisland-concept-art/digital-shamans-ds-supertrampers-survisland-prototype-d-05.jpg"
+        }
+      ]
+    },
+    {
+      "check": "studio-wide-viewer",
+      "sequence": [
+        1,
+        2,
+        3,
+        2,
+        1
+      ],
+      "height": 1600,
+      "images": [
+        {
+          "complete": true,
+          "naturalWidth": 3840,
+          "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/03e99d896b7e6fe8814ca35c72470cf4864eafe3/survisland-concept-art/digital-shamans-fishtraps-color-01-portfolio.jpg"
+        }
+      ],
+      "width": 2800,
+      "closed": true
+    },
+    {
+      "check": "personal-wide",
+      "complete": true,
+      "count": 48,
+      "first": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/03e99d896b7e6fe8814ca35c72470cf4864eafe3/survisland-concept-art/digital-shamans-fishtraps-color-01-portfolio.jpg",
+      "natural": 3840,
+      "route": "/artur/galleries/survisland-concept-art/",
+      "width": 2800
+    },
+    {
+      "check": "personal-wide-viewer",
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "images": [
+        {
+          "complete": true,
+          "naturalWidth": 3840,
+          "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/03e99d896b7e6fe8814ca35c72470cf4864eafe3/survisland-concept-art/digital-shamans-trap-element-tree-02d-portfolio.jpg"
+        }
+      ],
+      "closed": true
+    },
+    {
+      "check": "personal-mobile",
+      "clientWidth": 375,
+      "complete": true,
+      "count": 48,
+      "first": "https://digitalshamans.co.uk/galleries/survisland-concept-art/1440p/digital-shamans-fishtraps-color-01-portfolio.webp?v=261522726c920f31ee3de6c17f537dc552ba2ddd&webp=q92-m6",
+      "natural": 2560,
+      "route": "/artur/galleries/survisland-concept-art/",
+      "scrollWidth": 375,
+      "width": 390
+    },
+    {
+      "check": "personal-mobile-viewer",
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "height": 844,
+      "images": [
+        {
+          "complete": true,
+          "naturalWidth": 2560,
+          "src": "https://digitalshamans.co.uk/galleries/survisland-concept-art/1440p/digital-shamans-trap-element-tree-02d-portfolio.webp?v=e0196616f694eea348fc5de94990c2c93aa8a259&webp=q92-m6"
+        }
+      ],
+      "width": 390,
+      "closed": true
+    }
+  ],
+  "logs": [
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T18:38:12.752Z",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43"
+    },
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T18:38:52.693Z",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43"
+    },
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T18:39:41.200Z",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43"
+    },
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T18:40:12.757Z",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43"
+    }
+  ],
+  "limitations": [
+    "Physical touch, iOS and Safari untested.",
+    "Image viewer overlays verified; native Fullscreen API grant is not claimed where IAB denied it."
+  ],
+  "screenshots": [
+    "outputs/survisland-concepts-mobile.jpg",
+    "outputs/survisland-concepts-desktop.jpg"
+  ]
+}

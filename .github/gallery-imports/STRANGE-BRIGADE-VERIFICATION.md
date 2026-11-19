@@ -1,0 +1,15 @@
+# Strange Brigade - Environment Art verification
+
+Scope: ArtStationVd5Vg5 only, one gallery release on both routes. Source/media/native/private/service gates passed; Pages/live-browser/caption/capture-cleanup gates remain pending.
+
+Source33 JPGs/no embeds/empty second container omitted. Exact /4k/ download links retained with dl=1, but every supplied original actually2560x1440; no upscaling/invented4K. Originals28,815,630 bytes; WebPs20,910,770 bytes, all2560x1440. Every size/hash/blob/full decode/order/case check passed. Lanczos/q92/method6/EXIF/ICC. Downloads4.691s; preparation10.723s.
+
+Each source image has one of two captions located on project-asset outside asset-container. All33 exact filename/text pairs preserved. Original project description empty and recorded separately from exact-caption-derived metadata description. Optional gallery_captions frontmatter, escaped inert template and caption JS/CSS render text per original filename; image-only gallery.json and core viewer remain unchanged. Seven caption tests and maintained regressions58/58, plus importer tests11/11 passed. Importer now emits captions automatically; current page matches generated output after normalizing Windows CRLF.
+
+Actual installed DS Gallery Editor v0.11 rendered all33 individual previews and passed reorder/explicit Save/reopen/canonical restoration; exact array/case/order and all original hashes unchanged. Scratch canonical bytes restored. CUA reset after last screenshot; no further native capture. Private PR11 merged3ea1ff2006349804fde73818e2c16d7e21af0586; all33 immutable tree blobs/sizes verified. Archiving/service prep overlapped final previews; website publication waited for full native report. Public source checkpointd03dbad.
+
+Service v14 source59af59c11926d13128283be854288ccf08d5df14, deployment appgdep_6aff4937bf6881918acc91f3b457e903 succeeded2026-11-19T19:08:52.912131Z,env19. Ten old catalogs/active revisions retained, runtime/audience/access controls unchanged. Build14/14 tests passed. All40 actual service GETs passed:33 new originals,3 retained samples,4 denials;36x200+4x404,24.86s,10s/request,WindowsTLS.
+
+Incoming website approval/revision only; old overrides/global fallback retained. Both new routes unlisted/noindex/sitemapfalse, existing external ArtStation card unchanged. Shared layout only adds optional caption markup/assets; existing galleries without metadata skip it. Public checks will verify both HTML documents, exact caption templates,34 assetversions, all33 WebPs and actual dependencies. In-app390/2800 checks must verify caption association/visibility and viewer navigation/exit on both routes, alongside one existing-gallery smoke for opt-in isolation. HTTP success never substitutes for UI.
+
+After final screenshots: inspect files, reset used tool kernels and stop verified original capture helpers with one bounded restart retry. No fresh desktop screenshot afterward; no disappearance claim from process counts. No Chrome/routine user prompts. Full Pages/Jekyll CI and terminal deployment must be observed before completion.

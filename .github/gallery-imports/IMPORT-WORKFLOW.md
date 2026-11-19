@@ -70,6 +70,21 @@ the native Gallery Editor round-trip requirement.
 
 Guard verification: `node --test .github/tests/gallery-browser-check.test.mjs`.
 
+## Image captions
+
+Inspect each `project-asset` wrapper for `.asset-caption`; it can be a sibling of
+`.asset-container`, so reading the image container alone misses source text. Keep
+each exact caption on its image record and preserve an empty project description
+separately from any caption-derived metadata description.
+
+The importer emits optional `gallery_captions` in studio-page frontmatter, keyed
+by original filename. Both portfolio layouts use that same map through escaped
+inert template data and the optional caption script/style. The native editor's
+image-only manifest stays unchanged; image order is never a caption identifier.
+Run `.github/tests/gallery-captions.test.cjs` and the importer tests when changing
+this feature. Verify template mappings and actual visible captions on both live
+routes, including after asynchronous gallery replacement and viewer navigation.
+
 ## Mandatory automatic screen-capture cleanup
 
 The user has authorized this cleanup after **every** gallery transfer. Run it

@@ -1,0 +1,44 @@
+{
+  "passed": true,
+  "completed_utc": "2026-11-19T18:41:51.4622636Z",
+  "native_editor_session_reset": true,
+  "root_cua_session_reset": true,
+  "root_node_repl_session_reset": true,
+  "original_processes_recorded": 3,
+  "actions": [
+    {
+      "id": 26704,
+      "name": "codex-computer-use.exe",
+      "result": "original-already-exited"
+    },
+    {
+      "id": 20052,
+      "name": "codex-computer-use.exe",
+      "result": "original-already-exited"
+    },
+    {
+      "id": 49436,
+      "name": "codex-computer-use-swift.exe",
+      "result": "stopped-original",
+      "identity_verified": true
+    },
+    {
+      "id": 49872,
+      "name": "codex-computer-use-swift.exe",
+      "result": "stopped-automatic-restart-once",
+      "identity_verified": true
+    }
+  ],
+  "original_processes_still_running": [],
+  "background_helpers_after_bounded_retry": [
+    {
+      "ProcessId": 17576,
+      "Name": "codex-computer-use-swift.exe",
+      "ParentProcessId": 38608
+    }
+  ],
+  "errors": [],
+  "creation_time_comparison": "Normalized UTC DateTime ticks; no raw ISO-string comparison.",
+  "visual_indicator": "No post-cleanup desktop screenshot; visual disappearance is not inferred from process counts.",
+  "privacy_settings_changed": false
+}
