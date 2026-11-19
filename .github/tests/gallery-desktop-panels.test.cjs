@@ -8,225 +8,273 @@ const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '../..');
 const script = fs.readFileSync(path.join(root, 'galleries/gallery-desktop-panels.js'), 'utf8');
-const include = fs.readFileSync(path.join(root, '_includes/gallery-navigation.html'), 'utf8');
+const markup = fs.readFileSync(path.join(root, '_includes/gallery-navigation.html'), 'utf8');
 const styles = fs.readFileSync(path.join(root, 'galleries/gallery.css'), 'utf8');
 
-function browser({ desktop = true, reduced = false, prefix = '' } = {}) {
+function browser({ desktop = true, reduced = false, prefix = '', gsap = true, arrival = null,
+    nextHref, previousHref } = {}) {
   const events = {};
   const calls = [];
   const tweens = [];
-  const triggerSettings = [];
   const timers = new Map();
-  let clock = 0;
-  let nextTimer = 0;
-  const makeClassList = (initial = []) => ({
-    contains(value) { return initial.includes(value); },
-    add() {}, remove() {}
-  });
-
+  let now = 0;
+  let nextId = 0;
+  const setTimer = (callback, ms) => {
+    const id = ++nextId;
+    timers.set(id, { callback, at: now + ms });
+    return id;
+  };
+  const cancelTimer = id => timers.delete(id);
+  function advance(ms) {
+    const end = now + ms;
+    for (;;) {
+      const first = [...timers.entries()].filter(([, timer]) => timer.at <= end)
+        .sort((a, b) => a[1].at - b[1].at)[0];
+      if (!first) break;
+      now = first[1].at;
+      timers.delete(first[0]);
+      first[1].callback();
+    }
+    now = end;
+  }
   class Element {
-    constructor(tagName = 'div') {
-      this.tagName = tagName.toUpperCase();
+    constructor(tag = 'div') {
+      this.tagName = tag.toUpperCase();
       this.children = [];
       this.dataset = {};
       this.hidden = false;
       this.style = {};
       this.className = '';
-      this.classList = makeClassList();
     }
     append(...nodes) { this.children.push(...nodes); }
-    after(...nodes) { this.afterNodes = nodes; }
     setAttribute(name, value) { this[name] = value; }
-    getAttribute(name) { return this[name] || null; }
     closest(selector) {
-      return selector.split(',').some(item => item.trim() === this.tagName.toLowerCase()) ? this : null;
+      return selector.split(',').some(part => part.trim() === this.tagName.toLowerCase()) ? this : null;
     }
-    getBoundingClientRect() { return { top: 850, bottom: 1750 }; }
   }
-
-  const previous = { href: 'https://example.test' + prefix + '/galleries/hb-rzstart/',
-    dataset: { galleryName: 'RZ Start (password required)' } };
-  const next = { href: 'https://example.test' + prefix + '/galleries/hb-helipad/',
-    dataset: { galleryName: 'Helipad' } };
-  const navigation = { querySelector(selector) { return selector.endsWith('--next') ? next : previous; } };
-  const main = new Element('main');
+  const previous = {
+    href: previousHref || 'https://example.test' + prefix + '/galleries/hb-rzstart/',
+    dataset: { galleryName: 'RZ Start (password required)' }
+  };
+  const next = {
+    href: nextHref || 'https://example.test' + prefix + '/galleries/hb-helipad/',
+    dataset: { galleryName: 'Helipad' }
+  };
+  const navigation = { querySelector: key => key.endsWith('--next') ? next : previous };
+  let dialog = false;
+  const body = new Element('body');
   const document = {
+    currentScript: { src: 'https://example.test/galleries/gallery-desktop-panels.js?v=2' },
     hidden: false, fullscreenElement: null,
-    documentElement: { scrollHeight: 5000 },
-    activeElement: new Element('body'),
-    currentScript: { src: 'https://example.test/galleries/gallery-desktop-panels.js' },
-    body: new Element('body'), head: new Element('head'),
-    querySelector(selector) {
-      if (selector === '.gallery-navigation') return navigation;
-      if (selector === 'body > main.shell') return main;
-      if (selector === 'body > main.shell:not(.gallery-access)') return main;
+    activeElement: body, body, head: new Element('head'),
+    createElement(tag) { return new Element(tag); },
+    querySelector(key) {
+      if (key === '.gallery-navigation') return navigation;
+      if (key === 'dialog[open]' && dialog) return {};
       return null;
     },
-    createElement(tagName) { return new Element(tagName); },
-    addEventListener(type, callback) { events['document:' + type] = callback; },
+    addEventListener(type, handler) { events['document:' + type] = handler; }
   };
-  const media = { matches: desktop, addEventListener() {} };
-  const motion = { matches: reduced, addEventListener() {} };
-  const win = {
-    location: { origin: 'https://example.test', pathname: prefix + '/galleries/hb-egypt/',
+  const storage = new Map();
+  if (arrival) storage.set('gallery-desktop-edge-arrival', JSON.stringify(arrival));
+  const media = { matches: desktop, addEventListener(type, cb) { events['media:' + type] = cb; } };
+  const motion = { matches: reduced };
+  const window = {
+    innerWidth: 1440, innerHeight: 900, visualViewport: { scale: 1 },
+    location: {
+      origin: 'https://example.test',
+      pathname: prefix + '/galleries/hb-egypt/',
       href: 'https://example.test' + prefix + '/galleries/hb-egypt/',
-      assign(href) { calls.push(href); } },
-    scrollY: 600, innerHeight: 900, visualViewport: { scale: 1 },
-    getSelection: () => ({ isCollapsed: true }),
-    sessionStorage: { setItem() {}, getItem() { return null; }, removeItem() {} },
-    requestAnimationFrame(callback) { callback(); },
-    matchMedia(query) { return query.includes('prefers-reduced-motion') ? motion : media; },
-    addEventListener(type, callback) { events['window:' + type] = callback; },
-    gsap: {
-      registerPlugin() {},
-      killTweensOf() {},
-      set() {},
-      to(element, options) {
-        tweens.push(options);
-        if (options.scrollTrigger) {
-          triggerSettings.push(options.scrollTrigger);
-          return { scrollTrigger: { refresh() {} } };
-        }
-        if (options.onComplete) options.onComplete();
-        return {};
-      },
-      fromTo() {}
+      assign(url) { calls.push(url); }
     },
-    ScrollTrigger: { create() {} },
-    ResizeObserver: class { observe() {} disconnect() {} }
+    matchMedia(query) { return query.includes('prefers-reduced-motion') ? motion : media; },
+    getSelection() { return { isCollapsed: true }; },
+    sessionStorage: {
+      getItem(key) { return storage.has(key) ? storage.get(key) : null; },
+      setItem(key, value) { storage.set(key, value); },
+      removeItem(key) { storage.delete(key); }
+    },
+    addEventListener(type, handler) { events['window:' + type] = handler; },
+    requestAnimationFrame(cb) { cb(); }
   };
+  if (gsap) {
+    const animations = new Map();
+    window.gsap = {
+      killTweensOf(node) { cancelTimer(animations.get(node)); animations.delete(node); },
+      fromTo(node, start, options) {
+        tweens.push({ node, start, options });
+        const id = setTimer(() => { animations.delete(node); options.onComplete?.(); },
+          options.duration * 1000);
+        animations.set(node, id);
+      },
+      to(node, options) {
+        const id = setTimer(() => { animations.delete(node); options.onComplete?.(); },
+          options.duration * 1000);
+        animations.set(node, id);
+      }
+    };
+  }
   vm.runInNewContext(script, {
-    window: win, document, navigator: { maxTouchPoints: 0 }, URL,
-    Date: { now: () => clock },
-    setTimeout(callback, delay) { const key = ++nextTimer; timers.set(key, { at: clock + delay, callback }); return key; },
-    clearTimeout(id) { timers.delete(id); },
-    ResizeObserver: win.ResizeObserver,
-    MutationObserver: class { observe() {} disconnect() {} }
+    window, document, URL,
+    Date: { now: () => now },
+    setTimeout: setTimer, clearTimeout: cancelTimer
   }, { filename: 'gallery-desktop-panels.js' });
 
-  function send(type, event = {}) {
-    const e = { type, target: new Element('body'), cancelable: true, deltaMode: 0,
-      deltaX: 0, deltaY: 0, prevented: false,
-      preventDefault() { this.prevented = true; }, ...event };
-    events['window:' + type]?.(e);
+  function pointer(x, { type = 'mouse', target = body } = {}) {
+    events['window:pointermove']?.({ pointerType: type, clientX: x, target });
+  }
+  function keydown(key, target = body) {
+    const e = { key, target, prevented: false, preventDefault() { this.prevented = true; } };
+    events['window:keydown']?.(e);
     return e;
   }
-  function advance(ms) {
-    const end = clock + ms;
-    for (;;) {
-      const entry = [...timers.entries()].filter(([, x]) => x.at <= end)
-        .sort((a, b) => a[1].at - b[1].at)[0];
-      if (!entry) break;
-      clock = entry[1].at; timers.delete(entry[0]); entry[1].callback();
-    }
-    clock = end;
-  }
-  return { win, document, main, calls, events, send, advance, triggerSettings, next, previous };
+  return {
+    window, document, events, calls, tweens, pointer, advance, keydown, next, previous, Element,
+    setDialog(value) { dialog = value; },
+    get panel() { return body.children.find(node => node.className === 'gallery-desktop-edge-panel'); },
+    event(type) { events['window:' + type]?.(); }
+  };
 }
 
-async function setup(options) {
-  const instance = browser(options);
-  await Promise.resolve();
-  await Promise.resolve();
-  return instance;
-}
-
-test('desktop project arrows are removed but fullscreen image arrows are retained', () => {
-  assert.doesNotMatch(include, /gallery-navigation__arrow|gallery-navigation__details/);
-  assert.match(include, /gallery-desktop-panels\.js/);
+test('no desktop boxes/arrows and no scroll stage; fullscreen screenshot controls remain', () => {
+  assert.match(markup, /gallery-navigation[^>]+hidden/);
+  assert.doesNotMatch(markup, /gallery-navigation__arrow|gallery-navigation__details/);
+  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=2/);
   assert.match(styles, /\.gallery-navigation\s*\{\s*display:\s*none !important/);
   assert.match(styles, /\.viewer-arrows button/);
+  assert.doesNotMatch(styles, /gallery-desktop-scroll-stage/);
+  assert.match(styles, /\.gallery-desktop-edge-panel\s*\{/);
 });
 
-test('desktop loads a scroll-driven GSAP panel with scrub enabled, without snapping', async () => {
-  const b = await setup();
-  assert.equal(b.triggerSettings.length, 1);
-  assert.equal(b.triggerSettings[0].scrub, true);
-  assert.equal(b.triggerSettings[0].snap, undefined);
-  assert.equal(b.main.afterNodes[0].className, 'gallery-desktop-scroll-stage');
-});
-
-test('touch-first and reduced-motion views keep controls unobtrusive', async () => {
-  const mobile = await setup({ desktop: false });
-  assert.equal(mobile.events['window:wheel'], undefined);
-  const reduced = await setup({ reduced: true });
-  assert.equal(reduced.main.afterNodes, undefined);
-  assert.equal(typeof reduced.events['window:wheel'], 'function');
-});
-
-test('horizontal trackpad wheel changes galleries without clicking on both portfolios', async () => {
+test('moving mouse into right or left edge starts the slide and navigates automatically', () => {
   for (const prefix of ['', '/artur']) {
-    const b = await setup({ prefix });
-    assert.equal(b.send('wheel', { deltaX: 110 }).prevented, true);
-    assert.equal(b.calls.length, 0);
-    b.send('wheel', { deltaX: 110 });
-    b.advance(160);
-    assert.deepEqual(b.calls, ['https://example.test' + prefix + '/galleries/hb-helipad/']);
+    for (const [x, which] of [[1439, 'next'], [1, 'previous']]) {
+      const b = browser({ prefix });
+      b.pointer(x);
+      assert.equal(b.panel.hidden, true, 'short edge brushes show nothing');
+      b.advance(179);
+      assert.equal(b.panel.hidden, true);
+      b.advance(1);
+      assert.equal(b.panel.hidden, false);
+      assert.equal(b.panel.dataset.direction, which);
+      assert.equal(b.calls.length, 0, 'animation must be visible before navigation');
+      b.advance(749);
+      assert.equal(b.calls.length, 0);
+      b.advance(1);
+      assert.deepEqual(b.calls, [which === 'next' ? b.next.href : b.previous.href]);
+    }
   }
 });
 
-test('scrolling up at top or using Shift+wheel moves to previous gallery', async () => {
-  const b = await setup();
-  b.win.scrollY = 0;
-  assert.equal(b.send('wheel', { deltaY: -210 }).prevented, true);
-  b.advance(160);
+test('approaching within five percent of an edge works without touching screen border', () => {
+  const b = browser();
+  b.pointer(75);
+  b.advance(930);
   assert.deepEqual(b.calls, [b.previous.href]);
-
-  const c = await setup();
-  c.send('wheel', { shiftKey: true, deltaY: 210 });
-  c.advance(160);
-  assert.deepEqual(c.calls, [c.next.href]);
 });
 
-test('ordinary vertical scrolling within a gallery remains native', async () => {
-  const b = await setup();
-  assert.equal(b.send('wheel', { deltaY: 240 }).prevented, false);
-  b.advance(500);
+test('moving out of the edge before or during animation cancels the transition', () => {
+  for (const elapsed of [80, 360]) {
+    const b = browser();
+    b.pointer(1439);
+    b.advance(elapsed);
+    b.pointer(720);
+    b.advance(1500);
+    assert.equal(b.calls.length, 0);
+    assert.equal(b.panel.hidden, true);
+  }
+});
+
+test('moving between edges changes direction instead of leaving a stale navigation', () => {
+  const b = browser();
+  b.pointer(1439);
+  b.advance(200);
+  b.pointer(0);
+  b.advance(180 + 750);
+  assert.deepEqual(b.calls, [b.previous.href]);
+});
+
+test('page visits do not automatically chain to another gallery until the mouse exits the edge', () => {
+  const b = browser({ arrival: { direction: 'next', pathname: '/galleries/hb-egypt/', at: 0 } });
+  b.pointer(1439);
+  b.advance(1700);
+  assert.equal(b.calls.length, 0);
+  b.pointer(700);
+  b.pointer(1439);
+  b.advance(930);
+  assert.deepEqual(b.calls, [b.next.href]);
+});
+
+test('touch and coarse-pointer devices do not install desktop navigation handlers', () => {
+  const coarse = browser({ desktop: false });
+  assert.equal(coarse.events['window:pointermove'], undefined);
+  assert.equal(coarse.panel, undefined);
+  const touch = browser();
+  touch.pointer(1439, { type: 'touch' });
+  touch.advance(2000);
+  assert.deepEqual(touch.calls, []);
+});
+
+test('gallery fullscreen, dialogs, editable targets and zoom block edge navigation', () => {
+  for (const setup of [
+    b => { b.document.fullscreenElement = {}; },
+    b => b.setDialog(true),
+    b => { b.window.visualViewport.scale = 1.3; },
+    b => { b.document.activeElement = new b.Element('input'); }
+  ]) {
+    const b = browser();
+    setup(b);
+    b.pointer(1439);
+    b.advance(2000);
+    assert.deepEqual(b.calls, []);
+  }
+  const b = browser();
+  b.pointer(1439, { target: new b.Element('a') });
+  b.advance(1000);
   assert.equal(b.calls.length, 0);
 });
 
-test('scrolling through the next panel navigates only with deliberate scrolling', async () => {
-  const b = await setup();
-  b.triggerSettings[0].onLeave();
-  assert.equal(b.calls.length, 0, 'history restoration should not auto-redirect');
-  b.send('wheel', { deltaY: 100 });
-  b.triggerSettings[0].onLeave();
-  assert.deepEqual(b.calls, [b.next.href]);
+test('mouse button press cancels an active edge transition', () => {
+  const b = browser();
+  b.pointer(1439);
+  b.advance(240);
+  b.event('pointerdown');
+  b.advance(1000);
+  assert.equal(b.calls.length, 0);
 });
 
-test('fullscreen dialogs, zoom, interactive fields and control wheel gestures do not switch pages', async () => {
-  for (const block of [
-    b => { b.document.fullscreenElement = {}; },
-    b => { b.document.querySelector = selector => selector === 'dialog[open]' ? {} : null; },
-    b => { b.win.visualViewport.scale = 1.2; },
-    b => { b.document.activeElement = { closest: () => ({}) }; },
+test('keyboard arrows remain a click-free fallback outside interactive elements', () => {
+  const b = browser();
+  assert.equal(b.keydown('ArrowRight').prevented, true);
+  b.advance(750);
+  assert.deepEqual(b.calls, [b.next.href]);
+  const c = browser();
+  assert.equal(c.keydown('ArrowLeft', new c.Element('input')).prevented, false);
+  c.advance(1000);
+  assert.equal(c.calls.length, 0);
+});
+
+test('reduced motion and GSAP failure both preserve auto navigation', () => {
+  const reduced = browser({ reduced: true });
+  reduced.pointer(1439);
+  reduced.advance(430);
+  assert.deepEqual(reduced.calls, [reduced.next.href]);
+  const css = browser({ gsap: false });
+  css.pointer(1439);
+  css.advance(180 + 790);
+  assert.deepEqual(css.calls, [css.next.href]);
+});
+
+test('invalid, cross-origin or cross-portfolio destinations do not activate', () => {
+  for (const href of [
+    'https://other.example/galleries/hb-helipad/',
+    'https://example.test/artur/galleries/hb-helipad/',
+    'https://example.test/galleries/other-product/'
   ]) {
-    const b = await setup(); block(b);
-    assert.equal(b.send('wheel', { deltaX: 300 }).prevented, false);
-    b.advance(600); assert.equal(b.calls.length, 0);
-  }
-  const c = await setup();
-  assert.equal(c.send('wheel', { deltaX: 300, ctrlKey: true }).prevented, false);
-  assert.equal(c.send('wheel', { deltaX: 300, target: { closest: () => ({}) } }).prevented, false);
-  c.advance(600); assert.equal(c.calls.length, 0);
-});
-
-test('arrow keys are a no-click navigation fallback and are disabled in inputs', async () => {
-  const b = await setup();
-  assert.equal(b.send('keydown', { key: 'ArrowRight' }).prevented, true);
-  b.advance(160);
-  assert.deepEqual(b.calls, [b.next.href]);
-
-  const c = await setup();
-  assert.equal(c.send('keydown', { key: 'ArrowRight', target: { closest: () => ({}) } }).prevented, false);
-  c.advance(400); assert.equal(c.calls.length, 0);
-});
-
-test('cross-origin and cross-portfolio destinations are rejected', async () => {
-  for (const href of ['https://evil.example/galleries/hb-helipad/', 'https://example.test/artur/galleries/hb-helipad/']) {
-    const b = await setup();
-    // Validation takes place at initialization; mutate via a fresh fixture scenario by URL object.
-    assert.equal(b.calls.length, 0);
-    assert.notEqual(href, b.next.href);
+    const b = browser({ nextHref: href });
+    assert.equal(b.events['window:pointermove'], undefined);
+    b.pointer(1439);
+    b.advance(2000);
+    assert.deepEqual(b.calls, []);
   }
 });
