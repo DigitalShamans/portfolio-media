@@ -1,0 +1,15 @@
+# Carve Snowboarding VR - Concept Art Design verification
+
+Scope: requested ArtStation d8Zm23 only; one gallery release, both portfolio routes. Source/media/editor/private/service gates passed. Website deployment and actual live acceptance remain pending.
+
+Source:35 JPGs, one genuinely empty source container atposition2 omitted, no embedded viewers/video. Every actual download link is /4k/ with dl=1. Source filename case/order, full description and credits retained. All originals3840x2160,33,202,978bytes. All35 derived WebPs2560x1440,10,994,490bytes, Lanczos/q92/method6/EXIF/ICC/no crop or upscale. Downloads6.925s; preparation10.019s. All source/staged hashes, blobs, sizes, dimensions and full decodes pass. Production GalleryData parser matches exact canonical35-image source order. No companion was invented.
+
+Actual installed DS Gallery Editor v0.11 rendered all35 individual previews. Adjacent reorder, explicit Save, reopen and canonical restoration/Save passed. Canonical data/case/order and all original hashes stayed exact. Scratch manifest bytes restored to canonical stage after retaining native save evidence. The native owner reset its CUA kernel and made no further capture call. Final global capture cleanup remains required after the last live-browser screenshot.
+
+Private PR8 merged7eb23fec77cce43134e22a6394cb71580c7de697; all35 immutable tree blob/size entries match approved.json. Public prepared source checkpoint6ad548f. Existing private approvals preserved. Original archiving/service preparation overlapped final individual editor previews; website publication stayed gated on the completed editor report.
+
+Existing public media-service v12: source6fc4ed2fff7970ac65eb186c382348a7bf824fd6, deployment appgdep_6aff251948088191bb2db410ffc609db succeeded2026-11-19T16:34:47.983308Z, environment17. Catalog-only addition; eight old catalogs/active revisions retained; runtime/access controls unchanged. Build and14/14 gateway tests passed. Actual42GETs passed (35 new originals,3 retained samples,4 denial probes),38 HTTP200+4 HTTP404,27.47s,10s/request and Windows TLS. Every new original exact size/SHA-256/blob/full decode/dimensions/orientation.
+
+Website patches add only incoming approval and per-gallery immutable revision. All prior approvals, overrides and global fallback remain. Both pages unlisted/noindex/sitemapfalse; external ArtStation homepage cards and navigation unchanged. Current main's concurrent About/CV edits preserved. Maintained browser/resolution/prefetch/arrival/embed tests51/51 passed. Production asset-version generation and Pages CI are the publication gates; no local Ruby pass is claimed.
+
+Pending: exact Pages implementation/build/deploy success; all published WebPs/manifests/dependencies/noindex/unlisted checks; actual390px mobile and2800px wide image delivery/viewer navigation/exit on both routes; screenshot inspection; viewport reset and automatic capture release. HTTP success will not substitute for interaction. No automatic Chrome. Capture cleanup is mandatory on success/failure/early exit without another user prompt.
