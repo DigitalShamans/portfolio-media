@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "overview": {
+    "image": "Hall_Technical_LightProbes_01_4k_Logos.jpg",
+    "alt": "Angled whole-level technical overview of the Atrium, with its light-probe layout visible"
+  },
+  "regions": [
+    { "label": "Offices", "image": "Hall_Final_Office_05_4k_Logos.jpg", "x": 25, "y": 29 },
+    { "label": "Upper walkway", "image": "Hall_Atrium_1st_04_4k_Logos.jpg", "x": 66, "y": 25 },
+    { "label": "Reception", "image": "Hall_Atrium_Ground_01_4k_Logos.jpg", "x": 37, "y": 70 },
+    { "label": "Stairwell", "image": "Hall_Final_StaircaseB_01_4k_Logos.jpg", "x": 77, "y": 68 }
+  ]
+}

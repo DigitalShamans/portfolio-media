@@ -21,6 +21,20 @@ GitHub Pages excludes the source PNG folders, branding and marketing folders, an
 
 If the delivery revision is unset, 4K continues to come from the Pages checkout. When a verified immutable revision is configured, the delivery service supplies 4K and the Pages artifact excludes those originals. The RZ Start card remains a public banner. The gallery itself uses the existing password session.
 
+## Interactive gallery maps
+
+Open `https://digitalshamans.co.uk/_tools/gallery-editor.html` in desktop Chrome or Edge, or open `_tools/gallery-editor.html` from your checkout. Choose `galleries/<gallery>` with **Open gallery folder**, then select **Interactive map**. The editor supports both original images and the repository's `1440p` WebP subfolder. Files stay on your computer.
+
+1. Choose the overview image and give it a description.
+2. Choose screenshots, click **Add screenshot**, and drag them onto the overview. Arrow keys move a selected screenshot by 1%; Shift moves it by 5%. Edit its label or remove it in the sidebar.
+3. Click **Preview map** to try the same hover/tap interaction used by the published map. Return to editing to adjust positions.
+4. Click **Save gallery-map.json**. In download-only mode, download that file and place it beside `gallery.json`. Image ordering and comparisons remain in their original manifest.
+5. Commit and push in Fork. The build validates filenames, positions, descriptions and matching WebPs. Open `/experiments/gallery-map/?gallery=hb-atrium`, substituting your gallery folder. The personal version uses `/artur/experiments/gallery-map/?gallery=hb-atrium`.
+
+Maps use images already included in the public gallery manifest, including its comparisons. Add any new overview image through the normal approved-image workflow first. Map configuration is public; RZ Start remains protected and is not supported by these public map pages. Maps are unlisted and excluded from the sitemap; the homepages and ordinary galleries are unchanged. The existing `/experiments/atrium-overview/` test now reads the same saved Atrium map.
+
+The editor checks for external file changes before saving and prompts before discarding unsaved order or map edits. It reports invalid map files without replacing them; **Start a new map** only writes a replacement when you save.
+
 ## Git LFS
 
 PSD and PSB files use Git LFS throughout the repository. In each local clone, run `git lfs install --local` before staging or pulling LFS assets. Use `git lfs ls-files` to check which files are stored in LFS. PNGs use regular Git. Add a specific LFS rule when another source format needs it.

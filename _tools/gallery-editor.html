@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Digital Shamans Gallery Editor</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="../galleries/gallery-map.css?v=1">
+  <link rel="stylesheet" href="gallery-map-editor.css?v=1">
   <style>
     :root { color-scheme: dark; font: 16px/1.5 system-ui, sans-serif; color: #f2f2f2; background: #191919; }
     * { box-sizing: border-box; }
@@ -54,16 +57,53 @@
       <button id="save" type="button" class="primary" disabled>Save gallery.json</button>
       <button id="download" type="button" disabled>Download gallery.json</button>
       <button id="merge" type="button" disabled>Merge selected</button>
+      <button id="map-save" type="button" class="primary" hidden disabled>Save gallery-map.json</button>
+      <button id="map-download" type="button" hidden disabled>Download gallery-map.json</button>
+      <button id="map-preview" type="button" hidden disabled aria-pressed="false">Preview map</button>
     </div>
+    <div class="editor-modes" aria-label="Editing mode">
+      <button id="order-mode" type="button" aria-pressed="true" disabled>Image order</button>
+      <button id="map-mode" type="button" aria-pressed="false" disabled>Interactive map</button>
+    </div>
+    <details class="opening-options"><summary>Other opening options</summary><button id="open-readonly" type="button">Open folder for download-only editing</button></details>
     <p id="status" role="status">Choose a gallery folder containing your images and gallery.json.</p>
     <input id="folder-input" type="file" webkitdirectory multiple hidden>
   </div>
   <main id="workspace" hidden>
     <h2 id="folder-name"></h2>
-    <p class="muted">Drag the handles or use ↑ and ↓ to reorder. Tick two images in order and click <strong>Merge selected</strong>. The first is the primary and the second is its hover alternate.</p>
-    <ol id="tiles" aria-label="Gallery order"></ol>
+    <div id="order-panel">
+      <p class="muted">Drag the handles or use ↑ and ↓ to reorder. Tick two images in order and click <strong>Merge selected</strong>. The first is the primary and the second is its hover alternate.</p>
+      <ol id="tiles" aria-label="Gallery order"></ol>
+    </div>
+    <section id="map-panel" aria-label="Interactive map editor" hidden>
+      <div id="map-file-error" class="map-file-error" hidden><p id="map-file-error-text" role="alert"></p><button id="map-reset" type="button">Start a new map</button></div>
+      <fieldset id="map-fields" style="border:0;padding:0;margin:0;min-width:0">
+        <div class="map-picker">
+          <label>Overview image<select id="map-overview"></select></label>
+          <label>Overview description<input id="map-overview-alt" type="text" placeholder="Describe the overview for visitors"></label>
+        </div>
+        <div class="map-workspace">
+          <div>
+            <div id="map-stage" class="gallery-map-stage map-editor-stage" aria-label="Map canvas"></div>
+            <p id="map-help" class="map-editor-help"></p>
+            <p id="map-caption" class="muted" role="status" aria-live="polite">Whole-level overview</p>
+          </div>
+          <aside class="map-sidebar" aria-label="Map screenshots">
+            <div><h3>Add a screenshot</h3><label for="map-screenshot" class="muted">Screenshot image</label><select id="map-screenshot"></select><img id="map-sample" alt="Selected screenshot preview" hidden><div class="actions"><button id="map-add" type="button" disabled>Add screenshot</button></div></div>
+            <div><h3>Placed screenshots</h3><ul id="map-regions" class="map-region-list"></ul></div>
+            <div id="map-selected" class="map-selected" hidden><h3>Selected screenshot</h3><p id="map-selected-file" class="muted" style="overflow-wrap:anywhere"></p><label>Screenshot label<input id="map-label" type="text"></label><p id="map-position" class="muted" aria-live="polite"></p></div>
+          </aside>
+        </div>
+      </fieldset>
+      <p id="map-validation" class="map-validation" role="status"></p>
+      <p class="map-publish-help">Save gallery-map.json in this gallery folder, then commit and push in Fork. The map stays separate from image ordering and is available by direct link after publishing. <a id="map-published" target="_blank" rel="noopener" hidden>Open published map</a></p>
+    </section>
   </main>
   <script src="../galleries/gallery-data.js"></script>
+  <script src="../galleries/gallery-map-data.js?v=1"></script>
+  <script src="../galleries/gallery-map.js?v=1"></script>
+  <script src="gallery-editor-files.js?v=1"></script>
+  <script src="gallery-map-editor.js?v=1"></script>
   <script>
     'use strict';
 
@@ -87,6 +127,10 @@
     let busy = false;
     let dragged;
     let dropTarget;
+    let mapEditor;
+    let mapMode = false;
+    const orderModeButton = document.querySelector('#order-mode');
+    const mapModeButton = document.querySelector('#map-mode');
 
     function message(text, error = false) {
       status.textContent = text;
@@ -99,6 +143,9 @@
       downloadButton.disabled = busy || !entries.length;
       mergeButton.disabled = busy || selected.size !== 2;
       list.inert = busy;
+      orderModeButton.disabled = mapModeButton.disabled = busy || !entries.length;
+      document.querySelector('#open-readonly').disabled = busy;
+      mapEditor?.setBusy(busy);
     }
 
     function preview(name) {
@@ -263,21 +310,11 @@
     }
 
     async function readManifest(handle) {
-      try {
-        const file = await handle.getFileHandle(filename);
-        return (await file.getFile()).text();
-      } catch (error) {
-        if (error.name === 'NotFoundError') return null;
-        throw error;
-      }
+      return GalleryEditorFiles.readText(handle, filename);
     }
 
-    async function loadFiles(imageFiles, manifest, handle, name) {
-      const found = new Map(imageFiles.filter(file => GalleryData.isImageName(file.name)).map(file => [file.name, file]));
-      if (!found.size) throw new Error('This folder has no supported images.');
-      const order = manifest === null
-        ? [...found.keys()].sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).map(image => ({ image }))
-        : GalleryData.parse(manifest, found);
+    async function loadFiles(imageFiles, manifest, handle, name, reduced = [], mapText = null) {
+      const { files: found, entries: order } = GalleryEditorFiles.collect(imageFiles, reduced, manifest);
 
       for (const url of previews.values()) URL.revokeObjectURL(url);
       previews.clear();
@@ -289,6 +326,7 @@
       dirty = manifest === null;
       folderName.textContent = name;
       workspace.hidden = false;
+      mapEditor.load({ names: entries.flatMap(GalleryData.images), directory, text: mapText, name });
       render();
       const mode = handle ? 'Save changes here, then commit in Fork.' : 'Download gallery.json and copy it into this gallery folder.';
       message(entries.length + ' tiles loaded. ' + mode);
@@ -308,7 +346,7 @@
     }
 
     openButton.addEventListener('click', () => {
-      if (dirty && !window.confirm('Discard unsaved changes and open another folder?')) return;
+      if ((dirty || mapEditor.dirty) && !window.confirm('Discard unsaved changes and open another folder?')) return;
       if (!window.showDirectoryPicker) {
         input.click();
         return;
@@ -325,8 +363,13 @@
         for await (const entry of handle.values()) {
           if (entry.kind === 'file' && GalleryData.isImageName(entry.name)) images.push(entry.getFile());
         }
-        const [imageFiles, manifest] = await Promise.all([Promise.all(images), readManifest(handle)]);
-        await loadFiles(imageFiles, manifest, handle, handle.name);
+        const reduced = [];
+        try {
+          const small = await handle.getDirectoryHandle('1440p');
+          for await (const entry of small.values()) if (entry.kind === 'file' && /\.webp$/i.test(entry.name)) reduced.push(entry.getFile());
+        } catch (error) { if (error.name !== 'NotFoundError') throw error; }
+        const [imageFiles, manifest, previewFiles, mapText] = await Promise.all([Promise.all(images), readManifest(handle), Promise.all(reduced), GalleryEditorFiles.readText(handle, GalleryMapData.filename)]);
+        await loadFiles(imageFiles, manifest, handle, handle.name, previewFiles, mapText);
       });
     });
 
@@ -338,7 +381,9 @@
         const name = picked[0].webkitRelativePath.split('/')[0];
         const topLevel = picked.filter(file => file.webkitRelativePath.split('/').length === 2);
         const manifest = topLevel.find(file => file.name === filename);
-        await loadFiles(topLevel, manifest ? await manifest.text() : null, null, name);
+        const mapFile = topLevel.find(file => file.name === GalleryMapData.filename);
+        const reduced = picked.filter(file => { const parts = file.webkitRelativePath.split('/'); return parts.length === 3 && parts[1] === '1440p'; });
+        await loadFiles(topLevel, manifest ? await manifest.text() : null, null, name, reduced, mapFile ? await mapFile.text() : null);
       });
     });
 
@@ -373,19 +418,8 @@
 
     saveButton.addEventListener('click', () => {
       void run(async () => {
-        if (await readManifest(directory) !== sourceText) {
-          throw new Error('gallery.json changed outside the editor. Reopen the folder before saving.');
-        }
         const text = orderText();
-        const file = await directory.getFileHandle(filename, { create: true });
-        const writer = await file.createWritable();
-        try {
-          await writer.write(text);
-          await writer.close();
-        } catch (error) {
-          await writer.abort().catch(() => {});
-          throw error;
-        }
+        await GalleryEditorFiles.writeText(directory, filename, text, sourceText);
         sourceText = text;
         dirty = false;
         message('Saved gallery.json. Commit and push it in Fork to publish.');
@@ -404,9 +438,25 @@
       });
     });
 
-    window.addEventListener('beforeunload', event => {
-      if (dirty) event.preventDefault();
+    mapEditor = GalleryMapEditor.create({ preview, message, run, onStateChange: controls });
+    function changeMode(value) {
+      mapMode = value;
+      document.body.classList.toggle('map-mode', value);
+      document.querySelector('#order-panel').hidden = value;
+      document.querySelector('#map-panel').hidden = !value;
+      orderModeButton.setAttribute('aria-pressed', String(!value));
+      mapModeButton.setAttribute('aria-pressed', String(value));
+      for (const button of [saveButton, downloadButton, mergeButton]) button.hidden = value;
+      for (const id of ['#map-save', '#map-download', '#map-preview']) document.querySelector(id).hidden = !value;
+      controls();
+    }
+    orderModeButton.addEventListener('click', () => changeMode(false));
+    mapModeButton.addEventListener('click', () => changeMode(true));
+    document.querySelector('#open-readonly').addEventListener('click', () => {
+      if ((dirty || mapEditor.dirty) && !window.confirm('Discard unsaved changes and open another folder?')) return;
+      input.click();
     });
+    window.addEventListener('beforeunload', event => { if (dirty || mapEditor.dirty) event.preventDefault(); });
   </script>
 </body>
 </html>

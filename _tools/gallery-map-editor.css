@@ -1,0 +1,32 @@
+[hidden] { display: none !important; }
+.editor-modes { display: flex; gap: 8px; margin-top: 12px; }
+.editor-modes [aria-pressed="true"] { background: #414141; border-color: #ddd; }
+body.map-mode { max-width: 1600px; }
+.map-picker, .map-selected { display: grid; gap: 8px; }
+.map-picker { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); margin: 16px 0; }
+.map-picker label, .map-selected label { display: grid; gap: 4px; font-size: 14px; }
+.map-picker select, .map-picker input, .map-selected input, #map-screenshot { width: 100%; min-width: 0; padding: 8px; border: 1px solid #626262; border-radius: 4px; background: #252525; color: inherit; font: inherit; }
+.map-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 20px; align-items: start; }
+.map-workspace .gallery-map-stage { align-self: start; }
+.map-sidebar { display: grid; gap: 16px; min-width: 0; }
+.map-sidebar h3 { font-size: 16px; margin: 0 0 6px; }
+.map-sidebar .actions { margin-top: 8px; }
+.map-region-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.map-region-list li { display: flex; gap: 6px; }
+.map-region-list li > button:first-child { flex: 1; text-align: left; min-width: 0; overflow-wrap: anywhere; }
+.map-region-list [aria-pressed="true"] { border-color: #eb9a56; background: #3a2b21; }
+.map-region-list button { font-size: 14px; padding: 6px 8px; }
+.map-selected { border-top: 1px solid #454545; padding-top: 12px; }
+.map-editor-help { margin: 8px 0; color: #ccc; font-size: 14px; }
+.map-validation { color: #ffbd9d; font-size: 14px; min-height: 1.5em; }
+.map-editor-stage.is-editing .gallery-map-region { cursor: grab; touch-action: none; transition: none; }
+.map-editor-stage.is-editing .gallery-map-region:active { cursor: grabbing; }
+.map-editor-stage.is-editing .gallery-map-region.is-selected { border: 2px solid #eb9a56; z-index: 2; }
+.map-sidebar img { width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #101010; border-radius: 4px; }
+.map-publish-help { font-size: 14px; margin-top: 20px; color: #bbb; }
+.map-mode .toolbar { z-index: 10; }
+.map-file-error { padding: 12px; border: 1px solid #b75c40; border-radius: 4px; }
+.opening-options { margin-top: 8px; color: #bbb; font-size: 14px; }
+.opening-options button { margin-top: 8px; }
+@media (max-width: 1000px) { .map-workspace { grid-template-columns: minmax(0, 1fr); } .map-sidebar { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 620px) { .map-picker, .map-sidebar { grid-template-columns: 1fr; } }
