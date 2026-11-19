@@ -1,0 +1,189 @@
+{
+  "benchmark": "local Firearms replay; acquisition, UI and deployment excluded",
+  "cold": {
+    "process_seconds": 3.756,
+    "report": {
+      "slug": "firearms",
+      "prepared": 21,
+      "images": 20,
+      "embeds": 1,
+      "empty_containers": 0,
+      "webp_cache_hits": 0,
+      "encoder": {
+        "pillow": "13.0.0",
+        "bounds": [
+          2560,
+          1440
+        ],
+        "quality": 92,
+        "method": 6,
+        "resampling": "LANCZOS",
+        "exif_transpose": true,
+        "icc": true
+      },
+      "elapsed_seconds": 3.472,
+      "publication": "Staged only; private checkpoint, service and Pages publication pending."
+    }
+  },
+  "warm": {
+    "process_seconds": 1.443,
+    "report": {
+      "slug": "firearms",
+      "prepared": 21,
+      "images": 20,
+      "embeds": 1,
+      "empty_containers": 0,
+      "webp_cache_hits": 20,
+      "encoder": {
+        "pillow": "13.0.0",
+        "bounds": [
+          2560,
+          1440
+        ],
+        "quality": 92,
+        "method": 6,
+        "resampling": "LANCZOS",
+        "exif_transpose": true,
+        "icc": true
+      },
+      "elapsed_seconds": 1.158,
+      "publication": "Staged only; private checkpoint, service and Pages publication pending."
+    }
+  },
+  "byte_identical_webps": [
+    {
+      "name": "digital-shamans-artur-perzyna-weapon-aw50-compose1.webp",
+      "sha256": "1da99b9d844e92e0e1c631f08fae0680026a4ce40b165d0fdcb05b51fb63140d"
+    },
+    {
+      "name": "digital-shamans-artur-perzyna-weapon-aw50-compose2.webp",
+      "sha256": "59639e98241b15de8186788234ef1b41f693387b13f912f5b4cba34b361e812a"
+    },
+    {
+      "name": "digital-shamans-artur-perzyna-weapon-barrett-compose1.webp",
+      "sha256": "1ccef1ecb55818b063e51343bdf4dc75b0fb1e948277d844ef8ebef383fadc37"
+    },
+    {
+      "name": "digital-shamans-artur-perzyna-weapon-cheytac-compose.webp",
+      "sha256": "d8616af3b71e473be624143ee99d0d0b2c11148d9024e54de61456c40ba71058"
+    },
+    {
+      "name": "digital-shamans-artur-perzyna-weapon-dsr50-compose1.webp",
+      "sha256": "9d65cd9aee4ecd39b53571ca6fe08ff5f9ca96bf794b1a40e5c26026fa33c1ab"
+    },
+    {
+      "name": "digital-shamans-artur-perzyna-weapon-dsr50-compose2.webp",
+      "sha256": "10526d6e51d8181f1b4766dcfb35d91d2836379c18c08bff05d791a7550511b6"
+    },
+    {
+      "name": "digital-shamans-artur-perzyna-weapon-m24-compose.webp",
+      "sha256": "441760c41fe5c4a2d539d18d4c72b18d122d0b53acf92cf085ab728e8af0ad45"
+    },
+    {
+      "name": "digital-shamans-artur-perzyna-weapon-remington-compose1.webp",
+      "sha256": "41fd96ac9c18aaf9809113a51a829ee1eb8126f713a4daa0fae55514f14ac3ee"
+    },
+    {
+      "name": "digital-shamans-artur-perzyna-weapon-remington-compose2.webp",
+      "sha256": "6afd4b41252faf0584793ba200c727df07859a6619d3ab4875fe11f727732281"
+    },
+    {
+      "name": "digital-shamans-artur-perzyna-weapon-vintorez-compose.webp",
+      "sha256": "dd8b4614ad5d8f9d11ea16ca8bcbe4ffd5095f611e22ad40846effa6553da965"
+    },
+    {
+      "name": "digital-shamans-artur-perzyna-weapon-vintorez-night-compose1.webp",
+      "sha256": "eabb2cbb8d262f58e3119ab6046f34a94368ef16377e84ce3f897a39f3f26133"
+    },
+    {
+      "name": "digital-shamans-artur-perzyna-weapon-xm312-compose.webp",
+      "sha256": "72534317cdbc25860e569a2107795eaf024d51ee2c946f9f7b05b8599df940fb"
+    },
+    {
+      "name": "digital-shamans-m5-phalanx-compose1.webp",
+      "sha256": "57e7ef955201bec258948253a9316cbd2ab74809e395a694765ee5f12278bf04"
+    },
+    {
+      "name": "digital-shamans-m5-phalanx-compose2.webp",
+      "sha256": "75d511f90f68a76f5a063795e9d6ecf727466a8dd19e941ce96493ede53c0af6"
+    },
+    {
+      "name": "digital-shamans-noise-maker-01.webp",
+      "sha256": "bd131d65d9773c9a6b40e8903f41e00cc3edab9502978b44325f7dbbc36bf453"
+    },
+    {
+      "name": "digital-shamans-noise-maker-03.webp",
+      "sha256": "380c71d5dbbf158ab3c28a9391fc6634af08bc3508a690dc595e764c1efa21aa"
+    },
+    {
+      "name": "digital-shamans-non-pbr.webp",
+      "sha256": "61acb5bb8160c222157899f918a9c6b53e0196cc4c024916beddbc32cfcdb469"
+    },
+    {
+      "name": "digital-shamans-phantom-aksm-01-impr-denoised-srgb-02.webp",
+      "sha256": "b00f1218f1bca78fdc76cab0ddf8edab0a60915dd1b956c736df692f60d1542b"
+    },
+    {
+      "name": "digital-shamans-phantom-aksm-02-impr-denoised-srgb.webp",
+      "sha256": "03533db9fe7a7f72d4e1edec037869f5dc0c418d5c8eddf0476447a28040fb40"
+    },
+    {
+      "name": "digital-shamans-phantom-aksm-unreal4-impr-04.webp",
+      "sha256": "a6121bc6accfe22a22b4b11092f34a70118672e655f8e1f81a93b9593d694794"
+    }
+  ],
+  "mp4_byte_identical": true,
+  "image_order_and_video_anchors_identical": true,
+  "baseline": {
+    "elapsed_seconds": 3863,
+    "definition": "Firearms request 12:16:35Z to final 13:20:58Z on 2026-11-19",
+    "source_download_seconds": 6.27,
+    "previous_media_preparation_seconds": 14.536,
+    "half_time_threshold_seconds": 1931.5
+  },
+  "forecast": {
+    "target_minutes": [
+      25,
+      30
+    ],
+    "scope": "one new gallery per release; supported formats; healthy source/deployment",
+    "end_to_end_speedup_measured": false
+  },
+  "transport_smoke": {
+    "files": 1,
+    "original_bytes": 115319,
+    "original_dimensions": [
+      2560,
+      1366
+    ],
+    "expected_sha256": "aa7291eb8e92ede7858e62c37732ea8046b838c6e828725b1a7338d90c5ddd22",
+    "original_hash_and_decode_match": true,
+    "download_elapsed_seconds": 0.413,
+    "resume_elapsed_seconds": 0.103,
+    "resume_transfers": 0,
+    "source_download_parameter_preserved": "dl=1",
+    "alternate_container_rejected": {
+      "bytes": 89214,
+      "pixels_identical": true,
+      "exif_and_container_different": true,
+      "originals_overwritten": false
+    }
+  },
+  "checks": {
+    "python_tests_passed": 9,
+    "offline_downloader_assertions_passed": 75,
+    "offline_shells": [
+      "Windows PowerShell5.1",
+      "PowerShell7"
+    ],
+    "live_transport_shell": "Windows PowerShell5.1",
+    "production_manifest_parsers_passed": true,
+    "not_exercised": [
+      "live_redirects",
+      "live_retry_statuses",
+      "live_cancellation",
+      "live_MP4_transfer",
+      "new_gallery_end_to_end_speedup"
+    ]
+  }
+}
