@@ -1,0 +1,73 @@
+{
+  "passed": true,
+  "revision": "19e539dd5bfe0f687926281a5a94b1d7fe144c75",
+  "matched": 13,
+  "approval_matches": true,
+  "files": [
+    {
+      "path": "public/strange-brigade-ancient-weapons/digital-shamans-crossbow-03.jpg",
+      "git_blob_sha": "a709c966c7dacce8a3488d8ee71e088601b38a92",
+      "bytes": 715334
+    },
+    {
+      "path": "public/strange-brigade-ancient-weapons/digital-shamans-long-sword-03.jpg",
+      "git_blob_sha": "541f5ccdbf5bb845de5f7ba272a4b3ae394e3bb4",
+      "bytes": 932805
+    },
+    {
+      "path": "public/strange-brigade-ancient-weapons/digital-shamans-long-sword-04.jpg",
+      "git_blob_sha": "ed30bd59ddb80ef7963af2398ecdf65b22962abe",
+      "bytes": 1361876
+    },
+    {
+      "path": "public/strange-brigade-ancient-weapons/digital-shamans-melee-spear-01.jpg",
+      "git_blob_sha": "c00ff458cb1b7107f0da0dfb825585bc6a6951b9",
+      "bytes": 462312
+    },
+    {
+      "path": "public/strange-brigade-ancient-weapons/digital-shamans-melee-spear-03.jpg",
+      "git_blob_sha": "d6f061d3b28b032a6cba1d333e9275a21d362032",
+      "bytes": 1356965
+    },
+    {
+      "path": "public/strange-brigade-ancient-weapons/digital-shamans-pirate-scimitar-02ab.jpg",
+      "git_blob_sha": "dfe1e16e1a583e3981d70357a6356095964780ce",
+      "bytes": 829901
+    },
+    {
+      "path": "public/strange-brigade-ancient-weapons/digital-shamans-shield-02.jpg",
+      "git_blob_sha": "b2f3fc9a36af27d182e0aef5b0943e350c5f12da",
+      "bytes": 844055
+    },
+    {
+      "path": "public/strange-brigade-ancient-weapons/digital-shamans-shield-03.jpg",
+      "git_blob_sha": "09158a92b89a53bba2de78b8c14aac35e98c0984",
+      "bytes": 1244634
+    },
+    {
+      "path": "public/strange-brigade-ancient-weapons/digital-shamans-shield-04-impr03.jpg",
+      "git_blob_sha": "5067c3e4efe95eb3059bdf91a941c5294b9fa671",
+      "bytes": 1780603
+    },
+    {
+      "path": "public/strange-brigade-ancient-weapons/digital-shamans-souls-gathering-amulet-05.jpg",
+      "git_blob_sha": "c88d45b2dc88f33fa68957b15ac395b3b023a04d",
+      "bytes": 1042868
+    },
+    {
+      "path": "public/strange-brigade-ancient-weapons/digital-shamans-stx-10.jpg",
+      "git_blob_sha": "2a93ba31f4897560d6b45ef48c3e26755212bb18",
+      "bytes": 614078
+    },
+    {
+      "path": "public/strange-brigade-ancient-weapons/digital-shamans-stx-14.jpg",
+      "git_blob_sha": "524cb9ca784c0a2e02de71941d3f9938ad0519a3",
+      "bytes": 759184
+    },
+    {
+      "path": "public/strange-brigade-ancient-weapons/digital-shamans-stx-17b.jpg",
+      "git_blob_sha": "9f6b4317f300a48a440496a4959339d4d7a55650",
+      "bytes": 799776
+    }
+  ]
+}

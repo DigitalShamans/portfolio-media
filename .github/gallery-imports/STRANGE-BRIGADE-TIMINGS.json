@@ -1,0 +1,28 @@
+{
+  "processing_start_utc": "2026-11-19T18:50:29Z",
+  "source_complete_utc": "2026-11-19T18:55:55.790785+00:00",
+  "download_seconds": 4.691,
+  "prepare_seconds": 10.723,
+  "service_succeeded_utc": "2026-11-19T19:08:52.912131Z",
+  "pages_succeeded_utc": "2026-11-19T19:17:52Z",
+  "final_visual_proof_utc": "2026-11-19T19:27:36.184Z",
+  "verification_and_capture_release_complete_utc": "2026-11-19T19:28:37.0059816Z",
+  "verification_and_capture_release_elapsed_seconds": 2288.006,
+  "final_checkpoint_prepared_utc": "2026-11-19T19:30:44.781584+00:00",
+  "elapsed_through_checkpoint_preparation_seconds": 2415.782,
+  "checkpoint_push_and_final_response_excluded_from_preparation_duration": true,
+  "baseline_firearms_seconds": 3863,
+  "half_time_target_seconds": 1931.5,
+  "half_time_target_met": false,
+  "verification_duration_reduction_percent": 40.77,
+  "checkpoint_preparation_duration_reduction_percent": 37.46,
+  "service_http_seconds": 24.86,
+  "public_http_seconds": 9.97,
+  "notes": [
+    "One gallery only; one media-service release and one website publication.",
+    "Added automated source image-caption import, optional rendering, and meaningful regression coverage.",
+    "Cold-load observations and an early mobile screenshot were corrected after actual decode; one stale IAB tab timed out at 15 seconds, and one fresh IAB tab succeeded.",
+    "Pages success alone is not the completion duration. All actual UI checks and automatic capture cleanup are included in verification duration.",
+    "This run did not reach the half-time target. Final checkpoint push and response add time beyond preparation."
+  ]
+}

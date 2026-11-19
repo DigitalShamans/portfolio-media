@@ -1,0 +1,200 @@
+{
+  "passed": true,
+  "browser": "ChatGPT in-app browser",
+  "tab": "16",
+  "opening": {
+    "status": "interactive-verified",
+    "interactivePassed": true,
+    "needsInteractiveVerification": false,
+    "attempts": [
+      {
+        "backend": "in-app",
+        "passed": true,
+        "elapsedMs": 13
+      }
+    ],
+    "value": {
+      "passed": true,
+      "value": {
+        "captions": 33,
+        "shots": 33,
+        "title": "Strange Brigade - Environment Art"
+      }
+    }
+  },
+  "checks": [
+    {
+      "captions": 33,
+      "complete": true,
+      "first": "https://digitalshamans.co.uk/galleries/strange-brigade-environment-art/1440p/digital-shamans-1-impr-03-srgb.webp?v=744eaccda9e8659d086076b8cb1012e9863bde73&webp=q92-m6",
+      "firstCaption": "From a blockout to the production quality.",
+      "natural": 2560,
+      "route": "/galleries/strange-brigade-environment-art/",
+      "width": 390,
+      "captionPairsVerified": 33,
+      "viewer": {
+        "height": 844,
+        "images": [
+          {
+            "complete": true,
+            "natural": 2560,
+            "src": "https://digitalshamans.co.uk/galleries/strange-brigade-environment-art/1440p/digital-shamans-2-impr-03-srgb.webp?v=df24d300796e96aac9429619988a36383128bd8a&webp=q92-m6"
+          }
+        ],
+        "width": 390
+      },
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "closed": true
+    },
+    {
+      "captions": 33,
+      "complete": true,
+      "first": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/3ea1ff2006349804fde73818e2c16d7e21af0586/strange-brigade-environment-art/digital-shamans-1-impr-03-srgb.jpg",
+      "natural": 2560,
+      "route": "/galleries/strange-brigade-environment-art/",
+      "width": 2800,
+      "captionPairsVerified": 33,
+      "viewer": {
+        "height": 1600,
+        "images": [
+          {
+            "complete": true,
+            "natural": 2560,
+            "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/3ea1ff2006349804fde73818e2c16d7e21af0586/strange-brigade-environment-art/digital-shamans-2-impr-03-srgb.jpg"
+          }
+        ],
+        "width": 2800
+      },
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "closed": true,
+      "note": "Initial cold-load read raced image decoding; actual decoded image was then observed after waiting for the named viewer image."
+    },
+    {
+      "captions": 33,
+      "complete": true,
+      "first": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/3ea1ff2006349804fde73818e2c16d7e21af0586/strange-brigade-environment-art/digital-shamans-1-impr-03-srgb.jpg",
+      "natural": 2560,
+      "route": "/artur/galleries/strange-brigade-environment-art/",
+      "width": 2800,
+      "captionPairsVerified": 33,
+      "viewer": {
+        "height": 1600,
+        "images": [
+          {
+            "complete": true,
+            "natural": 2560,
+            "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/3ea1ff2006349804fde73818e2c16d7e21af0586/strange-brigade-environment-art/digital-shamans-2-impr-03-srgb.jpg"
+          }
+        ],
+        "width": 2800
+      },
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "closed": true
+    },
+    {
+      "captions": 33,
+      "complete": true,
+      "first": "https://digitalshamans.co.uk/galleries/strange-brigade-environment-art/1440p/digital-shamans-1-impr-03-srgb.webp?v=744eaccda9e8659d086076b8cb1012e9863bde73&webp=q92-m6",
+      "natural": 2560,
+      "route": "/artur/galleries/strange-brigade-environment-art/",
+      "width": 390,
+      "captionPairsVerified": 33,
+      "viewer": {
+        "height": 844,
+        "images": [
+          {
+            "complete": true,
+            "natural": 2560,
+            "src": "https://digitalshamans.co.uk/galleries/strange-brigade-environment-art/1440p/digital-shamans-2-impr-03-srgb.webp?v=df24d300796e96aac9429619988a36383128bd8a&webp=q92-m6"
+          }
+        ],
+        "width": 390
+      },
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "closed": true
+    }
+  ],
+  "existingGallerySmoke": {
+    "captionScripts": 0,
+    "captionStyles": 0,
+    "captionTemplate": false,
+    "captions": 0,
+    "route": "/galleries/survisland-concept-art/",
+    "shots": 48
+  },
+  "logs": [
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T19:18:39.981Z",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43"
+    },
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T19:18:41.042Z",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43"
+    },
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T19:20:14.350Z",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43"
+    },
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T19:21:43.919Z",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43"
+    },
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T19:21:44.921Z",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43"
+    }
+  ],
+  "diagnostics": [
+    "Initial desktop observation raced image decoding; explicit named-image visibility and fresh decoded-image observation passed.",
+    "Attempt to update an owned host helper using string code generation was rejected; literal documented API calls completed subsequent checks."
+  ],
+  "limitations": [
+    "Physical touch/iOS/Safari untested.",
+    "Native Fullscreen API grant not claimed where IAB denied it; full-viewport overlays/navigation verified."
+  ],
+  "screenshots": [
+    "outputs/strange-brigade-mobile.jpg",
+    "outputs/strange-brigade-desktop.jpg"
+  ],
+  "proof": {
+    "desktop": "outputs/strange-brigade-desktop.jpg",
+    "mobile": "outputs/strange-brigade-mobile.jpg",
+    "mobileRetake": {
+      "tabId": "17",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "decodedFirstImage": 2560,
+      "visuallyConfirmed": true,
+      "note": "Replaced the first screenshot taken before image painting. Fresh IAB tab succeeded after one stale-tab timeout.",
+      "completedAtUtc": "2026-11-19T19:27:36.184Z"
+    }
+  }
+}
