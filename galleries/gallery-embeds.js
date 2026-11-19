@@ -5,12 +5,15 @@ const GalleryEmbeds = (() => {
     sketchfab: { id: /^[a-f0-9]{32}$/, origin: 'https://sketchfab.com/models/', suffix: '/embed' },
     youtube: { id: /^[A-Za-z0-9_-]{11}$/, origin: 'https://www.youtube-nocookie.com/embed/', suffix: '?rel=0' },
   };
+  // Require the absolute end; $ alone also accepts a final newline.
+  const videoFile = /^[A-Za-z0-9][A-Za-z0-9_-]*\.mp4(?![\s\S])/;
 
   function anchorIndex(entries, filename) {
     return entries.findIndex(entry => GalleryData.images(entry).includes(filename));
   }
 
   function source(embed) {
+    if (embed.type === 'video') return embed.file;
     const provider = providers[embed.type];
     return provider.origin + embed.id + provider.suffix;
   }
@@ -25,22 +28,25 @@ const GalleryEmbeds = (() => {
     const used = new Set();
     for (const embed of embeds) {
       const provider = embed && Object.hasOwn(providers, embed.type) && providers[embed.type];
-      if (!provider || typeof embed.id !== 'string' || !provider.id.test(embed.id) ||
+      const validSource = embed && (embed.type === 'video'
+        ? typeof embed.file === 'string' && videoFile.test(embed.file)
+        : provider && typeof embed.id === 'string' && provider.id.test(embed.id));
+      if (!validSource ||
           typeof embed.title !== 'string' || !embed.title.trim() ||
           (embed.caption !== undefined && typeof embed.caption !== 'string') ||
           (embed.after === undefined && embed.before === undefined) ||
           (embed.after !== undefined && !GalleryData.isImageName(embed.after)) ||
           (embed.before !== undefined && !GalleryData.isImageName(embed.before))) {
-        throw new Error('Each viewer needs a supported provider, model/video ID, title and gallery image anchor.');
+        throw new Error('Each viewer needs a supported provider ID or local MP4 basename, title and gallery image anchor.');
       }
-      const key = embed.type + ':' + embed.id;
+      const key = embed.type + ':' + (embed.type === 'video' ? embed.file : embed.id);
       if (used.has(key)) throw new Error('Embedded viewer appears more than once: ' + key);
       used.add(key);
     }
     return embeds;
   }
 
-  async function mount(gallery, entries, elements, url) {
+  async function mount(gallery, entries, elements, url, assetUrl) {
     try {
       const response = await fetch(url);
       if (!response.ok) throw new Error('Embedded viewer list unavailable.');
@@ -52,18 +58,25 @@ const GalleryEmbeds = (() => {
         section.className = 'gallery-embed';
         const heading = document.createElement('h2');
         heading.textContent = embed.title;
-        const iframe = document.createElement('iframe');
-        iframe.src = source(embed);
-        iframe.title = embed.title;
-        iframe.loading = 'lazy';
-        iframe.width = 1280;
-        iframe.height = 720;
-        iframe.allow = embed.type === 'sketchfab'
-          ? 'autoplay; fullscreen; xr-spatial-tracking'
-          : 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-        iframe.allowFullscreen = true;
-        iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-        section.append(heading, iframe);
+        const media = document.createElement(embed.type === 'video' ? 'video' : 'iframe');
+        const mediaSource = source(embed);
+        media.src = embed.type === 'video' && assetUrl ? assetUrl(mediaSource) : mediaSource;
+        media.title = embed.title;
+        media.width = 1280;
+        media.height = 720;
+        if (embed.type === 'video') {
+          media.controls = true;
+          media.playsInline = true;
+          media.preload = 'metadata';
+        } else {
+          media.loading = 'lazy';
+          media.allow = embed.type === 'sketchfab'
+            ? 'autoplay; fullscreen; xr-spatial-tracking'
+            : 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+          media.allowFullscreen = true;
+          media.referrerPolicy = 'strict-origin-when-cross-origin';
+        }
+        section.append(heading, media);
         if (embed.caption) {
           const caption = document.createElement('p');
           caption.textContent = embed.caption;

@@ -31,7 +31,7 @@
   {% endif %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
   <link rel="stylesheet" href="../gallery.css?v=23">
-  {% if gallery_page.gallery_embeds %}<link rel="stylesheet" href="../gallery-embeds.css?v=1">{% endif %}
+  {% if gallery_page.gallery_embeds %}<link rel="stylesheet" href="../gallery-embeds.css?v=2">{% endif %}
   {% if gallery_page.gallery_youtube_id %}<link rel="stylesheet" href="{{ '/assets/gallery-video.css' | relative_url }}?v=1">{% endif %}
 </head>
 <body data-gallery-revision="{{ site.github.build_revision | escape }}"{% if gallery_asset_versions %} data-gallery-asset-versions="{{ gallery_asset_versions | jsonify | escape }}"{% endif %}>
@@ -86,7 +86,7 @@
 
   <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=6"></script>
   <script src="../gallery-data.js?v=3"></script>
-  {% if gallery_page.gallery_embeds %}<script src="../gallery-embeds.js?v=2"></script>{% endif %}
-  <script src="../gallery-viewer.js?v=41"></script>
+  {% if gallery_page.gallery_embeds %}<script src="../gallery-embeds.js?v=3"></script>{% endif %}
+  <script src="../gallery-viewer.js?v=42"></script>
 </body>
 </html>

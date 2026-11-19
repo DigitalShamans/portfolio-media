@@ -1859,6 +1859,88 @@
         "blob": "afa1da5486b2ec1cbaeb390c2478c122836aed8f",
         "size": 483874
       }
+    },
+    "firearms": {
+      "digital-shamans-artur-perzyna-weapon-aw50-compose1.jpg": {
+        "blob": "41559265aa865124a92dc1ea08fa795fdfe06835",
+        "size": 394697
+      },
+      "digital-shamans-artur-perzyna-weapon-aw50-compose2.jpg": {
+        "blob": "721434b79473110a7e75a59076525183b848f371",
+        "size": 396847
+      },
+      "digital-shamans-artur-perzyna-weapon-barrett-compose1.jpg": {
+        "blob": "904e0c3e16cf33fcdd6e9a564ae862357d33fd84",
+        "size": 447874
+      },
+      "digital-shamans-artur-perzyna-weapon-cheytac-compose.jpg": {
+        "blob": "741c4ee62556dbaa951224309fb33e35bfd12795",
+        "size": 422979
+      },
+      "digital-shamans-artur-perzyna-weapon-dsr50-compose1.jpg": {
+        "blob": "0156860403fdee6d424410a0cdc29a04fd325ae8",
+        "size": 425569
+      },
+      "digital-shamans-artur-perzyna-weapon-dsr50-compose2.jpg": {
+        "blob": "e9d1e38743ed3a4aa730adb74c65cff30e25d11a",
+        "size": 400647
+      },
+      "digital-shamans-artur-perzyna-weapon-m24-compose.jpg": {
+        "blob": "552f8994c18978b9d6fc4993b852828219445c81",
+        "size": 600707
+      },
+      "digital-shamans-artur-perzyna-weapon-remington-compose1.jpg": {
+        "blob": "f75bd34b495781ce3e7f012a09d729d72d5f8436",
+        "size": 561481
+      },
+      "digital-shamans-artur-perzyna-weapon-remington-compose2.jpg": {
+        "blob": "26b1162206e5eb80b232ddfb5385ded2a0ff2921",
+        "size": 464730
+      },
+      "digital-shamans-artur-perzyna-weapon-vintorez-compose.jpg": {
+        "blob": "564db836aec18e1ef697e0f6aa025faa4b4b6117",
+        "size": 436935
+      },
+      "digital-shamans-artur-perzyna-weapon-vintorez-night-compose1.jpg": {
+        "blob": "c2b38d5424d3973af1fc74a09df73d2938da101f",
+        "size": 421272
+      },
+      "digital-shamans-artur-perzyna-weapon-xm312-compose.jpg": {
+        "blob": "b15b1dcb6b4a9889f037cdc56510c9b0b6a845d0",
+        "size": 488759
+      },
+      "digital-shamans-m5-phalanx-compose1.jpg": {
+        "blob": "ef9485cf036bcce911dfa7b0c3669753417ccb01",
+        "size": 499364
+      },
+      "digital-shamans-m5-phalanx-compose2.jpg": {
+        "blob": "c485308f05a499510bedf48290735c511200fccf",
+        "size": 504312
+      },
+      "digital-shamans-noise-maker-01.jpg": {
+        "blob": "e6acaac94ef2a7ab20d5aa1347d13d40e22276ae",
+        "size": 392883
+      },
+      "digital-shamans-noise-maker-03.jpg": {
+        "blob": "002b228db87809056ef30f6f3c894dbc186a0f9a",
+        "size": 540912
+      },
+      "digital-shamans-non-pbr.jpg": {
+        "blob": "0021d1849820dea7e5beef4f7458a59488ae8917",
+        "size": 115319
+      },
+      "digital-shamans-phantom-aksm-01-impr-denoised-srgb-02.jpg": {
+        "blob": "704fcacd5346987a6fe0358cf98487ded14ce179",
+        "size": 269219
+      },
+      "digital-shamans-phantom-aksm-02-impr-denoised-srgb.jpg": {
+        "blob": "9635526296997c165a9acfbda92e21134f00e21f",
+        "size": 450778
+      },
+      "digital-shamans-phantom-aksm-unreal4-impr-04.jpg": {
+        "blob": "d5738f47fb2c21e0aaf45103fd76923979293a4a",
+        "size": 502332
+      }
     }
   }
 }

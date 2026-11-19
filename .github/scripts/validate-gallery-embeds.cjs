@@ -1,7 +1,7 @@
 'use strict';
 
 const { execFileSync } = require('node:child_process');
-const { readFileSync } = require('node:fs');
+const { readFileSync, statSync } = require('node:fs');
 const { resolve } = require('node:path');
 const { runInNewContext } = require('node:vm');
 
@@ -18,6 +18,12 @@ for (const path of tracked) {
   const [, folder] = match;
   const embeds = GalleryEmbeds.parse(readFileSync(resolve(root, path), 'utf8'));
   for (const embed of embeds) {
+    if (embed.type === 'video') {
+      const videoPath = `galleries/${folder}/${embed.file}`;
+      if (!tracked.has(videoPath) || !statSync(resolve(root, videoPath), { throwIfNoEntry: false })?.isFile()) {
+        throw new Error(`${path}: Local MP4 must exist with its exact tracked filename: ${embed.file}.`);
+      }
+    }
     for (const anchor of [embed.after, embed.before].filter(Boolean)) {
       if (!Object.hasOwn(approved[folder] ?? {}, anchor) && !tracked.has(`galleries/${folder}/${anchor}`)) {
         throw new Error(`${path}: Unknown image anchor ${anchor}.`);

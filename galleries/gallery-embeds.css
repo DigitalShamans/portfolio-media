@@ -1,6 +1,6 @@
 .gallery-embed { min-width: 0; }
 .gallery-embed h2 { margin: 0 0 .75rem; font-size: 1.125rem; }
-.gallery-embed iframe {
+.gallery-embed iframe, .gallery-embed video {
   display: block;
   width: 100%;
   height: auto;

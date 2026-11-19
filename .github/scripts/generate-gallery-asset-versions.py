@@ -37,6 +37,10 @@ def gallery_versions():
         embeds_path = path.parent / 'gallery-embeds.json'
         if embeds_path in tracked:
             files['gallery-embeds.json'] = tracked[embeds_path]
+            embeds = json.loads((ROOT / embeds_path).read_text(encoding='utf-8'))
+            for embed in embeds:
+                if embed['type'] == 'video':
+                    files[embed['file']] = tracked[path.parent / embed['file']]
         entries = json.loads((ROOT / path).read_text(encoding='utf-8-sig'))
         for entry in entries:
             for name in (entry['image'], entry.get('compare'), *(entry.get('additionalImages') or [])):
