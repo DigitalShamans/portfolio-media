@@ -38,7 +38,7 @@ jobs:
       - name: Validate public gallery manifests
         if: steps.source.outputs.workflow_source == 'true'
         run: |
-          node --test .github/tests/public-gallery-routes.test.cjs .github/tests/gallery-resolution.test.cjs .github/tests/gallery-mobile-scroll.test.cjs .github/tests/gallery-navigation.test.cjs
+          node --test .github/tests/public-gallery-routes.test.cjs .github/tests/gallery-resolution.test.cjs .github/tests/gallery-mobile-scroll.test.cjs .github/tests/gallery-navigation.test.cjs .github/tests/gallery-desktop-panels.test.cjs
           node .github/scripts/validate-public-galleries.cjs
           node --test .github/tests/gallery-embeds.test.cjs
           node .github/scripts/validate-gallery-embeds.cjs
