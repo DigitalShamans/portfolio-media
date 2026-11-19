@@ -52,6 +52,8 @@
     const stage = document.querySelector('#public-map'); stage.hidden = false;
     GalleryMap.mount(stage, map, resolveImage, { caption, help: document.querySelector('#map-help') });
     caption.textContent = 'Whole-level overview';
+    // Mounting the overview can add the page scrollbar; measure the visible layout.
+    fitMap();
   } catch {
     const error = document.querySelector('#map-error'); error.textContent = 'This interactive map is not available.'; error.hidden = false;
     caption.textContent = '';
