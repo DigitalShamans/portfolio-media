@@ -1,6 +1,12 @@
 # Phantom: Covert Ops verification
 
-Scope: Phantom only. Checked 19 November 2026. Page deployment and live acceptance are pending until recorded below.
+Scope: Phantom only. Checked 19 November 2026. Published and verified, with the explicit test limits below.
+
+Studio: https://digitalshamans.co.uk/galleries/phantom-covert-ops/
+
+Personal: https://digitalshamans.co.uk/artur/galleries/phantom-covert-ops/
+
+Implementation `4c6bcf49ff9ff2f528e62edafa2a74a7ac0017e9`, PR #47. Pages build and deployment completed successfully: https://github.com/DigitalShamans/portfolio-media/actions/runs/44520062181
 
 ## Source and media — passed
 
@@ -19,8 +25,22 @@ Scope: Phantom only. Checked 19 November 2026. Page deployment and live acceptan
 - Twelve maintained embed tests plus eleven controlled delivery browser tests passed (23 total), including placement, exclusion/reordering, existing Aircrafts order/fallbacks, malformed or failed sidecars preserving images, JPG retry/WebP fallback, stale navigation/variant protection and previous-image retention. All 39 resolution/mobile/navigation tests also passed. `git diff --check` passed.
 - Source checkpoint `03fc93c`; recovered implementation `6f2d6c2`; verified media/current-main integration checkpoint `120f0b8`. Main's completed Aircrafts report is retained.
 
-## Remaining live checks
+## Actual editor UI — passed
 
 Actual native DS Gallery Editor v0.10 round-trip **passed** on an isolated copy: 23 included JPG entries, rendered previews, first-image reorder, save/reopen with persisted order, then canonical order restored and saved. All 23 JPG references exist. The shipped companion remained byte-identical (SHA-256 `7CB12F21FBD4B6CC768E2AA8984AA74C569593A60BAA80580575BDFC5818A282`), preserving the video ID, exact title and original JPG anchor. The first two previews were inspected; all 23 individual previews were not exhaustively inspected. This is an actual UI test, separate from parser tests.
 
-Pages build/deployment, both deployed routes, all public WebPs, responsive original/WebP selection, fullscreen/navigation, actual YouTube playback, sitemap/navigation exclusions and existing-gallery smoke checks remain pending. A commit is not represented as a deployment.
+## Deployed acceptance — passed
+
+- All 38 public verification requests returned HTTP 200. All 23 public WebPs fully decode, preserve exact source dimensions and match implementation bytes and Git blob hashes. All ten checked shared script/style/public manifest files match the deployed implementation.
+- Both routes contain the correct 23-image manifest and one actual YouTube iframe before the lead image, with the exact source title and ID. Both carry `noindex`, shared embed script v2 and correct originals revision data. The HTTP-200 sitemap and both homepages/main navigation exclude the Phantom gallery route URLs; pre-existing external ArtStation cards remain. Unlisted access is direct/anonymous; security settings are unchanged.
+- Both routes were tested at 390 CSS pixels with matching WebPs and at 2800 CSS pixels with the approved original JPG URL and successful actual decoding. The lead original remains 1920×1080; selecting the original does not turn a smaller source into 4K. Image fullscreen/dialog, counters, next/previous navigation and return worked.
+- Native Chrome studio video verification passed actual advancing playback `0:15 → 0:31 → 0:43`, stable pause at `0:43`, resume past `1:03`, and embedded video fullscreen at `1:23` followed by Escape return. This was YouTube iframe fullscreen, not Chrome F11. Personal route loaded the exact video and started its actual intro.
+- Shared-change live smoke checks passed: Aircrafts retains 23 screenshots and four ordered Sketchfab iframes after the lead image; NFS image fullscreen decode/navigation worked (`1/6 → 2/6`); Egypt retains 36 groups and its wireframe/checker variants decoded and switched correctly. Existing controlled delivery tests cover retry/fallback and stale-request behavior.
+
+## Explicit test limits
+
+- Personal-route video timeline advancement and its own fullscreen cycle were not separately completed: the user switched Chrome tabs after its actual intro started, so native browser input stopped. Studio playback/fullscreen passed; both routes share the same YouTube ID and embed implementation.
+- Physical touch-device swipes were not directly exercised. Responsive browser sizes and maintained mobile/navigation gesture tests passed.
+- Native editor verification inspected the first two image previews, all 23 included entries/references and saved data. It did not exhaustively inspect every individual editor preview. Actual media decode/hash checks cover all 23 files.
+
+Phantom is the only import handled by this continuation. Firearms was not started. Checkpoints remain recoverable at `03fc93c`, `120f0b8`, `f42ba24`, `5bbfaaf` and the merged implementation above.
