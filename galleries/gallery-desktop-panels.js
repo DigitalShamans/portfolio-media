@@ -172,26 +172,26 @@
     } else {
       showHeader();
       if (window.gsap?.fromTo) {
-      window.gsap.killTweensOf(panel);
-      window.gsap.fromTo(panel,
-        { xPercent: offset, autoAlpha: 1 },
-        { xPercent: 0, autoAlpha: 1, duration: slideDuration / 1000,
-          ease: 'power2.inOut', overwrite: true,
-          onComplete: () => navigate(which, id) });
-    } else {
-      // If GSAP fails to load, CSS still performs a timed slide and navigation.
-      panel.style.transition = 'none';
-      panel.style.transform = 'translate3d(' + offset + '%,0,0)';
-      panel.style.opacity = '1';
-      window.requestAnimationFrame(() => {
-        if (id !== animationId || panel.hidden) return;
+        window.gsap.killTweensOf(panel);
+        window.gsap.fromTo(panel,
+          { xPercent: offset, autoAlpha: 1 },
+          { xPercent: 0, autoAlpha: 1, duration: slideDuration / 1000,
+            ease: 'power2.inOut', overwrite: true,
+            onComplete: () => navigate(which, id) });
+      } else {
+        // If GSAP fails to load, CSS still performs a timed slide and navigation.
+        panel.style.transition = 'none';
+        panel.style.transform = 'translate3d(' + offset + '%,0,0)';
+        panel.style.opacity = '1';
         window.requestAnimationFrame(() => {
           if (id !== animationId || panel.hidden) return;
-          panel.style.transition = 'transform ' + slideDuration + 'ms cubic-bezier(.45,0,.55,1)';
-          panel.style.transform = 'translate3d(0,0,0)';
+          window.requestAnimationFrame(() => {
+            if (id !== animationId || panel.hidden) return;
+            panel.style.transition = 'transform ' + slideDuration + 'ms cubic-bezier(.45,0,.55,1)';
+            panel.style.transform = 'translate3d(0,0,0)';
+          });
         });
-      });
-      finishTimer = setTimeout(() => navigate(which, id), slideDuration + 40);
+        finishTimer = setTimeout(() => navigate(which, id), slideDuration + 40);
       }
     }
   }
