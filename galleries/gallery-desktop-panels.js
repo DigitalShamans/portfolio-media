@@ -67,6 +67,8 @@
   }
 
   // Avoid chaining through multiple galleries while the pointer remains on the edge.
+  // The early arrival cover consumes the marker before this deferred script runs.
+  if (window.__galleryDesktopEdgeArrived) armed = false;
   try {
     const arrival = JSON.parse(window.sessionStorage.getItem('gallery-desktop-edge-arrival') || 'null');
     window.sessionStorage.removeItem('gallery-desktop-edge-arrival');
@@ -144,7 +146,9 @@
     navigating = true;
     try {
       window.sessionStorage.setItem('gallery-desktop-edge-arrival', JSON.stringify({
-        direction: which, pathname: target.pathname, at: Date.now()
+        direction: which, pathname: target.pathname, at: Date.now(),
+        title: target.title,
+        headerHeight: siteHeader ? Math.ceil(siteHeader.getBoundingClientRect().height) : 0
       }));
     } catch { /* Page switching must still work without storage. */ }
     window.location.assign(target.href);
@@ -243,7 +247,11 @@
   window.addEventListener('keydown', keyboard);
   window.addEventListener('blur', interrupt);
   window.addEventListener('resize', interrupt);
-  window.addEventListener('pagehide', () => { navigating = false; clear(); });
+  window.addEventListener('pagehide', () => {
+    // Preserve the completed panel until Chrome captures the outgoing page.
+    // pageshow will clear it if this document later returns from BFCache.
+    if (!navigating) clear();
+  });
   window.addEventListener('pageshow', event => {
     navigating = false;
     clear();
