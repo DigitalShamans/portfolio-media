@@ -51,6 +51,12 @@ const GalleryMap = (() => {
     const hover = matchMedia('(hover: hover) and (pointer: fine)');
     const blocked = new Set();
     let active = null, mode = null, interiorEntered = false, pointer = null;
+    const hoverDelay = 400;
+    let pendingCard = null, hoverTimer;
+    function cancelPendingHover() {
+      clearTimeout(hoverTimer);
+      hoverTimer = undefined; pendingCard = null;
+    }
     const updateHelp = () => {
       if (!help) return;
       help.textContent = navigationEnabled
@@ -77,6 +83,7 @@ const GalleryMap = (() => {
       return Math.min(margin, Math.min(rect.width, rect.height) * .49);
     }
     function close(block = false) {
+      cancelPendingHover();
       if (!active) return;
       const card = active; if (block) blocked.add(card);
       active = null; mode = null; interiorEntered = false;
@@ -95,6 +102,16 @@ const GalleryMap = (() => {
       card.classList.add('is-open'); card.setAttribute('aria-expanded', 'true'); stage.classList.add('has-open-region');
       if (caption) caption.textContent = map.regions[cards.indexOf(card)].label;
     }
+    function scheduleHover(card) {
+      if (pendingCard === card) return;
+      cancelPendingHover();
+      if (!card) return;
+      pendingCard = card;
+      hoverTimer = setTimeout(() => {
+        pendingCard = null; hoverTimer = undefined;
+        if (hover.matches && !active && pointer && !blocked.has(card) && edgeDistance(pointer, geometry(card).thumb) >= 0) open(card, 'pointer');
+      }, hoverDelay);
+    }
     listen(stage, 'pointermove', event => {
       if (!hover.matches || event.pointerType === 'touch') return;
       pointer = { x: event.clientX, y: event.clientY };
@@ -106,7 +123,7 @@ const GalleryMap = (() => {
         if (distance < 0 || (interiorEntered && distance <= margin)) close(true);
       } else {
         const card = cards.find(item => !blocked.has(item) && edgeDistance(pointer, geometry(item).thumb) >= 0);
-        if (card) open(card, 'pointer');
+        scheduleHover(card);
       }
     });
     listen(stage, 'pointerleave', () => { if (mode === 'pointer') close(); pointer = null; blocked.clear(); });
@@ -114,8 +131,9 @@ const GalleryMap = (() => {
       listen(card, 'focus', () => { if (navigationEnabled && card.matches(':focus-visible')) open(card, 'keyboard'); });
       listen(card, 'pointerenter', event => {
         if (!hover.matches || event.pointerType === 'touch' || active || blocked.has(card)) return;
-        pointer = { x: event.clientX, y: event.clientY }; open(card, 'pointer');
+        pointer = { x: event.clientX, y: event.clientY }; scheduleHover(card);
       });
+      listen(card, 'pointerleave', () => { if (pendingCard === card) cancelPendingHover(); });
       listen(card, 'click', event => {
         if (navigationEnabled && (hover.matches || event.detail === 0 || active === card)) {
           close(true);
@@ -135,3 +153,4 @@ const GalleryMap = (() => {
   }
   return { mount };
 })();
+

@@ -45,9 +45,12 @@
 body.gallery-map-experiment { --background: #191919; }
 .gallery-map-intro h1 { text-align: start; letter-spacing: normal; }
 .gallery-map-actions { display: flex; align-items: center; gap: 1rem; }
+.gallery-map-overview-button { display: block; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; background: transparent; color: inherit; cursor: zoom-in; }
+.gallery-map-overview-button:focus-visible { outline: 2px solid #fff; outline-offset: -3px; }
 .gallery-map-fullscreen-button { padding: .25rem .6rem; border: 1px solid var(--border, #383838); border-radius: .25rem; background: #181818; color: inherit; font: inherit; cursor: pointer; }
 .gallery-map-fullscreen-button:disabled { opacity: .5; cursor: default; }
 .gallery-map-fullscreen { position: absolute; inset: auto; left: 50%; top: 50%; z-index: 1; width: min(100%, calc(100dvh * 16 / 9)); height: auto; border: 0; border-radius: 0; transform: translate(-50%, -50%); }
 .gallery-map-fullscreen[hidden] { display: none; }
 #viewer.has-overview-map #stage { visibility: hidden; }
 .gallery-map-experiment #viewer .viewer-arrows, .gallery-map-experiment #viewer .viewer-bar, .gallery-map-experiment #viewer .status, .gallery-map-experiment #viewer .comparison-indicator { z-index: 2; }
+

@@ -114,6 +114,17 @@
     });
     fullscreenButton.disabled = false;
     fullscreenButton.addEventListener('click', event => viewerApi.openImage(map.overview.image, { opener: fullscreenButton, event }));
+    // The overview itself should open the viewer just like an ordinary gallery image.
+    // Keep it separate from the hotspot buttons, whose clicks still scroll down.
+    const overview = stage.querySelector('.gallery-map-base');
+    const overviewButton = document.createElement('button');
+    overviewButton.type = 'button';
+    overviewButton.className = 'gallery-map-overview-button';
+    overviewButton.setAttribute('aria-label', 'Open interactive overview image in fullscreen');
+    overviewButton.title = 'Open overview in fullscreen';
+    overview.before(overviewButton);
+    overviewButton.append(overview);
+    overviewButton.addEventListener('click', event => viewerApi.openImage(map.overview.image, { opener: overviewButton, event }));
     caption.textContent = 'Whole-level overview';
     fitMap();
   } catch (error) {
