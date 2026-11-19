@@ -34,9 +34,13 @@
     const root = new URL(options.galleryRoot + folder + '/', location.origin);
     const url = new URL('gallery-map.json', root);
     if (versions['gallery-map.json']) url.searchParams.set('v', versions['gallery-map.json']);
-    const response = await fetch(url);
-    if (!response.ok) throw new Error('Map unavailable');
-    const map = GalleryMapData.parse(await response.text(), new Set(Object.keys(versions).filter(name => name !== 'gallery.json' && name !== 'gallery-map.json')));
+    const galleryUrl = new URL('gallery.json', root);
+    if (versions['gallery.json']) galleryUrl.searchParams.set('v', versions['gallery.json']);
+    const [response, galleryResponse] = await Promise.all([fetch(url), fetch(galleryUrl)]);
+    if (!response.ok || !galleryResponse.ok) throw new Error('Map unavailable');
+    const entries = GalleryData.parse(await galleryResponse.text());
+    const available = new Set(entries.flatMap(GalleryData.images));
+    const map = GalleryMapData.parse(await response.text(), available);
     const resolveImage = name => {
       const src = new URL('1440p/' + encodeURIComponent(name.replace(/\.[^.]+$/, '.webp')), root);
       if (versions[name]) src.searchParams.set('v', versions[name]);
@@ -50,7 +54,33 @@
     const link = document.querySelector('#map-gallery-link');
     link.href = (options.personal ? '/artur' : '') + options.galleryRoot + folder + '/'; link.hidden = false;
     const stage = document.querySelector('#public-map'); stage.hidden = false;
-    GalleryMap.mount(stage, map, resolveImage, { caption, help: document.querySelector('#map-help') });
+    const targets = new Map();
+    const renderer = GalleryMap.mount(stage, map, resolveImage, {
+      caption, help: document.querySelector('#map-help'),
+      onNavigate(region) {
+        const target = targets.get(region.image);
+        if (!target) return;
+        target.focus({ preventScroll: true });
+        target.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+      }
+    });
+    const screenshots = document.querySelector('#map-screenshots');
+    screenshots.replaceChildren();
+    screenshots.setAttribute('aria-label', gallery.title + ' screenshots');
+    const regions = new Map(map.regions.map(region => [region.image, region]));
+    // Preserve primary gallery order, including a comparison image if a hotspot targets it.
+    const images = entries.flatMap(entry => GalleryData.images(entry).filter((name, index) => index === 0 || regions.has(name)));
+    images.forEach((name, index) => {
+      const region = regions.get(name);
+      const label = 'Screenshot ' + (index + 1) + (region ? ' - ' + region.label : '');
+      const figure = document.createElement('figure');
+      figure.className = 'gallery-map-shot'; figure.id = 'map-shot-' + encodeURIComponent(name);
+      figure.dataset.image = name; figure.tabIndex = -1;
+      figure.append(renderer.picture(name, region?.label || gallery.title + ' ' + label, false, true));
+      const description = document.createElement('figcaption'); description.textContent = label;
+      figure.append(description); screenshots.append(figure); targets.set(name, figure);
+    });
+    screenshots.hidden = false;
     caption.textContent = 'Whole-level overview';
     // Mounting the overview can add the page scrollbar; measure the visible layout.
     fitMap();

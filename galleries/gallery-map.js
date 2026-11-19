@@ -1,10 +1,11 @@
 'use strict';
 
 const GalleryMap = (() => {
-  function mount(stage, map, resolveImage, { interactive = true, caption, help } = {}) {
+  function mount(stage, map, resolveImage, { interactive = true, caption, help, onNavigate } = {}) {
     const cleanup = [];
     const listen = (target, type, handler) => { target.addEventListener(type, handler); cleanup.push(() => target.removeEventListener(type, handler)); };
-    function picture(name, alt, primary = false) {
+    const navigationEnabled = interactive && typeof onNavigate === 'function';
+    function picture(name, alt, primary = false, lazy = false) {
       const source = resolveImage(name);
       const picture = document.createElement('picture');
       if (source.original && source.media) {
@@ -16,6 +17,7 @@ const GalleryMap = (() => {
       image.alt = alt; image.src = source.src; image.width = 2560; image.height = 1440;
       image.draggable = false; image.decoding = 'async';
       if (primary) image.fetchPriority = 'high';
+      if (lazy) image.loading = 'lazy';
       image.addEventListener('error', () => {
         if (picture.querySelector('source')) {
           picture.querySelectorAll('source').forEach(item => item.remove());
@@ -28,6 +30,7 @@ const GalleryMap = (() => {
     stage.replaceChildren();
     stage.classList.add('gallery-map-stage');
     stage.classList.remove('has-open-region');
+    stage.classList.toggle('has-gallery-links', navigationEnabled);
     if (!map.overview.image) {
       const placeholder = document.createElement('p'); placeholder.className = 'gallery-map-placeholder';
       placeholder.textContent = 'Choose an overview image to start your map.'; stage.append(placeholder);
@@ -39,7 +42,7 @@ const GalleryMap = (() => {
       const card = document.createElement('button'); card.type = 'button'; card.className = 'gallery-map-region';
       card.style.setProperty('--x', region.x + '%'); card.style.setProperty('--y', region.y + '%');
       card.dataset.x = region.x; card.dataset.y = region.y;
-      card.setAttribute('aria-label', (interactive ? 'Enlarge ' : 'Move ') + region.label + ' screenshot');
+      card.setAttribute('aria-label', (navigationEnabled ? 'View ' : interactive ? 'Enlarge ' : 'Move ') + region.label + ' screenshot');
       card.setAttribute('aria-expanded', 'false');
       card.append(picture(region.image, region.label)); stage.append(card); return card;
     });
@@ -48,14 +51,19 @@ const GalleryMap = (() => {
     const hover = matchMedia('(hover: hover) and (pointer: fine)');
     const blocked = new Set();
     let active = null, mode = null, interiorEntered = false, pointer = null;
-    const updateHelp = () => { if (help) help.textContent = hover.matches ? 'Hover a screenshot to enlarge it. Move towards its edge to return.' : 'Tap a screenshot to enlarge it. Tap again or outside it to return.'; };
+    const updateHelp = () => {
+      if (!help) return;
+      help.textContent = navigationEnabled
+        ? (hover.matches ? 'Hover to enlarge. Click to scroll to the screenshot below.' : 'Tap to preview. Tap the enlarged screenshot again to scroll to it.')
+        : (hover.matches ? 'Hover a screenshot to enlarge it. Move towards its edge to return.' : 'Tap a screenshot to enlarge it. Tap again or outside it to return.');
+    };
     function geometry(card) {
       const width = stage.clientWidth, height = stage.clientHeight;
       const thumbWidth = width * .2, thumbHeight = thumbWidth * 9 / 16;
       const anchorX = width * Math.max(10, Math.min(90, Number(card.dataset.x))) / 100;
       const anchorY = height * Math.max(10, Math.min(90, Number(card.dataset.y))) / 100;
       const gap = Math.min(12, width * .025);
-      const scale = Math.min(3, (width - 2 * gap) / thumbWidth, (height - 2 * gap) / thumbHeight);
+      const scale = Math.min(4.5, (width - 2 * gap) / thumbWidth, (height - 2 * gap) / thumbHeight);
       const panelWidth = thumbWidth * scale, panelHeight = thumbHeight * scale;
       const x = Math.max(gap + panelWidth / 2, Math.min(width - gap - panelWidth / 2, anchorX));
       const y = Math.max(gap + panelHeight / 2, Math.min(height - gap - panelHeight / 2, anchorY));
@@ -99,12 +107,18 @@ const GalleryMap = (() => {
       }
     });
     listen(stage, 'pointerleave', () => { if (mode === 'pointer') close(); pointer = null; blocked.clear(); });
-    cards.forEach(card => {
+    cards.forEach((card, index) => {
+      listen(card, 'focus', () => { if (navigationEnabled && card.matches(':focus-visible')) open(card, 'keyboard'); });
       listen(card, 'pointerenter', event => {
         if (!hover.matches || event.pointerType === 'touch' || active || blocked.has(card)) return;
         pointer = { x: event.clientX, y: event.clientY }; open(card, 'pointer');
       });
       listen(card, 'click', event => {
+        if (navigationEnabled && (hover.matches || event.detail === 0 || active === card)) {
+          close(true);
+          onNavigate(map.regions[index]);
+          return;
+        }
         if (hover.matches && event.detail !== 0) return;
         if (active === card) close(); else open(card, event.detail === 0 ? 'keyboard' : 'touch');
       });
@@ -114,7 +128,7 @@ const GalleryMap = (() => {
     listen(stage, 'focusout', event => { if (mode === 'keyboard' && !stage.contains(event.relatedTarget)) close(); });
     const resize = new ResizeObserver(() => { if (active) place(active); }); resize.observe(stage);
     listen(hover, 'change', () => { close(); blocked.clear(); updateHelp(); }); updateHelp();
-    return { cards, close, destroy() { close(); resize.disconnect(); cleanup.forEach(remove => remove()); stage.replaceChildren(); } };
+    return { cards, close, picture, destroy() { close(); resize.disconnect(); cleanup.forEach(remove => remove()); stage.replaceChildren(); } };
   }
   return { mount };
 })();

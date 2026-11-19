@@ -30,3 +30,13 @@
 .gallery-map-caption p { margin: 0; }
 @media (max-width: 620px) { .gallery-map-intro { flex-direction: column; align-items: flex-start; gap: 8px; } }
 @media (prefers-reduced-motion: reduce) { .gallery-map-region, .gallery-map-base { transition: none !important; } }
+
+/* Full-size click targets below the overview use the same image frame. */
+.gallery-map-stage.has-gallery-links .gallery-map-region { cursor: pointer; }
+.gallery-map-screenshots { display: grid; gap: clamp(12px, 2vw, 28px); margin-top: clamp(28px, 4vw, 54px); }
+.gallery-map-screenshots[hidden] { display: none; }
+.gallery-map-shot { margin: 0; scroll-margin-top: 1rem; }
+.gallery-map-shot picture, .gallery-map-shot img { display: block; width: 100%; }
+.gallery-map-shot img { height: auto; }
+.gallery-map-shot figcaption { padding-top: .35rem; color: var(--muted, #bbb); font-size: .875rem; }
+.gallery-map-shot:focus-visible { outline: 2px solid var(--accent, #eb9a56); outline-offset: 4px; }
