@@ -21,15 +21,18 @@
   const dialog = document.querySelector('#career-details');
   const dialogBody = dialog.querySelector('[data-career-details-body]');
   const ns = 'http://www.w3.org/2000/svg';
+  const desktopCurveAspect = 1.25;
   const canAnimate = Boolean(window.gsap && window.ScrollTrigger && window.DrawSVGPlugin && window.MotionPathPlugin);
   let animation;
   let mobileReveals = [];
   let mobileCamera;
+  let smoother;
   let signature = '';
   let resizeTimer;
 
   if (canAnimate) {
     gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin, MotionPathPlugin);
+    if (window.ScrollSmoother) gsap.registerPlugin(ScrollSmoother);
     // Collapsing mobile browser controls must not refresh the scroll journey.
     ScrollTrigger.config({ ignoreMobileResize: true });
   }
@@ -50,6 +53,7 @@
     heading.id = 'career-details-title';
     dialogBody.replaceChildren(year, copy);
     dialog.showModal();
+    if (smoother) smoother.paused(true);
   }
 
   entries.forEach(entry => entry.querySelector('button').addEventListener('click', () => showDetails(entry)));
@@ -62,6 +66,26 @@
     const box = dialog.getBoundingClientRect();
     if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) dialog.close();
   });
+  dialog.addEventListener('close', () => { if (smoother) smoother.paused(false); });
+
+  function updateDesktopSmoothing(narrow) {
+    const enabled = canAnimate && window.ScrollSmoother && !narrow && !reducedMotion.matches;
+    if (enabled && !smoother) {
+      smoother = ScrollSmoother.create({
+        wrapper: '#career-scroll-wrapper',
+        content: '#career-scroll-content',
+        smooth: .8,
+        smoothTouch: 0,
+        effects: false,
+        normalizeScroll: false,
+        onFocusIn: () => dialog.open ? false : undefined
+      });
+    } else if (!enabled && smoother) {
+      smoother.kill();
+      smoother = null;
+    }
+    track.dataset.desktopSmoothing = smoother ? '.8' : '0';
+  }
 
   function reset() {
     mobileCamera = null;
@@ -73,6 +97,7 @@
     mobileReveals.forEach(reveal => reveal.animation.kill());
     mobileReveals = [];
     canvas.style.removeProperty('transform');
+    entries.forEach(entry => entry.style.removeProperty('transform'));
     track.classList.remove('career-track--slow');
     if (canAnimate) gsap.set([...texts, pointer, path, ...stops.children], { clearProps: 'all' });
     track.dataset.timelineState = 'static';
@@ -89,6 +114,19 @@
     const x = c.anchor - c.left - point.x;
     const y = c.documentTop - virtualScroll - stageTop;
     canvas.style.transform = 'translate3d(' + x.toFixed(3) + 'px,' + y.toFixed(3) + 'px,0)';
+    c.labels.forEach((box, i) => {
+      // Keep cards readable while the wider curve pans behind them.
+      const labelWidth = box.right - box.left;
+      const left = Math.max(-x, Math.min(c.width - labelWidth - x, box.left));
+      const shift = left - box.left;
+      entries[i].style.transform = 'translateX(' + shift.toFixed(3) + 'px)';
+      const guide = c.guideNodes[i];
+      if (!guide) return;
+      const startX = c.points[i].x + 6;
+      const endX = left - 6;
+      const middle = (startX + endX) / 2;
+      guide.setAttribute('points', startX + ',' + c.points[i].y + ' ' + middle + ',' + c.points[i].y + ' ' + endX + ',' + (box.top + 9));
+    });
   }
 
   function updateMobileReveals() {
@@ -104,8 +142,8 @@
   }
 
   function drawCurve(width, height, narrow, scale) {
-    const span = narrow ? Math.min(132, width * .34) : width;
-    const offset = narrow ? 8 : 0;
+    const span = narrow ? Math.min(300, width * .7) : Math.min(width, (height - 80 * scale) / desktopCurveAspect);
+    const offset = narrow ? 8 : (width - span) / 2;
     const x = value => offset + value * span;
     const y = value => 56 * scale + value * (height - 80 * scale);
     const d = 'M ' + x(.10) + ' ' + y(0) +
@@ -159,7 +197,7 @@
       const point = points[i];
       const above = entry.dataset.curveSide === 'above';
       const side = above ? 'above' : narrow ? 'right' : entry.dataset.curveSide;
-      const preferredWidth = narrow ? Math.min(300, width - 24) : Math.min(420 * scale, width * .36);
+      const preferredWidth = narrow ? Math.min(above ? 200 : 300, width - 24) : Math.min(420 * scale, width * .36);
       entry.style.width = preferredWidth + 'px';
       let top = above ? Math.max(0, point.y - entry.offsetHeight - 12 * scale) : point.y - 16 * scale;
       let left = 0, labelWidth = preferredWidth, labelHeight = entry.offsetHeight;
@@ -178,8 +216,7 @@
           left = Math.max(0, Math.min(width - preferredWidth, point.x - 32 * scale));
         } else if (side === 'right') {
           left = maxX + 18 * scale;
-          // Leave room for a previous card as the S-curve turns back left.
-          const availableWidth = cameraAnchor ? width + trackLeft - cameraAnchor - 18 * scale - (maxX - point.x) - 24 : width - left;
+          const availableWidth = cameraAnchor ? width + trackLeft - cameraAnchor - 18 * scale : width - left;
           labelWidth = Math.max(60, Math.min(preferredWidth, availableWidth));
         } else {
           labelWidth = Math.max(60, Math.min(preferredWidth, minX - 18 * scale));
@@ -189,7 +226,7 @@
         labelHeight = entry.offsetHeight;
         let nextTop = top;
         for (const other of placed) {
-          const horizontalOverlap = left < other.right + 8 * scale && left + labelWidth > other.left - 8 * scale;
+          const horizontalOverlap = narrow || (left < other.right + 8 * scale && left + labelWidth > other.left - 8 * scale);
           if (horizontalOverlap && nextTop < other.bottom + 12 * scale && nextTop + labelHeight > other.top - 12 * scale) {
             nextTop = other.bottom + 12 * scale;
           }
@@ -216,14 +253,17 @@
     if (nextSignature === signature) return;
     signature = nextSignature;
     reset();
+    updateDesktopSmoothing(narrow);
     track.classList.add('career-track--positioned');
     track.classList.toggle('career-track--narrow', narrow);
+    track.classList.toggle('career-track--tight', narrow && width < 300);
 
     // Calibrate using actual SVG arc length, rather than only its height.
     // Even the first viewport (with the header and title present) fits >=40%.
-    const documentTop = track.getBoundingClientRect().top + window.scrollY;
+    const documentTop = track.getBoundingClientRect().top + (smoother ? smoother.scrollTop() : window.scrollY);
     const available = Math.max(120, viewport - documentTop - 16);
     let height = Math.round(available * 2);
+    if (!narrow) height = Math.min(height, Math.round(width * desktopCurveAspect + 80 * scale));
     let metrics, visibleFraction;
     for (let i = 0; i < 9; i++) {
       metrics = drawCurve(width, height, narrow, scale);
@@ -244,21 +284,22 @@
     });
     const slowMobile = narrow && canAnimate && !reducedMotion.matches;
     const trackLeft = track.getBoundingClientRect().left;
-    const cameraAnchor = slowMobile ? Math.max(64, Math.min(96, window.innerWidth * .22)) : 0;
+    const cameraAnchor = slowMobile ? Math.max(96, Math.min(180, window.innerWidth * .38)) : 0;
     const labels = placeLabels(points, metrics, width, narrow, scale, cameraAnchor, trackLeft);
-    guides.replaceChildren(...points.flatMap((point, i) => {
+    const guideNodes = points.map((point, i) => {
       const box = labels[i];
-      if (box.side === 'above') return [];
+      if (box.side === 'above') return null;
       const right = box.side === 'right';
       const endX = right ? box.left - 6 * scale : box.right + 6 * scale;
       const endY = box.top + 9 * scale;
       const startX = point.x + (right ? 6 * scale : -6 * scale);
       const middle = (startX + endX) / 2;
-      return [element('polyline', {
+      return element('polyline', {
         points: startX + ',' + point.y + ' ' + middle + ',' + point.y + ' ' + endX + ',' + endY,
         class: 'career-guide'
-      })];
-    }));
+      });
+    });
+    guides.replaceChildren(...guideNodes.filter(Boolean));
     stops.replaceChildren(...points.map((point, i) => {
       const circle = element('circle', { cx: point.x, cy: point.y, r: narrow ? 6 : 8 * scale, class: 'career-stop' });
       circle.addEventListener('click', () => showDetails(entries[i]));
@@ -285,7 +326,7 @@
       track.style.setProperty('--career-stage-height', viewport + 'px');
       track.style.height = outerHeight + 'px';
       track.dataset.cameraAnchor = cameraAnchor.toFixed(3);
-      mobileCamera = { documentTop, viewport, start: normalStart, end, outerHeight, normalDistance, left: trackLeft, anchor: cameraAnchor, length: metrics.length };
+      mobileCamera = { documentTop, viewport, start: normalStart, end, outerHeight, normalDistance, left: trackLeft, anchor: cameraAnchor, length: metrics.length, width, labels, points, guideNodes };
     }
     animation = gsap.timeline({
       defaults: { ease: 'none' },
@@ -296,7 +337,7 @@
         // Fixed small-viewport pixels also keep later refreshes stable on phones.
         start: slowMobile ? normalStart : 'clamp(top ' + revealLine + 'px)',
         end: slowMobile ? normalStart + scrollDistance : 'clamp(bottom ' + revealLine + 'px)',
-        scrub: narrow ? .35 : true
+        scrub: narrow ? .35 : smoother ? true : .8
       }
     });
     animation.fromTo(path, { drawSVG: 0 }, { drawSVG: '100%', duration: 1 }, 0);
@@ -333,7 +374,8 @@
       }, { opacity: 1, duration, ease: 'power2.out' }, at);
     });
     track.dataset.timelineState = 'animated';
-    animation.scrollTrigger.refresh();
+    if (smoother) ScrollTrigger.refresh();
+    else animation.scrollTrigger.refresh();
     animation.progress(animation.scrollTrigger.progress);
     updateMobileCamera();
     updateMobileReveals();
