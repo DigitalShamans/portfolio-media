@@ -35,6 +35,34 @@ have one owner. Checkpoint after each gate; resume files rather than reacquiring
 source or rebuilding reviewed code. Keep STATUS concise; put detailed results in
 separate evidence files. Do not treat checkpoints as a chat-length reset.
 
+## Browser deadlines and automatic fallback
+
+Use the in-app browser first for source capture and both-route acceptance. Do not
+automatically launch native Chrome: its API stalled for 24 minutes on the Sniper
+import. Start independent HTTP/decode/hash verification as soon as Pages succeeds.
+
+Import `.github/scripts/gallery-browser-check.mjs` into the supported CUA JavaScript
+session and call `runGalleryBrowserCheck` with `inApp`, optional `retryInApp`
+(a fresh in-app tab) and `deliveryFallback` observation callbacks. Each callback
+returns `{passed: true, ...evidence}` only after its assertions pass. Defaults are
+5 seconds per in-app attempt and 2 seconds for the delivery fallback, with at most
+one in-app retry. Both thrown errors and expired deadlines trigger fallback.
+
+Use `withBrowserCheckTimeout` for individual read-only observations, 5-second
+Playwright locator timeouts, and `timeout_ms: 15000` on each CUA tool call. Keep
+calls small. The in-session guard discards late results; it cannot cancel a pending
+UI input or force an unresponsive tool transport to return. Do not race input
+callbacks against further input. After an unknown action outcome, obtain fresh
+state before continuing; reset/rebind the CUA session once if needed.
+
+Delivery fallback can consume independently verified HTTP results. Its status is
+`delivery-only`, with interactive acceptance still unverified. If both in-app
+attempts fail, continue independent work and record the exact missing interaction
+check; do not claim gallery acceptance from HTTP alone. This policy does not remove
+the native Gallery Editor round-trip requirement.
+
+Guard verification: `node --test .github/tests/gallery-browser-check.test.mjs`.
+
 ## Input and commands
 
 Requires Python with **Pillow 13.0.0**, including WebP support, and Windows PowerShell
@@ -98,7 +126,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .github/scripts/download-gal
 `prepare` writes originals/provenance under `stage/private`, WebPs, image-only
 `gallery.json`, stable image-anchored embeds, native MP4 and both page stubs under
 `stage/public`. It also emits measured sizes, SHA-256/Git blob IDs, approval entries,
-an artifact inventory and a timing report. WebPs fit 2560×1440 with Lanczos,
+an artifact inventory and a timing report. WebPs fit 2560Ã—1440 with Lanczos,
 quality 92/method 6, EXIF orientation and ICC handling, without cropping/upscaling.
 Add `--resume` to repeat preparation with the same input/stage. Source hashes and
 cached derivative hashes are rechecked; a filename alone is never a cache hit.
@@ -170,9 +198,9 @@ transfer were not exercised by this tooling smoke. MP4 container/byte preservati
 was checked by the real local replay; no new viewer behavior was introduced.
 
 For a comparable gallery using supported formats and healthy services, target
-**25–30 minutes end to end**: source/preflight 4m; acquisition/preparation/private
+**25â€“30 minutes end to end**: source/preflight 4m; acquisition/preparation/private
 checkpoint 4m; pages/service/integration 7m; Pages 3m; editor/live acceptance 8m;
-final evidence 3m = **29m**. These are planning estimates, not a measured 2× result.
+final evidence 3m = **29m**. These are planning estimates, not a measured 2Ã— result.
 Record UTC start/end/result per checkpoint on the next import and compare against
 the 32m11.5s half-time threshold. Report unexpected source/feature/CI blockers
 separately instead of omitting required media or checks to meet the target.
