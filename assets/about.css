@@ -8,8 +8,8 @@
 
 .about-content {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-  column-gap: clamp(2rem, 5vw, 5rem);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: clamp(1.5rem, 3vw, 2rem);
   row-gap: clamp(2rem, 4vw, 3.5rem);
   align-items: start;
   max-inline-size: 68rem;
@@ -70,7 +70,7 @@
   font: inherit;
   text-align: start;
   border-inline-start: 1px solid var(--border);
-  padding-inline-start: clamp(1.25rem, 3vw, 2.5rem);
+  padding-inline-start: clamp(1.25rem, 2vw, 1.75rem);
 }
 
 .about-details section + section { margin-block-start: 1.25rem; }
