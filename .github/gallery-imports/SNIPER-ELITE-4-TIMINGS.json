@@ -1,0 +1,27 @@
+{
+  "source_complete_utc": "2026-11-19T13:53:00.059592+00:00",
+  "measurement_start_utc": "2026-11-19T13:51:05Z",
+  "measurement_note": "Exact user request timestamp from this chat event log; explicit clock/per-stage durations retained.",
+  "preparation_complete_utc": "2026-11-19T13:55:35.997625+00:00",
+  "request_start_utc": "2026-11-19T13:50:17.706Z",
+  "service_succeeded_utc": "2026-11-19T14:05:46.130748+00:00",
+  "pages_succeeded_utc": "2026-11-19T14:10:28Z",
+  "acceptance_complete_utc": "2026-11-19T14:42:01.784100+00:00",
+  "native_browser_tool_stall_seconds": 1460.4716,
+  "source_download_seconds": 4.827,
+  "media_preparation_seconds": 4.718,
+  "service_http_seconds": 16.9,
+  "public_http_seconds": 7.69,
+  "prior_full_import_baseline_seconds": 3863,
+  "half_time_threshold_seconds": 1931.5,
+  "half_time_target_met": false,
+  "notes": [
+    "Exact user request timestamp from this chat event log.",
+    "Pages success is publication, not completion of later live acceptance.",
+    "A native Chrome API call stalled then returned an expired continuation. It was not an image conversion or deployment duration.",
+    "Interactive IAB verification completed after reset; external native Chrome remains unverified.",
+    "No claimed end-to-end speedup based on subtracting the stall."
+  ],
+  "request_to_pages_seconds": 1210.294,
+  "request_to_acceptance_seconds": 3104.078
+}
