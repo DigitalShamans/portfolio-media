@@ -1,6 +1,30 @@
 'use strict';
 
 (async () => {
+  // Keep desktop zoom/display sizing aligned with fitGallery in gallery-viewer.js.
+  const mapPage = document.querySelector('.gallery-map-page');
+  const finePointer = window.matchMedia('(pointer: fine)');
+  let displaySize = `${screen.width}x${screen.height}`;
+  let baselinePixelRatio = window.devicePixelRatio;
+  function fitMap() {
+    const viewport = document.documentElement;
+    const currentDisplaySize = `${screen.width}x${screen.height}`;
+    if (currentDisplaySize !== displaySize) {
+      displaySize = currentDisplaySize;
+      baselinePixelRatio = window.devicePixelRatio;
+    }
+    if (!finePointer.matches) {
+      mapPage.style.removeProperty('--shot-width');
+      return;
+    }
+    const pageScale = window.devicePixelRatio / baselinePixelRatio;
+    const fitWidth = Math.min(viewport.clientWidth, viewport.clientHeight * 16 / 9);
+    mapPage.style.setProperty('--shot-width', (0.9 * fitWidth * pageScale) + 'px');
+  }
+  fitMap();
+  window.addEventListener('resize', fitMap);
+  finePointer.addEventListener('change', fitMap);
+
   const caption = document.querySelector('#map-caption');
   try {
     const options = JSON.parse(document.querySelector('#gallery-map-options').textContent);
