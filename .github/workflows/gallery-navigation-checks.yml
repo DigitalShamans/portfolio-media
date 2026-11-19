@@ -1,0 +1,25 @@
+name: Gallery navigation tests
+on:
+  pull_request:
+    paths:
+      - '_includes/gallery-navigation.html'
+      - 'galleries/gallery.css'
+      - 'galleries/gallery-navigation.js'
+      - 'galleries/gallery-desktop-panels.js'
+      - '.github/tests/gallery-navigation.test.cjs'
+      - '.github/tests/gallery-desktop-panels.test.cjs'
+      - '.github/workflows/gallery-navigation-checks.yml'
+jobs:
+  navigation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check mobile and desktop gallery navigation
+        run: node --test .github/tests/gallery-navigation.test.cjs .github/tests/gallery-desktop-panels.test.cjs
