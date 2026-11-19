@@ -289,3 +289,69 @@ test('invalid, cross-origin or cross-portfolio destinations do not activate', ()
     assert.deepEqual(b.calls, []);
   }
 });
+
+test('RZ Start password focus does not trap edge navigation on either portfolio', () => {
+  for (const prefix of ['', '/artur']) {
+    const options = {
+      prefix, folder: 'hb-rzstart', activeTag: 'input',
+      previousHref: 'https://example.test' + prefix + '/galleries/hb-spybase/',
+      nextHref: 'https://example.test' + prefix + '/galleries/hb-egypt/'
+    };
+    for (const [x, expected] of [[1, options.previousHref], [1439, options.nextHref]]) {
+      const b = browser(options);
+      b.pointer(x);
+      b.advance(930);
+      assert.deepEqual(b.calls, [expected], 'RZ Start escape must work: ' + expected);
+    }
+  }
+});
+
+test('Alt+Left and Alt+Right traverse history even while a password input is focused', () => {
+  const b = browser({ folder: 'hb-rzstart', activeTag: 'input' });
+  const password = new b.Element('input');
+  assert.equal(b.keydown('ArrowLeft', password, { altKey: true }).prevented, true);
+  assert.equal(b.keydown('ArrowRight', password, { altKey: true }).prevented, true);
+  assert.deepEqual(b.historyCalls, ['back', 'forward']);
+  assert.deepEqual(b.calls, [], 'history shortcuts must not create new gallery entries');
+});
+
+test('Back/Forward history restoration stays disarmed until mouse leaves edge', () => {
+  for (const [options, event] of [
+    [{}, { persisted: true }],
+    [{ navigationType: 'back_forward' }, { persisted: false }]
+  ]) {
+    const b = browser(options);
+    b.event('pageshow', event);
+    b.pointer(1439);
+    b.advance(1400);
+    assert.deepEqual(b.calls, [], 'history restore must not automatically advance');
+    b.pointer(700);
+    b.pointer(1439);
+    b.advance(930);
+    assert.deepEqual(b.calls, [b.next.href]);
+  }
+});
+
+test('RZ gate provides visible previous and looping-next fallback links before and after unlock', () => {
+  assert.match(locked, /<main id="gallery-access"/);
+  assert.equal(locked.split('include rz-gallery-exit.html').length - 1, 2);
+  assert.match(exitLinks, /rz_previous\.folder/);
+  assert.match(exitLinks, /rz_next\.folder/);
+  assert.match(exitLinks, /Previous gallery:/);
+  assert.match(exitLinks, /Next gallery:/);
+  assert.match(exitLinks, /include\.portfolio_url/);
+  assert.doesNotMatch(exitLinks, /onclick=|type="button"/);
+});
+
+test('transition tint is exactly RGB 21,20,23 without the old brown gradient', () => {
+  assert.match(styles, /\.gallery-desktop-edge-panel\s*\{[^}]*background:\s*rgb\(21, 20, 23\)/s);
+  assert.doesNotMatch(styles, /linear-gradient\(125deg, #171717/);
+});
+
+test('Alt+Back/Forward are not intercepted while the fullscreen image viewer is open', () => {
+  const b = browser();
+  b.document.fullscreenElement = {};
+  const e = b.keydown('ArrowLeft', new b.Element('body'), { altKey: true });
+  assert.equal(e.prevented, false);
+  assert.deepEqual(b.historyCalls, []);
+});
