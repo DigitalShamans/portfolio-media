@@ -1,16 +1,17 @@
 # Gallery publication status
 
-Current task: Props only (ArtStation ba253a), the sixth Full Portfolio gallery. One gallery per release; publish and verify both unlisted routes before completion.
+Current task: Props (ArtStation ba253a) — published and verified on both routes. The sixth Full Portfolio gallery is complete; no implementation/publication work remains.
 
-## Bounded checkpoints
+## Completed checkpoints
 
-1. Source: rendered in-app browser verifies43 containers,42JPGs,noembeds,one empty record atposition2. Exact order/case, source captions and actual download links including dl=1 preserved. No guessed higher-resolution URLs. New browser guard primary timed out at5s; automatic fresh in-app retry succeeded in0.972s, without native Chrome.
-2. Prepared:42verified originals and42WebPs, image-only JPG gallery.json and both route stubs from reusable importer. Downloads10.333s; preparation9.836s. Originals:7at3840x2160,10at2560x1440,6at2560x1366,19at1920x1080. Original bytes22,566,756. Native editor v0.11 all42previews and reorder/save/reopen/canonical restore passed; allhashes unchanged.
-3. Private:PR6 merged de815cfb10a0ab016e63bb93f7cb0da658620b39. Single Git tree query matches all42approval blob/size records. Source checkpoint c23923c. Existing approval inventories remain unchanged.
-4. Publication: new scoped media catalog contains only Props; six prior catalogs retained. Service v10 sourceb2515911703e45c82d32113883e9c2ef4da9b723, deploymentappgdep_6aff11b6d8908191a31ed9ec418b386b succeeded15:12:04Z,env15. Actual42newJPG+3legacy samples and4denial probes pass. Website metadata applied only after this gate. Public branch codex/props-20261119 includes tested browser guard checkpoint3a8d9f1; no shared gallery viewer changes.
+1. Source: 42 JPGs, no embeds, one empty record at position 2 omitted. Exact image order/case, captions and genuine download links preserved. Originals: 7 at 3840×2160,10 at 2560×1440,6 at 2560×1366,19 at 1920×1080. Original bytes 22,566,756. Downloads 10.333s, preparation 9.836s, Lanczos/q92/m6/EXIF/ICC with no crop/upscale.
+2. Private: PR6 merged `de815cfb10a0ab016e63bb93f7cb0da658620b39`; all 42 approved blobs/sizes match the immutable tree. Native Gallery Editor v0.11 individually rendered all 42 previews and passed reorder/save/reopen/canonical restoration, all hashes unchanged. Public guard checkpoint 3a8d9f1, media/pages b676519, metadata 107f7ae.
+3. Service: v10 source b2515911703e45c82d32113883e9c2ef4da9b723; deployment appgdep_6aff11b6d8908191a31ed9ec418b386b succeeded 15:12:04Z,environment revision 15. Six old catalogs/active revisions retained. 14 gateway tests+build pass. Actual 42 new originals+3 legacy samples pass integrity/decode; four denial probes 404 (49 GETs).
+4. Website: PR70 merged 82e2723b9d21f6d9c7bb01cc76c421c6ccd7a1cb; Pages44552731651 succeeded 15:17:13Z. Both actual HTML builds match. All 55 public HTTP checks pass, including 42 WebPs, canonical manifest, both routes, seven dependencies, homes/nav/sitemap. Noindex/unlisted and external ArtStation cards preserved. Maintained tests 55/55, parser/version/embeds and CI Ruby/Jekyll pass. Concurrent desktop handoff through d7c4604 retained.
+5. In-app browser: both routes 390/2800 plus studio 1280, decoded WebP/original selection, 42 images, fullscreen/counters/next/previous/Escape/return pass; actual 3840×2160 sample verified. Finished screenshots inspected; viewport override reset. No native Chrome or prompts. Physical touch/iOS/Safari not tested.
 
-Browser policy: in-app first;5s observations, one fresh in-app retry,2s delivery fallback;15s tool calls and5s locators. No automatic native Chrome. Failed interactive checks remain unverified; HTTP success is not UI acceptance. Dispatch delivery checks immediately after Pages succeeds.
+Routes: /galleries/props/ and /artur/galleries/props/. Final reports: PROPS-VERIFICATION.md and PROPS-TIMINGS.json on working branch codex/props-20261119, avoiding another website release.
 
-Next: one Pages release, then dispatch independent public HTTP checks immediately and verify both routes in-app at mobile/wide sizes. Current main through d7c4604 integrated, preserving seamless desktop handoff updates. Keep original/JPG selection, fallback/caching, navigation, protected media and homepage ArtStation links unchanged. Route conflicts for /galleries/props/ and /artur/galleries/props/ are clear.
+Future browser rule is committed: in-app first; 5s check, one fresh in-app retry, 2s delivery fallback; 5s locators/15s tool calls. Seven guard tests pass; actual timed-out source open recovered automatically. HTTP fallback never claims interactive success. Dispatch HTTP checks as soon as Pages succeeds.
 
-Completed Sniper evidence is retained, including its final report/timings now carried forward from its working checkpoint. Prior Full Portfolio conversions: NFS Unbound, Vehicles-Aircrafts, Phantom, Firearms and Sniper Elite4. No other new gallery starts during this release.
+Full request-to-acceptance: 25.45min, 60.5% below Firearms 64m23s; half-time target met for this JPG-only run. Earlier Full Portfolio conversions: NFS,Aircrafts,Phantom,Firearms,Sniper. No additional gallery starts until requested.
