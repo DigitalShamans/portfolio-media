@@ -411,7 +411,7 @@ test('the banner fades as the gallery appears, independently of the first screen
   assert.equal(b.frame.style.clipPath, 'inset(50px 0px 0px 0px)');
   await b.loaded();
   assert.equal(b.cover.classList.contains('portfolio-gallery-transition--moving'), true);
-  assert.match(portfolioStyles, /\.portfolio-gallery-transition--moving \.portfolio-gallery-transition__frame\s*\{\s*opacity:\s*0;\s*transition:\s*opacity 140ms ease-out/);
+  assert.match(portfolioStyles, /\.portfolio-gallery-transition--moving \.portfolio-gallery-transition__frame\s*\{\s*opacity:\s*0;\s*transition:\s*opacity 70ms ease-out/);
   assert.equal(b.frame.style.left, '60px');
   assert.equal(b.frame.style.top, '355.75px');
   assert.equal(b.frame.style.width, '1080px');

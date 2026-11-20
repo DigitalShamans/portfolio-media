@@ -27,7 +27,7 @@
 }
 .portfolio-gallery-transition--moving .portfolio-gallery-transition__frame {
   opacity: 0;
-  transition: opacity 140ms ease-out,
+  transition: opacity 70ms ease-out,
     left 340ms cubic-bezier(.22,.61,.36,1), top 340ms cubic-bezier(.22,.61,.36,1),
     width 340ms cubic-bezier(.22,.61,.36,1), height 340ms cubic-bezier(.22,.61,.36,1),
     clip-path 340ms cubic-bezier(.22,.61,.36,1);
