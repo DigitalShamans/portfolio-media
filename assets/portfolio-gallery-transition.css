@@ -1,44 +1,38 @@
-.portfolio-gallery-transition {
-  position: fixed;
-  inset: 0;
-  z-index: 30;
-  overflow: hidden;
-  pointer-events: none;
-  transition: opacity 240ms ease;
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+
+  :root:active-view-transition-type(artur-gallery) .site-header {
+    view-transition-name: artur-gallery-header;
+  }
+
+  :root:active-view-transition-type(artur-gallery)::view-transition-old(root) {
+    animation: none !important;
+    mix-blend-mode: normal;
+  }
+
+  /* Reveal the new document over the old one without blending their artwork. */
+  :root:active-view-transition-type(artur-gallery)::view-transition-new(root) {
+    animation: artur-gallery-reveal 360ms cubic-bezier(.2, .72, .28, 1) both !important;
+    mix-blend-mode: normal;
+  }
+
+  ::view-transition-group(artur-gallery-header) {
+    animation: none;
+    z-index: 1;
+  }
+
+  ::view-transition-old(artur-gallery-header) {
+    animation: none;
+    opacity: 0;
+  }
+
+  ::view-transition-new(artur-gallery-header) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
 }
-.portfolio-gallery-transition__backdrop {
-  position: absolute;
-  inset: 0;
-  background: #121212;
-}
-.portfolio-gallery-transition__frame {
-  position: absolute;
-  overflow: hidden;
-}
-.portfolio-gallery-transition__frame img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.portfolio-gallery-transition--moving .portfolio-gallery-transition__backdrop {
-  opacity: 0;
-  transition: opacity 240ms ease;
-}
-.portfolio-gallery-transition--moving .portfolio-gallery-transition__frame {
-  opacity: 0;
-  transition: opacity 70ms ease-out,
-    left 340ms cubic-bezier(.22,.61,.36,1), top 340ms cubic-bezier(.22,.61,.36,1),
-    width 340ms cubic-bezier(.22,.61,.36,1), height 340ms cubic-bezier(.22,.61,.36,1),
-    clip-path 340ms cubic-bezier(.22,.61,.36,1);
-}
-.portfolio-gallery-transition--leaving { opacity: 0; }
-body:has(> .portfolio-gallery-transition) > .site-header {
-  position: relative;
-  z-index: 31;
-}
-.recent-gallery .portfolio-gallery-transition-source { opacity: 0; }
-@media (prefers-reduced-motion: reduce) {
-  .portfolio-gallery-transition { display: none; }
-  .recent-gallery .portfolio-gallery-transition-source { opacity: 1; }
+
+@keyframes artur-gallery-reveal {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0); }
 }
