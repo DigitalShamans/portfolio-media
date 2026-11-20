@@ -49,13 +49,13 @@
     .gallery-access__escape a:hover, .gallery-access__escape a:focus-visible { color: var(--text); }
   </style>
   {% if page.portfolio == 'personal' %}
-    <link rel="stylesheet" href="{{ '/assets/portfolio-gallery-transition.css' | relative_url }}?v=2">
+    <link rel="stylesheet" href="{{ '/assets/portfolio-gallery-transition.css' | relative_url }}?v=3">
   {% endif %}
   {% include personal-typography.html %}
 </head>
 <body data-gallery-revision="{{ site.github.build_revision | escape }}">
   {% if page.portfolio == 'personal' %}
-    <script src="{{ '/assets/portfolio-gallery-transition.js' | relative_url }}?v=3" data-gallery-arrival></script>
+    <script src="{{ '/assets/portfolio-gallery-transition.js' | relative_url }}?v=4" data-gallery-arrival></script>
   {% endif %}
   <div id="gallery-edge-arrival"><script src="../gallery-arrival.js?v=3"></script></div>
   {% include site-header.html %}

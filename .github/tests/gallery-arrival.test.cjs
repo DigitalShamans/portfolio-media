@@ -397,35 +397,25 @@ test('ordinary link behavior is preserved for new tabs, reduced motion, zoom, an
   assert.equal(portfolioBrowser({ zoom: 2 }).click(), false);
 });
 
-test('gallery arrival moves straight to the real screenshot while the image is loading', async () => {
-  const firstReady = deferred();
-  const image = {
-    naturalWidth: 2560,
-    decode: () => Promise.resolve(),
+test('the banner fades as the gallery appears, independently of the first screenshot', async () => {
+  const shot = {
     getBoundingClientRect: () => ({ top: 160, left: 60, width: 1080, height: 607.5, bottom: 767.5 })
   };
   const b = portfolioBrowser({
-    incoming: true, marker: galleryMarker(), shot: image,
-    galleryReady: () => Promise.resolve({ firstReady: firstReady.promise, items: [{ image }] })
+    incoming: true, marker: galleryMarker(), shot,
+    galleryReady: () => assert.fail('The departing banner must not wait for gallery image loading')
   });
   assert.equal(b.stored.has(portfolioArrivalKey), false);
   assert.equal(b.window.__galleryDesktopEdgeArrived, true);
   assert.equal(b.frame.children[0].src, portfolioOrigin + portfolioBannerPath);
-  assert.equal(b.frame.style.top, '20px');
-  assert.equal(b.frame.style.height, '220px');
   assert.equal(b.frame.style.clipPath, 'inset(50px 0px 0px 0px)');
-  const loaded = b.loaded();
-  await Promise.resolve();
+  await b.loaded();
   assert.equal(b.cover.classList.contains('portfolio-gallery-transition--moving'), true);
+  assert.match(portfolioStyles, /\.portfolio-gallery-transition--moving \.portfolio-gallery-transition__frame\s*\{\s*opacity:\s*0;\s*transition:\s*opacity 140ms ease-out/);
   assert.equal(b.frame.style.left, '60px');
   assert.equal(b.frame.style.top, '355.75px');
   assert.equal(b.frame.style.width, '1080px');
   assert.equal(b.frame.style.height, '216px');
-  assert.equal(b.cover.classList.contains('portfolio-gallery-transition--leaving'), false);
-  firstReady.resolve(true);
-  b.timeout(180);
-  await loaded;
-  assert.equal(b.cover.classList.contains('portfolio-gallery-transition--leaving'), true);
   b.timeout(300);
   assert.equal(b.cover, undefined);
 });
@@ -439,7 +429,9 @@ test('RZ Start reveals its password gate using only the public banner', async ()
   });
   assert.equal(b.frame.children[0].src, portfolioOrigin + banner);
   await b.loaded();
-  assert.equal(b.cover.classList.contains('portfolio-gallery-transition--leaving'), true);
+  assert.equal(b.cover.classList.contains('portfolio-gallery-transition--moving'), true);
+  b.timeout(300);
+  assert.equal(b.cover, undefined);
 });
 
 test('direct visits, unrelated homepages, and expired or invalid arrival markers use the normal gallery', () => {
@@ -465,8 +457,8 @@ test('a slow gallery cannot hold the banner cover past its timeout', () => {
 });
 
 test('the real Artur homepage and its recent galleries load the transition and the shared wheel scroll', () => {
-  assert.match(portfolioLayout, /page\.url == site\.data\.personal_portfolio\.home and page\.font_preview == nil[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=3" defer/);
+  assert.match(portfolioLayout, /page\.url == site\.data\.personal_portfolio\.home and page\.font_preview == nil[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=4" defer/);
   assert.match(portfolioLayout, /recent-galleries-scroll\.js' \| relative_url }}\?v=2/);
-  assert.match(layouts[0], /page\.portfolio == 'personal' and recent_gallery[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=3" data-gallery-arrival/);
-  assert.match(layouts[1], /page\.portfolio == 'personal'[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=3" data-gallery-arrival/);
+  assert.match(layouts[0], /page\.portfolio == 'personal' and recent_gallery[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=4" data-gallery-arrival/);
+  assert.match(layouts[1], /page\.portfolio == 'personal'[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=4" data-gallery-arrival/);
 });

@@ -65,29 +65,32 @@
     // and avoid triggering an edge slide under the pointer on arrival.
     window.__galleryDesktopEdgeArrived = true;
     try { window.sessionStorage.removeItem('gallery-desktop-edge-arrival'); } catch {}
-    const { cover, frame } = createCover(url);
+    const { cover, backdrop, frame } = createCover(url);
     place(frame, marker.box);
     clip(frame, marker.inset);
     document.body.append(cover);
 
-    let leaving = false;
-    const deadline = window.setTimeout(reveal, 2000);
-    function reveal() {
-      if (leaving) return;
-      leaving = true;
-      window.clearTimeout(deadline);
+    let ending = false;
+    let cleanupTimer = window.setTimeout(() => {
+      ending = true;
       cover.classList.add('portfolio-gallery-transition--leaving');
-      cover.addEventListener('transitionend', event => {
-        if (event.target === cover && event.propertyName === 'opacity') cover.remove();
-      });
-      window.setTimeout(() => cover.remove(), 300);
+      cleanupTimer = window.setTimeout(removeCover, 300);
+    }, 2000);
+
+    function removeCover() {
+      ending = true;
+      window.clearTimeout(cleanupTimer);
+      cover.remove();
     }
 
-    window.addEventListener('pagehide', () => cover.remove(), { once: true });
+    cover.addEventListener('transitionend', event => {
+      if (event.propertyName === 'opacity' && (event.target === backdrop || event.target === cover)) removeCover();
+    });
+    window.addEventListener('pagehide', removeCover, { once: true });
     document.addEventListener('DOMContentLoaded', async () => {
-      // Paint the banner in its original position before moving to the real image slot.
+      // Paint the banner in its original position before revealing the gallery.
       await new Promise(resolve => window.requestAnimationFrame(() => window.requestAnimationFrame(resolve)));
-      if (leaving) return;
+      if (ending) return;
 
       const shot = document.querySelector('.gallery .shot-primary')?.getBoundingClientRect();
       cover.classList.add('portfolio-gallery-transition--moving');
@@ -97,20 +100,9 @@
         place(frame, { left: shot.left, top: shot.top + (shot.height - height) / 2, width: shot.width, height });
         clip(frame, [0, 0, 0, 0]);
       }
-      if (document.querySelector('#gallery-access')) {
-        reveal();
-        return;
-      }
-
-      const timeToMove = new Promise(resolve => window.setTimeout(resolve, 180));
-      try {
-        const gallery = await window.GalleryViewer?.ready;
-        await gallery?.firstReady;
-        const first = gallery?.items?.[0]?.image;
-        if (first?.naturalWidth) await first.decode?.().catch(() => {});
-      } catch { /* Reveal the destination even if gallery loading fails. */ }
-      await timeToMove;
-      reveal();
+      // The artwork fades with the arrival, independently of the first image's download.
+      window.clearTimeout(cleanupTimer);
+      cleanupTimer = window.setTimeout(removeCover, 300);
     }, { once: true });
   }
 
