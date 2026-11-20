@@ -219,3 +219,202 @@ test('Chrome swaps identical covered snapshots with no browser crossfade or move
   assert.match(controller, /const slideDuration = 420/);
   assert.match(controller, /const holdDelay = 180/);
 });
+
+const portfolioTransition = fs.readFileSync(path.join(root, 'assets/portfolio-gallery-transition.js'), 'utf8');
+const portfolioLayout = fs.readFileSync(path.join(root, '_layouts/portfolio.html'), 'utf8');
+const portfolioOrigin = 'https://digitalshamans.co.uk';
+const portfolioGalleryPath = '/artur/galleries/hb-atrium/';
+const portfolioBannerPath = '/projects/hb-atrium/hb_atrium_header_400.jpg?v=artwork';
+const portfolioArrivalKey = 'portfolio-gallery-arrival';
+
+function portfolioBrowser({ incoming = false, pathname = incoming ? portfolioGalleryPath : '/artur/',
+    marker, reduced = false, gate = false, galleryReady, stored = new Map(), zoom = 1 } = {}) {
+  const windowEvents = {}, documentEvents = {}, clickEvents = {}, timers = new Map();
+  const navigations = [], tweens = [];
+  let timelineDone;
+  let timerId = 0;
+
+  function element() {
+    const events = {}, classes = new Set();
+    const node = {
+      children: [], style: {},
+      classList: {
+        add: value => classes.add(value),
+        remove: value => classes.delete(value),
+        contains: value => classes.has(value)
+      },
+      append(child) { child.parent = node; node.children.push(child); },
+      remove() {
+        if (!node.parent) return;
+        node.parent.children.splice(node.parent.children.indexOf(node), 1);
+        node.parent = undefined;
+      },
+      addEventListener(name, fn) { events[name] = fn; },
+      setAttribute(name, value) { node[name] = value; }
+    };
+    return node;
+  }
+
+  const body = element();
+  const banner = {
+    ...element(), currentSrc: portfolioOrigin + portfolioBannerPath, complete: true, naturalWidth: 2000,
+    getBoundingClientRect: () => ({ top: 20, left: 50, bottom: 240, right: 1150, width: 1100, height: 220 })
+  };
+  const region = {
+    addEventListener(type, callback) { clickEvents[type] = callback; },
+    getBoundingClientRect: () => ({ top: 70, left: 50, bottom: 900, right: 1150 })
+  };
+  const link = {
+    href: portfolioOrigin + portfolioGalleryPath, target: '',
+    querySelector: () => banner, hasAttribute: () => false
+  };
+  if (marker) stored.set(portfolioArrivalKey, JSON.stringify(marker));
+  const document = {
+    body, documentElement: { clientWidth: 1200 }, createElement: element,
+    currentScript: { hasAttribute: name => incoming && name === 'data-gallery-arrival' },
+    querySelector: selector => selector === '#recent-work .recent-galleries' && !incoming
+      ? region : selector === '#gallery-access' && gate ? {} : null,
+    addEventListener(type, callback) { documentEvents[type] = callback; }
+  };
+  const window = {
+    location: { origin: portfolioOrigin, pathname, href: portfolioOrigin + pathname,
+      assign: url => navigations.push(url) },
+    innerHeight: 800, visualViewport: { scale: zoom },
+    matchMedia: () => ({ matches: reduced }),
+    gsap: {
+      timeline({ onComplete }) {
+        timelineDone = onComplete;
+        return { to(node, props) { tweens.push({ node, props }); return this; }, kill() {} };
+      }
+    },
+    GalleryViewer: { get ready() { return galleryReady?.(); } },
+    sessionStorage: {
+      getItem: name => stored.get(name) ?? null,
+      setItem: (name, value) => stored.set(name, value),
+      removeItem: name => stored.delete(name)
+    },
+    requestAnimationFrame: callback => callback(),
+    setTimeout(callback, delay) { timers.set(++timerId, { callback, delay }); return timerId; },
+    clearTimeout: id => timers.delete(id),
+    addEventListener(type, callback) { windowEvents[type] = callback; }
+  };
+  vm.runInNewContext(portfolioTransition, { window, document, URL, Date: { now: () => 2500 } });
+  return {
+    window, stored, navigations, tweens, banner, link,
+    get cover() { return body.children[0]; },
+    click(overrides = {}) {
+      let prevented = false;
+      clickEvents.click({
+        button: 0, target: { closest: () => link }, preventDefault() { prevented = true; }, ...overrides
+      });
+      return prevented;
+    },
+    finish: () => timelineDone?.(),
+    shown: persisted => windowEvents.pageshow?.({ persisted }),
+    loaded: () => documentEvents.DOMContentLoaded?.(),
+    timeout(delay) { [...timers.values()].find(timer => timer.delay === delay)?.callback(); }
+  };
+}
+
+test('a plain or keyboard banner click expands the selected art and hands it to the gallery', () => {
+  const b = portfolioBrowser();
+  assert.equal(b.click({ detail: 0 }), true);
+  assert.equal(b.click(), true, 'a repeated click does not start a new transition');
+  assert.equal(b.tweens.length, 2);
+  assert.equal(b.cover['aria-hidden'], 'true');
+  assert.equal(b.cover.children[0].style.clipPath, 'inset(50px 0px 0px 0px)');
+  assert.equal(b.cover.children[0].children[0].src, portfolioOrigin + portfolioBannerPath);
+  assert.equal(b.stored.has(portfolioArrivalKey), false);
+  b.shown(false);
+  assert.ok(b.cover, 'the initial pageshow does not interrupt a click during loading');
+  b.finish();
+  b.timeout(500);
+  assert.deepEqual(b.navigations, [portfolioOrigin + portfolioGalleryPath]);
+  assert.deepEqual(JSON.parse(b.stored.get(portfolioArrivalKey)), {
+    pathname: portfolioGalleryPath, banner: portfolioOrigin + portfolioBannerPath, at: 2500
+  });
+  b.shown(true);
+  assert.equal(b.cover, undefined);
+  assert.equal(b.banner.classList.contains('portfolio-gallery-transition-source'), false);
+});
+
+test('ordinary link behavior is preserved for new tabs, reduced motion, zoom, and other destinations', () => {
+  const b = portfolioBrowser();
+  for (const overrides of [{ ctrlKey: true }, { metaKey: true }, { button: 1 }, { shiftKey: true }]) {
+    assert.equal(b.click(overrides), false);
+  }
+  b.link.target = '_blank';
+  assert.equal(b.click(), false);
+  b.link.target = '';
+  b.link.href = portfolioOrigin + '/galleries/hb-atrium/';
+  assert.equal(b.click(), false);
+  b.link.href = 'https://example.org' + portfolioGalleryPath;
+  assert.equal(b.click(), false);
+  assert.equal(portfolioBrowser({ reduced: true }).click(), false);
+  assert.equal(portfolioBrowser({ zoom: 2 }).click(), false);
+});
+
+test('the matching gallery shows the same art until the first screenshot is ready', async () => {
+  const firstReady = deferred();
+  const image = {
+    naturalWidth: 2560,
+    decode: () => Promise.resolve(),
+    getBoundingClientRect: () => ({ top: 160, left: 60, width: 1080, height: 607.5, bottom: 767.5 })
+  };
+  const b = portfolioBrowser({
+    incoming: true, marker: { pathname: portfolioGalleryPath, at: 2400, banner: portfolioBannerPath },
+    galleryReady: () => Promise.resolve({ firstReady: firstReady.promise, items: [{ image }] })
+  });
+  assert.equal(b.stored.has(portfolioArrivalKey), false);
+  assert.equal(b.window.__galleryDesktopEdgeArrived, true);
+  assert.equal(b.cover.children[0].children[0].src, portfolioOrigin + portfolioBannerPath);
+  const loaded = b.loaded();
+  await Promise.resolve();
+  assert.equal(b.cover.classList.contains('portfolio-gallery-transition--leaving'), false);
+  firstReady.resolve(true);
+  await loaded;
+  assert.equal(b.cover.children[0].style.top, '160px');
+  assert.equal(b.cover.classList.contains('portfolio-gallery-transition--leaving'), true);
+  b.timeout(360);
+  assert.equal(b.cover, undefined);
+});
+
+test('RZ Start reveals its password gate using only the public banner', async () => {
+  const pathname = '/artur/galleries/hb-rzstart/';
+  const banner = '/projects/hb-rzstart/hb_rzstart_header_400.jpg';
+  const b = portfolioBrowser({
+    incoming: true, gate: true, pathname, marker: { pathname, banner, at: 2400 },
+    galleryReady: () => assert.fail('A password gate must not wait for private gallery images')
+  });
+  assert.equal(b.cover.children[0].children[0].src, portfolioOrigin + banner);
+  await b.loaded();
+  assert.equal(b.cover.classList.contains('portfolio-gallery-transition--leaving'), true);
+});
+
+test('direct visits, unrelated homepages, and expired or invalid arrival markers use the normal gallery', () => {
+  const marker = { pathname: portfolioGalleryPath, at: 2400, banner: portfolioBannerPath };
+  assert.equal(portfolioBrowser({ incoming: true }).cover, undefined);
+  assert.equal(portfolioBrowser({ incoming: true, marker, reduced: true }).cover, undefined);
+  assert.equal(portfolioBrowser({ incoming: true, marker: { ...marker, pathname: '/galleries/hb-atrium/' } }).cover, undefined);
+  assert.equal(portfolioBrowser({ incoming: true, marker: { ...marker, banner: 'https://example.org/example.jpg' } }).cover, undefined);
+  assert.equal(portfolioBrowser({ incoming: true, marker: { ...marker, banner: '/projects/hb-egypt/banner.jpg' } }).cover, undefined);
+  assert.equal(portfolioBrowser({ incoming: true, marker: { ...marker, at: -8000 } }).cover, undefined);
+  assert.equal(portfolioBrowser({ incoming: true, marker: { ...marker, at: 15000 } }).cover, undefined);
+});
+
+test('a slow gallery cannot hold the banner cover past its timeout', () => {
+  const b = portfolioBrowser({
+    incoming: true, marker: { pathname: portfolioGalleryPath, at: 2400, banner: portfolioBannerPath }
+  });
+  b.timeout(2200);
+  assert.equal(b.cover.classList.contains('portfolio-gallery-transition--leaving'), true);
+  b.timeout(360);
+  assert.equal(b.cover, undefined);
+});
+
+test('the real Artur homepage and its recent galleries load the transition and the shared wheel scroll', () => {
+  assert.match(portfolioLayout, /page\.url == site\.data\.personal_portfolio\.home and page\.font_preview == nil[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=1" defer/);
+  assert.match(portfolioLayout, /recent-galleries-scroll\.js' \| relative_url }}\?v=2/);
+  assert.match(layouts[0], /page\.portfolio == 'personal' and recent_gallery[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=1" data-gallery-arrival/);
+  assert.match(layouts[1], /page\.portfolio == 'personal'[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=1" data-gallery-arrival/);
+});
