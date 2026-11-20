@@ -13,11 +13,14 @@
   letter-spacing: 1px;
 }
 
+h1,
 .site-brand--personal,
 .portfolio-heading,
 .career-intro h1,
 .career-copy h2,
+.gallery-content > .intro h1,
 .gallery-map-intro h1,
+.gallery-desktop-edge-panel__content p,
 button, input, select, textarea {
   letter-spacing: inherit;
 }
