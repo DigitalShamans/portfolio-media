@@ -191,6 +191,7 @@
     stage.style.removeProperty('transform');
     canvas.style.removeProperty('transform');
     cellular?.style.removeProperty('transform');
+    cellular?.style.removeProperty('opacity');
     network?.style.removeProperty('transform');
     network?.style.removeProperty('opacity');
     entries.forEach(entry => entry.classList.remove('career-milestone--awaiting-reveal'));
@@ -543,10 +544,9 @@
     });
     const slowMobile = narrow && canAnimate && !reducedMotion.matches;
     track.style.setProperty('--career-first-stop-y', points[0].y + 'px');
-    // Halve the required gesture distance on touch devices, preserving the
-    // existing desktop speed and the slower second half of the journey.
+    // Double desktop travel and keep the existing gesture distance on mobile.
     const touchScrollFactor = touchDevice.matches ? .5 : 1;
-    const scrollMultiplier = (slowMobile ? 6 : 2) * touchScrollFactor;
+    const scrollMultiplier = (slowMobile ? 6 : 2) * touchScrollFactor * (narrow ? 1 : 2);
     const trackLeft = track.getBoundingClientRect().left;
     const cameraAnchor = slowMobile ? trackLeft + mobileLayout.anchor : 0;
     const labels = mobilePlacement ? mobilePlacement.labels : placeLabels(points, metrics, width, narrow, scale, cameraAnchor, trackLeft);
@@ -632,11 +632,16 @@
     });
     animation.fromTo(path, { drawSVG: 0 }, { drawSVG: '100%', duration: 1 }, 0);
     animation.fromTo(pointer, { autoAlpha: 0 }, { autoAlpha: 1, duration: .004 }, 0);
+    const networkFadeStart = lastStopAt * .8;
+    if (cellular) {
+      animation.fromTo(cellular, { opacity: 1 }, {
+        opacity: 0, duration: networkFadeStart, ease: 'sine.inOut'
+      }, 0);
+    }
     if (network) {
-      const fadeStart = lastStopAt * .8;
       animation.fromTo(network, { opacity: 0 }, {
-        opacity: 1, duration: lastStopAt - fadeStart, ease: 'sine.inOut'
-      }, fadeStart);
+        opacity: 1, duration: lastStopAt - networkFadeStart, ease: 'sine.inOut'
+      }, networkFadeStart);
     }
     if (!narrow) {
       animation.to(pointer, {
