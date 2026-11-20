@@ -208,6 +208,12 @@
     const c = scrollCamera;
     const scroll = smoother ? smoother.scrollTop() : window.scrollY;
     const progress = animation.progress();
+    // Cache the reading position in either layout before resize/refresh can
+    // clamp the old scroll offset or change the animation's geometry.
+    const measuredViewport = c.narrow && viewportMeasure ? Math.round(viewportMeasure.getBoundingClientRect().height) : window.innerHeight;
+    if (track.clientWidth === c.width && measuredViewport === c.viewport) {
+      c.readingPosition = captureReadingPosition(false);
+    }
     // Mobile finishes at the final milestone, including its ending controls.
     const point = c.anchor ? path.getPointAtLength(Math.min(progress, c.lastStopAt) * c.length) : null;
     const virtualScroll = scroll < c.start ? scroll : c.start + progress * c.normalDistance + Math.max(0, scroll - c.end);
@@ -244,11 +250,6 @@
     // Only the global navigation/footer stay centered. Milestone cards keep
     // the same canvas transform as their nodes throughout the whole journey.
     ending.style.transform = 'translateX(' + (-x - c.endingLeft).toFixed(3) + 'px)';
-    // Remember the last valid scene position before an orientation change
-    // reflows the page or ScrollTrigger refreshes against the old geometry.
-    if (track.clientWidth === c.width && Math.round(viewportMeasure.getBoundingClientRect().height) === c.viewport) {
-      c.mobilePosition = captureMobilePosition(false);
-    }
   }
 
   function updateMilestoneReveals() {
@@ -411,9 +412,9 @@
     return placed;
   }
 
-  function captureMobilePosition(useCached = true) {
-    if (!animation || !track.classList.contains('career-track--narrow') || !milestoneReveals.length) return null;
-    if (useCached && scrollCamera?.mobilePosition) return scrollCamera.mobilePosition;
+  function captureReadingPosition(useCached = true) {
+    if (!animation || !milestoneReveals.length) return null;
+    if (useCached && scrollCamera?.readingPosition) return scrollCamera.readingPosition;
     const progress = animation.progress();
     let index = 0;
     milestoneReveals.forEach((reveal, i) => {
@@ -422,14 +423,16 @@
     const start = milestoneReveals[index].at;
     const end = milestoneReveals[index + 1]?.at ?? 1;
     const fraction = Math.max(0, Math.min(1, (progress - start) / (end - start || 1)));
-    const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
-    return { index, fraction, atBottom };
+    const scroll = smoother ? smoother.scrollTop() : window.scrollY;
+    const atTop = scroll <= 1;
+    const atBottom = scroll + window.innerHeight >= document.documentElement.scrollHeight - 2;
+    return { index, fraction, atTop, atBottom };
   }
 
   function rebuild() {
     const width = track.clientWidth;
     const narrow = width < 720;
-    const previousMobilePosition = narrow ? captureMobilePosition() : null;
+    const previousReadingPosition = captureReadingPosition();
     // The small viewport stays constant when a phone's address bar folds away.
     // Actual viewport/orientation changes still recalculate the geometry.
     const viewport = narrow && viewportMeasure ? Math.round(viewportMeasure.getBoundingClientRect().height) : window.innerHeight;
@@ -558,7 +561,7 @@
     track.style.setProperty('--career-stage-height', stageHeight + 'px');
     track.style.height = outerHeight + 'px';
     if (slowMobile) track.dataset.cameraAnchor = cameraAnchor.toFixed(3);
-    scrollCamera = { documentTop, viewport, width, start: normalStart, end, outerHeight, normalDistance, left: trackLeft, anchor: cameraAnchor, length: metrics.length, firstPointY: points[0].y, lastStopAt: points[points.length - 1].progress, endingLeft };
+    scrollCamera = { documentTop, viewport, width, narrow, start: normalStart, end, outerHeight, normalDistance, left: trackLeft, anchor: cameraAnchor, length: metrics.length, firstPointY: points[0].y, lastStopAt: points[points.length - 1].progress, endingLeft };
     animation = gsap.timeline({
       paused: true,
       defaults: { ease: 'none' },
@@ -620,12 +623,17 @@
     track.dataset.timelineState = 'animated';
     if (smoother) ScrollTrigger.refresh();
     else scrollTween.scrollTrigger.refresh();
-    if (previousMobilePosition) {
-      const { index, fraction, atBottom } = previousMobilePosition;
+    if (previousReadingPosition) {
+      const { index, fraction, atTop, atBottom } = previousReadingPosition;
       const start = points[index].progress;
       const end = points[index + 1]?.progress ?? 1;
       const restoredDistance = journeyDistance(Math.min(endAt, start + (end - start) * fraction)) / endWeight;
-      window.scrollTo(0, atBottom ? document.documentElement.scrollHeight - window.innerHeight : normalStart + restoredDistance * scrollDistance);
+      const maximumScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      const target = atTop ? 0 : atBottom ? maximumScroll : Math.min(maximumScroll, normalStart + restoredDistance * scrollDistance);
+      // Update ScrollSmoother's visual position as well as native scrolling.
+      // Otherwise entering the wide layout visibly eases from the old offset.
+      if (smoother) smoother.scrollTop(target);
+      else window.scrollTo(0, target);
       ScrollTrigger.update();
     }
     scrollTween.progress(scrollTween.scrollTrigger.progress);
