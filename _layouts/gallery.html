@@ -35,9 +35,9 @@
   <link rel="expect" href="#gallery-edge-ready" blocking="render">
   {% if gallery_page.gallery_embeds %}<link rel="stylesheet" href="../gallery-embeds.css?v=2">{% endif %}
   {% if gallery_page.gallery_youtube_id %}<link rel="stylesheet" href="{{ '/assets/gallery-video.css' | relative_url }}?v=1">{% endif %}
-  {% if page.portfolio == 'personal' and recent_gallery %}
-    <link rel="stylesheet" href="{{ '/assets/portfolio-gallery-transition.css' | relative_url }}?v=5">
-    <script src="{{ '/assets/portfolio-gallery-transition.js' | relative_url }}?v=5"></script>
+  {% if recent_gallery %}
+    <link rel="stylesheet" href="{{ '/assets/portfolio-gallery-transition.css' | relative_url }}?v=6">
+    <script src="{{ '/assets/portfolio-gallery-transition.js' | relative_url }}?v=6"></script>
     <link rel="expect" href="{{ page.url | relative_url }}#portfolio-gallery-ready" blocking="render" media="(prefers-reduced-motion: no-preference)">
   {% endif %}
   {% include personal-typography.html %}
@@ -92,7 +92,7 @@
       </section>
       {% endif %}
     </div>
-    <footer class="site-footer"{% if page.portfolio == 'personal' and recent_gallery %} id="portfolio-gallery-ready"{% endif %}><a class="back" href="{{ portfolio_url | relative_url }}#recent-work">Back to portfolio</a></footer>
+    <footer class="site-footer"{% if recent_gallery %} id="portfolio-gallery-ready"{% endif %}><a class="back" href="{{ portfolio_url | relative_url }}#recent-work">Back to portfolio</a></footer>
   </main>
 
   {% include gallery-viewer.html %}
