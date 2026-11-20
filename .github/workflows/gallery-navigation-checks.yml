@@ -19,6 +19,9 @@ on:
       - '.github/tests/studio-full-gallery-loop.test.cjs'
       - '_data/portfolio.json'
       - '_data/personal_portfolio.json'
+      - 'assets/portfolio.css'
+      - '_layouts/portfolio.html'
+      - '.github/tests/homepage-scroll.test.cjs'
       - '.github/workflows/gallery-navigation-checks.yml'
 jobs:
   navigation:
@@ -33,4 +36,4 @@ jobs:
         with:
           node-version: '22'
       - name: Check mobile and desktop gallery navigation
-        run: node --test .github/tests/gallery-navigation.test.cjs .github/tests/gallery-desktop-panels.test.cjs .github/tests/gallery-document-prefetch.test.cjs .github/tests/gallery-arrival.test.cjs .github/tests/personal-full-gallery-loop.test.cjs .github/tests/studio-full-gallery-loop.test.cjs
+        run: node --test .github/tests/gallery-navigation.test.cjs .github/tests/gallery-desktop-panels.test.cjs .github/tests/gallery-document-prefetch.test.cjs .github/tests/gallery-arrival.test.cjs .github/tests/personal-full-gallery-loop.test.cjs .github/tests/studio-full-gallery-loop.test.cjs .github/tests/homepage-scroll.test.cjs
