@@ -202,7 +202,9 @@
     const offset = narrow ? 8 : (width - span) / 2;
     const x = value => offset + value * span;
     const y = value => 56 * scale + value * (height - 80 * scale) / curveExtent;
-    const d = 'M ' + x(.10) + ' ' + y(0) +
+    // Leave room to the left of the first date for its 140px thumbnail.
+    const startX = narrow ? x(.10) : Math.max(x(.10), 180 * scale);
+    const d = 'M ' + startX + ' ' + y(0) +
       ' C ' + x(.51) + ' ' + y(.015) + ', ' + x(.40) + ' ' + y(.12) + ', ' + x(.29) + ' ' + y(.23) +
       ' C ' + x(.12) + ' ' + y(.40) + ', ' + x(.12) + ' ' + y(.47) + ', ' + x(.26) + ' ' + y(.58) +
       ' C ' + x(.40) + ' ' + y(.69) + ', ' + x(.65) + ' ' + y(.81) + ', ' + x(.74) + ' ' + y(.91) +
@@ -270,7 +272,8 @@
           maxX = Math.max(maxX, sample.x);
         }
         if (side === 'above') {
-          left = Math.max(0, Math.min(width - preferredWidth, point.x - 32 * scale));
+          const headingOffset = narrow ? 32 : 164;
+          left = Math.max(0, Math.min(width - preferredWidth, point.x - headingOffset * scale));
         } else if (side === 'right') {
           left = maxX + 18 * scale;
           // The final card must clear its node while the camera follows the leftward tail.
