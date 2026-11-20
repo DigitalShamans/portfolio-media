@@ -1,0 +1,43 @@
+{
+  "startedAtUtc": "2026-11-20T08:35:23.9555391Z",
+  "finishedAtUtc": "2026-11-20T08:35:26.4739773Z",
+  "sessionsReset": true,
+  "resetEvidence": [
+    "Root native CUA completion summary and reset after all 19 previews and save/reopen/restore",
+    "Root CUA completion summary then reset after final responsive proof",
+    "Root node_repl reset after final browser proof"
+  ],
+  "stopped": [
+    {
+      "ProcessId": 51208,
+      "Name": "codex-computer-use-swift.exe",
+      "Phase": "original",
+      "CreatedUtc": "2026-11-20T07:02:35.3120710Z"
+    },
+    {
+      "ProcessId": 14276,
+      "Name": "codex-computer-use-swift.exe",
+      "Phase": "one-restart-retry",
+      "CreatedUtc": "2026-11-20T08:35:24.4368130Z"
+    }
+  ],
+  "alreadyExitedOrIdentityChanged": [
+    52288,
+    53148
+  ],
+  "originalSurvivors": [],
+  "oneRestartRetryOnly": true,
+  "remainingHelpers": [
+    {
+      "ProcessId": 52568,
+      "Name": "codex-computer-use-swift.exe",
+      "ParentProcessId": 38608,
+      "CreatedUtc": "2026-11-20T08:35:25.4652250Z"
+    }
+  ],
+  "errors": [],
+  "noPostCleanupScreenshot": true,
+  "visualYellowBorderDisappearanceClaimed": false,
+  "note": "A warm helper can restart automatically. Process presence alone does not establish capture; all verified original sessions were released. Main app, other recorders, Chrome and privacy controls were untouched.",
+  "passed": true
+}
