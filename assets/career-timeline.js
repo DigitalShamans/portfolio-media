@@ -28,7 +28,7 @@
   let canAnimate = false;
   let animation;
   let scrollTween;
-  let mobileReveals = [];
+  let milestoneReveals = [];
   let scrollCamera;
   let smoother;
   let signature = '';
@@ -86,8 +86,8 @@
 
   entries.forEach(entry => entry.querySelector('button.career-checkpoint')?.addEventListener('click', () => showDetails(entry)));
   entries.forEach(entry => {
-    entry.addEventListener('focusin', updateMobileReveals);
-    entry.addEventListener('focusout', () => window.requestAnimationFrame(updateMobileReveals));
+    entry.addEventListener('focusin', updateMilestoneReveals);
+    entry.addEventListener('focusout', () => window.requestAnimationFrame(updateMilestoneReveals));
   });
   [dialog, imageDialog].forEach(modal => {
     modal.addEventListener('click', event => {
@@ -129,13 +129,16 @@
       animation.kill();
       animation = null;
     }
-    mobileReveals.forEach(reveal => reveal.animation.kill());
-    mobileReveals = [];
+    milestoneReveals.forEach(reveal => reveal.animation.kill());
+    milestoneReveals = [];
     stage.style.removeProperty('transform');
     canvas.style.removeProperty('transform');
-    entries.forEach(entry => entry.style.removeProperty('transform'));
+    entries.forEach(entry => entry.classList.remove('career-milestone--awaiting-reveal'));
     track.classList.remove('career-track--slow');
-    if (canAnimate) gsap.set([...texts, pointer, path, ...stops.children], { clearProps: 'all' });
+    if (canAnimate) {
+      gsap.set(entries, { clearProps: 'opacity,transform' });
+      gsap.set([...texts, pointer, path, ...stops.children], { clearProps: 'all' });
+    }
     track.dataset.timelineState = 'static';
   }
 
@@ -188,13 +191,14 @@
     });
   }
 
-  function updateMobileReveals() {
+  function updateMilestoneReveals() {
     if (!animation) return;
     const progress = animation.progress();
-    mobileReveals.forEach(reveal => {
+    milestoneReveals.forEach(reveal => {
       const reached = progress + .0001 >= reveal.at || reveal.entry.contains(document.activeElement);
       if (reached === reveal.reached) return;
       reveal.reached = reached;
+      reveal.entry.classList.toggle('career-milestone--awaiting-reveal', !reached);
       if (reached) reveal.animation.play();
       else reveal.animation.reverse();
     });
@@ -351,6 +355,7 @@
       return { x: exact.x, y: exact.y, progress: at };
     });
     const slowMobile = narrow && canAnimate && !reducedMotion.matches;
+    const scrollMultiplier = slowMobile ? 6 : 2;
     const trackLeft = track.getBoundingClientRect().left;
     const cameraAnchor = slowMobile ? Math.max(96, Math.min(180, window.innerWidth * .38)) : 0;
     const labels = placeLabels(points, metrics, width, narrow, scale, cameraAnchor, trackLeft);
@@ -363,8 +368,8 @@
     const contentHeight = Math.ceil(Math.max(height, ...labels.map(box => box.bottom)) + 24);
     canvas.style.height = contentHeight + 'px';
     track.style.height = contentHeight + 'px';
-    track.dataset.scrollMultiplier = slowMobile ? '3' : '1';
-    track.dataset.lateScrollMultiplier = slowMobile ? '6' : '2';
+    track.dataset.scrollMultiplier = String(scrollMultiplier);
+    track.dataset.lateScrollMultiplier = String(scrollMultiplier * 2);
     delete track.dataset.cameraAnchor;
 
     if (!canAnimate || reducedMotion.matches) return;
@@ -380,7 +385,7 @@
     }
     const normalEnd = Math.min(maximumEnd, Math.max(documentTop + height - revealLine, documentTop + contentHeight - viewport));
     const normalDistance = Math.max(1, normalEnd - normalStart);
-    const scrollDistance = normalDistance * (slowMobile ? 3 : 1) * 1.5;
+    const scrollDistance = normalDistance * scrollMultiplier * 1.5;
     const end = normalStart + scrollDistance;
     // Reserve only the extra animation distance; do not leave an empty tail.
     const outerHeight = contentHeight + scrollDistance - normalDistance;
@@ -396,7 +401,7 @@
     animation = gsap.timeline({
       paused: true,
       defaults: { ease: 'none' },
-      onUpdate: () => { updateScrollCamera(); updateMobileReveals(); }
+      onUpdate: () => { updateScrollCamera(); updateMilestoneReveals(); }
     });
     animation.fromTo(path, { drawSVG: 0 }, { drawSVG: '100%', duration: 1 }, 0);
     animation.fromTo(pointer, { autoAlpha: 0 }, { autoAlpha: 1, duration: .004 }, 0);
@@ -405,31 +410,27 @@
       motionPath: { path, align: path, alignOrigin: [.5, .5] }
     }, 0);
     points.forEach((point, i) => {
+      const entry = entries[i];
       const at = point.progress;
+      const reveal = gsap.timeline({ paused: true });
       if (narrow) {
-        // Give each entrance a real duration even during a quick touch swipe.
-        // The scrubbed travelling dot decides when to play or reverse it.
-        const reveal = gsap.timeline({ paused: true });
-        reveal.fromTo(entries[i].querySelector('.career-year'), {
+        reveal.fromTo(entry.querySelector('.career-year'), {
           opacity: .35, x: -8
         }, { opacity: 1, x: 0, duration: .4, ease: 'power2.out' }, 0);
-        reveal.fromTo(entries[i].querySelector('.career-copy'), {
-          opacity: 0, x: -24, y: 8
-        }, { opacity: 1, x: 0, y: 0, duration: .6, ease: 'power3.out' }, .06);
-        reveal.fromTo(stops.children[i], {
-          attr: { r: 2.5 }, autoAlpha: .3
-        }, { attr: { r: 6.5 }, autoAlpha: 1, duration: .5, ease: 'back.out(2)' }, 0);
-        mobileReveals.push({ entry: entries[i], at, animation: reveal, reached: false });
-        return;
       }
-      const duration = Math.min(.025, (1 - at) * .8);
-      animation.fromTo(stops.children[i], { attr: { r: 3 * scale }, autoAlpha: .4 }, {
-        attr: { r: narrow ? 6 : 8 * scale }, autoAlpha: 1, duration,
-        ease: 'back.out(2.5)'
-      }, at);
-      animation.fromTo(entries[i].querySelectorAll('.career-year, .career-copy'), {
-        opacity: .8
-      }, { opacity: 1, duration, ease: 'power2.out' }, at);
+      // Desktop grid milestones can use display: contents for their copy.
+      // Animate the entry itself so its text and thumbnails reveal together.
+      const content = narrow ? entry.querySelector('.career-copy') : entry;
+      reveal.fromTo(content, {
+        opacity: 0, x: -24, y: 8
+      }, { opacity: 1, x: 0, y: 0, duration: .6, ease: 'power3.out' }, .06);
+      reveal.fromTo(stops.children[i], {
+        attr: { r: narrow ? 2.5 : 3 * scale }, autoAlpha: narrow ? .3 : .4
+      }, { attr: { r: narrow ? 6.5 : 8 * scale }, autoAlpha: 1, duration: .5, ease: 'back.out(2)' }, 0);
+      const reached = at === 0;
+      if (reached) reveal.progress(1);
+      entry.classList.toggle('career-milestone--awaiting-reveal', !reached);
+      milestoneReveals.push({ entry, at, animation: reveal, reached });
     });
     const playhead = { progress: 0 };
     scrollTween = gsap.to(playhead, {
@@ -451,7 +452,7 @@
     else scrollTween.scrollTrigger.refresh();
     scrollTween.progress(scrollTween.scrollTrigger.progress);
     updateScrollCamera();
-    updateMobileReveals();
+    updateMilestoneReveals();
   }
 
   function scheduleRebuild() {
