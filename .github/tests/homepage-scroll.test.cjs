@@ -47,8 +47,16 @@ test('preloading and homepage navigation observe the page without swallowing whe
 });
 
 
-function wheelHarness(position = 0, page = 0) {
-  const region = { scrollTop: position, scrollHeight: 1000, clientHeight: 600 };
+function wheelHarness(position = 0, page = 0, reduced = false) {
+  let inner = position;
+  let time = 0;
+  const frames = [];
+  const region = {
+    scrollHeight: 1000,
+    clientHeight: 600,
+    get scrollTop() { return inner; },
+    set scrollTop(value) { inner = Math.round(value); }
+  };
   const state = { page };
   let handler;
   region.addEventListener = (event, callback, opts) => {
@@ -57,11 +65,20 @@ function wheelHarness(position = 0, page = 0) {
     handler = callback;
   };
   vm.runInNewContext(wheel, {
-    document: { querySelector: () => region },
-    window: { scrollBy: movement => {
-      assert.equal(movement.behavior, 'instant');
-      state.page = Math.max(0, state.page + movement.top);
-    } }
+    document: {
+      querySelector: () => region,
+      scrollingElement: { scrollHeight: 2000, clientHeight: 800 }
+    },
+    window: {
+      get scrollY() { return state.page; },
+      matchMedia: () => ({ matches: reduced }),
+      performance: { now: () => time },
+      requestAnimationFrame: callback => frames.push(callback),
+      scrollTo(movement) {
+        assert.equal(movement.behavior, 'instant');
+        state.page = Math.round(movement.top);
+      }
+    }
   });
   function send(deltaY, overrides = {}) {
     let prevented = false;
@@ -73,23 +90,103 @@ function wheelHarness(position = 0, page = 0) {
     });
     return prevented;
   }
-  return { region, state, send };
+  function step() {
+    time += 16;
+    assert.equal(frames.length, 1);
+    frames.shift()(time);
+  }
+  function settle() {
+    for (let count = 0; frames.length && count < 60; count++) step();
+    assert.equal(frames.length, 0, 'Wheel scrolling reaches its destination and settles');
+  }
+  return { region, state, send, step, settle };
 }
 
-test('wheel boundary movement is split between gallery and page in the same event', () => {
+test('one wheel step eases through the banner boundary and carries its full distance to the page', () => {
   const h = wheelHarness(350, 20);
   assert.equal(h.send(200), true);
+  assert.equal(h.region.scrollTop, 350);
+  assert.equal(h.state.page, 20);
+  h.step();
+  assert.ok(h.region.scrollTop > 350 && h.region.scrollTop < 400);
+  assert.equal(h.state.page, 20);
+  h.step();
   assert.equal(h.region.scrollTop, 400);
+  assert.ok(h.state.page > 20 && h.state.page < 170);
+  h.settle();
   assert.equal(h.state.page, 170);
   assert.equal(h.send(100), true);
+  h.settle();
   assert.equal(h.state.page, 270);
 });
 
-test('reverse scrolling hands leftover motion to the page immediately', () => {
+test('reverse scrolling eases through the upper boundary into the page', () => {
   const h = wheelHarness(75, 400);
   assert.equal(h.send(-125), true);
+  h.step();
+  assert.ok(h.region.scrollTop < 75 && h.region.scrollTop > 0);
+  assert.equal(h.state.page, 400);
+  h.settle();
   assert.equal(h.region.scrollTop, 0);
   assert.equal(h.state.page, 350);
+});
+
+test('small and large wheel steps ease over time and keep their input distance', () => {
+  const inputs = [
+    { delta: 2, mode: 1, distance: 32 },
+    { delta: 8, mode: 1, distance: 128 },
+    { delta: 320, mode: 0, distance: 320 }
+  ];
+  for (const { delta, mode, distance } of inputs) {
+    const h = wheelHarness(40, 20);
+    assert.equal(h.send(delta, { deltaMode: mode }), true);
+    h.step();
+    assert.ok(h.region.scrollTop > 40 && h.region.scrollTop < 40 + distance);
+    h.settle();
+    assert.equal(h.region.scrollTop, 40 + distance);
+    assert.equal(h.state.page, 20);
+  }
+});
+
+test('rapid wheel inputs accumulate before and during movement', () => {
+  const h = wheelHarness(200, 100);
+  h.send(120);
+  h.send(120);
+  h.step();
+  h.send(80);
+  h.settle();
+  assert.equal(h.region.scrollTop, 400);
+  assert.equal(h.state.page, 220);
+});
+
+test('a direction change starts from the visible position', () => {
+  const h = wheelHarness(180, 100);
+  h.send(250);
+  h.step();
+  const before = h.region.scrollTop;
+  h.send(-40);
+  h.step();
+  assert.ok(h.region.scrollTop < before);
+  h.settle();
+  assert.equal(h.region.scrollTop, before - 40);
+  assert.equal(h.state.page, 100);
+});
+
+test('wheel easing yields when the page is scrolled by another input', () => {
+  const h = wheelHarness(380, 20);
+  h.send(260);
+  h.step();
+  h.state.page = 700;
+  h.settle();
+  assert.equal(h.state.page, 700);
+});
+
+test('reduced motion still hands off the wheel distance immediately', () => {
+  const h = wheelHarness(350, 20, true);
+  assert.equal(h.send(200), true);
+  assert.equal(h.region.scrollTop, 400);
+  assert.equal(h.state.page, 170);
+  h.settle();
 });
 
 test('zoom and horizontal trackpad gestures are never hijacked', () => {
@@ -98,10 +195,11 @@ test('zoom and horizontal trackpad gestures are never hijacked', () => {
   assert.equal(h.send(120, { deltaX: 200 }), false);
   assert.equal(h.send(120, { cancelable: false }), false);
   assert.equal(h.region.scrollTop, 0);
+  h.settle();
 });
 
 test('portfolio GSAP effects are scoped, scroll-safe and reduced-motion aware', () => {
-  assert.match(layout, /recent-galleries-scroll\.js' \| relative_url }}\?v=1/);
+  assert.match(layout, /recent-galleries-scroll\.js' \| relative_url }}\?v=2/);
   assert.match(layout, /portfolio-effects\.js' \| relative_url }}\?v=2/);
   assert.match(layout, /vendor\/gsap\/3\.15\.1\/gsap\.min\.js/);
   assert.match(layout, /vendor\/gsap\/3\.15\.1\/ScrollTrigger\.min\.js/);
