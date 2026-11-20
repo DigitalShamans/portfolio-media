@@ -102,7 +102,7 @@ test('zoom and horizontal trackpad gestures are never hijacked', () => {
 
 test('portfolio GSAP effects are scoped, scroll-safe and reduced-motion aware', () => {
   assert.match(layout, /recent-galleries-scroll\.js' \| relative_url }}\?v=1/);
-  assert.match(layout, /portfolio-effects\.js' \| relative_url }}\?v=1/);
+  assert.match(layout, /portfolio-effects\.js' \| relative_url }}\?v=2/);
   assert.match(layout, /vendor\/gsap\/3\.15\.1\/gsap\.min\.js/);
   assert.match(layout, /vendor\/gsap\/3\.15\.1\/ScrollTrigger\.min\.js/);
   assert.match(effects, /prefers-reduced-motion: reduce/);
@@ -113,16 +113,29 @@ test('portfolio GSAP effects are scoped, scroll-safe and reduced-motion aware', 
 });
 
 test('studio parallax registers only on a fine pointer and Artur uses staggered tile batches', () => {
-  const images = [{}, {}], cards = [{}, {}], banners = images.map(img => ({
-    querySelector: () => img,
-    getBoundingClientRect: () => ({ top: 100, height: 200 })
-  }));
+  const images = [{}, {}], cards = [{}, {}];
   function inspect(studio, reduced = false, fine = true) {
     const calls = { set: 0, quick: 0, created: 0, batched: 0, entered: 0 };
+    let bannerTop = 100;
+    let scale;
+    let shift;
+    let onBannerScroll;
+    const banners = images.map(img => ({
+      querySelector: () => img,
+      getBoundingClientRect: () => ({ top: bannerTop, height: 200 })
+    }));
     const gsap = {
       registerPlugin() {},
-      set() { calls.set++; },
-      quickSetter() { return () => { calls.quick++; }; },
+      set(elements, options) {
+        calls.set++;
+        scale = options.scale;
+      },
+      quickSetter() {
+        return value => {
+          calls.quick++;
+          shift = value;
+        };
+      },
       fromTo() { calls.entered++; }
     };
     const ScrollTrigger = {
@@ -132,7 +145,9 @@ test('studio parallax registers only on a fine pointer and Artur uses staggered 
     const region = {
       querySelectorAll: () => banners,
       getBoundingClientRect: () => ({ top: 0, bottom: 800 }),
-      addEventListener() {}
+      addEventListener(event, handler) {
+        if (event === 'scroll') onBannerScroll = handler;
+      }
     };
     const win = {
       gsap, ScrollTrigger, innerHeight: 1000,
@@ -145,13 +160,25 @@ test('studio parallax registers only on a fine pointer and Artur uses staggered 
       querySelector: q => q.includes('recent-galleries') ? region : { querySelectorAll: () => cards }
     };
     vm.runInNewContext(effects, { document: doc, window: win });
-    return calls;
+    return {
+      ...calls, scale, shift,
+      moveBanner(top) {
+        bannerTop = top;
+        onBannerScroll();
+        return shift;
+      }
+    };
   }
   const studio = inspect(true);
   assert.equal(studio.set, 1);
   assert.equal(studio.quick, 2);
   assert.equal(studio.created, 1);
   assert.equal(studio.batched, 0);
+  assert.ok(studio.moveBanner(-50) - studio.shift >= 5,
+    'A 150px scroll should pan the artwork at least 5% of the banner height');
+  assert.equal(studio.moveBanner(100), studio.shift, 'Reverse scrolling restores the original position');
+  const maxShift = Math.max(Math.abs(studio.moveBanner(-200)), Math.abs(studio.moveBanner(850)));
+  assert.ok((studio.scale - 1) * 50 > maxShift, 'The artwork covers the frame throughout the pan');
   const personal = inspect(false);
   assert.equal(personal.set, 0);
   assert.equal(personal.batched, 1);

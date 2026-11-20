@@ -16,7 +16,12 @@
     const banners = [...region.querySelectorAll('.recent-gallery')];
     if (!banners.length) return;
     const images = banners.map(banner => banner.querySelector('img'));
-    gsap.set(images, { scale: 1.08, transformOrigin: 'center center' });
+    const maxShiftPercent = 16;
+    // The extra image area covers the frame at either end of the pan.
+    gsap.set(images, {
+      scale: 1 + 2 * (maxShiftPercent + 2) / 100,
+      transformOrigin: 'center center'
+    });
     const setters = images.map(image => gsap.quickSetter(image, 'yPercent'));
     let scheduled = false;
 
@@ -27,11 +32,15 @@
       const bottom = Math.min(window.innerHeight, clip.bottom);
       if (bottom <= top) return;
 
-      for (let i = 0; i < banners.length; i++) {
-        const bounds = banners[i].getBoundingClientRect();
-        const fraction = Math.max(0, Math.min(1,
-          (bottom - bounds.top) / (bottom - top + bounds.height)));
-        setters[i]((fraction - .5) * 5);
+      const visibleHeight = bottom - top;
+      const center = top + visibleHeight / 2;
+      const bounds = banners.map(banner => banner.getBoundingClientRect());
+      for (let i = 0; i < bounds.length; i++) {
+        const { top: bannerTop, height } = bounds[i];
+        const bannerCenter = bannerTop + height / 2;
+        const travel = (visibleHeight + height) * .4;
+        const offset = (center - bannerCenter) / travel;
+        setters[i](Math.max(-1, Math.min(1, offset)) * maxShiftPercent);
       }
     }
 
