@@ -191,13 +191,9 @@
     const pointTop = Math.max(dockedTop, firstPointTop - scroll) - Math.max(0, scroll - c.end);
     const mobileStageTop = stage.getBoundingClientRect().top;
     const mobileY = pointTop - mobileStageTop - point.y;
+    // Move the curve, nodes, text, and thumbnails together. Each milestone
+    // keeps its position relative to its node as the camera pans.
     canvas.style.transform = 'translate3d(' + x.toFixed(3) + 'px,' + mobileY.toFixed(3) + 'px,0)';
-    c.labels.forEach((box, i) => {
-      // The curve pans at its natural width. Cards keep a stable reading
-      // column, with enough space between their text and thumbnails.
-      const shift = c.cardLeft - x - box.left;
-      entries[i].style.transform = 'translateX(' + shift.toFixed(3) + 'px)';
-    });
   }
 
   function updateMilestoneReveals() {
