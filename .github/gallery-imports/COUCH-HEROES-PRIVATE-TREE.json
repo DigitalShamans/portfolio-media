@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "revision": "0e4a48b032a13ce0b07bbb2abc9a0fc9fc6bc91a",
+  "archived_files_verified": 20,
+  "approved_selected_files": 12,
+  "unapproved_archive_files": [
+    "Couch_Heroes_Characters_01.jpg",
+    "Couch_Heroes_Characters_02.jpg",
+    "Couch_Heroes_Characters_03.jpg",
+    "Couch_Heroes_Enviro_13.jpg",
+    "Couch_Heroes_Enviro_14.jpg",
+    "Couch_Heroes_Enviro_15.jpg",
+    "Couch_Heroes_Enviro_16.jpg",
+    "Couch_Heroes_Logo_02.jpg"
+  ],
+  "unchanged_approval_groups": 23,
+  "archive_blob_size_checks": true
+}
