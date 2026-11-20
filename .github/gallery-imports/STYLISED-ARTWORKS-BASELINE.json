@@ -1,0 +1,49 @@
+{
+  "checkedUtc": "2026-11-20T08:47:24.302040+00:00",
+  "sourceProject": "https://www.artstation.com/artwork/Dv2RPR",
+  "exactTitle": "Stylised Artworks",
+  "slug": "stylised-artworks",
+  "publicHead": "7752808533a542dd1f03347dc360e943c3e47c46",
+  "privateHead": "37741ff5622207d7cb6326e3d28a33d04ec212c7",
+  "routeChecks": [
+    {
+      "repository": "Portfolio-Media",
+      "relativePath": "galleries/stylised-artworks",
+      "exists": false
+    },
+    {
+      "repository": "Portfolio-Media",
+      "relativePath": "artur/galleries/stylised-artworks",
+      "exists": false
+    },
+    {
+      "repository": "Portfolio-Media",
+      "relativePath": "projects/stylised-artworks",
+      "exists": false
+    },
+    {
+      "repository": "Portfolio-Media",
+      "relativePath": "projects/Dv2RPR",
+      "exists": false
+    },
+    {
+      "repository": "portfolio-media-private",
+      "relativePath": "public/stylised-artworks",
+      "exists": false
+    },
+    {
+      "repository": "portfolio-media-private",
+      "relativePath": "imports/stylised-artworks-artstation.json",
+      "exists": false
+    }
+  ],
+  "existingPersonalCard": {
+    "ordinal": 6,
+    "title": "Stylised Artworks",
+    "url": "https://cg3d.artstation.com/projects/Dv2RPR",
+    "cover": "https://cdnb.artstation.com/p/assets/covers/images/064/717/261/smaller_square/the-digital-shaman-the-digital-shaman-stylised3-ps.jpg?1688581821"
+  },
+  "external_card_preserved": true,
+  "publicUserFileCount": 14,
+  "privateUntrackedCount": 238
+}

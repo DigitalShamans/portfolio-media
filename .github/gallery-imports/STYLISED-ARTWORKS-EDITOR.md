@@ -1,0 +1,3 @@
+# Stylised Artworks native editor acceptance
+
+PASS: DS Gallery Editor v0.11 rendered all 16 individual previews. Explicitly moved the first image down, saved, reopened the scratch folder and observed the persisted swap; restored the source order and explicitly saved again. All 42 immutable stage files and 16 scratch originals retained their hashes/bytes. Image-only schema and exact canonical order passed; no captions/companions. Retained the editor-save snapshot and restored scratch canonical manifest bytes. Closed only the owned new editor window; existing user window 198164 preserved. Parent-window raising and folder-dialog screenshot coordinates resolved initial input geometry. Capture cleanup remains a required root final gate.
