@@ -1,0 +1,24 @@
+{
+  "processing_start_utc": "2026-11-19T22:38:59Z",
+  "source_and_assets_prepared_utc": "2026-11-19T23:00:24.079104+00:00",
+  "native_ui_seconds": 310.0,
+  "service_succeeded_utc": "2026-11-19T23:06:51.918292+00:00",
+  "pages_succeeded_utc": "2026-11-19T23:10:13Z",
+  "browser_completed_utc": "2026-11-19T23:15:24.195Z",
+  "capture_release_utc": "2026-11-19T23:16:03.7820646Z",
+  "verification_and_capture_release_seconds": 2224.782,
+  "checkpoint_prepared_utc": "2026-11-19T23:18:56.268759+00:00",
+  "elapsed_through_checkpoint_preparation_seconds": 2397.269,
+  "baseline_firearms_seconds": 3863,
+  "half_time_target_seconds": 1931.5,
+  "half_time_target_met_at_preparation": false,
+  "reduction_percent_at_preparation": 37.94,
+  "push_and_final_response_excluded_from_preparation_duration": true,
+  "service_request_elapsed_ms": 20909,
+  "public_request_elapsed_ms": 8094,
+  "notes": [
+    "Existing-gallery merge includes fresh source comparison and 25-image cross-collection deduplication.",
+    "Initial Sites source operation failed DNS in default sandbox; preserved commit packaged/pushed successfully with authorized network execution.",
+    "Half-time target is measured against full elapsed time, with clarification, recovery, editor and live checks included."
+  ]
+}

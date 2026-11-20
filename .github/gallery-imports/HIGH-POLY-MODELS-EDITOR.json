@@ -1,0 +1,774 @@
+{
+  "title": "HIgh-Poly Models",
+  "sourceProject": "https://www.artstation.com/artwork/1xRNxG",
+  "slug": "high-poly-models",
+  "checkedUtc": "2026-11-20T06:55:09.5508337Z",
+  "editorVersion": "0.11",
+  "ownedWindowId": 1252486,
+  "existingWindowIdsPreserved": [
+    270074,
+    7604316,
+    2301318,
+    198164,
+    4922266
+  ],
+  "passed": true,
+  "failed": [],
+  "roundtrip": {
+    "actualNativeUi": true,
+    "openedScratchGallery": true,
+    "originalFolderResolvedAutomatically": true,
+    "includedEntries": 27,
+    "adjacentReorderExplicitlySaved": true,
+    "reopenPersistedReorder": true,
+    "canonicalOrderExplicitlyRestoredAndSaved": true,
+    "savedSchemaImageOnly": true,
+    "savedCount": 27,
+    "uniqueExactCaseNames": 27,
+    "exactCanonicalData": true,
+    "retainedEditorOutputMatchesSavedManifest": true,
+    "editorOutputByteIdenticalToSource": false,
+    "editorOutputSha256": "7e845425368b279e92f6062e25d1868c58bfc749d9e85774e912379355007e5b"
+  },
+  "nativePreviews": [
+    {
+      "position": 1,
+      "image": "the-digital-shaman-artur-perzyna-two-armchairs-and-table.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 2,
+      "image": "the-digital-shaman-artur-perzyna-chandeliers.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 3,
+      "image": "the-digital-shaman-numinatic-castle-gear-1-e435cc2b-61ym.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 4,
+      "image": "the-digital-shaman-numinatic-castle-gear-1-2ab34797-f0hs.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 5,
+      "image": "the-digital-shaman-reka.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 6,
+      "image": "the-digital-shaman-artur-perzyna-mech-daisy1.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 7,
+      "image": "the-digital-shaman-artur-perzyna-mech-daisy2.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 8,
+      "image": "the-digital-shaman-artur-perzyna-mech-daisy3.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 9,
+      "image": "the-digital-shaman-numinatic-porsche-carrera-gt-e-1-fa087813-myxn.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 10,
+      "image": "the-digital-shaman-numinatic-lego-car-wire-1-9aa175e3-57p1.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 11,
+      "image": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-001.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 12,
+      "image": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-002.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 13,
+      "image": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-007.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 14,
+      "image": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-004.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 15,
+      "image": "the-digital-shaman-set-021.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 16,
+      "image": "the-digital-shaman-set-022.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 17,
+      "image": "the-digital-shaman-set-011.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 18,
+      "image": "the-digital-shaman-amxx-009-003.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 19,
+      "image": "the-digital-shaman-amxx-020-00.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 20,
+      "image": "the-digital-shaman-amxx-018-01.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 21,
+      "image": "the-digital-shaman-amxx-018-02.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 22,
+      "image": "the-digital-shaman-amxx-020-05.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 23,
+      "image": "the-digital-shaman-amxx-020-01.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 24,
+      "image": "the-digital-shaman-22-set-noui.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 25,
+      "image": "the-digital-shaman-009.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 26,
+      "image": "the-digital-shaman-009-64719152.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "position": 27,
+      "image": "the-digital-shaman-amxx-009-001.jpg",
+      "nativePreviewRendered": true
+    }
+  ],
+  "integrity": {
+    "allOriginalHashesAndCaseUnchanged": true,
+    "originals": [
+      {
+        "image": "the-digital-shaman-artur-perzyna-two-armchairs-and-table.jpg",
+        "exactCaseResolved": true,
+        "bytes": 249217,
+        "baselineSha256": "5f01e48f4145f98827a221576a2d5a4cecf470f666fe7636d1959c609dd964bf",
+        "scratchSha256": "5f01e48f4145f98827a221576a2d5a4cecf470f666fe7636d1959c609dd964bf",
+        "stageSha256": "5f01e48f4145f98827a221576a2d5a4cecf470f666fe7636d1959c609dd964bf",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-artur-perzyna-chandeliers.jpg",
+        "exactCaseResolved": true,
+        "bytes": 254450,
+        "baselineSha256": "1a9173c294e0cedc9719a80a1ac56fd0ffa55970cfe7b91d96cbad45563e9ded",
+        "scratchSha256": "1a9173c294e0cedc9719a80a1ac56fd0ffa55970cfe7b91d96cbad45563e9ded",
+        "stageSha256": "1a9173c294e0cedc9719a80a1ac56fd0ffa55970cfe7b91d96cbad45563e9ded",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-numinatic-castle-gear-1-e435cc2b-61ym.jpg",
+        "exactCaseResolved": true,
+        "bytes": 156136,
+        "baselineSha256": "9ed68420064ad02df5b14e076acc2c6a3d3b3cb33c9829e0167cb8b510291fb5",
+        "scratchSha256": "9ed68420064ad02df5b14e076acc2c6a3d3b3cb33c9829e0167cb8b510291fb5",
+        "stageSha256": "9ed68420064ad02df5b14e076acc2c6a3d3b3cb33c9829e0167cb8b510291fb5",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-numinatic-castle-gear-1-2ab34797-f0hs.jpg",
+        "exactCaseResolved": true,
+        "bytes": 144668,
+        "baselineSha256": "fbab861598a2cba2f4398e424b2b28b9788feabacbfe23992c4e11945d2096b8",
+        "scratchSha256": "fbab861598a2cba2f4398e424b2b28b9788feabacbfe23992c4e11945d2096b8",
+        "stageSha256": "fbab861598a2cba2f4398e424b2b28b9788feabacbfe23992c4e11945d2096b8",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-reka.jpg",
+        "exactCaseResolved": true,
+        "bytes": 128022,
+        "baselineSha256": "3a40f704e00d77ad25df09b19f6b0a6636be1fe7ae1f8651a2f90818c6280e19",
+        "scratchSha256": "3a40f704e00d77ad25df09b19f6b0a6636be1fe7ae1f8651a2f90818c6280e19",
+        "stageSha256": "3a40f704e00d77ad25df09b19f6b0a6636be1fe7ae1f8651a2f90818c6280e19",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-artur-perzyna-mech-daisy1.jpg",
+        "exactCaseResolved": true,
+        "bytes": 230349,
+        "baselineSha256": "e43522c0911b67e99f419983d43737c62c20b7bae611f9e06197fe83cf759a88",
+        "scratchSha256": "e43522c0911b67e99f419983d43737c62c20b7bae611f9e06197fe83cf759a88",
+        "stageSha256": "e43522c0911b67e99f419983d43737c62c20b7bae611f9e06197fe83cf759a88",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-artur-perzyna-mech-daisy2.jpg",
+        "exactCaseResolved": true,
+        "bytes": 221090,
+        "baselineSha256": "1231937488c044fae3524c40dc589ab6b628055f66a0e4f5a7d1022f40c82eaa",
+        "scratchSha256": "1231937488c044fae3524c40dc589ab6b628055f66a0e4f5a7d1022f40c82eaa",
+        "stageSha256": "1231937488c044fae3524c40dc589ab6b628055f66a0e4f5a7d1022f40c82eaa",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-artur-perzyna-mech-daisy3.jpg",
+        "exactCaseResolved": true,
+        "bytes": 295607,
+        "baselineSha256": "af2db09f4e46498bb6babc3b42fcc977ca86a293eecca77bf5be88a0c508328a",
+        "scratchSha256": "af2db09f4e46498bb6babc3b42fcc977ca86a293eecca77bf5be88a0c508328a",
+        "stageSha256": "af2db09f4e46498bb6babc3b42fcc977ca86a293eecca77bf5be88a0c508328a",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-numinatic-porsche-carrera-gt-e-1-fa087813-myxn.jpg",
+        "exactCaseResolved": true,
+        "bytes": 250906,
+        "baselineSha256": "68385115d7ab0be9d0277d82be976b443a5707a1647650272cc084b111759801",
+        "scratchSha256": "68385115d7ab0be9d0277d82be976b443a5707a1647650272cc084b111759801",
+        "stageSha256": "68385115d7ab0be9d0277d82be976b443a5707a1647650272cc084b111759801",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-numinatic-lego-car-wire-1-9aa175e3-57p1.jpg",
+        "exactCaseResolved": true,
+        "bytes": 286555,
+        "baselineSha256": "a09a5f5e6cc732b94983e0f68f6503f756d8744ee2941863bfc7f02ffdff1306",
+        "scratchSha256": "a09a5f5e6cc732b94983e0f68f6503f756d8744ee2941863bfc7f02ffdff1306",
+        "stageSha256": "a09a5f5e6cc732b94983e0f68f6503f756d8744ee2941863bfc7f02ffdff1306",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-001.jpg",
+        "exactCaseResolved": true,
+        "bytes": 1607844,
+        "baselineSha256": "df363c20bba6afdf74e164097797f0dca95391ff8591600966259182e7b7e782",
+        "scratchSha256": "df363c20bba6afdf74e164097797f0dca95391ff8591600966259182e7b7e782",
+        "stageSha256": "df363c20bba6afdf74e164097797f0dca95391ff8591600966259182e7b7e782",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-002.jpg",
+        "exactCaseResolved": true,
+        "bytes": 1299981,
+        "baselineSha256": "a1a16dbdda3a3f1b12cba9cbc5c9a5462baece09b09fcce392c10aa2bc912a41",
+        "scratchSha256": "a1a16dbdda3a3f1b12cba9cbc5c9a5462baece09b09fcce392c10aa2bc912a41",
+        "stageSha256": "a1a16dbdda3a3f1b12cba9cbc5c9a5462baece09b09fcce392c10aa2bc912a41",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-007.jpg",
+        "exactCaseResolved": true,
+        "bytes": 1247863,
+        "baselineSha256": "77bf043e497cf0c703e3bf70dd6e51f258dd9c9a5f11c2547985d1e00f480846",
+        "scratchSha256": "77bf043e497cf0c703e3bf70dd6e51f258dd9c9a5f11c2547985d1e00f480846",
+        "stageSha256": "77bf043e497cf0c703e3bf70dd6e51f258dd9c9a5f11c2547985d1e00f480846",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-004.jpg",
+        "exactCaseResolved": true,
+        "bytes": 858226,
+        "baselineSha256": "847f3e1b9f6bd2b18c5ee049ad9942aba304b9c0938c9e0850b3c56a797d9e3c",
+        "scratchSha256": "847f3e1b9f6bd2b18c5ee049ad9942aba304b9c0938c9e0850b3c56a797d9e3c",
+        "stageSha256": "847f3e1b9f6bd2b18c5ee049ad9942aba304b9c0938c9e0850b3c56a797d9e3c",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-set-021.jpg",
+        "exactCaseResolved": true,
+        "bytes": 230286,
+        "baselineSha256": "8c0a96d7f1d046d22d473805f1a74342f7413e06ee729813399197b6ffa8b625",
+        "scratchSha256": "8c0a96d7f1d046d22d473805f1a74342f7413e06ee729813399197b6ffa8b625",
+        "stageSha256": "8c0a96d7f1d046d22d473805f1a74342f7413e06ee729813399197b6ffa8b625",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-set-022.jpg",
+        "exactCaseResolved": true,
+        "bytes": 217299,
+        "baselineSha256": "d3b2f43d919ba03693fdcf738c030ae0b7d6b88a6f8890d985992b5edf5d05db",
+        "scratchSha256": "d3b2f43d919ba03693fdcf738c030ae0b7d6b88a6f8890d985992b5edf5d05db",
+        "stageSha256": "d3b2f43d919ba03693fdcf738c030ae0b7d6b88a6f8890d985992b5edf5d05db",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-set-011.jpg",
+        "exactCaseResolved": true,
+        "bytes": 169327,
+        "baselineSha256": "d895d0fcff150bb226be4b4a6886fd8b54db5607030b011464205ebbc6815923",
+        "scratchSha256": "d895d0fcff150bb226be4b4a6886fd8b54db5607030b011464205ebbc6815923",
+        "stageSha256": "d895d0fcff150bb226be4b4a6886fd8b54db5607030b011464205ebbc6815923",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-amxx-009-003.jpg",
+        "exactCaseResolved": true,
+        "bytes": 250281,
+        "baselineSha256": "ab5d41cc0410c8fe466b78625953bb960fd2248224e7e5a8fcd8c1a70d4fdeeb",
+        "scratchSha256": "ab5d41cc0410c8fe466b78625953bb960fd2248224e7e5a8fcd8c1a70d4fdeeb",
+        "stageSha256": "ab5d41cc0410c8fe466b78625953bb960fd2248224e7e5a8fcd8c1a70d4fdeeb",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-amxx-020-00.jpg",
+        "exactCaseResolved": true,
+        "bytes": 356751,
+        "baselineSha256": "1b5715de972562547aac5f41a43523d2d53aa041d8d68364eb0ce50b0486876e",
+        "scratchSha256": "1b5715de972562547aac5f41a43523d2d53aa041d8d68364eb0ce50b0486876e",
+        "stageSha256": "1b5715de972562547aac5f41a43523d2d53aa041d8d68364eb0ce50b0486876e",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-amxx-018-01.jpg",
+        "exactCaseResolved": true,
+        "bytes": 285514,
+        "baselineSha256": "34de5e52cb28c1f4303c7c40b2a7807794db9414770f0e780859f1f6eab28271",
+        "scratchSha256": "34de5e52cb28c1f4303c7c40b2a7807794db9414770f0e780859f1f6eab28271",
+        "stageSha256": "34de5e52cb28c1f4303c7c40b2a7807794db9414770f0e780859f1f6eab28271",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-amxx-018-02.jpg",
+        "exactCaseResolved": true,
+        "bytes": 555410,
+        "baselineSha256": "83f87360295e7c19b6e7b3676a77228f269f4a960156f41188b180a1725731c2",
+        "scratchSha256": "83f87360295e7c19b6e7b3676a77228f269f4a960156f41188b180a1725731c2",
+        "stageSha256": "83f87360295e7c19b6e7b3676a77228f269f4a960156f41188b180a1725731c2",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-amxx-020-05.jpg",
+        "exactCaseResolved": true,
+        "bytes": 320415,
+        "baselineSha256": "d9a1a4adb39046c08d8b374047730588205d7253022de1fd1a01a58c487e9126",
+        "scratchSha256": "d9a1a4adb39046c08d8b374047730588205d7253022de1fd1a01a58c487e9126",
+        "stageSha256": "d9a1a4adb39046c08d8b374047730588205d7253022de1fd1a01a58c487e9126",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-amxx-020-01.jpg",
+        "exactCaseResolved": true,
+        "bytes": 185769,
+        "baselineSha256": "3bda1c3483476e211bc20c5287bf0f9c6eff16cc1c4deee17898d7ae61d9c30e",
+        "scratchSha256": "3bda1c3483476e211bc20c5287bf0f9c6eff16cc1c4deee17898d7ae61d9c30e",
+        "stageSha256": "3bda1c3483476e211bc20c5287bf0f9c6eff16cc1c4deee17898d7ae61d9c30e",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-22-set-noui.jpg",
+        "exactCaseResolved": true,
+        "bytes": 256628,
+        "baselineSha256": "39eb96b4963506b15568aba39dbb78e21e145a4716664406230b47f6c136ebc3",
+        "scratchSha256": "39eb96b4963506b15568aba39dbb78e21e145a4716664406230b47f6c136ebc3",
+        "stageSha256": "39eb96b4963506b15568aba39dbb78e21e145a4716664406230b47f6c136ebc3",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-009.jpg",
+        "exactCaseResolved": true,
+        "bytes": 238753,
+        "baselineSha256": "058b7f6fac1cd9c034463f086cdbd17d64565160e2416fccc392dd4b6d1dd32a",
+        "scratchSha256": "058b7f6fac1cd9c034463f086cdbd17d64565160e2416fccc392dd4b6d1dd32a",
+        "stageSha256": "058b7f6fac1cd9c034463f086cdbd17d64565160e2416fccc392dd4b6d1dd32a",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-009-64719152.jpg",
+        "exactCaseResolved": true,
+        "bytes": 299146,
+        "baselineSha256": "5f43d14049bd7a9a8b866c453c123fdb6bbb333314c354c99fbb31cc9f1fe9bb",
+        "scratchSha256": "5f43d14049bd7a9a8b866c453c123fdb6bbb333314c354c99fbb31cc9f1fe9bb",
+        "stageSha256": "5f43d14049bd7a9a8b866c453c123fdb6bbb333314c354c99fbb31cc9f1fe9bb",
+        "hashesMatch": true
+      },
+      {
+        "image": "the-digital-shaman-amxx-009-001.jpg",
+        "exactCaseResolved": true,
+        "bytes": 183251,
+        "baselineSha256": "cea4fb704274e4b4e21b567415d384ce9e2773b36f394f1cbb3e967b43494fb0",
+        "scratchSha256": "cea4fb704274e4b4e21b567415d384ce9e2773b36f394f1cbb3e967b43494fb0",
+        "stageSha256": "cea4fb704274e4b4e21b567415d384ce9e2773b36f394f1cbb3e967b43494fb0",
+        "hashesMatch": true
+      }
+    ],
+    "stageUntouched": true,
+    "stageFilesChecked": 64,
+    "stageFiles": [
+      {
+        "path": "approved.json",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "artifacts.json",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "download-plan.json",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "normalized-source.json",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "report.json",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "stage.json",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/imports/high-poly-models-artstation.json",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-009-64719152.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-009.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-22-set-noui.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-amxx-009-001.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-amxx-009-003.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-amxx-018-01.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-amxx-018-02.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-amxx-020-00.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-amxx-020-01.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-amxx-020-05.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-archivis-furnitures-presentation-ue4-27-001.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-archivis-furnitures-presentation-ue4-27-002.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-archivis-furnitures-presentation-ue4-27-004.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-archivis-furnitures-presentation-ue4-27-007.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-artur-perzyna-chandeliers.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-artur-perzyna-mech-daisy1.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-artur-perzyna-mech-daisy2.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-artur-perzyna-mech-daisy3.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-artur-perzyna-two-armchairs-and-table.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-numinatic-castle-gear-1-2ab34797-f0hs.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-numinatic-castle-gear-1-e435cc2b-61ym.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-numinatic-lego-car-wire-1-9aa175e3-57p1.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-numinatic-porsche-carrera-gt-e-1-fa087813-myxn.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-reka.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-set-011.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-set-021.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "private/public/high-poly-models/the-digital-shaman-set-022.jpg",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/artur/galleries/high-poly-models/index.html",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/gallery.json",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/index.html",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-009-64719152.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-009.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-22-set-noui.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-amxx-009-001.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-amxx-009-003.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-amxx-018-01.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-amxx-018-02.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-amxx-020-00.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-amxx-020-01.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-amxx-020-05.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-archivis-furnitures-presentation-ue4-27-001.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-archivis-furnitures-presentation-ue4-27-002.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-archivis-furnitures-presentation-ue4-27-004.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-archivis-furnitures-presentation-ue4-27-007.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-chandeliers.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-mech-daisy1.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-mech-daisy2.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-mech-daisy3.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-two-armchairs-and-table.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-numinatic-castle-gear-1-2ab34797-f0hs.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-numinatic-castle-gear-1-e435cc2b-61ym.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-numinatic-lego-car-wire-1-9aa175e3-57p1.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-numinatic-porsche-carrera-gt-e-1-fa087813-myxn.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-reka.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-set-011.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-set-021.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      },
+      {
+        "path": "public/galleries/high-poly-models/1440p/the-digital-shaman-set-022.webp",
+        "bytesUnchanged": true,
+        "sha256Unchanged": true
+      }
+    ],
+    "captionEntries": 17,
+    "captionValuesAreStringsWithoutNull": true,
+    "captionNamesResolveToIncludedImages": true,
+    "sourceNullImageCaptionCount": 10,
+    "distinctCollidingSourceAssetsRetainedAsUniqueNames": true,
+    "companionAbsentInScratchAndStage": true,
+    "scratchGalleryFiles": [
+      "gallery.json"
+    ],
+    "scratchManifestCanonicalBytesRestored": true,
+    "scratchManifestSha256": "5f2c45d604c9ca76a853b7c7c97f891648d6d9386b8aacabcb452cfcb2c2980c"
+  },
+  "capture": {
+    "finalPreview": "the-digital-shaman-amxx-009-001.jpg",
+    "completionSummaryImmediatelyAfterFinalScreenshot": true,
+    "cuaKernelResetConfirmed": true,
+    "separateNodeReplUsed": false,
+    "furtherCaptureAfterReset": false,
+    "helperProcessesStoppedByThisLane": false,
+    "releaseOwnerNotified": true,
+    "globalHelperRelease": "Root-owned; unverified by this lane.",
+    "yellowFrameDisappearance": "Unverified; no visual claim."
+  },
+  "recovery": [
+    "Used documented sky APIs inside CUA from the start; no input error or recovery required.",
+    "Folder picker targeted by its returned screenshot ID and observed coordinates.",
+    "No input timeout, user prompt, native Chrome, or repository/service/source mutation."
+  ],
+  "unverifiedByThisLane": [
+    "Browser/publication/service checks",
+    "Global capture-helper termination",
+    "Yellow-frame disappearance"
+  ]
+}

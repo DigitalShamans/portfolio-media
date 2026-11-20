@@ -1,0 +1,43 @@
+{
+  "source_id": "1xRNxG",
+  "slug": "high-poly-models",
+  "title": "HIgh-Poly Models",
+  "description": "TTT",
+  "branch": "codex/high-poly-models-20261120",
+  "images": 27,
+  "captions": 17,
+  "null_captions": 10,
+  "empty_source_positions": [
+    1
+  ],
+  "embeds": 0,
+  "filename_alias": {
+    "source_position": 27,
+    "original": "the-digital-shaman-009.jpg",
+    "canonical": "the-digital-shaman-009-64719152.jpg",
+    "asset_id": 64719152
+  },
+  "public_base": "0a496056efd365ced2fbfa5a07341a5a784c20b5",
+  "carried_prior_evidence": "633e6cd1021da67e4c466755e758d5f3b794d2e9",
+  "private": {
+    "source_commit": "306d9c93fb5760cbf0049dbf5b5a53cc468954b4",
+    "pr": 16,
+    "revision": "0d8a70c4ed2f818e6ecf1c863b1e4c3477eae9f8",
+    "unchanged_approval_groups": 20,
+    "tree_verified": 27
+  },
+  "service": {
+    "project_id": "appgprj_6afbf3a4aa2c81919821379c8fde09df",
+    "prior_catalogs": 15,
+    "source": "54796596faf42ddf2906e3371b028a8e63dd2c81",
+    "version": 19,
+    "saved_version": "appgprj_6afbf3a4aa2c81919821379c8fde09df~appgver_c58b53cf7c5c8191b281ccfeab0b941d",
+    "deployment_id": "appgdep_6affee81e5708191a4669bf85935f2e1",
+    "status": "succeeded",
+    "environment": 24,
+    "succeeded_at": "2026-11-20T06:54:06.717658+00:00"
+  },
+  "website": {
+    "status": "pending"
+  }
+}

@@ -1,0 +1,282 @@
+{
+  "passed": true,
+  "completedAtUtc": "2026-11-19T23:15:24.195Z",
+  "build": "41fd9d764958e759ea70ada0d518722e7b18d0ac",
+  "revision": "0f32e45b4ec85c19aa0527ce5725256787dafbbf",
+  "checks": [
+    {
+      "path": "/galleries/vegetation/",
+      "width": 390,
+      "height": 844,
+      "shots": 29,
+      "captions": 28,
+      "captionPairsVerified": 28,
+      "sourceOrderVerified": true,
+      "horizontalOverflow": false,
+      "build": "41fd9d764958e759ea70ada0d518722e7b18d0ac",
+      "first": {
+        "complete": true,
+        "natural": 2560,
+        "src": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-seaweed-4k.webp?v=1e7b1cc86e883d8b44e7b9c8b54c221e9df36d23&webp=q92-m6"
+      },
+      "navigation": {
+        "viewer": {
+          "height": 844,
+          "image": {
+            "complete": true,
+            "natural": 2560,
+            "src": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-wheat01-4k.webp?v=f307bd6001eacfd0dde37a4de09d8af0ac53806d&webp=q92-m6"
+          },
+          "width": 390
+        },
+        "sequence": [
+          1,
+          2,
+          1
+        ],
+        "escapeClosed": true
+      }
+    },
+    {
+      "build": "41fd9d764958e759ea70ada0d518722e7b18d0ac",
+      "captions": 28,
+      "first": {
+        "complete": true,
+        "natural": 3840,
+        "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/0f32e45b4ec85c19aa0527ce5725256787dafbbf/vegetation/digital-shamans-ds-vegetation-survisland-seaweed-4k.jpg"
+      },
+      "height": 1600,
+      "horizontalOverflow": false,
+      "path": "/galleries/vegetation/",
+      "shots": 29,
+      "width": 2800,
+      "captionPairsVerified": 28,
+      "sourceOrderVerified": true,
+      "navigation": {
+        "viewer": {
+          "height": 1600,
+          "image": {
+            "complete": true,
+            "natural": 3840,
+            "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/0f32e45b4ec85c19aa0527ce5725256787dafbbf/vegetation/digital-shamans-ds-vegetation-survisland-wheat01-4k.jpg"
+          },
+          "width": 2800
+        },
+        "sequence": [
+          1,
+          2,
+          1
+        ],
+        "escapeClosed": true
+      }
+    },
+    {
+      "build": "41fd9d764958e759ea70ada0d518722e7b18d0ac",
+      "captions": 28,
+      "first": {
+        "complete": true,
+        "natural": 3840,
+        "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/0f32e45b4ec85c19aa0527ce5725256787dafbbf/vegetation/digital-shamans-ds-vegetation-survisland-seaweed-4k.jpg"
+      },
+      "height": 1600,
+      "horizontalOverflow": false,
+      "path": "/artur/galleries/vegetation/",
+      "shots": 29,
+      "width": 2800,
+      "captionPairsVerified": 28,
+      "sourceOrderVerified": true,
+      "navigation": {
+        "viewer": {
+          "height": 1600,
+          "image": {
+            "complete": true,
+            "natural": 3840,
+            "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/0f32e45b4ec85c19aa0527ce5725256787dafbbf/vegetation/digital-shamans-ds-vegetation-survisland-wheat01-4k.jpg"
+          },
+          "width": 2800
+        },
+        "sequence": [
+          1,
+          2,
+          1
+        ],
+        "escapeClosed": true
+      }
+    },
+    {
+      "build": "41fd9d764958e759ea70ada0d518722e7b18d0ac",
+      "captions": 28,
+      "first": {
+        "complete": true,
+        "natural": 2560,
+        "src": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-seaweed-4k.webp?v=1e7b1cc86e883d8b44e7b9c8b54c221e9df36d23&webp=q92-m6"
+      },
+      "height": 844,
+      "horizontalOverflow": false,
+      "path": "/artur/galleries/vegetation/",
+      "shots": 29,
+      "width": 390,
+      "captionPairsVerified": 28,
+      "sourceOrderVerified": true,
+      "navigation": {
+        "viewer": {
+          "height": 844,
+          "image": {
+            "complete": true,
+            "natural": 2560,
+            "src": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-wheat01-4k.webp?v=f307bd6001eacfd0dde37a4de09d8af0ac53806d&webp=q92-m6"
+          },
+          "width": 390
+        },
+        "sequence": [
+          1,
+          2,
+          1
+        ],
+        "escapeClosed": true
+      }
+    }
+  ],
+  "addedChecks": [
+    {
+      "start": 17,
+      "filename": "the-digital-shaman-palms-019b-4k.jpg",
+      "width": 390,
+      "height": 844,
+      "natural": 2560,
+      "src": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-019b-4k.webp?v=772fe5b34efa284e9b5b7e0655053636edbc2423&webp=q92-m6",
+      "complete": true,
+      "sequence": [
+        17,
+        18,
+        17
+      ],
+      "escapeClosed": true,
+      "route": "studio"
+    },
+    {
+      "start": 17,
+      "filename": "the-digital-shaman-palms-019b-4k.jpg",
+      "width": 2800,
+      "height": 1600,
+      "natural": 3840,
+      "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/0f32e45b4ec85c19aa0527ce5725256787dafbbf/vegetation/the-digital-shaman-palms-019b-4k.jpg",
+      "complete": true,
+      "sequence": [
+        17,
+        18,
+        17
+      ],
+      "escapeClosed": true,
+      "route": "studio"
+    },
+    {
+      "start": 29,
+      "filename": "the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.jpg",
+      "width": 2800,
+      "height": 1600,
+      "natural": 3840,
+      "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/0f32e45b4ec85c19aa0527ce5725256787dafbbf/vegetation/the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.jpg",
+      "complete": true,
+      "escapeClosed": true,
+      "route": "studio"
+    },
+    {
+      "start": 17,
+      "filename": "the-digital-shaman-palms-019b-4k.jpg",
+      "width": 2800,
+      "height": 1600,
+      "natural": 3840,
+      "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/0f32e45b4ec85c19aa0527ce5725256787dafbbf/vegetation/the-digital-shaman-palms-019b-4k.jpg",
+      "complete": true,
+      "sequence": [
+        17,
+        18,
+        17
+      ],
+      "escapeClosed": true,
+      "route": "personal"
+    },
+    {
+      "start": 29,
+      "filename": "the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.jpg",
+      "width": 2800,
+      "height": 1600,
+      "natural": 3840,
+      "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/0f32e45b4ec85c19aa0527ce5725256787dafbbf/vegetation/the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.jpg",
+      "complete": true,
+      "escapeClosed": true,
+      "route": "personal"
+    },
+    {
+      "start": 17,
+      "filename": "the-digital-shaman-palms-019b-4k.jpg",
+      "width": 390,
+      "height": 844,
+      "natural": 2560,
+      "src": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-019b-4k.webp?v=772fe5b34efa284e9b5b7e0655053636edbc2423&webp=q92-m6",
+      "complete": true,
+      "sequence": [
+        17,
+        18,
+        17
+      ],
+      "escapeClosed": true,
+      "route": "personal"
+    },
+    {
+      "start": 29,
+      "filename": "the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.jpg",
+      "width": 390,
+      "height": 844,
+      "natural": 2560,
+      "src": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-digitalshamans-vegetation-phantom-speedtree.webp?v=69c46d2a830ef39c6395ae81ff9e3dc1c55bad85&webp=q92-m6",
+      "complete": true,
+      "escapeClosed": true,
+      "route": "personal"
+    }
+  ],
+  "normalDesktop": {
+    "build": "41fd9d764958e759ea70ada0d518722e7b18d0ac",
+    "captions": 28,
+    "first": {
+      "complete": true,
+      "natural": 2560,
+      "src": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-seaweed-4k.webp?v=1e7b1cc86e883d8b44e7b9c8b54c221e9df36d23&webp=q92-m6"
+    },
+    "height": 900,
+    "horizontalOverflow": false,
+    "path": "/artur/galleries/vegetation/",
+    "shots": 29,
+    "width": 1280,
+    "captionPairsVerified": 28,
+    "sourceOrderVerified": true
+  },
+  "normalDesktopAdded": {
+    "start": 17,
+    "filename": "the-digital-shaman-palms-019b-4k.jpg",
+    "width": 1280,
+    "height": 900,
+    "natural": 2560,
+    "src": "https://digitalshamans.co.uk/galleries/vegetation/1440p/the-digital-shaman-palms-019b-4k.webp?v=772fe5b34efa284e9b5b7e0655053636edbc2423&webp=q92-m6",
+    "complete": true,
+    "escapeClosed": true
+  },
+  "viewportReset": {
+    "dialogOpen": false,
+    "height": 900,
+    "width": 1280
+  },
+  "screenshots": [
+    "outputs/vegetation-merged-mobile.jpg",
+    "outputs/vegetation-merged-wide.jpg",
+    "outputs/vegetation-merged-desktop.jpg"
+  ],
+  "recovery": [
+    "After changing the already loaded mobile page to wide dimensions, its lead retained WebP. Reloaded at each target viewport, then confirmed decoded original requests at 2800 on both routes. No dynamic in-place source transition claim."
+  ],
+  "limits": [
+    "IAB emulated viewport checks; physical touch, iOS and Safari unverified.",
+    "Full-viewport image overlay verified; native OS fullscreen permission not granted or claimed."
+  ]
+}
