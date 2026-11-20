@@ -20,11 +20,12 @@
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const touchDevice = window.matchMedia('(any-pointer: coarse)');
   const viewportMeasure = document.querySelector('.career-viewport');
+  const contact = document.querySelector('.career-contact');
   const outro = document.querySelector('.career-outro');
   const footer = document.querySelector('.portfolio-footer');
   const ending = document.createElement('div');
   ending.className = 'career-ending';
-  const endingHomes = [outro, footer].filter(Boolean).map(node => {
+  const endingHomes = [contact, outro, footer].filter(Boolean).map(node => {
     const marker = document.createComment('career-ending-home');
     node.before(marker);
     return { node, marker, role: node.getAttribute('role') };
@@ -223,13 +224,10 @@
     const x = c.anchor - c.left - point.x;
     pointer.setAttribute('cx', point.x);
     pointer.setAttribute('cy', point.y);
-    // Follow the actual point on the curve, rather than the height of all
-    // the labels. This keeps the arriving card below the top clipping edge.
-    const firstPointTop = c.documentTop + c.firstPointY;
-    const dockedTop = Math.min(firstPointTop, c.viewport * .38);
-    const pointTop = Math.max(dockedTop, firstPointTop - scroll) - Math.max(0, scroll - c.end);
-    const mobileStageTop = stage.getBoundingClientRect().top;
-    const mobileY = pointTop - mobileStageTop - point.y;
+    // CSS sticky owns vertical placement, including entry and exit from the
+    // scene. Only advance the drawing within that scene; compensating for a
+    // measured stage top makes the curve drift when native scrolling reverses.
+    const mobileY = c.firstPointY - point.y;
     // Move the curve, nodes, text, and thumbnails together. Each milestone
     // keeps its position relative to its node as the camera pans.
     canvas.style.transform = 'translate3d(' + x.toFixed(3) + 'px,' + mobileY.toFixed(3) + 'px,0)';
@@ -271,12 +269,12 @@
     prioritizePreviews(current);
   }
 
-  function drawCurve(width, height, narrow, scale, desktopAspect) {
+  function drawCurve(width, height, narrow, scale, desktopAspect, mobileTopInset) {
     const desktopSpan = (height - 80 * scale) / (desktopAspect * curveExtent);
     const span = narrow ? Math.max(width * 2, desktopSpan) : Math.min(width, desktopSpan);
     const offset = narrow ? 8 : (width - span) / 2;
     const x = value => offset + value * span;
-    const startY = narrow ? Math.max(56, entries[0].offsetHeight + 16) : 56 * scale;
+    const startY = narrow ? mobileTopInset : 56 * scale;
     const verticalSpan = narrow ? height - startY - 24 : height - 80 * scale;
     const y = value => startY + value * verticalSpan / curveExtent;
     // Leave room to the left of the first date for its thumbnail.
@@ -449,7 +447,10 @@
     track.classList.toggle('career-track--tight', narrow && width < 300);
     if (narrow) track.classList.add('career-track--compact');
     const mobileLayout = narrow ? measureMobileLabels(width) : null;
-    const minimumHeight = narrow ? Math.ceil(mobileLayout.minimumSpan / .95 + Math.max(56, mobileLayout.heights[0] + 16) + 24) : 0;
+    // Leave a stable inset for the final card even when browser controls
+    // reappear and native scrolling exposes the shorter ending viewport.
+    const mobileTopInset = narrow ? Math.max(56, mobileLayout.heights[0] + 16, largeViewport - viewport + 24) : 0;
+    const minimumHeight = narrow ? Math.ceil(mobileLayout.minimumSpan / .95 + mobileTopInset + 24) : 0;
 
     // Calibrate using actual SVG arc length, rather than only its height.
     // Desktop fits >=40% even with the header and title present. On phones,
@@ -463,7 +464,7 @@
     if (!narrow) height = Math.min(height, Math.round(width * desktopAspect * curveExtent + 80 * scale));
     let metrics, visibleFraction;
     for (let i = 0; i < 9; i++) {
-      metrics = drawCurve(width, height, narrow, scale, desktopAspect);
+      metrics = drawCurve(width, height, narrow, scale, desktopAspect, mobileTopInset);
       visibleFraction = minimumVisibleFraction(metrics, height, available);
       if (visibleFraction >= .42 || height === minimumHeight) break;
       height = Math.max(minimumHeight, Math.round(height * .9));
@@ -515,7 +516,8 @@
     if (!canAnimate || reducedMotion.matches) return;
     const revealLine = Math.round(viewport * (narrow ? .65 : .5));
     const normalStart = Math.max(0, documentTop - revealLine);
-    const tailHeight = (document.querySelector('.career-outro')?.offsetHeight || 0) +
+    const tailHeight = (narrow ? (contact?.offsetHeight || 0) + 16 : 0) +
+      (document.querySelector('.career-outro')?.offsetHeight || 0) +
       (document.querySelector('.portfolio-footer')?.offsetHeight || 0);
     const maximumEnd = documentTop + contentHeight + tailHeight - viewport - 1;
     if (maximumEnd <= normalStart) {
@@ -534,14 +536,15 @@
     if (slowMobile) {
       setMobileEnding(true);
       const lastPoint = points[points.length - 1];
-      const dockedTop = Math.min(documentTop + points[0].y, viewport * .38);
+      const dockedTop = points[0].y;
       const cardBottom = dockedTop + labels[labels.length - 1].bottom - lastPoint.y;
       endingLeft = lastPoint.x - mobileLayout.anchor;
       ending.style.width = width + 'px';
       ending.style.left = endingLeft + 'px';
       ending.style.top = lastPoint.y - dockedTop + 'px';
       ending.style.setProperty('--career-ending-footer-height', (footer?.offsetHeight || 0) + 'px');
-      stageHeight = Math.max(largeViewport, cardBottom + 16 + (outro?.offsetHeight || 0) + 16 + (footer?.offsetHeight || 0));
+      ending.style.setProperty('--career-ending-outro-height', (outro?.offsetHeight || 0) + 'px');
+      stageHeight = Math.max(largeViewport, cardBottom + 24 + (contact?.offsetHeight || 0) + 16 + (outro?.offsetHeight || 0) + (footer?.offsetHeight || 0));
       ending.style.height = stageHeight + 'px';
     }
     // Mobile unpins exactly at the final node. Any remaining native scroll
