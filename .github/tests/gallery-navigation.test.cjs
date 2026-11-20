@@ -104,6 +104,36 @@ test('personal Full Portfolio background swipes wrap in their own loop', () => {
   assert.deepEqual(wrap.calls, [wrap.next.href]);
 });
 
+test('studio Full Portfolio swipes between its own cards and wraps Vegetation to NFS', () => {
+  const first = browser({ prefix: '', folder: 'nfs-unbound', galleryLoop: 'full' });
+  first.next.href = 'https://example.test/galleries/vehicles-aircrafts/';
+  first.previous.href = 'https://example.test/galleries/vegetation/';
+  first.start(); first.move(160); first.end(160); first.advance(180);
+  assert.deepEqual(first.calls, [first.next.href]);
+  const last = browser({ prefix: '', folder: 'vegetation', galleryLoop: 'full' });
+  last.next.href = 'https://example.test/galleries/nfs-unbound/';
+  last.start(); last.move(160); last.end(160); last.advance(180);
+  assert.deepEqual(last.calls, [last.next.href]);
+  const reverse = browser({ prefix: '', folder: 'nfs-unbound', galleryLoop: 'full' });
+  reverse.previous.href = 'https://example.test/galleries/vegetation/';
+  reverse.start(); reverse.move(280); reverse.end(280); reverse.advance(180);
+  assert.deepEqual(reverse.calls, [reverse.previous.href]);
+});
+
+test('studio Full Portfolio touch swipes reject cross-loop and cross-portfolio links', () => {
+  for (const href of [
+    'https://example.test/galleries/hb-egypt/',
+    'https://example.test/artur/galleries/props/',
+    'https://other.test/galleries/props/',
+    'https://example.test/galleries/props/?bad=1'
+  ]) {
+    const b = browser({ prefix: '', folder: 'nfs-unbound', galleryLoop: 'full' });
+    b.next.href = href;
+    b.start(); b.move(160); b.end(160); b.advance(180);
+    assert.deepEqual(b.calls, [], href);
+  }
+});
+
 test('Full Portfolio touch swipes reject Hard Bullet, studio and external destinations', () => {
   for (const href of [
     'https://example.test/artur/galleries/hb-helipad/',
