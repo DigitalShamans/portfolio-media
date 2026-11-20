@@ -18,7 +18,7 @@
   const loop = arrival?.loop ?? 'hard-bullet';
   const validRoute = loop === 'hard-bullet'
     ? /^\/(?:artur\/)?galleries\/hb-[a-z0-9-]+\/$/.test(arrival?.pathname)
-    : loop === 'full' && /^\/artur\/galleries\/(?!hb-)[a-z0-9-]+\/$/.test(arrival?.pathname);
+    : loop === 'full' && /^\/(?:artur\/)?galleries\/(?!hb-)[a-z0-9-]+\/$/.test(arrival?.pathname);
   if (!arrival || !['next', 'previous'].includes(arrival.direction) ||
       arrival.pathname !== window.location.pathname || !validRoute ||
       !Number.isFinite(arrival.at) || now < arrival.at || now - arrival.at > 10000 ||

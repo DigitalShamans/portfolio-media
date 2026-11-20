@@ -125,6 +125,25 @@ test('personal Full Portfolio prefetch stays within its own loop and never fetch
   }
 });
 
+test('studio Full Portfolio prefetches only the two declared adjacent gallery documents', () => {
+  const b = browser({ prefix: '', galleryLoop: 'full', folder: 'nfs-unbound',
+    previousHref: 'https://example.test/galleries/vegetation/',
+    nextHref: 'https://example.test/galleries/vehicles-aircrafts/' });
+  b.warm();
+  assert.deepEqual(b.sources(), [b.previous.href, b.next.href]);
+  assert(b.sources().every(url => !/\.(?:jpe?g|webp|mp4)/i.test(url)));
+  for (const nextHref of [
+    'https://example.test/artur/galleries/nfs-unbound/',
+    'https://example.test/galleries/hb-egypt/',
+    'https://other.test/galleries/props/'
+  ]) {
+    const invalid = browser({ prefix: '', galleryLoop: 'full', folder: 'nfs-unbound',
+      previousHref: 'https://example.test/galleries/vegetation/', nextHref });
+    invalid.warm();
+    assert.deepEqual(invalid.sources(), [invalid.previous.href]);
+  }
+});
+
 test('touch browsers, data saver, 2g connections and unsupported browsers do nothing', () => {
   for (const options of [
     { desktop: false }, { supported: false }, { saveData: true },
@@ -163,8 +182,8 @@ test('hidden tabs delay speculative downloads without breaking edge behavior', (
 });
 
 test('document prefetch is isolated from the original 420ms animation and route navigation', () => {
-  assert.match(navSource, /gallery-desktop-panels\.js'.*\?v=8/);
-  assert.match(navSource, /gallery-document-prefetch\.js'.*\?v=2/);
+  assert.match(navSource, /gallery-desktop-panels\.js'.*\?v=9/);
+  assert.match(navSource, /gallery-document-prefetch\.js'.*\?v=3/);
   assert.match(panelSource, /const holdDelay = 180;/);
   assert.match(panelSource, /const slideDuration = 420;/);
   assert.doesNotMatch(script, /location\.assign|location\.replace|scrollTrigger|cloneNode/);

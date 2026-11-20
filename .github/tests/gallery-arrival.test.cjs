@@ -129,12 +129,25 @@ test('personal Full Portfolio shows the matching title without crossing into the
   assert.equal(b.panel.children[0].children[1].textContent, 'Phantom: Covert Ops - Oculus VR');
   b.loaded(); b.revealed(); await b.flush();
   assert.equal(b.panel, undefined);
-  for (const pathname of ['/galleries/phantom-covert-ops/', '/artur/galleries/hb-egypt/']) {
+  for (const pathname of ['/galleries/hb-egypt/', '/artur/galleries/hb-egypt/']) {
     const bad = browser({ pathname, loop: 'full' });
     assert.equal(bad.panel, undefined, 'full-loop cover must not cross set or portfolio');
   }
   const hb = browser({ pathname: '/artur/galleries/nfs-unbound/' });
   assert.equal(hb.panel, undefined, 'Hard Bullet cover must reject Full Portfolio routes');
+});
+
+test('studio Full Portfolio preserves its stationary title on arrival', async () => {
+  const b = browser({ pathname: '/galleries/vehicles-aircrafts/',
+    title: 'Vehicles - Aircrafts', loop: 'full' });
+  assert.ok(b.panel);
+  assert.equal(b.panel.children[0].children[0].textContent, 'Full Portfolio');
+  assert.equal(b.panel.children[0].children[1].textContent, 'Vehicles - Aircrafts');
+  b.loaded(); b.revealed(); await b.flush();
+  assert.equal(b.panel, undefined);
+  assert.equal(b.body.classList.contains('gallery-edge-header-visible'), false);
+  const invalid = browser({ pathname: '/artur/galleries/hb-egypt/', loop: 'full' });
+  assert.equal(invalid.panel, undefined);
 });
 
 test('the completed cover stays until both browser snapshot and first image are ready', async () => {
@@ -188,7 +201,7 @@ test('both gallery layouts construct the arriving panel before the real header a
   for (const layout of layouts) {
     assert.match(layout, /gallery\.css\?v=27/);
     assert.match(layout, /<link rel="expect" href="#gallery-edge-ready" blocking="render">/);
-    assert.match(layout, /<div id="gallery-edge-arrival"><script src="\.\.\/gallery-arrival\.js\?v=2"><\/script><\/div>/);
+    assert.match(layout, /<div id="gallery-edge-arrival"><script src="\.\.\/gallery-arrival\.js\?v=3"><\/script><\/div>/);
     assert.match(layout, /gallery-edge-arrival[\s\S]*include site-header\.html[\s\S]*gallery-edge-ready/);
   }
   assert.match(layouts[0], /gallery-viewer\.js\?v=43/);

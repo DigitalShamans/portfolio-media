@@ -1,7 +1,7 @@
 {% comment %}
-Two independent loops. Recent Work follows the shared Hard Bullet list;
-personal Full Portfolio follows its own tile order and never crosses into
-the studio portfolio or Hard Bullet gallery set.
+Each portfolio has two independent loops. Recent Work follows the same
+Hard Bullet list; Full Portfolio follows the respective site's own card
+order, never crossing into the other site or the Hard Bullet gallery set.
 {% endcomment %}
 {% assign current_gallery_route = include.portfolio_url | append: 'galleries/' | append: include.current | append: '/' %}
 {% assign navigation_items = site.data.portfolio.recent %}
@@ -10,6 +10,14 @@ the studio portfolio or Hard Bullet gallery set.
   {% for personal_project in site.data.personal_portfolio.full %}
     {% if personal_project.url == current_gallery_route %}
       {% assign navigation_items = site.data.personal_portfolio.full %}
+      {% assign navigation_loop = 'full' %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% else %}
+  {% for studio_project in site.data.portfolio.full %}
+    {% if studio_project.url == current_gallery_route %}
+      {% assign navigation_items = site.data.portfolio.full %}
       {% assign navigation_loop = 'full' %}
       {% break %}
     {% endif %}
@@ -53,9 +61,9 @@ the studio portfolio or Hard Bullet gallery set.
            data-gallery-name="{{ navigation_next.title | escape }}{% if navigation_next.locked %} (password required){% endif %}"
            aria-label="Next gallery: {{ navigation_next.title | escape }}{% if navigation_next.locked %} (password required){% endif %}"></a>
       </nav>
-      <script src="{{ '/galleries/gallery-navigation.js' | relative_url }}?v=3" defer></script>
-      <script src="{{ '/galleries/gallery-desktop-panels.js' | relative_url }}?v=8" defer></script>
-      <script src="{{ '/galleries/gallery-document-prefetch.js' | relative_url }}?v=2" defer></script>
+      <script src="{{ '/galleries/gallery-navigation.js' | relative_url }}?v=4" defer></script>
+      <script src="{{ '/galleries/gallery-desktop-panels.js' | relative_url }}?v=9" defer></script>
+      <script src="{{ '/galleries/gallery-document-prefetch.js' | relative_url }}?v=3" defer></script>
       {% break %}
     {% endif %}
   {% endfor %}
