@@ -135,11 +135,18 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
 
 @media (min-width: 48rem) {
   .site-header--personal .site-header__inner {
+    --personal-header-height: calc(clamp(5rem, 7.4vw, 7.75rem) - 40px);
     max-inline-size: 106.5rem;
-    min-block-size: clamp(5rem, 7.4vw, 7.75rem);
+    min-block-size: var(--personal-header-height);
     padding-inline: clamp(3rem, 11.75vw, 9rem);
   }
 
-  .site-brand--personal { font-size: clamp(1.6rem, 2.68vw, 2.3rem); }
+  .site-brand--personal {
+    font-size: clamp(1.6rem, 2.68vw, 2.3rem);
+    position: relative;
+    /* Shortening the header moves its center 20px closer to the accent.
+       Move another 7px within the space above the bottom padding. */
+    inset-block-start: clamp(0px, calc((var(--personal-header-height) - .75rem - 3px - 1lh) / 2), 7px);
+  }
   .site-header--personal .site-nav a { font-size: 1.125rem; }
 }
