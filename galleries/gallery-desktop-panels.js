@@ -32,7 +32,7 @@
     if (url.origin !== window.location.origin || url.search || url.hash ||
         url.pathname.split('/galleries/')[0] !== prefix ||
         (isFullPortfolio
-          ? prefix !== '/artur' || !/^\/galleries\/(?!hb-)[a-z0-9-]+\/$/.test(localPath)
+          ? (prefix !== '' && prefix !== '/artur') || !/^\/galleries\/(?!hb-)[a-z0-9-]+\/$/.test(localPath)
           : !/^\/galleries\/hb-[a-z0-9-]+\/$/.test(localPath))) return null;
     return {
       href: url.href, pathname: url.pathname,
