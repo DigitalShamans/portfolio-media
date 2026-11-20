@@ -1,0 +1,8 @@
+{% if page.portfolio == 'personal' %}
+  {% assign personal_font_css = site.data.personal_typography.adobe_stylesheet_url | default: '' %}
+  {% if personal_font_css != '' %}
+    <link rel="preconnect" href="https://use.typekit.net" crossorigin>
+    <link rel="stylesheet" href="{{ personal_font_css | escape }}">
+    <link rel="stylesheet" href="{{ '/assets/artur-typography.css' | relative_url }}?v=1">
+  {% endif %}
+{% endif %}

@@ -1,0 +1,8 @@
+/* Loaded only on personal pages once the Adobe Web Project is configured. */
+:root {
+  --artur-font-family: "faust", system-ui, sans-serif;
+  font-family: var(--artur-font-family);
+}
+
+body { font-family: var(--artur-font-family); }
+button, input, select, textarea { font-family: inherit; }
