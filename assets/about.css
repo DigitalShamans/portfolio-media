@@ -9,13 +9,15 @@
 .about-content {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  column-gap: clamp(1.5rem, 3vw, 2rem);
+  column-gap: 0;
   row-gap: clamp(2rem, 4vw, 3.5rem);
   align-items: start;
-  max-inline-size: 68rem;
+  max-inline-size: 70rem;
   margin-inline: auto;
   padding-block: clamp(2rem, 5vw, 4rem);
 }
+
+.about-intro { padding-inline-end: clamp(1.5rem, 3vw, 2rem); }
 
 .about-intro .about-title {
   margin: 0 0 .5rem;
@@ -132,6 +134,8 @@
 
 @media (max-width: 720px) {
   .about-content { grid-template-columns: minmax(0, 1fr); }
+
+  .about-intro { padding-inline-end: 0; }
 
   .about-details {
     border-inline-start: 0;
