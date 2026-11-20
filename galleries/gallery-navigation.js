@@ -55,7 +55,7 @@
     if (url.origin !== window.location.origin || url.search || url.hash ||
         url.pathname.split('/galleries/')[0] !== prefix) return;
     if (fullPortfolio) {
-      if (prefix === '/artur' && /^\/galleries\/(?!hb-)[a-z0-9-]+\/$/.test(localPath)) return url;
+      if ((prefix === '' || prefix === '/artur') && /^\/galleries\/(?!hb-)[a-z0-9-]+\/$/.test(localPath)) return url;
     } else if (/^\/galleries\/hb-[a-z0-9-]+\/$/.test(localPath)) return url;
   }
 
