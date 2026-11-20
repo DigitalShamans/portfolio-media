@@ -22,12 +22,12 @@ function deferred() {
 
 function browser({ pathname = '/galleries/hb-helipad/', now = 1700, at = 1000,
     title = 'Helipad', desktop = true, reduced = false, arrival = true,
-    gate = false, ready, pageReveal = true } = {}) {
+    gate = false, ready, pageReveal = true, loop = 'hard-bullet' } = {}) {
   const events = {};
   const timers = [];
   const stored = new Map();
   if (arrival) stored.set('gallery-desktop-edge-arrival', JSON.stringify({
-    direction: 'next', pathname, title, at, headerHeight: 96
+    direction: 'next', pathname, title, loop, at, headerHeight: 96
   }));
 
   class Element {
@@ -121,6 +121,22 @@ test('arrival cover is installed before the destination body has loaded', () => 
   }
 });
 
+test('personal Full Portfolio shows the matching title without crossing into the Hard Bullet loop', async () => {
+  const b = browser({ pathname: '/artur/galleries/phantom-covert-ops/',
+    title: 'Phantom: Covert Ops - Oculus VR', loop: 'full' });
+  assert.ok(b.panel);
+  assert.equal(b.panel.children[0].children[0].textContent, 'Full Portfolio');
+  assert.equal(b.panel.children[0].children[1].textContent, 'Phantom: Covert Ops - Oculus VR');
+  b.loaded(); b.revealed(); await b.flush();
+  assert.equal(b.panel, undefined);
+  for (const pathname of ['/galleries/phantom-covert-ops/', '/artur/galleries/hb-egypt/']) {
+    const bad = browser({ pathname, loop: 'full' });
+    assert.equal(bad.panel, undefined, 'full-loop cover must not cross set or portfolio');
+  }
+  const hb = browser({ pathname: '/artur/galleries/nfs-unbound/' });
+  assert.equal(hb.panel, undefined, 'Hard Bullet cover must reject Full Portfolio routes');
+});
+
 test('the completed cover stays until both browser snapshot and first image are ready', async () => {
   const firstShot = deferred();
   const b = browser({ ready: Promise.resolve({
@@ -172,7 +188,7 @@ test('both gallery layouts construct the arriving panel before the real header a
   for (const layout of layouts) {
     assert.match(layout, /gallery\.css\?v=27/);
     assert.match(layout, /<link rel="expect" href="#gallery-edge-ready" blocking="render">/);
-    assert.match(layout, /<div id="gallery-edge-arrival"><script src="\.\.\/gallery-arrival\.js\?v=1"><\/script><\/div>/);
+    assert.match(layout, /<div id="gallery-edge-arrival"><script src="\.\.\/gallery-arrival\.js\?v=2"><\/script><\/div>/);
     assert.match(layout, /gallery-edge-arrival[\s\S]*include site-header\.html[\s\S]*gallery-edge-ready/);
   }
   assert.match(layouts[0], /gallery-viewer\.js\?v=43/);
