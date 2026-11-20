@@ -25,13 +25,15 @@ test('Recent Work retains the original six-banner viewport and accessible scroll
   assert.match(css, /\.recent-gallery\s*\{[^}]*overflow:\s*hidden/s);
 });
 
-test('both homepages retain native page scrolling and all gallery banners', () => {
-  assert.match(layout, /portfolio\.css' \| relative_url }}\?v=9/);
+test('both homepages keep a sticky header and all gallery banners', () => {
+  assert.match(layout, /portfolio\.css' \| relative_url }}\?v=10/);
+  assert.match(layout, /<body class="portfolio-page[^\n]*>[\s\S]*?include site-header\.html/);
+  assert.match(css, /\.portfolio-page > \.site-header\s*\{[^}]*position:\s*sticky;[^}]*inset-block-start:\s*0;/);
+  assert.match(css, /#recent-work\s*\{[^}]*scroll-margin-block-start:[^;]*--home-header-height/);
   assert.match(layout, /<div class="recent-galleries" role="region" aria-label="Gallery banners" tabindex="0">/);
   assert.match(layout, /recent-galleries"[^>]*tabindex="0"/);
   assert.match(layout, /for gallery in site\.data\.portfolio\.recent/);
   assert.match(layout, /for project in portfolio\.full/);
-  assert.match(layout, /include site-header\.html/);
   assert.equal(studio.recent.length, 8);
   assert.match(css, /\.recent-gallery-list\s*\{[^}]*display:\s*grid/s);
   assert.match(css, /\.recent-gallery img\s*\{[^}]*width:\s*100%/s);
