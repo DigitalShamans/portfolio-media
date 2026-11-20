@@ -26,9 +26,8 @@
   {% include seo.html title=gallery_seo_title description=gallery_seo_description image=gallery_folder %}
   {% if page.portfolio == 'personal' %}
     <base href="{{ gallery_path | relative_url }}">
-  {% else %}
-    {% include site-favicon.html %}
   {% endif %}
+  {% include site-favicon.html %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
   <link rel="stylesheet" href="../gallery.css?v=27">
   {% if gallery_page.gallery_captions %}<link rel="stylesheet" href="../gallery-captions.css?v=1">{% endif %}
