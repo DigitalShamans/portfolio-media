@@ -298,13 +298,15 @@
 .career-track--narrow .career-year,
 .career-track--narrow .career-checkpoint { background: #111; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .career-track--narrow .career-year { width: fit-content; }
+.career-track--narrow { --career-mobile-thumbnail-width: 88px; }
+.career-track--narrow.career-track--tight { --career-mobile-thumbnail-width: 72px; }
 .career-track--narrow .career-copy--media {
-  grid-template-columns: minmax(0, max-content) 88px;
+  grid-template-columns: minmax(0, max-content) var(--career-mobile-thumbnail-width);
   justify-content: start;
   gap: 12px;
 }
 .career-track--narrow .career-description { overflow-wrap: anywhere; }
-.career-track--narrow .career-preview { width: 88px; }
+.career-track--narrow .career-preview { width: var(--career-mobile-thumbnail-width); }
 .career-track--narrow.career-track--tight #career-2004 .career-preview { width: 64px; }
 .career-track--narrow #career-2015-rebellion .career-copy--media { grid-template-columns: minmax(0, 1fr); }
 .career-track--narrow .career-preview-stack { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
@@ -350,31 +352,23 @@
 .career-outro { padding-block: 2rem 2.5rem; text-align: center; }
 .career-ending {
   position: absolute;
+  left: 0;
+  display: flow-root;
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
 }
 .career-track--complete .career-ending { visibility: visible; opacity: 1; }
 .career-ending .career-contact {
-  position: absolute;
-  top: auto;
-  bottom: calc(var(--career-ending-footer-height, 0px) + var(--career-ending-outro-height, 0px) + 1rem);
-  left: 0;
-  width: 100%;
+  position: static;
+  width: auto;
   margin: 0;
+  text-align: left;
   pointer-events: auto;
 }
+.career-ending .career-socials { justify-content: flex-start; margin-top: .5rem; }
 .career-ending .career-outro {
-  position: absolute;
-  bottom: var(--career-ending-footer-height, 0px);
-  width: 100%;
-  padding-block: 1rem;
-  pointer-events: auto;
-}
-.career-ending .portfolio-footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
+  padding-block: 1.25rem .625rem;
   pointer-events: auto;
 }
 .career-ending .portfolio-footer .site-shell { width: 100%; margin-inline: 0; }
@@ -446,7 +440,7 @@
   .career-intro { padding-bottom: 1.5rem; }
   .career-contact { position: static; width: auto; margin-top: 1rem; text-align: left; }
   .career-contact h2 { margin: 0 0 .35rem; font-size: .9rem; }
-  .career-socials { display: inline-flex; margin: 0 0 0 .75rem; vertical-align: middle; }
+  .career-socials { justify-content: flex-start; margin-top: .5rem; }
   .career-socials a { width: 1.5rem; height: 1.5rem; }
   .career-path, .career-path-background { stroke-width: 3; }
 }

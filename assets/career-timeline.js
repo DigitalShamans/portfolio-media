@@ -37,6 +37,7 @@
   const ns = 'http://www.w3.org/2000/svg';
   const desktopCurveAspect = 1.25;
   const curveExtent = 1.22;
+  const mobileCardInset = 16;
   let canAnimate = false;
   let animation;
   let scrollTween;
@@ -227,31 +228,32 @@
       canvas.style.transform = 'translate3d(0,' + y.toFixed(3) + 'px,0)';
       return;
     }
-    const x = c.anchor - c.left - point.x;
+    const nextIndex = c.mobileStops.findIndex(stop => stop.progress > progress);
+    const endStopIndex = nextIndex < 0 ? c.mobileStops.length - 1 : Math.max(1, nextIndex);
+    const from = c.mobileStops[endStopIndex - 1];
+    const to = c.mobileStops[endStopIndex];
+    const fraction = Math.max(0, Math.min(1, (progress - from.progress) / (to.progress - from.progress)));
+    const blend = fraction * fraction * (3 - 2 * fraction);
+    const framedX = from.offset + (to.offset - from.offset) * blend;
+    const x = Math.max(10 - point.x, Math.min(framedX, c.width - 10 - point.x));
     pointer.setAttribute('cx', point.x);
     pointer.setAttribute('cy', point.y);
-    // CSS sticky owns vertical placement, including entry and exit from the
-    // scene. Only advance the drawing within that scene; compensating for a
-    // measured stage top makes the curve drift when native scrolling reverses.
-    // Stop following vertically when the final entries and ending controls
-    // fit together. The drawing continues downward along the stationary curve.
-    const mobileY = Math.max(c.minimumY, c.firstPointY - point.y);
-    // Move the curve, nodes, text, and thumbnails together. Each milestone
-    // keeps its position relative to its node as the camera pans.
+    // Let the marker move into the screen before following it upward. Stop
+    // following once the last card and Contact fit below the visible entries.
+    const mobileY = Math.max(c.minimumY, Math.min(0, c.followY - point.y));
+    // Keep the curve, text and thumbnails together as the view moves.
     canvas.style.transform = 'translate3d(' + x.toFixed(3) + 'px,' + mobileY.toFixed(3) + 'px,0)';
     // Fade departing cards before the viewport cuts through their text.
     // Their positions still follow the same canvas transform as the spline.
     entries.forEach(entry => {
       const left = parseFloat(entry.style.left) + x;
-      const opacity = Math.max(0, Math.min(1, (left - 8) / 24));
+      const opacity = Math.max(0, Math.min(1, left / mobileCardInset));
       entry.style.opacity = opacity.toFixed(3);
       // Fully faded previews must not leave invisible links over the map.
       // Inherit visibility so the initial loading guard remains effective.
       entry.style.visibility = opacity > 0 ? 'inherit' : 'hidden';
     });
-    // Only the global navigation/footer stay centered. Milestone cards keep
-    // the same canvas transform as their nodes throughout the whole journey.
-    ending.style.transform = 'translateX(' + (-x - c.endingLeft).toFixed(3) + 'px)';
+    ending.style.transform = 'translateX(' + (-x).toFixed(3) + 'px)';
   }
 
   function updateMilestoneReveals() {
@@ -274,14 +276,14 @@
 
   function drawCurve(width, height, narrow, scale, desktopAspect, mobileTopInset) {
     const desktopSpan = (height - 80 * scale) / (desktopAspect * curveExtent);
-    const span = narrow ? Math.max(width * 2, desktopSpan) : Math.min(width, desktopSpan);
+    const span = narrow ? width * 2 : Math.min(width, desktopSpan);
     const offset = narrow ? 8 : (width - span) / 2;
     const x = value => offset + value * span;
     const startY = narrow ? mobileTopInset : 56 * scale;
     const verticalSpan = narrow ? height - startY - 24 : height - 80 * scale;
     const y = value => startY + value * verticalSpan / curveExtent;
     // Leave room to the left of the first date for its thumbnail.
-    const startX = narrow ? x(.10) : Math.max(x(.10), 180 * scale);
+    const startX = narrow ? x(.36) : Math.max(x(.10), 180 * scale);
     const d = 'M ' + startX + ' ' + y(0) +
       ' C ' + x(.51) + ' ' + y(.015) + ', ' + x(.40) + ' ' + y(.12) + ', ' + x(.29) + ' ' + y(.23) +
       ' C ' + x(.12) + ' ' + y(.40) + ', ' + x(.12) + ' ' + y(.47) + ', ' + x(.26) + ' ' + y(.58) +
@@ -333,8 +335,13 @@
     const cardWidth = width - cardLeft;
     entries.forEach(entry => { entry.style.width = cardWidth + 'px'; });
     const heights = entries.map(entry => entry.offsetHeight);
+    const contentWidths = entries.map(entry => {
+      const parts = entry.querySelectorAll('.career-year, .career-checkpoint, .career-preview');
+      const right = Math.max(...Array.from(parts, part => part.getBoundingClientRect().right));
+      return right - entry.getBoundingClientRect().left;
+    });
     const minimumSpan = heights.slice(0, -1).reduce((sum, height) => sum + height + 24, 0);
-    return { anchor, cardLeft, cardWidth, heights, minimumSpan };
+    return { anchor, cardLeft, contentWidths, heights, minimumSpan };
   }
 
   function placeMobileLabels(metrics, layout) {
@@ -355,9 +362,23 @@
       entry.style.left = left + 'px';
       entry.style.top = top + 'px';
       points.push({ x: point.x, y: point.y, progress: at });
-      labels.push({ left, right: left + layout.cardWidth, top, bottom: top + layout.heights[i] });
+      labels.push({ left, right: left + layout.contentWidths[i], top, bottom: top + layout.heights[i] });
     });
     return { points, labels };
+  }
+
+  function frameMobileStops(points, labels, width, anchor) {
+    return points.map((point, i) => {
+      const card = labels[i];
+      const previous = labels[Math.max(0, i - 1)];
+      const preferredOffset = anchor - point.x;
+      const bothLeft = mobileCardInset - Math.min(card.left, previous.left);
+      const bothRight = width - Math.max(card.right, previous.right);
+      const sharedOffset = Math.max(bothLeft, Math.min(preferredOffset, bothRight));
+      // If both cards cannot fit, give the newly revealed card priority.
+      const offset = Math.min(width - card.right, Math.max(mobileCardInset - card.left, sharedOffset));
+      return { progress: point.progress, offset };
+    });
   }
 
   function placeLabels(points, metrics, width, narrow, scale, cameraAnchor, trackLeft) {
@@ -537,26 +558,20 @@
     const scrollDistance = normalDistance * scrollMultiplier * endWeight;
     const end = normalStart + scrollDistance;
     let stageHeight = viewport;
-    let endingLeft = 0;
+    let mobileStops;
+    let followY = 0;
     let minimumY = 0;
     if (slowMobile) {
       setMobileEnding(true);
       const lastPoint = points[points.length - 1];
-      const footerHeight = footer?.offsetHeight || 0;
-      const outroHeight = outro?.offsetHeight || 0;
-      const controlsHeight = (contact?.offsetHeight || 0) + 16 + outroHeight + footerHeight;
-      const afterPoint = Math.max(labels[labels.length - 1].bottom, metrics.y(1)) - lastPoint.y;
-      const endingGap = 32;
-      stageHeight = Math.max(largeViewport, points[0].y + afterPoint + endingGap + controlsHeight);
-      const finalPointY = stageHeight - controlsHeight - endingGap - afterPoint;
-      minimumY = finalPointY - lastPoint.y;
-      endingLeft = lastPoint.x - mobileLayout.anchor;
+      const endingTop = Math.max(labels[labels.length - 1].bottom, metrics.y(1)) + 28;
       ending.style.width = width + 'px';
-      ending.style.left = endingLeft + 'px';
-      ending.style.top = -minimumY + 'px';
-      ending.style.setProperty('--career-ending-footer-height', footerHeight + 'px');
-      ending.style.setProperty('--career-ending-outro-height', outroHeight + 'px');
-      ending.style.height = stageHeight + 'px';
+      ending.style.top = endingTop + 'px';
+      const endingBottom = endingTop + ending.offsetHeight;
+      stageHeight = Math.max(largeViewport, points[0].y + endingBottom - lastPoint.y);
+      minimumY = Math.min(0, stageHeight - endingBottom);
+      followY = Math.min(viewport * .55, lastPoint.y + minimumY);
+      mobileStops = frameMobileStops(points, labels, width, mobileLayout.anchor);
     }
     // Mobile unpins exactly at the final node. Any remaining native scroll
     // is the actual ending viewport, including space under browser controls.
@@ -569,7 +584,7 @@
     track.style.setProperty('--career-stage-height', stageHeight + 'px');
     track.style.height = outerHeight + 'px';
     if (slowMobile) track.dataset.cameraAnchor = cameraAnchor.toFixed(3);
-    scrollCamera = { documentTop, viewport, width, narrow, start: normalStart, end, outerHeight, normalDistance, left: trackLeft, anchor: cameraAnchor, length: metrics.length, firstPointY: points[0].y, lastStopAt: points[points.length - 1].progress, endingLeft, minimumY };
+    scrollCamera = { documentTop, viewport, width, narrow, start: normalStart, end, outerHeight, normalDistance, anchor: cameraAnchor, length: metrics.length, lastStopAt: points[points.length - 1].progress, mobileStops, followY, minimumY };
     animation = gsap.timeline({
       paused: true,
       defaults: { ease: 'none' },
@@ -597,7 +612,7 @@
       const content = narrow ? entry.querySelector('.career-copy') : entry;
       reveal.fromTo(content, {
         opacity: 0, x: narrow ? 0 : -24, y: 8
-      }, { opacity: 1, x: 0, y: 0, duration: slowMobile && i === points.length - 1 ? .3 : .6, ease: 'power3.out' }, slowMobile && i === points.length - 1 ? 0 : .06);
+      }, { opacity: 1, x: 0, y: 0, duration: narrow ? .3 : .6, ease: 'power3.out' }, narrow ? 0 : .06);
       reveal.fromTo(stops.children[i], {
         attr: { r: narrow ? 2.5 : 3 * scale }, autoAlpha: narrow ? .3 : .4
       }, { attr: { r: narrow ? 6.5 : 8 * scale }, autoAlpha: 1, duration: .5, ease: 'back.out(2)' }, 0);
