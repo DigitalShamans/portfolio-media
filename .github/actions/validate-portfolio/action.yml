@@ -1,0 +1,28 @@
+name: Validate portfolio
+description: Check portfolio source, run offline regressions and validate the Jekyll build.
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+    - name: Check source, regressions and gallery manifests
+      shell: bash
+      run: python3 .github/scripts/check-portfolio.py
+    - name: Generate gallery asset versions
+      shell: bash
+      run: python3 .github/scripts/generate-gallery-asset-versions.py
+    - name: Build with Jekyll
+      uses: actions/jekyll-build-pages@v1
+      with:
+        source: ./
+        destination: ./_site
+    - name: Prune unpublished gallery images
+      shell: bash
+      run: |
+        # Jekyll's build container creates its output as root.
+        sudo chown -R "$(id -u):$(id -g)" ./_site/galleries
+        python3 .github/scripts/prune-unpublished-gallery-images.py ./_site --apply
+    - name: Validate homepage gallery links
+      shell: bash
+      run: python3 .github/scripts/validate-homepage-gallery-links.py ./_site
