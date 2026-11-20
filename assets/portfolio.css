@@ -10,14 +10,12 @@
 
 #recent-work { container-type: inline-size; }
 
+/* Recent Work is part of the document's vertical flow, not a nested
+   scroll container. A hidden inner scrollbar swallowed wheel/trackpad steps
+   while the cursor was over the banners and made the page appear stuck. */
 .recent-galleries {
   --banner-gap: 4px;
-  max-block-size: calc(120cqi + 5 * var(--banner-gap));
-  overflow-y: auto;
-  scrollbar-width: none;
 }
-
-.recent-galleries::-webkit-scrollbar { display: none; }
 
 .recent-gallery-list,
 .portfolio-grid {
