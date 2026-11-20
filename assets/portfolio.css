@@ -8,12 +8,19 @@
   letter-spacing: -.035em;
 }
 
-/* Recent Work is part of the document's vertical flow, not a nested
-   scroll container. A hidden inner scrollbar swallowed wheel/trackpad steps
-   while the cursor was over the banners and made the page appear stuck. */
+/* Six of the eight Recent Work banners are visible in the independent viewport.
+   Residual wheel movement is handed to the page in the same event by
+   recent-galleries-scroll.js, preventing the former lost-scroll-step bug. */
+#recent-work { container-type: inline-size; }
 .recent-galleries {
   --banner-gap: 4px;
+  max-block-size: calc(120cqi + 5 * var(--banner-gap));
+  overflow-y: auto;
+  overscroll-behavior-y: auto;
+  scrollbar-width: none;
 }
+.recent-galleries::-webkit-scrollbar { display: none; }
+.recent-galleries:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 .recent-gallery-list,
 .portfolio-grid {
@@ -31,6 +38,7 @@
 .recent-gallery {
   position: relative;
   display: block;
+  overflow: hidden;
   background: #080808;
   text-decoration: none;
 }
