@@ -25,6 +25,7 @@
   const outro = document.querySelector('.career-outro');
   const footer = document.querySelector('.portfolio-footer');
   const backdrops = document.querySelector('.career-backdrops');
+  const cellular = backdrops?.querySelector('.career-cellular');
   const network = backdrops?.querySelector('.career-network');
   const ending = document.createElement('div');
   ending.className = 'career-ending';
@@ -176,7 +177,6 @@
   function reset() {
     scrollCamera = null;
     backdrops?.style.removeProperty('--career-backdrop-footer-space');
-    network?.style.removeProperty('transform');
     if (scrollTween) {
       scrollTween.scrollTrigger.kill();
       scrollTween.kill();
@@ -190,6 +190,9 @@
     milestoneReveals = [];
     stage.style.removeProperty('transform');
     canvas.style.removeProperty('transform');
+    cellular?.style.removeProperty('transform');
+    network?.style.removeProperty('transform');
+    network?.style.removeProperty('opacity');
     entries.forEach(entry => entry.classList.remove('career-milestone--awaiting-reveal'));
     track.classList.remove('career-track--slow', 'career-track--complete');
     if (canAnimate) {
@@ -232,11 +235,10 @@
     if (track.clientWidth === c.width && measuredViewport === c.viewport) {
       c.readingPosition = captureReadingPosition(false);
     }
-    if (network) {
-      // Counter 70% of the page movement and keep the same placement at the footer.
-      const remaining = Math.max(0, scrollLimit() - scroll);
-      network.style.transform = 'translateY(' + (-.7 * remaining).toFixed(3) + 'px)';
-    }
+    // Keep the cellular art at its starting height and the network art at
+    // its final height as the scene scrolls under the timeline camera.
+    if (cellular) cellular.style.transform = 'translateY(' + scroll.toFixed(3) + 'px)';
+    if (network) network.style.transform = 'translateY(' + (scroll - scrollLimit()).toFixed(3) + 'px)';
     // Mobile finishes at the final milestone, including its ending controls.
     const point = c.anchor ? path.getPointAtLength(Math.min(progress, c.lastStopAt) * c.length) : null;
     const virtualScroll = scroll < c.start ? scroll : c.start + progress * c.normalDistance + Math.max(0, scroll - c.end);
@@ -581,7 +583,8 @@
     }
     const normalEnd = Math.min(maximumEnd, Math.max(documentTop + height - revealLine, documentTop + contentHeight - viewport));
     const normalDistance = Math.max(1, normalEnd - normalStart);
-    const endAt = slowMobile ? points[points.length - 1].progress : 1;
+    const lastStopAt = points[points.length - 1].progress;
+    const endAt = slowMobile ? lastStopAt : 1;
     const endWeight = journeyDistance(endAt);
     const scrollDistance = normalDistance * scrollMultiplier * endWeight;
     const end = normalStart + scrollDistance;
@@ -617,7 +620,7 @@
     track.style.setProperty('--career-stage-height', stageHeight + 'px');
     track.style.height = outerHeight + 'px';
     if (slowMobile) track.dataset.cameraAnchor = cameraAnchor.toFixed(3);
-    scrollCamera = { documentTop, viewport, width, narrow, start: normalStart, end, outerHeight, normalDistance, anchor: cameraAnchor, length: metrics.length, lastStopAt: points[points.length - 1].progress, mobileStops, followY, minimumY };
+    scrollCamera = { documentTop, viewport, width, narrow, start: normalStart, end, outerHeight, normalDistance, anchor: cameraAnchor, length: metrics.length, lastStopAt, mobileStops, followY, minimumY };
     animation = gsap.timeline({
       paused: true,
       defaults: { ease: 'none' },
@@ -625,6 +628,12 @@
     });
     animation.fromTo(path, { drawSVG: 0 }, { drawSVG: '100%', duration: 1 }, 0);
     animation.fromTo(pointer, { autoAlpha: 0 }, { autoAlpha: 1, duration: .004 }, 0);
+    if (network) {
+      const fadeStart = lastStopAt * .8;
+      animation.fromTo(network, { opacity: 0 }, {
+        opacity: 1, duration: lastStopAt - fadeStart, ease: 'sine.inOut'
+      }, fadeStart);
+    }
     if (!narrow) {
       animation.to(pointer, {
         duration: 1,
