@@ -41,8 +41,7 @@
 .career-track { position: relative; }
 .career-canvas { position: relative; }
 .career-track--slow .career-stage {
-  position: sticky;
-  top: 0;
+  position: relative;
   height: var(--career-stage-height);
   overflow: hidden;
   overflow: clip;
@@ -191,7 +190,7 @@
 .career-track--compact .career-projects,
 .career-track--narrow .career-role { display: none; }
 
-.career-outro { padding-block: 2rem max(4rem, 50svh); text-align: center; }
+.career-outro { padding-block: 2rem 2.5rem; text-align: center; }
 .career-portfolio-link, .career-details-close {
   display: inline-flex;
   align-items: center;
@@ -263,7 +262,7 @@
 @media print {
   .career-page, #career-scroll-wrapper, #career-scroll-content { height: auto !important; position: static !important; transform: none !important; overflow: visible !important; }
   .career-track { height: auto !important; }
-  .career-track--slow .career-stage { position: static; height: auto; overflow: visible; }
+  .career-track--slow .career-stage { position: static; height: auto; overflow: visible; transform: none !important; }
   .career-canvas { height: auto !important; transform: none !important; will-change: auto !important; }
   .career-rail { display: none !important; }
   .career-track--positioned .career-milestone {
