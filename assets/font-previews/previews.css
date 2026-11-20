@@ -1,0 +1,65 @@
+@font-face {
+  font-family: "Preview Conifers Breeze";
+  src: url("conifers-breeze.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Preview The Simple";
+  src: url("the-simple.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Preview Nothing Phone";
+  src: url("nothing-phone.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+:root[data-font-preview="conifers-breeze"] { --preview-font: "Preview Conifers Breeze"; }
+:root[data-font-preview="the-simple"] { --preview-font: "Preview The Simple"; }
+:root[data-font-preview="nothing-phone"] { --preview-font: "Preview Nothing Phone"; }
+:root[data-font-preview], :root[data-font-preview] body {
+  font-family: var(--preview-font), system-ui, sans-serif;
+}
+:root[data-font-preview] button,
+:root[data-font-preview] input,
+:root[data-font-preview] select,
+:root[data-font-preview] textarea { font-family: inherit; }
+.font-preview-note {
+  position: fixed;
+  inset: auto auto .75rem .75rem;
+  z-index: 1000;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .35rem .75rem;
+  max-width: calc(100% - 1.5rem);
+  padding: .5rem .75rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #191919;
+  box-shadow: 0 2px 12px #0008;
+  font: .875rem/1.4 system-ui, sans-serif;
+}
+.font-preview-note a { color: var(--accent); text-underline-offset: .2em; }
+.font-preview-main { width: min(calc(100% - 2rem), 76.25rem); margin: 2rem auto; }
+.font-preview-main > h1 { margin: 0 0 .35rem; font-size: clamp(1.75rem, 4vw, 2.5rem); line-height: 1.2; }
+.font-preview-intro { margin: 0 0 1.5rem; color: var(--muted); }
+.font-preview-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.font-preview-card { min-width: 0; padding: 1.25rem; border: 1px solid var(--border); border-radius: 5px; background: #111; }
+.font-preview-card--conifers-breeze { font-family: "Preview Conifers Breeze", serif; }
+.font-preview-card--the-simple { font-family: "Preview The Simple", serif; }
+.font-preview-card--nothing-phone { font-family: "Preview Nothing Phone", sans-serif; }
+.font-preview-card > h2 { margin: 0 0 1.5rem; color: var(--muted); font: 600 1rem/1.4 system-ui, sans-serif; }
+.font-preview-sample { margin: 0 0 1rem; font-size: clamp(1.75rem, 3vw, 2.25rem); line-height: 1.25; overflow-wrap: anywhere; }
+.font-preview-heading-sample { margin: 1.5rem 0 .75rem; color: var(--accent); font-size: 1.25rem; font-weight: 700; }
+.font-preview-body-sample { margin: 0; font-size: 1rem; line-height: 1.55; }
+.font-preview-glyphs { margin: 1rem 0 1.5rem; font-size: 1rem; overflow-wrap: anywhere; }
+.font-preview-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.5rem; font: 600 .875rem/1.3 system-ui, sans-serif; }
+.font-preview-actions a { display: inline-flex; align-items: center; min-height: 44px; padding: .55rem .85rem; border: 1px solid var(--accent); border-radius: 3px; color: var(--accent); text-decoration: none; }
+.font-preview-actions a:hover { background: var(--accent); color: #111; }
+@media (max-width: 900px) { .font-preview-grid { grid-template-columns: minmax(0, 1fr); } }

@@ -8,7 +8,7 @@
   {% assign gallery_prefix = '/galleries/' %}
 {% endif %}
 <!doctype html>
-<html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}" data-gallery-webp-revision="{{ site.gallery_webp_revision | escape }}"{% if site.data.gallery_delivery.revision %} data-gallery-originals-origin="{{ site.data.gallery_delivery.service_origin | escape }}" data-gallery-originals-revision="{{ site.data.gallery_delivery.revision | escape }}" data-gallery-originals-gallery-revisions="{{ site.data.gallery_delivery.gallery_revisions | jsonify | escape }}"{% endif %}>
+<html lang="en"{% if page.font_preview %} data-font-preview="{{ page.font_preview.id | escape }}"{% endif %} data-gallery4k-media="{{ site.gallery_4k_media | escape }}" data-gallery-webp-revision="{{ site.gallery_webp_revision | escape }}"{% if site.data.gallery_delivery.revision %} data-gallery-originals-origin="{{ site.data.gallery_delivery.service_origin | escape }}" data-gallery-originals-revision="{{ site.data.gallery_delivery.revision | escape }}" data-gallery-originals-gallery-revisions="{{ site.data.gallery_delivery.gallery_revisions | jsonify | escape }}"{% endif %}>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -26,10 +26,11 @@
     <link rel="stylesheet" href="{{ '/assets/home-sections.css' | relative_url }}?v=1">
     <script src="{{ '/assets/home-sections.js' | relative_url }}?v=1" defer></script>
   {% endunless %}
-  {% if site.data.portfolio_gallery_preloads %}
+  {% if site.data.portfolio_gallery_preloads and page.font_preview == nil %}
     <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=6" defer></script>
     <script src="{{ '/assets/portfolio-preload.js' | relative_url }}?v=3" defer></script>
   {% endif %}
+  {% include font-preview.html %}
 </head>
 <body class="portfolio-page{% unless page.portfolio == 'personal' %} portfolio-home{% endunless %}">
   {% include site-header.html %}
@@ -99,3 +100,4 @@
   {% include copyright-footer.html owner=copyright_owner %}
 </body>
 </html>
+
