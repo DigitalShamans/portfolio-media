@@ -770,5 +770,7 @@
     "Browser/publication/service checks",
     "Global capture-helper termination",
     "Yellow-frame disappearance"
-  ]
+  ],
+  "nativeUiElapsedSeconds": 290.0,
+  "captureIdentityReport": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\editor-check\\capture-owner-active.json"
 }
