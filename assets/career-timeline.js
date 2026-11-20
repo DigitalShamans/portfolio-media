@@ -259,8 +259,11 @@
     const to = c.mobileStops[endStopIndex];
     const fraction = Math.max(0, Math.min(1, (progress - from.progress) / (to.progress - from.progress)));
     const blend = fraction * fraction * (3 - 2 * fraction);
-    const framedX = from.offset + (to.offset - from.offset) * blend;
-    const x = Math.max(10 - point.x, Math.min(framedX, c.width - 10 - point.x));
+    // Follow the actual curve between nodes. Ease only the screen position
+    // needed to frame the cards so the marker doesn't drift and correct itself.
+    const markerX = from.markerX + (to.markerX - from.markerX) * blend;
+    // Keep the outgoing card in view if the curve bows right between nodes.
+    const x = Math.max(Math.min(from.offset, to.offset), markerX - point.x);
     pointer.setAttribute('cx', point.x);
     pointer.setAttribute('cy', point.y);
     // Let the marker move into the screen before following it upward. Stop
@@ -402,7 +405,8 @@
       const sharedOffset = Math.max(bothLeft, Math.min(preferredOffset, bothRight));
       // If both cards cannot fit, give the newly revealed card priority.
       const offset = Math.min(width - card.right, Math.max(mobileCardInset - card.left, sharedOffset));
-      return { progress: point.progress, offset };
+      const markerX = Math.max(10, Math.min(width - 10, point.x + offset));
+      return { progress: point.progress, markerX, offset: markerX - point.x };
     });
   }
 
@@ -648,21 +652,20 @@
     points.forEach((point, i) => {
       const entry = entries[i];
       const at = point.progress;
+      const stop = stops.children[i];
       const reveal = gsap.timeline({ paused: true });
       if (narrow) {
-        reveal.fromTo(entry.querySelector('.career-year'), {
-          opacity: .35, x: -8
-        }, { opacity: 1, x: 0, duration: .4, ease: 'power2.out' }, 0);
+        // Keep the cards and nodes fixed to the curve while they fade in.
+        const fade = { opacity: 1, duration: .3, ease: 'power2.out' };
+        reveal.fromTo([entry.querySelector('.career-year'), stop], { opacity: .35 }, fade, 0);
+        reveal.fromTo(entry.querySelector('.career-copy'), { opacity: 0 }, fade, 0);
+      } else {
+        // Desktop grid milestones can use display: contents for their copy.
+        reveal.fromTo(entry, { opacity: 0, x: -24, y: 8 },
+          { opacity: 1, x: 0, y: 0, duration: .6, ease: 'power3.out' }, .06);
+        reveal.fromTo(stop, { attr: { r: 3 * scale }, autoAlpha: .4 },
+          { attr: { r: 8 * scale }, autoAlpha: 1, duration: .5, ease: 'back.out(2)' }, 0);
       }
-      // Desktop grid milestones can use display: contents for their copy.
-      // Animate the entry itself so its text and thumbnails reveal together.
-      const content = narrow ? entry.querySelector('.career-copy') : entry;
-      reveal.fromTo(content, {
-        opacity: 0, x: narrow ? 0 : -24, y: 8
-      }, { opacity: 1, x: 0, y: 0, duration: narrow ? .3 : .6, ease: 'power3.out' }, narrow ? 0 : .06);
-      reveal.fromTo(stops.children[i], {
-        attr: { r: narrow ? 2.5 : 3 * scale }, autoAlpha: narrow ? .3 : .4
-      }, { attr: { r: narrow ? 6.5 : 8 * scale }, autoAlpha: 1, duration: .5, ease: 'back.out(2)' }, 0);
       const reached = at === 0;
       if (reached) reveal.progress(1);
       entry.classList.toggle('career-milestone--awaiting-reveal', !reached);
