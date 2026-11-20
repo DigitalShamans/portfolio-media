@@ -116,7 +116,7 @@
   text-decoration: none;
 }
 .career-preview img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.career-preview__arrow {
+.career-preview__arrow, .career-preview__zoom {
   position: absolute;
   inset: auto 0 0 auto;
   padding: 0 .25rem;
@@ -124,7 +124,8 @@
   font-size: .8rem;
   line-height: 1.2;
 }
-.career-preview__arrow svg { display: block; }
+.career-preview__arrow svg, .career-preview__zoom svg { display: block; }
+.career-preview--image { cursor: zoom-in; }
 .career-preview:hover, .career-preview:focus-visible { border-color: var(--accent); }
 .career-preview--empty {
   display: grid;
@@ -143,6 +144,7 @@
 }
 .career-track--tight .career-copy--media { grid-template-columns: minmax(0, 1fr); }
 .career-track--tight .career-preview { width: 64px; }
+.career-track--tight #career-2004 .career-copy--media { grid-template-columns: minmax(0, 1fr) 64px; }
 .career-copy h2 {
   margin: 0;
   color: var(--accent);
@@ -160,6 +162,7 @@
   font: inherit;
   letter-spacing: inherit;
   text-align: start;
+  text-decoration: none;
   cursor: pointer;
 }
 .career-checkpoint:hover { text-decoration: underline; text-underline-offset: .2em; }
@@ -207,7 +210,27 @@
   background: #191919;
   color: var(--text);
 }
-.career-details::backdrop { background: rgb(0 0 0 / .75); }
+.career-details::backdrop, .career-image-dialog::backdrop { background: rgb(0 0 0 / .75); }
+.career-image-dialog {
+  width: fit-content;
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100svh - 2rem);
+  padding: .75rem;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: #191919;
+  color: var(--text);
+  overflow: auto;
+}
+.career-image-dialog form { display: flex; justify-content: flex-end; margin: 0 0 .5rem; }
+.career-image-dialog img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: calc(100vw - 4rem);
+  max-height: calc(100svh - 7rem);
+  object-fit: contain;
+}
 .career-details form { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
 .career-details-close { min-height: 2.5rem; padding: .35rem .9rem; }
 .career-details .career-copy h2 { font-size: calc(1.5rem * var(--career-layout-scale)); }
@@ -239,5 +262,5 @@
   .career-year, .career-copy { opacity: 1 !important; transform: none !important; }
   .career-track .career-role, .career-track .career-projects { display: block; }
   .career-outro { padding-block: 1rem; }
-  .career-details { display: none; }
+  .career-details, .career-image-dialog { display: none; }
 }

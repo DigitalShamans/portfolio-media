@@ -20,6 +20,8 @@
   const viewportMeasure = document.querySelector('.career-viewport');
   const dialog = document.querySelector('#career-details');
   const dialogBody = dialog.querySelector('[data-career-details-body]');
+  const imageDialog = document.querySelector('#career-image');
+  const fullImage = imageDialog.querySelector('[data-career-image-full]');
   const ns = 'http://www.w3.org/2000/svg';
   const desktopCurveAspect = 1.25;
   const canAnimate = Boolean(window.gsap && window.ScrollTrigger && window.DrawSVGPlugin && window.MotionPathPlugin);
@@ -53,20 +55,43 @@
     heading.id = 'career-details-title';
     dialogBody.replaceChildren(year, copy);
     dialog.showModal();
-    if (smoother) smoother.paused(true);
+    syncDialogScrolling();
   }
 
-  entries.forEach(entry => entry.querySelector('button').addEventListener('click', () => showDetails(entry)));
+  function syncDialogScrolling() {
+    if (smoother) smoother.paused(dialog.open || imageDialog.open);
+  }
+
+  function showImage(link) {
+    if (imageDialog.open) return;
+    const thumbnail = link.querySelector('img');
+    fullImage.src = link.href;
+    fullImage.alt = thumbnail.alt;
+    imageDialog.setAttribute('aria-label', thumbnail.alt);
+    imageDialog.showModal();
+    syncDialogScrolling();
+  }
+
+  document.addEventListener('click', event => {
+    const link = event.target.closest?.('a[data-career-image]');
+    if (!link || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    showImage(link);
+  });
+
+  entries.forEach(entry => entry.querySelector('button.career-checkpoint')?.addEventListener('click', () => showDetails(entry)));
   entries.forEach(entry => {
     entry.addEventListener('focusin', updateMobileReveals);
     entry.addEventListener('focusout', () => window.requestAnimationFrame(updateMobileReveals));
   });
-  dialog.addEventListener('click', event => {
-    if (event.target !== dialog) return;
-    const box = dialog.getBoundingClientRect();
-    if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) dialog.close();
+  [dialog, imageDialog].forEach(modal => {
+    modal.addEventListener('click', event => {
+      if (event.target !== modal) return;
+      const box = modal.getBoundingClientRect();
+      if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) modal.close();
+    });
+    modal.addEventListener('close', syncDialogScrolling);
   });
-  dialog.addEventListener('close', () => { if (smoother) smoother.paused(false); });
 
   function updateDesktopSmoothing(narrow) {
     const enabled = canAnimate && window.ScrollSmoother && !narrow && !reducedMotion.matches;
@@ -78,7 +103,7 @@
         smoothTouch: 0,
         effects: false,
         normalizeScroll: false,
-        onFocusIn: () => dialog.open ? false : undefined
+        onFocusIn: () => dialog.open || imageDialog.open ? false : undefined
       });
     } else if (!enabled && smoother) {
       smoother.kill();
@@ -197,7 +222,7 @@
       const point = points[i];
       const above = entry.dataset.curveSide === 'above';
       const side = above ? 'above' : narrow ? 'right' : entry.dataset.curveSide;
-      const preferredWidth = narrow ? Math.min(above ? 200 : 300, width - 24) : Math.min(420 * scale, width * .36);
+      const preferredWidth = narrow ? Math.min(above ? 260 : 300, width - 24) : Math.min(420 * scale, width * .36);
       entry.style.width = preferredWidth + 'px';
       let top = above ? Math.max(0, point.y - entry.offsetHeight - 12 * scale) : point.y - 16 * scale;
       let left = 0, labelWidth = preferredWidth, labelHeight = entry.offsetHeight;
@@ -302,7 +327,7 @@
     guides.replaceChildren(...guideNodes.filter(Boolean));
     stops.replaceChildren(...points.map((point, i) => {
       const circle = element('circle', { cx: point.x, cy: point.y, r: narrow ? 6 : 8 * scale, class: 'career-stop' });
-      circle.addEventListener('click', () => showDetails(entries[i]));
+      circle.addEventListener('click', () => entries[i].querySelector('.career-checkpoint').click());
       return circle;
     }));
     pointer.setAttribute('r', String(narrow ? 7 : 7 * scale));
