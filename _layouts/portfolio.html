@@ -45,7 +45,7 @@
           </filter>
         </defs>
       </svg>
-      <div class="recent-galleries" role="region" aria-label="Gallery banners" tabindex="0">
+      <div class="recent-galleries" role="region" aria-label="Gallery banners">
         <ul class="recent-gallery-list">
           {% for gallery in site.data.portfolio.recent %}
             {% assign gallery_url = gallery_prefix | append: gallery.folder | append: '/' %}
