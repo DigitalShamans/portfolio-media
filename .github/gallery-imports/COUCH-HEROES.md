@@ -1,0 +1,11 @@
+# Couch Heroes - Environment Art: prepared publication checkpoint
+
+[Studio](https://digitalshamans.co.uk/galleries/couch-heroes/) and [Artur](https://digitalshamans.co.uk/artur/galleries/couch-heroes/) share the canonical12-image gallery: Couch_Heroes_Enviro_01.jpg through _12.jpg in numeric order. Both are unlisted/noindex, absent from sitemap and homepage/navigation. No captions or embeds were supplied. Neutral gallery text derives from the local folder name; no ArtStation provenance or download URLs are invented.
+
+The complete20-file user folder is archived in the private repository at public/couch-heroes, preserving every original byte and filename case. Private PR19 pins revision 0e4a48b032a13ce0b07bbb2abc9a0fc9fc6bc91a. Only the selected12 originals are approved for public delivery. The other8 files (Enviro13–16, Characters01–03 and Logo02) remain archived without public approval or WebP publication. All20 immutable commit-tree blobs/sizes match the staged inventory.
+
+Selected originals are all2560×1440. Original selected bytes 6,349,830; full archive 9,881,197; WebPs 3,187,820. All20 JPGs and12 WebPs fully decoded and passed size/SHA-256/Git blob checks. The established Pillow13/q92/method6/Lanczos/ICC/EXIF recipe fits2560×1440 without crop/upscale. Existing gallery/viewer/schema/runtime behavior is retained.
+
+Actual native Gallery Editor v0.11 opened the full20-file scratch folder, showed12 Included and8 Excluded, rendered all12 selected previews and passed explicit reorder/save/reopen/restore. The saved manifest contains only the canonical12 images. All41 frozen stage files and20 scratch originals remained unchanged; closed only the owned window and preserved the user's existing editor window.
+
+Service succeeded: retain18 earlier catalogs/revisions,23 prior approval groups, other gallery overrides, the global fallback and protected RZ/access/environment controls. Only the incoming selected-image catalog/revision is added. Existing D: checkouts reused; preserve14 public user files and238 private untracked paths outside the authorized folder. Final evidence is integrated through the same temporary gallery branch before its removal. Detailed release IDs and machine-checkable evidence use the COUCH-HEROES prefix.

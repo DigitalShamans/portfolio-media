@@ -1,0 +1,80 @@
+{
+  "passed": true,
+  "title": "Couch Heroes - Environment Art",
+  "editor": "DS Gallery Editor v0.11",
+  "ownedWindow": 6495220,
+  "existingUserWindowPreserved": 198164,
+  "nativePreviews": [
+    {
+      "image": "Couch_Heroes_Enviro_01.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "Couch_Heroes_Enviro_02.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "Couch_Heroes_Enviro_03.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "Couch_Heroes_Enviro_04.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "Couch_Heroes_Enviro_05.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "Couch_Heroes_Enviro_06.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "Couch_Heroes_Enviro_07.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "Couch_Heroes_Enviro_08.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "Couch_Heroes_Enviro_09.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "Couch_Heroes_Enviro_10.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "Couch_Heroes_Enviro_11.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "Couch_Heroes_Enviro_12.jpg",
+      "nativePreviewRendered": true
+    }
+  ],
+  "wholeFolderImages": 20,
+  "included": 12,
+  "excluded": 8,
+  "roundtrip": {
+    "adjacentReorderExplicitlySaved": true,
+    "reopenPersistedReorder": true,
+    "canonicalOrderRestoredAndSaved": true,
+    "nonselectedFilesStayedExcluded": true
+  },
+  "recovery": [
+    "Raised and observed the owned window to establish input geometry.",
+    "Used full accessibility state when diff output omitted unchanged rows; saved restored order with the visible Save button coordinates and verified the disk manifest."
+  ],
+  "completedAtUtc": "2026-11-20T09:34:06.432Z",
+  "integrity": {
+    "stageFilesChecked": 41,
+    "stageUntouched": true,
+    "scratchOriginalsUnchanged": 20,
+    "canonicalSelectedImages": 12,
+    "nonselectedImagesExcluded": 8
+  },
+  "ownedEditorWindowClosed": true,
+  "capture": "Final root gate after live IAB"
+}

@@ -1,0 +1,528 @@
+{
+  "passed": true,
+  "images": 12,
+  "archived_files": 20,
+  "not_published_files": [
+    "Couch_Heroes_Characters_01.jpg",
+    "Couch_Heroes_Characters_02.jpg",
+    "Couch_Heroes_Characters_03.jpg",
+    "Couch_Heroes_Enviro_13.jpg",
+    "Couch_Heroes_Enviro_14.jpg",
+    "Couch_Heroes_Enviro_15.jpg",
+    "Couch_Heroes_Enviro_16.jpg",
+    "Couch_Heroes_Logo_02.jpg"
+  ],
+  "captions": 0,
+  "embeds": 0,
+  "original_bytes": 6349830,
+  "archive_bytes": 9881197,
+  "webp_bytes": 3187820,
+  "original_dimensions": {
+    "2560x1440": 12
+  },
+  "webp_dimensions": {
+    "2560x1440": 12
+  },
+  "archive_facts": [
+    {
+      "filename": "Couch_Heroes_Characters_01.jpg",
+      "gallery_selected": false,
+      "bytes": 431113,
+      "sha256": "372432b6851181fcda4584e88d41ba446233a010423dceff6388fab780d1327b",
+      "git_blob_sha": "f384a213a167e453f0170e0c2f7d82c29a4e2fe5",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Characters_02.jpg",
+      "gallery_selected": false,
+      "bytes": 394632,
+      "sha256": "fb19ba8c9f74acea333b894823d33831ee8567374d5c02c66c59c0a8e2792b3c",
+      "git_blob_sha": "df844dd14cf8f36ad270523828e9227108f3a8d2",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Characters_03.jpg",
+      "gallery_selected": false,
+      "bytes": 375212,
+      "sha256": "c0b1de2a75779be559555885e979f0f10b5041536a1b8e8bfa534dd9538cce94",
+      "git_blob_sha": "12c9e331e7326a0298c155d415ba4720530862f2",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_01.jpg",
+      "gallery_selected": true,
+      "bytes": 443364,
+      "sha256": "dfab18669ebce5d5ab2deef97c135311c58bbc246c0d06c245612cce307dc189",
+      "git_blob_sha": "9a2dd70f45c455c84f6dc2acad6c0c70c4d97103",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_02.jpg",
+      "gallery_selected": true,
+      "bytes": 802174,
+      "sha256": "e2af7ddb0b932ef5660ab287256af5f90db87551137e7ef0d7f01bdbccdd4af0",
+      "git_blob_sha": "85d0e05a969078f5a698a1f79473c1fe994cfa35",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_03.jpg",
+      "gallery_selected": true,
+      "bytes": 649204,
+      "sha256": "3dfbc2ae5c38aff4317da7baf9f679c1c11efbca4361b2404ee85725c0f97b98",
+      "git_blob_sha": "559cca565635bde2d4caf8ea1e54520124a6f2a3",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_04.jpg",
+      "gallery_selected": true,
+      "bytes": 569910,
+      "sha256": "e35688e53dfadb27bd490ebd5a7cc720de951f08995bec443eeca2059c2aa7b9",
+      "git_blob_sha": "28e160d4e5ff7d31c8fe265b9ca4e2c52f4f9368",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_05.jpg",
+      "gallery_selected": true,
+      "bytes": 524244,
+      "sha256": "c8b4beabe14b9d8d2df2949a673202c6cc21c22dc0a1302460eadc7bd14be0e1",
+      "git_blob_sha": "7416aaccba54f19ac3b8e83fa3bf853fbde1fd2b",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_06.jpg",
+      "gallery_selected": true,
+      "bytes": 486874,
+      "sha256": "59760dccf5737130ba40c3de0083a01e849927d6a4132d65cf7cc0041d83f3d1",
+      "git_blob_sha": "1f3a5ef64211416aa476d1c3b027ca4ef38a9df2",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_07.jpg",
+      "gallery_selected": true,
+      "bytes": 487909,
+      "sha256": "8beda937a2cb534b9f3ae7d5217e86f95df946ee040a397786cb2a2ea4a3a37e",
+      "git_blob_sha": "e7dc385f9414b9e901fda1b3ccb350673c8b2ff3",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_08.jpg",
+      "gallery_selected": true,
+      "bytes": 470486,
+      "sha256": "e480c7ed92145c9da596b462d1a84250a8905b80d8e206b53bb1770302402e96",
+      "git_blob_sha": "9669468a5787e9e995353a98e8ba850aa4a59558",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_09.jpg",
+      "gallery_selected": true,
+      "bytes": 462447,
+      "sha256": "39b645cfa82609fadb3d45d3e0766109d2a532c2cdf5b4af584b52a8f2f894c7",
+      "git_blob_sha": "509f3044a04cca2fd6ec34ad35f58b5ae4794403",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_10.jpg",
+      "gallery_selected": true,
+      "bytes": 497394,
+      "sha256": "ccabff2299e378dfbec01e92f17621c6167b90b2beb5f226850569c3c2f1435c",
+      "git_blob_sha": "eb7b3a394ac44f0ac680b06dc683e75ab51fc577",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_11.jpg",
+      "gallery_selected": true,
+      "bytes": 511898,
+      "sha256": "713c946bcbf27dd401464defd0c3e7ef1589746a86e9ed754f3ef9e377d77b26",
+      "git_blob_sha": "4d8f8584ced63cd51a22f6f45181905e830a5ab9",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_12.jpg",
+      "gallery_selected": true,
+      "bytes": 443926,
+      "sha256": "2f2e692ade3cc7b99eea7c39e468d0fa3280f5467ff89e5efd36da7eabbae570",
+      "git_blob_sha": "67e88f1468bddca0ddc472aa290184da20915e3d",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_13.jpg",
+      "gallery_selected": false,
+      "bytes": 502506,
+      "sha256": "eb008674f3a7ed9734c3cc6e408abe4547efa7149a416912acd25549dd71c8ba",
+      "git_blob_sha": "5bf227f05145b86e6526dd41c26c07172debb343",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_14.jpg",
+      "gallery_selected": false,
+      "bytes": 478258,
+      "sha256": "9030d02adf7cdd27ea46cc27f896f2a35f761578fe6fa69590e5584c9e28ad8c",
+      "git_blob_sha": "988ce473d5d878ba8d3206f09d35af6459eef0f7",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_15.jpg",
+      "gallery_selected": false,
+      "bytes": 476990,
+      "sha256": "8b8085fff5016634c8ed9996f9682d08e74c0444eb3fa854bc4492036f499aff",
+      "git_blob_sha": "3e0137f53d03bfe8cf1fbe2bd1509a88664c2e69",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_16.jpg",
+      "gallery_selected": false,
+      "bytes": 447233,
+      "sha256": "d39ddf9e2156487b3b7d2da2594611dd5fec528c4cfd3fe6cdb09f5f236debc5",
+      "git_blob_sha": "7bbed555d2ad09bd7c5f85072d0d0bf298a213c9",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Logo_02.jpg",
+      "gallery_selected": false,
+      "bytes": 425423,
+      "sha256": "5c38ec646af4529273371a4dbb0b0cfc681f2ebfaada2510bde51f6199a93aee",
+      "git_blob_sha": "a6b6ca4e7379919a918fc04b33deab1d7119716c",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    }
+  ],
+  "original_facts": [
+    {
+      "filename": "Couch_Heroes_Enviro_01.jpg",
+      "gallery_selected": true,
+      "bytes": 443364,
+      "sha256": "dfab18669ebce5d5ab2deef97c135311c58bbc246c0d06c245612cce307dc189",
+      "git_blob_sha": "9a2dd70f45c455c84f6dc2acad6c0c70c4d97103",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_02.jpg",
+      "gallery_selected": true,
+      "bytes": 802174,
+      "sha256": "e2af7ddb0b932ef5660ab287256af5f90db87551137e7ef0d7f01bdbccdd4af0",
+      "git_blob_sha": "85d0e05a969078f5a698a1f79473c1fe994cfa35",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_03.jpg",
+      "gallery_selected": true,
+      "bytes": 649204,
+      "sha256": "3dfbc2ae5c38aff4317da7baf9f679c1c11efbca4361b2404ee85725c0f97b98",
+      "git_blob_sha": "559cca565635bde2d4caf8ea1e54520124a6f2a3",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_04.jpg",
+      "gallery_selected": true,
+      "bytes": 569910,
+      "sha256": "e35688e53dfadb27bd490ebd5a7cc720de951f08995bec443eeca2059c2aa7b9",
+      "git_blob_sha": "28e160d4e5ff7d31c8fe265b9ca4e2c52f4f9368",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_05.jpg",
+      "gallery_selected": true,
+      "bytes": 524244,
+      "sha256": "c8b4beabe14b9d8d2df2949a673202c6cc21c22dc0a1302460eadc7bd14be0e1",
+      "git_blob_sha": "7416aaccba54f19ac3b8e83fa3bf853fbde1fd2b",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_06.jpg",
+      "gallery_selected": true,
+      "bytes": 486874,
+      "sha256": "59760dccf5737130ba40c3de0083a01e849927d6a4132d65cf7cc0041d83f3d1",
+      "git_blob_sha": "1f3a5ef64211416aa476d1c3b027ca4ef38a9df2",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_07.jpg",
+      "gallery_selected": true,
+      "bytes": 487909,
+      "sha256": "8beda937a2cb534b9f3ae7d5217e86f95df946ee040a397786cb2a2ea4a3a37e",
+      "git_blob_sha": "e7dc385f9414b9e901fda1b3ccb350673c8b2ff3",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_08.jpg",
+      "gallery_selected": true,
+      "bytes": 470486,
+      "sha256": "e480c7ed92145c9da596b462d1a84250a8905b80d8e206b53bb1770302402e96",
+      "git_blob_sha": "9669468a5787e9e995353a98e8ba850aa4a59558",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_09.jpg",
+      "gallery_selected": true,
+      "bytes": 462447,
+      "sha256": "39b645cfa82609fadb3d45d3e0766109d2a532c2cdf5b4af584b52a8f2f894c7",
+      "git_blob_sha": "509f3044a04cca2fd6ec34ad35f58b5ae4794403",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_10.jpg",
+      "gallery_selected": true,
+      "bytes": 497394,
+      "sha256": "ccabff2299e378dfbec01e92f17621c6167b90b2beb5f226850569c3c2f1435c",
+      "git_blob_sha": "eb7b3a394ac44f0ac680b06dc683e75ab51fc577",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_11.jpg",
+      "gallery_selected": true,
+      "bytes": 511898,
+      "sha256": "713c946bcbf27dd401464defd0c3e7ef1589746a86e9ed754f3ef9e377d77b26",
+      "git_blob_sha": "4d8f8584ced63cd51a22f6f45181905e830a5ab9",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_12.jpg",
+      "gallery_selected": true,
+      "bytes": 443926,
+      "sha256": "2f2e692ade3cc7b99eea7c39e468d0fa3280f5467ff89e5efd36da7eabbae570",
+      "git_blob_sha": "67e88f1468bddca0ddc472aa290184da20915e3d",
+      "width": 2560,
+      "height": 1440,
+      "format": "JPEG",
+      "exif_orientation": 1
+    }
+  ],
+  "webp_facts": [
+    {
+      "filename": "Couch_Heroes_Enviro_01.webp",
+      "bytes": 197338,
+      "sha256": "554d7cb0a0e9bb29ed62b4b58cee12aabf880db3c973fa3e408d047c171357b3",
+      "git_blob_sha": "0fc503b123b3ab15c5b9f945b52d7afc0a8ebb14",
+      "width": 2560,
+      "height": 1440,
+      "format": "WEBP",
+      "exif_orientation": null
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_02.webp",
+      "bytes": 488088,
+      "sha256": "faf772dd7446e0be3114c6335daa8dfc5ff8a75e308d16fe6f8ceaeceef89ad9",
+      "git_blob_sha": "f487d3c16df01eb359334c9dd5972cf765c146e0",
+      "width": 2560,
+      "height": 1440,
+      "format": "WEBP",
+      "exif_orientation": null
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_03.webp",
+      "bytes": 359526,
+      "sha256": "2ba4eb86fbddc6351b53408f87a7a7d7ffde050a3465a9a695173de3c60e8657",
+      "git_blob_sha": "43bdc12a3a5021a9b1c8773bdc8fce5228d7aadb",
+      "width": 2560,
+      "height": 1440,
+      "format": "WEBP",
+      "exif_orientation": null
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_04.webp",
+      "bytes": 292504,
+      "sha256": "d2facbaef963c4910799c6281c1079dc8b5eee848f88c5f26c653950859440fe",
+      "git_blob_sha": "2997c14a72a74c356eea4a9a1e9b71a2cace7ca0",
+      "width": 2560,
+      "height": 1440,
+      "format": "WEBP",
+      "exif_orientation": null
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_05.webp",
+      "bytes": 263878,
+      "sha256": "0d396025030179399f5f155b12a6bfe76b088be9e1b1caa5adb58df2e07dbecd",
+      "git_blob_sha": "5d4f8155f33756d6045c98db701068b6c2f04913",
+      "width": 2560,
+      "height": 1440,
+      "format": "WEBP",
+      "exif_orientation": null
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_06.webp",
+      "bytes": 226404,
+      "sha256": "cdd111048cdfdf2435ac29a8868103caa913c63d2e9940f58e280f810f87c481",
+      "git_blob_sha": "c53c62b0d054ae7d051163942b9d854edf42ad20",
+      "width": 2560,
+      "height": 1440,
+      "format": "WEBP",
+      "exif_orientation": null
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_07.webp",
+      "bytes": 240932,
+      "sha256": "f9ff880dab8e1b90b1ae81ac5ef9cc86287eef80e7a3ad102ae2dc86f77779e6",
+      "git_blob_sha": "3178e727a3a008af21f5d3c3ef6408ea4b12ebe9",
+      "width": 2560,
+      "height": 1440,
+      "format": "WEBP",
+      "exif_orientation": null
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_08.webp",
+      "bytes": 217910,
+      "sha256": "f7b47ebe4b041bc36b2b91bf3351ad8c1086695064790454b43ae31924affcc1",
+      "git_blob_sha": "0813172c0cfb910dfe87317cd5cdab8d48fbb53a",
+      "width": 2560,
+      "height": 1440,
+      "format": "WEBP",
+      "exif_orientation": null
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_09.webp",
+      "bytes": 205826,
+      "sha256": "55d563f172d7c7f6442083c1c68b3f6951005a0ec2ff6ef69562a14ff149274b",
+      "git_blob_sha": "eb4c38150719f8da0748f70729df3c79fb388ce9",
+      "width": 2560,
+      "height": 1440,
+      "format": "WEBP",
+      "exif_orientation": null
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_10.webp",
+      "bytes": 228578,
+      "sha256": "aa18f6bd59fd2e3dfcebbb2d6be8489347d116f9e5ff80c8d9ae6e533afe6113",
+      "git_blob_sha": "7ca1044cacbfd4f7783e33938214e705d5be7167",
+      "width": 2560,
+      "height": 1440,
+      "format": "WEBP",
+      "exif_orientation": null
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_11.webp",
+      "bytes": 257086,
+      "sha256": "675c9ce9bc5cb6260a7bee5d3e93a5b7acf934f8b045713e7f7df40922d626de",
+      "git_blob_sha": "41d5142b828c5788fcad02ce2b861feed9309fea",
+      "width": 2560,
+      "height": 1440,
+      "format": "WEBP",
+      "exif_orientation": null
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_12.webp",
+      "bytes": 209750,
+      "sha256": "b16efbf15f272810776ce4cc02aa0f6805d2038397dd804a282fb767dd2e81cf",
+      "git_blob_sha": "98d4d330ac04a811635b18d5f32bb57a074cd2e2",
+      "width": 2560,
+      "height": 1440,
+      "format": "WEBP",
+      "exif_orientation": null
+    }
+  ],
+  "manifest": {
+    "bytes": 615,
+    "sha256": "a1281bdf91b3b44c2ae823e1ce0996bcd307c6e394d76c61feb6f5ed3c379528",
+    "git_blob_sha": "254d3d0865f35b4506a02d12e9654b67dcb6b1ca"
+  },
+  "pillow": "13.0.0",
+  "encoder": {
+    "pillow": "13.0.0",
+    "bounds": [
+      2560,
+      1440
+    ],
+    "quality": 92,
+    "method": 6,
+    "resampling": "LANCZOS",
+    "exif_transpose": true,
+    "icc": true
+  },
+  "artifacts": 37,
+  "elapsed_seconds": 9.858,
+  "checked_at_utc": "2026-11-20T09:26:58.858897+00:00",
+  "source_kind": "local-folder",
+  "all_originals_and_derivatives_fully_decoded": true,
+  "source_bytes_case_and_selection_preserved": true
+}

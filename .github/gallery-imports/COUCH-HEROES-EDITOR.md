@@ -1,0 +1,3 @@
+# Couch Heroes native acceptance
+
+PASS: actual native Gallery Editor v0.11 opened the full20-file image folder. It displayed Enviro01–12 as Included and the other8 files as Excluded. All12 selected previews rendered. Reorder/save/reopen/restore passed, with the canonical12-image manifest preserved and extra files still excluded. All20 scratch originals and all41 frozen stage files retained their bytes/hashes. Retained actual editor-save snapshots; restored canonical scratch manifest bytes. Closed only the owned editor window, preserving the existing user window. Capture cleanup is a required final root gate.

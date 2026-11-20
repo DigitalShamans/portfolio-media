@@ -1,0 +1,43 @@
+{
+  "source_kind": "local-folder",
+  "slug": "couch-heroes",
+  "title": "Couch Heroes - Environment Art",
+  "branch": "codex/couch-heroes-20261120",
+  "images": 12,
+  "archived_files": 20,
+  "not_published_files": [
+    "Couch_Heroes_Characters_01.jpg",
+    "Couch_Heroes_Characters_02.jpg",
+    "Couch_Heroes_Characters_03.jpg",
+    "Couch_Heroes_Enviro_13.jpg",
+    "Couch_Heroes_Enviro_14.jpg",
+    "Couch_Heroes_Enviro_15.jpg",
+    "Couch_Heroes_Enviro_16.jpg",
+    "Couch_Heroes_Logo_02.jpg"
+  ],
+  "captions": 0,
+  "embeds": 0,
+  "private": {
+    "status": "verified",
+    "source_commit": "454720d0815eb65d9990608252159bd5daaa5b4d",
+    "pr": 19,
+    "revision": "0e4a48b032a13ce0b07bbb2abc9a0fc9fc6bc91a",
+    "archived_files": 20,
+    "approved_selected": 12,
+    "unchanged_approval_groups": 23
+  },
+  "service": {
+    "status": "succeeded",
+    "source": "fc0753d1002c6e9747c85ff86cb0286f92a0a2bd",
+    "version": 22,
+    "saved_version": "appgprj_6afbf3a4aa2c81919821379c8fde09df~appgver_0eb44d8595448191a013beb2708e4a2e",
+    "deployment_id": "appgdep_6b0014efdc78819187e4dbfd4c819a0f",
+    "environment": 27,
+    "succeeded_at": "2026-11-20T11:38:05.014221+02:00",
+    "project_id": "appgprj_6afbf3a4aa2c81919821379c8fde09df",
+    "prior_catalogs": 18
+  },
+  "website": {
+    "status": "pending"
+  }
+}
