@@ -684,7 +684,8 @@
       onUpdate: () => animation.progress(playhead.progress),
       scrollTrigger: {
         id: 'artur-career-timeline',
-        scroller,
+        // ScrollSmoother's wrapper reports the rendered desktop position.
+        scroller: smoother ? smoother.wrapper() : scroller,
         trigger: track,
         start: normalStart,
         end,
