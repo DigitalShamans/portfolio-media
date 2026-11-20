@@ -1,6 +1,5 @@
 """Run the offline portfolio source checks shared by PRs and publication."""
 
-import ast
 import json
 from pathlib import Path
 import shlex
@@ -43,7 +42,7 @@ def main():
                            object_pairs_hook=unique_object, parse_constant=invalid_constant)
                 counts['JSON'] += 1
             elif path.suffix == '.py':
-                ast.parse((ROOT / path).read_text(encoding='utf-8-sig'), filename=str(path))
+                compile((ROOT / path).read_text(encoding='utf-8-sig'), str(path), 'exec')
                 counts['Python'] += 1
         except (OSError, ValueError, SyntaxError) as error:
             raise ValueError(f'{path}: {error}') from error

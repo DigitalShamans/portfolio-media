@@ -62,6 +62,7 @@ test('syntax failures anywhere in tracked JS, JSON or Python fail the shared che
     ['_data/example.json', '{"value":NaN}'],
     ['_data/example.json', '{broken json'],
     ['.github/scripts/broken.py', 'def broken(:\n'],
+    ['.github/scripts/broken.py', 'return\n'],
   ]) {
     const result = fixture(t, { [path]: content });
     assert.notEqual(result.status, 0, path);
