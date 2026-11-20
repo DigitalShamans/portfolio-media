@@ -1,7 +1,8 @@
 .career-page {
   --career-white: #f2f2f2;
   --career-layout-scale: 1;
-  --career-thumbnail-width: calc(140px * var(--career-layout-scale));
+  --career-thumbnail-scale: 1.2;
+  --career-thumbnail-width: calc(140px * var(--career-layout-scale) * var(--career-thumbnail-scale));
   background: #111;
 }
 @media (min-width: 64rem) {
@@ -203,7 +204,7 @@
 .career-copy { min-width: 0; }
 .career-copy--media {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 100px;
+  grid-template-columns: minmax(0, 1fr) calc(100px * var(--career-thumbnail-scale));
   align-items: start;
   gap: calc(.75rem * var(--career-layout-scale));
 }
@@ -218,6 +219,7 @@
 }
 .career-track--positioned:not(.career-track--narrow) .career-copy--media > .career-preview {
   flex: 0 0 var(--career-thumbnail-width);
+  max-inline-size: 100%;
 }
 .career-preview-stack { display: grid; gap: .75rem; min-width: 0; }
 .career-track--positioned:not(.career-track--narrow) #career-2015-rebellion .career-copy--media {
@@ -236,7 +238,7 @@
 .career-track--positioned:not(.career-track--narrow) #career-2004 .career-description { grid-column: 2; grid-row: 2; }
 .career-track--positioned:not(.career-track--narrow) #career-2004 .career-preview { grid-column: 1; grid-row: 1 / span 2; }
 .career-track--positioned:not(.career-track--narrow) #career-2004 .career-description { align-self: start; }
-@media (min-width: 960px) {
+@media (min-width: 1280px) {
   .career-track--positioned:not(.career-track--narrow) [data-year-layout="heading"] {
     display: grid;
     grid-template-columns: minmax(0, var(--career-thumbnail-width)) minmax(min-content, 1fr) max-content;
@@ -361,12 +363,11 @@
   gap: .4rem;
 }
 .career-track--narrow .career-description { overflow-wrap: anywhere; }
-.career-track--narrow .career-preview { width: var(--career-mobile-thumbnail-width); }
-.career-track--narrow.career-track--tight #career-2004 .career-preview { width: 112px; }
+.career-track--narrow .career-preview { width: calc(var(--career-mobile-thumbnail-width) * var(--career-thumbnail-scale)); }
+.career-track--narrow.career-track--tight #career-2004 .career-preview { width: calc(112px * var(--career-thumbnail-scale)); }
 .career-track--narrow #career-2015-rebellion .career-copy--media { grid-template-columns: minmax(0, 1fr); }
 .career-track--narrow .career-preview-stack {
-  /* Scale the previous three-column thumbnail width by the same 75%. */
-  grid-template-columns: calc((100% - 16px) / 3 * 1.75);
+  grid-template-columns: calc((100% - 16px) / 3 * 1.75 * var(--career-thumbnail-scale));
   gap: 8px;
 }
 .career-track--narrow .career-preview-stack .career-preview { width: 100%; }

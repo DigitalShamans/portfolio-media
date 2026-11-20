@@ -442,6 +442,7 @@
       const yearGutter = !narrow && entry.dataset.yearLayout === 'inline' ? 56 * scale : 0;
       const preferredWidth = narrow ? Math.min(above ? 260 : 300, width - 24) : Math.min(420 * scale, width * .36) + 40 * scale + yearGutter;
       entry.style.width = preferredWidth + 'px';
+      const headingOffset = above && !narrow ? entry.querySelector('.career-year').offsetLeft : 32 * scale;
       let top = above ? Math.max(0, point.y - entry.offsetHeight - 12 * scale) : point.y - 16 * scale;
       let left = 0, labelWidth = preferredWidth, labelHeight = entry.offsetHeight;
 
@@ -456,8 +457,7 @@
           maxX = Math.max(maxX, sample.x);
         }
         if (side === 'above') {
-          const headingOffset = narrow ? 32 : 164;
-          left = Math.max(0, Math.min(width - preferredWidth, point.x - headingOffset * scale));
+          left = Math.max(0, Math.min(width - preferredWidth, point.x - headingOffset));
         } else if (side === 'right') {
           left = maxX + 18 * scale;
           // The final card must clear its node while the camera follows the leftward tail.
