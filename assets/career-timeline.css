@@ -28,6 +28,7 @@
   block-size: 100lvh;
 }
 .career-shell {
+  position: relative;
   width: min(calc(100% - 3rem), calc(68.75rem * var(--career-layout-scale)));
   margin-inline: auto;
 }
@@ -304,6 +305,7 @@
 }
 .career-track--narrow .career-description { overflow-wrap: anywhere; }
 .career-track--narrow .career-preview { width: 88px; }
+.career-track--narrow.career-track--tight #career-2004 .career-preview { width: 64px; }
 .career-track--narrow #career-2015-rebellion .career-copy--media { grid-template-columns: minmax(0, 1fr); }
 .career-track--narrow .career-preview-stack { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .career-track--narrow .career-preview-stack .career-preview { width: 100%; }
@@ -353,6 +355,15 @@
   pointer-events: none;
 }
 .career-track--complete .career-ending { visibility: visible; opacity: 1; }
+.career-ending .career-contact {
+  position: absolute;
+  top: auto;
+  bottom: calc(var(--career-ending-footer-height, 0px) + var(--career-ending-outro-height, 0px) + 1rem);
+  left: 0;
+  width: 100%;
+  margin: 0;
+  pointer-events: auto;
+}
 .career-ending .career-outro {
   position: absolute;
   bottom: var(--career-ending-footer-height, 0px);
@@ -457,7 +468,8 @@
   .career-milestone, .career-year, .career-copy { opacity: 1 !important; transform: none !important; }
   .career-track .career-role, .career-track .career-projects { display: block; }
   .career-outro { padding-block: 1rem; }
-  .career-ending, .career-ending .career-outro, .career-ending .portfolio-footer {
+  .career-contact { position: static; width: auto; margin-top: 1rem; }
+  .career-ending, .career-ending .career-contact, .career-ending .career-outro, .career-ending .portfolio-footer {
     position: static; width: auto !important; height: auto !important;
     opacity: 1; visibility: visible; transform: none !important;
   }
