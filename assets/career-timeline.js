@@ -23,7 +23,7 @@
   const contact = document.querySelector('.career-contact');
   const outro = document.querySelector('.career-outro');
   const footer = document.querySelector('.portfolio-footer');
-  const network = document.querySelector('.career-network');
+  const backdrops = document.querySelector('.career-backdrops');
   const ending = document.createElement('div');
   ending.className = 'career-ending';
   const endingHomes = [contact, outro, footer].filter(Boolean).map(node => {
@@ -42,7 +42,6 @@
   let canAnimate = false;
   let animation;
   let scrollTween;
-  let networkFade;
   let milestoneReveals = [];
   let scrollCamera;
   let smoother;
@@ -162,11 +161,7 @@
 
   function reset() {
     scrollCamera = null;
-    if (networkFade) {
-      networkFade.revert();
-      networkFade = null;
-    }
-    network?.style.removeProperty('--career-network-clearance');
+    backdrops?.style.removeProperty('--career-backdrop-footer-space');
     if (scrollTween) {
       scrollTween.scrollTrigger.kill();
       scrollTween.kill();
@@ -577,9 +572,11 @@
       const endingBottom = endingTop + ending.offsetHeight;
       stageHeight = Math.max(largeViewport, points[0].y + endingBottom - lastPoint.y);
       minimumY = Math.min(0, stageHeight - endingBottom);
-      // The mobile ending places the footer inside the scene.
-      const networkClearance = (footer?.offsetHeight || 0) + Math.max(0, stageHeight - endingBottom);
-      network?.style.setProperty('--career-network-clearance', networkClearance + 'px');
+      // On mobile the footer moves into the scene, so clip the artwork above it.
+      if (backdrops && footer) {
+        const footerSpace = Math.ceil(footer.getBoundingClientRect().height + Math.max(0, stageHeight - endingBottom));
+        backdrops.style.setProperty('--career-backdrop-footer-space', footerSpace + 'px');
+      }
       followY = Math.min(viewport * .55, lastPoint.y + minimumY);
       mobileStops = frameMobileStops(points, labels, width, mobileLayout.anchor);
     }
@@ -653,18 +650,6 @@
         onUpdate: updateScrollCamera
       }
     });
-    if (network) {
-      networkFade = gsap.fromTo(network, { opacity: 0 }, {
-        opacity: 1,
-        ease: 'sine.inOut',
-        scrollTrigger: {
-          trigger: network,
-          start: 'top bottom',
-          end: 'bottom bottom',
-          scrub: true
-        }
-      });
-    }
     track.dataset.timelineState = 'animated';
     if (smoother) ScrollTrigger.refresh();
     else scrollTween.scrollTrigger.refresh();

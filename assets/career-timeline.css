@@ -34,20 +34,34 @@
 }
 #career-scroll-content { width: 100%; }
 
-.career-network-scene { position: relative; isolation: isolate; }
-.career-network {
+.career-scene { position: relative; isolation: isolate; }
+.career-backdrops {
   position: absolute;
   z-index: -1;
+  inset-block: 0 var(--career-backdrop-footer-space, 0px);
   inset-inline: 0;
-  inset-block-end: var(--career-network-clearance, 0px);
-  inline-size: 100%;
-  block-size: auto;
-  min-block-size: 20rem;
-  object-fit: cover;
-  object-position: center bottom;
+  overflow: hidden;
+  overflow: clip;
   pointer-events: none;
 }
-.career-network-scene .portfolio-footer { background-color: #111; }
+.career-backdrops > img {
+  position: absolute;
+  inset-inline: 0;
+  inline-size: 100%;
+  block-size: auto;
+  object-fit: cover;
+}
+.career-cellular {
+  inset-block-start: 0;
+  min-block-size: 12rem;
+  object-position: center top;
+}
+.career-network {
+  inset-block-end: -200px;
+  min-block-size: 20rem;
+  object-position: center bottom;
+}
+.career-scene .portfolio-footer { background-color: #111; }
 .career-intro {
   position: relative;
   padding-block: calc(1.25rem * var(--career-layout-scale)) calc(2.25rem * var(--career-layout-scale));
@@ -464,7 +478,7 @@
   .career-scroll-cue { transition: none; }
 }
 @media print {
-  .career-network, .career-scroll-cue { display: none; }
+  .career-backdrops, .career-scroll-cue { display: none; }
   .career-page, #career-scroll-wrapper, #career-scroll-content { height: auto !important; position: static !important; transform: none !important; overflow: visible !important; }
   .career-track { height: auto !important; }
   .career-track--slow .career-stage { position: static; height: auto; overflow: visible; transform: none !important; }
