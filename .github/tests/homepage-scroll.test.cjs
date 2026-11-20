@@ -200,96 +200,48 @@ test('zoom and horizontal trackpad gestures are never hijacked', () => {
 
 test('portfolio GSAP effects are scoped, scroll-safe and reduced-motion aware', () => {
   assert.match(layout, /recent-galleries-scroll\.js' \| relative_url }}\?v=2/);
-  assert.match(layout, /portfolio-effects\.js' \| relative_url }}\?v=3/);
+  assert.match(layout, /portfolio-effects\.js' \| relative_url }}\?v=4/);
   assert.match(layout, /vendor\/gsap\/3\.15\.1\/gsap\.min\.js/);
   assert.match(layout, /vendor\/gsap\/3\.15\.1\/ScrollTrigger\.min\.js/);
   assert.match(effects, /prefers-reduced-motion: reduce/);
-  assert.match(effects, /portfolio-home/);
   assert.match(effects, /\.portfolio-page \.portfolio-grid > li/);
   assert.match(effects, /ScrollTrigger\.batch\(cards/);
   assert.doesNotMatch(effects, /normalizeScroll\s*\(|preventDefault\s*\(/);
 });
 
-test('both homepages stagger the grid and studio parallax requires a fine pointer', () => {
-  const images = [{}, {}], cards = [{}, {}];
-  function inspect(studio, reduced = false, fine = true) {
-    const calls = { set: 0, quick: 0, created: 0, batched: 0, entered: 0 };
-    let bannerTop = 100;
-    let scale;
-    let shift;
-    let onBannerScroll;
-    const banners = images.map(img => ({
-      querySelector: () => img,
-      getBoundingClientRect: () => ({ top: bannerTop, height: 200 })
-    }));
+test('the shared grid reveal leaves the Recent Work banner artwork at its original framing', () => {
+  const cards = [{}, {}];
+  function inspect(reduced) {
+    let animated = 0;
     const gsap = {
       registerPlugin() {},
-      set(elements, options) {
-        calls.set++;
-        scale = options.scale;
-      },
-      quickSetter() {
-        return value => {
-          calls.quick++;
-          shift = value;
-        };
-      },
-      fromTo() { calls.entered++; }
+      fromTo(elements, from, to) {
+        assert.equal(elements, cards);
+        assert.equal(from.y, 18);
+        assert.equal(to.opacity, 1);
+        assert.equal(to.stagger, .07);
+        animated++;
+      }
     };
     const ScrollTrigger = {
-      create() { calls.created++; },
-      batch(entries, opts) { calls.batched++; assert.equal(entries.length, 2); opts.onEnter(cards); }
-    };
-    const region = {
-      querySelectorAll: () => banners,
-      getBoundingClientRect: () => ({ top: 0, bottom: 800 }),
-      addEventListener(event, handler) {
-        if (event === 'scroll') onBannerScroll = handler;
+      batch(elements, options) {
+        assert.deepEqual([...elements], cards);
+        options.onEnter(cards);
       }
     };
-    const win = {
-      gsap, ScrollTrigger, innerHeight: 1000,
-      requestAnimationFrame: fn => fn(),
-      addEventListener() {},
-      matchMedia: q => ({ matches: q.includes('reduced-motion') ? reduced : fine })
-    };
-    const doc = {
-      body: { classList: { contains: c => studio ? c === 'portfolio-home' : c === 'portfolio-page' } },
-      querySelector: q => q === '.portfolio-home .recent-galleries' ? region : null,
-      querySelectorAll: q => q === '.portfolio-page .portfolio-grid > li' ? cards : []
-    };
-    vm.runInNewContext(effects, { document: doc, window: win });
-    return {
-      ...calls, scale, shift,
-      moveBanner(top) {
-        bannerTop = top;
-        onBannerScroll();
-        return shift;
+    const document = {
+      querySelectorAll(selector) {
+        assert.equal(selector, '.portfolio-page .portfolio-grid > li');
+        return cards;
       }
     };
+    const window = {
+      gsap, ScrollTrigger,
+      matchMedia: query => ({ matches: query.includes('reduced-motion') && reduced })
+    };
+    vm.runInNewContext(effects, { document, window });
+    return animated;
   }
-  const studio = inspect(true);
-  assert.equal(studio.set, 1);
-  assert.equal(studio.quick, 2);
-  assert.equal(studio.created, 1);
-  assert.equal(studio.batched, 1);
-  assert.equal(studio.entered, 1);
-  assert.ok(studio.moveBanner(-50) - studio.shift >= 5,
-    'A 150px scroll should pan the artwork at least 5% of the banner height');
-  assert.equal(studio.moveBanner(100), studio.shift, 'Reverse scrolling restores the original position');
-  const maxShift = Math.max(Math.abs(studio.moveBanner(-200)), Math.abs(studio.moveBanner(850)));
-  assert.ok((studio.scale - 1) * 50 > maxShift, 'The artwork covers the frame throughout the pan');
-  const personal = inspect(false);
-  assert.equal(personal.set, 0);
-  assert.equal(personal.batched, 1);
-  assert.equal(personal.entered, 1);
-  const mobileStudio = inspect(true, false, false);
-  assert.equal(mobileStudio.set, 0);
-  assert.equal(mobileStudio.batched, 1);
-  assert.equal(mobileStudio.entered, 1);
-  for (const isStudio of [true, false]) {
-    const reduced = inspect(isStudio, true);
-    assert.equal(reduced.created, 0);
-    assert.equal(reduced.batched, 0);
-  }
+  assert.equal(inspect(false), 1);
+  assert.equal(inspect(true), 0);
 });

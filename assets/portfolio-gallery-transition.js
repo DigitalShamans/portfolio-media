@@ -1,10 +1,10 @@
 'use strict';
 
 (() => {
-  const homePath = '/artur/';
-  const galleryPath = /^\/artur\/galleries\/hb-[a-z0-9-]+\/$/;
+  const currentPath = window.location.pathname;
+  const galleryPath = /^(\/(?:artur\/)?)galleries\/hb-[a-z0-9-]+\/$/;
   const bannerList = '#recent-work .recent-galleries';
-  const transitionType = 'artur-gallery';
+  const transitionType = 'portfolio-gallery';
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   function localURL(href) {
@@ -13,15 +13,16 @@
     return url.origin === window.location.origin ? url : null;
   }
 
-  function isRecentGallery(url) {
-    return url && galleryPath.test(url.pathname) && !url.search && !url.hash;
+  function recentGalleryHome(url) {
+    if (!url || url.search || url.hash) return null;
+    return galleryPath.exec(url.pathname)?.[1] ?? null;
   }
 
-  if (window.location.pathname === homePath) {
+  if (currentPath === '/' || currentPath === '/artur/') {
     window.addEventListener('pageswap', ({ activation, viewTransition }) => {
       if (!viewTransition) return;
       if (activation?.navigationType === 'push' &&
-          isRecentGallery(localURL(activation.entry?.url)) && !reducedMotion.matches) {
+          recentGalleryHome(localURL(activation.entry?.url)) === currentPath && !reducedMotion.matches) {
         viewTransition.types?.add(transitionType);
       } else {
         viewTransition.skipTransition();
@@ -35,7 +36,7 @@
           event.shiftKey || event.altKey) return;
       const link = event.target.closest?.(bannerList + ' a.recent-gallery');
       if (!link || (link.target && link.target !== '_self') || link.hasAttribute('download') ||
-          !isRecentGallery(localURL(link.href))) return;
+          recentGalleryHome(localURL(link.href)) !== currentPath) return;
       const scrollTop = link.closest(bannerList).scrollTop;
       try {
         window.history.replaceState({
@@ -56,6 +57,9 @@
     return;
   }
 
+  const homePath = recentGalleryHome(localURL(window.location.href));
+  if (!homePath) return;
+
   function fromPortfolio() {
     const activation = window.navigation?.activation;
     const from = localURL(activation?.from?.url ?? document.referrer);
@@ -65,7 +69,6 @@
     return newVisit && from?.pathname === homePath;
   }
 
-  if (!isRecentGallery(localURL(window.location.href))) return;
   // Keep the first screenshot prioritised and disarm any stationary edge pointer.
   if (fromPortfolio()) window.__galleryDesktopEdgeArrived = true;
 

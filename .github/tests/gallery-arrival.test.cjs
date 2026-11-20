@@ -224,9 +224,9 @@ const portfolioTransition = fs.readFileSync(path.join(root, 'assets/portfolio-ga
 const portfolioLayout = fs.readFileSync(path.join(root, '_layouts/portfolio.html'), 'utf8');
 const portfolioStyles = fs.readFileSync(path.join(root, 'assets/portfolio-gallery-transition.css'), 'utf8');
 const portfolioOrigin = 'https://digitalshamans.co.uk';
+const studioHome = portfolioOrigin + '/';
 const portfolioHome = portfolioOrigin + '/artur/';
 const portfolioGallery = portfolioHome + 'galleries/hb-helipad/';
-const passwordGate = portfolioHome + 'galleries/hb-rzstart/';
 
 function nativeTransition() {
   const types = new Set();
@@ -243,7 +243,7 @@ function portfolioBrowser({ href = portfolioHome, from = '', navType = 'push',
   const windowEvents = {}, documentEvents = {};
   const region = { scrollTop };
   const link = {
-    href: portfolioGallery, target: '', closest: () => region, hasAttribute: () => false
+    href: new URL('galleries/hb-helipad/', href).href, target: '', closest: () => region, hasAttribute: () => false
   };
   const document = {
     referrer: from,
@@ -284,22 +284,30 @@ function portfolioBrowser({ href = portfolioHome, from = '', navType = 'push',
   };
 }
 
-test('only a forward move from Artur’s homepage to a recent gallery uses the gallery reveal', () => {
-  const home = portfolioBrowser();
-  for (const href of [portfolioGallery, passwordGate]) {
-    const outgoing = home.swap(href);
-    const incoming = portfolioBrowser({ href, from: portfolioHome });
-    assert.deepEqual([...outgoing.types], ['artur-gallery']);
-    assert.equal(outgoing.skipped, false);
-    assert.equal(incoming.window.__galleryDesktopEdgeArrived, true);
-    assert.deepEqual([...incoming.reveal().types], ['artur-gallery']);
+test('both homepages reveal their own Recent Work galleries on forward navigation', () => {
+  for (const [homeURL, otherHome] of [[studioHome, portfolioHome], [portfolioHome, studioHome]]) {
+    const home = portfolioBrowser({ href: homeURL });
+    for (const folder of ['hb-helipad', 'hb-rzstart']) {
+      const href = homeURL + 'galleries/' + folder + '/';
+      const outgoing = home.swap(href);
+      const incoming = portfolioBrowser({ href, from: homeURL });
+      assert.deepEqual([...outgoing.types], ['portfolio-gallery']);
+      assert.equal(outgoing.skipped, false);
+      assert.equal(incoming.window.__galleryDesktopEdgeArrived, true);
+      assert.deepEqual([...incoming.reveal().types], ['portfolio-gallery']);
+
+      assert.equal(home.swap(otherHome + 'galleries/' + folder + '/').skipped, true);
+      const crossed = portfolioBrowser({ href, from: otherHome });
+      assert.deepEqual([...crossed.reveal().types], []);
+      assert.equal(crossed.window.__galleryDesktopEdgeArrived, undefined);
+    }
+    const galleryURL = homeURL + 'galleries/hb-helipad/';
+    assert.equal(home.swap(galleryURL, 'traverse').skipped, true);
+    assert.equal(home.swap(galleryURL + '?test=1').skipped, true);
+    assert.equal(home.swap(homeURL + 'galleries/vehicles-aircrafts/').skipped, true);
+    assert.equal(home.swap(galleryURL.replace(portfolioOrigin, 'https://example.org')).skipped, true);
+    assert.equal(home.reveal().skipped, true);
   }
-  assert.equal(home.swap(portfolioGallery, 'traverse').skipped, true);
-  assert.equal(home.swap(portfolioGallery + '?test=1').skipped, true);
-  assert.equal(home.swap(portfolioHome + 'galleries/vehicles-aircrafts/').skipped, true);
-  assert.equal(home.swap(portfolioOrigin + '/galleries/hb-helipad/').skipped, true);
-  assert.equal(home.swap('https://example.org/artur/galleries/hb-helipad/').skipped, true);
-  assert.equal(home.reveal().skipped, true);
 });
 
 test('direct visits, reloads, and movement between galleries retain their original behaviour', () => {
@@ -328,20 +336,22 @@ test('reduced motion and browsers without navigation activation can still open a
 });
 
 test('a plain or keyboard banner click preserves Back’s nested scroll position without intercepting navigation', () => {
-  const home = portfolioBrowser({ scrollTop: 320, historyState: { existing: true } });
-  home.click({ detail: 0 });
-  const historyState = home.window.history.state;
-  assert.equal(historyState.portfolioRecentWorkScrollTop, 320);
-  assert.equal(historyState.existing, true);
-  home.region.scrollTop = 0;
-  home.shown(true);
-  assert.equal(home.region.scrollTop, 320);
-  const visitedAgain = portfolioBrowser({ historyState, timingType: 'back_forward' });
-  visitedAgain.shown(false);
-  assert.equal(visitedAgain.region.scrollTop, 320);
-  const refreshed = portfolioBrowser({ historyState, timingType: 'reload' });
-  refreshed.shown(false);
-  assert.equal(refreshed.region.scrollTop, 0);
+  for (const href of [studioHome, portfolioHome]) {
+    const home = portfolioBrowser({ href, scrollTop: 320, historyState: { existing: true } });
+    home.click({ detail: 0 });
+    const historyState = home.window.history.state;
+    assert.equal(historyState.portfolioRecentWorkScrollTop, 320);
+    assert.equal(historyState.existing, true);
+    home.region.scrollTop = 0;
+    home.shown(true);
+    assert.equal(home.region.scrollTop, 320);
+    const visitedAgain = portfolioBrowser({ href, historyState, timingType: 'back_forward' });
+    visitedAgain.shown(false);
+    assert.equal(visitedAgain.region.scrollTop, 320);
+    const refreshed = portfolioBrowser({ href, historyState, timingType: 'reload' });
+    refreshed.shown(false);
+    assert.equal(refreshed.region.scrollTop, 0);
+  }
 });
 
 test('modified clicks, downloads and new tabs do not overwrite scroll history', () => {
@@ -362,17 +372,17 @@ test('modified clicks, downloads and new tabs do not overwrite scroll history', 
 
 test('the browser reveals the gallery snapshot without replaying or blending the banner', () => {
   assert.match(portfolioStyles, /@view-transition\s*\{\s*navigation:\s*auto/);
-  assert.match(portfolioStyles, /:active-view-transition-type\(artur-gallery\)::view-transition-new\(root\)\s*\{[^}]*artur-gallery-reveal[^}]*mix-blend-mode: normal/);
-  assert.match(portfolioStyles, /@keyframes artur-gallery-reveal\s*\{\s*from \{ clip-path: inset\(0 0 100% 0\); \}\s*to \{ clip-path: inset\(0\); \}/);
+  assert.match(portfolioStyles, /:active-view-transition-type\(portfolio-gallery\)::view-transition-new\(root\)\s*\{[^}]*portfolio-gallery-reveal\s+360ms[^}]*mix-blend-mode: normal/);
+  assert.match(portfolioStyles, /@keyframes portfolio-gallery-reveal\s*\{\s*from \{ clip-path: inset\(0 0 100% 0\); \}\s*to \{ clip-path: inset\(0\); \}/);
   assert.doesNotMatch(portfolioTransition, /createElement|\.preventDefault\(|location\.assign|setTimeout/);
 });
 
 test('the real home and recent gallery pages register the reveal before first paint', () => {
-  assert.match(portfolioLayout, /page\.url == site\.data\.personal_portfolio\.home and page\.font_preview == nil[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=5"><\/script>/);
+  assert.match(portfolioLayout, /page\.font_preview == nil %\}[\s\S]*?page\.url == '\/' or page\.url == site\.data\.personal_portfolio\.home[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=6"><\/script>/);
   assert.match(portfolioLayout, /recent-galleries-scroll\.js' \| relative_url }}\?v=2/);
   for (const [layout, readyId] of [[layouts[0], 'portfolio-gallery-ready'], [layouts[1], 'access-message']]) {
     const head = layout.split('</head>')[0];
-    assert.match(head, /portfolio-gallery-transition\.js' \| relative_url }}\?v=5"><\/script>/);
+    assert.match(head, /portfolio-gallery-transition\.js' \| relative_url }}\?v=6"><\/script>/);
     assert.ok(head.includes('href="{{ page.url | relative_url }}#' + readyId + '" blocking="render"'));
     assert.ok(layout.includes('id="' + readyId + '"'));
   }
