@@ -222,13 +222,20 @@ test('Chrome swaps identical covered snapshots with no browser crossfade or move
 
 const portfolioTransition = fs.readFileSync(path.join(root, 'assets/portfolio-gallery-transition.js'), 'utf8');
 const portfolioLayout = fs.readFileSync(path.join(root, '_layouts/portfolio.html'), 'utf8');
+const portfolioStyles = fs.readFileSync(path.join(root, 'assets/portfolio-gallery-transition.css'), 'utf8');
 const portfolioOrigin = 'https://digitalshamans.co.uk';
 const portfolioGalleryPath = '/artur/galleries/hb-atrium/';
 const portfolioBannerPath = '/projects/hb-atrium/hb_atrium_header_400.jpg?v=artwork';
 const portfolioArrivalKey = 'portfolio-gallery-arrival';
+const bannerBox = { top: 20, left: 50, width: 1100, height: 220 };
+const bannerInset = [50, 0, 0, 0];
+const galleryMarker = overrides => ({
+  pathname: portfolioGalleryPath, at: 2400, banner: portfolioBannerPath,
+  box: bannerBox, inset: bannerInset, ...overrides
+});
 
 function portfolioBrowser({ incoming = false, pathname = incoming ? portfolioGalleryPath : '/artur/',
-    marker, reduced = false, gate = false, galleryReady, stored = new Map(), zoom = 1,
+    marker, reduced = false, gate = false, galleryReady, shot, stored = new Map(), zoom = 1,
     scrollTop = 0, historyState = null, navigationType = 'navigate' } = {}) {
   const windowEvents = {}, documentEvents = {}, clickEvents = {}, timers = new Map();
   const navigations = [], tweens = [];
@@ -244,7 +251,12 @@ function portfolioBrowser({ incoming = false, pathname = incoming ? portfolioGal
         remove: value => classes.delete(value),
         contains: value => classes.has(value)
       },
-      append(child) { child.parent = node; node.children.push(child); },
+      append(...children) {
+        for (const child of children) {
+          child.parent = node;
+          node.children.push(child);
+        }
+      },
       remove() {
         if (!node.parent) return;
         node.parent.children.splice(node.parent.children.indexOf(node), 1);
@@ -275,7 +287,7 @@ function portfolioBrowser({ incoming = false, pathname = incoming ? portfolioGal
     body, documentElement: { clientWidth: 1200 }, createElement: element,
     currentScript: { hasAttribute: name => incoming && name === 'data-gallery-arrival' },
     querySelector: selector => selector === '#recent-work .recent-galleries' && !incoming
-      ? region : selector === '#gallery-access' && gate ? {} : null,
+      ? region : selector === '#gallery-access' && gate ? {} : selector === '.gallery .shot-primary' ? shot : null,
     addEventListener(type, callback) { documentEvents[type] = callback; }
   };
   const window = {
@@ -309,6 +321,7 @@ function portfolioBrowser({ incoming = false, pathname = incoming ? portfolioGal
   return {
     window, stored, navigations, tweens, banner, link, region,
     get cover() { return body.children[0]; },
+    get frame() { return body.children[0]?.children[1]; },
     click(overrides = {}) {
       let prevented = false;
       clickEvents.click({
@@ -323,23 +336,27 @@ function portfolioBrowser({ incoming = false, pathname = incoming ? portfolioGal
   };
 }
 
-test('a plain or keyboard banner click expands the selected art and hands it to the gallery', () => {
+test('a plain or keyboard banner click carries the original position through navigation', () => {
   const b = portfolioBrowser();
   assert.equal(b.click({ detail: 0 }), true);
   assert.equal(b.click(), true, 'a repeated click does not start a new transition');
-  assert.equal(b.tweens.length, 2);
+  assert.equal(b.tweens.length, 1);
+  assert.equal(b.tweens[0].node.className, 'portfolio-gallery-transition__backdrop');
+  assert.equal(b.tweens[0].props.opacity, 1);
+  assert.equal('backgroundColor' in b.tweens[0].props, false);
+  assert.match(portfolioStyles, /.portfolio-gallery-transition__backdrop[^}]*background: #121212/s);
   assert.equal(b.cover['aria-hidden'], 'true');
-  assert.equal(b.cover.children[0].style.clipPath, 'inset(50px 0px 0px 0px)');
-  assert.equal(b.cover.children[0].children[0].src, portfolioOrigin + portfolioBannerPath);
+  assert.equal(b.frame.style.clipPath, 'inset(50px 0px 0px 0px)');
+  assert.equal(b.frame.children[0].src, portfolioOrigin + portfolioBannerPath);
   assert.equal(b.stored.has(portfolioArrivalKey), false);
   b.shown(false);
   assert.ok(b.cover, 'the initial pageshow does not interrupt a click during loading');
   b.finish();
-  b.timeout(500);
+  b.timeout(250);
   assert.deepEqual(b.navigations, [portfolioOrigin + portfolioGalleryPath]);
-  assert.deepEqual(JSON.parse(b.stored.get(portfolioArrivalKey)), {
-    pathname: portfolioGalleryPath, banner: portfolioOrigin + portfolioBannerPath, at: 2500
-  });
+  assert.deepEqual(JSON.parse(b.stored.get(portfolioArrivalKey)), galleryMarker({
+    banner: portfolioOrigin + portfolioBannerPath, at: 2500
+  }));
   b.shown(true);
   assert.equal(b.cover, undefined);
   assert.equal(b.banner.classList.contains('portfolio-gallery-transition-source'), false);
@@ -380,7 +397,7 @@ test('ordinary link behavior is preserved for new tabs, reduced motion, zoom, an
   assert.equal(portfolioBrowser({ zoom: 2 }).click(), false);
 });
 
-test('the matching gallery shows the same art until the first screenshot is ready', async () => {
+test('gallery arrival moves straight to the real screenshot while the image is loading', async () => {
   const firstReady = deferred();
   const image = {
     naturalWidth: 2560,
@@ -388,20 +405,28 @@ test('the matching gallery shows the same art until the first screenshot is read
     getBoundingClientRect: () => ({ top: 160, left: 60, width: 1080, height: 607.5, bottom: 767.5 })
   };
   const b = portfolioBrowser({
-    incoming: true, marker: { pathname: portfolioGalleryPath, at: 2400, banner: portfolioBannerPath },
+    incoming: true, marker: galleryMarker(), shot: image,
     galleryReady: () => Promise.resolve({ firstReady: firstReady.promise, items: [{ image }] })
   });
   assert.equal(b.stored.has(portfolioArrivalKey), false);
   assert.equal(b.window.__galleryDesktopEdgeArrived, true);
-  assert.equal(b.cover.children[0].children[0].src, portfolioOrigin + portfolioBannerPath);
+  assert.equal(b.frame.children[0].src, portfolioOrigin + portfolioBannerPath);
+  assert.equal(b.frame.style.top, '20px');
+  assert.equal(b.frame.style.height, '220px');
+  assert.equal(b.frame.style.clipPath, 'inset(50px 0px 0px 0px)');
   const loaded = b.loaded();
   await Promise.resolve();
+  assert.equal(b.cover.classList.contains('portfolio-gallery-transition--moving'), true);
+  assert.equal(b.frame.style.left, '60px');
+  assert.equal(b.frame.style.top, '355.75px');
+  assert.equal(b.frame.style.width, '1080px');
+  assert.equal(b.frame.style.height, '216px');
   assert.equal(b.cover.classList.contains('portfolio-gallery-transition--leaving'), false);
   firstReady.resolve(true);
+  b.timeout(180);
   await loaded;
-  assert.equal(b.cover.children[0].style.top, '160px');
   assert.equal(b.cover.classList.contains('portfolio-gallery-transition--leaving'), true);
-  b.timeout(360);
+  b.timeout(300);
   assert.equal(b.cover, undefined);
 });
 
@@ -409,16 +434,16 @@ test('RZ Start reveals its password gate using only the public banner', async ()
   const pathname = '/artur/galleries/hb-rzstart/';
   const banner = '/projects/hb-rzstart/hb_rzstart_header_400.jpg';
   const b = portfolioBrowser({
-    incoming: true, gate: true, pathname, marker: { pathname, banner, at: 2400 },
+    incoming: true, gate: true, pathname, marker: galleryMarker({ pathname, banner }),
     galleryReady: () => assert.fail('A password gate must not wait for private gallery images')
   });
-  assert.equal(b.cover.children[0].children[0].src, portfolioOrigin + banner);
+  assert.equal(b.frame.children[0].src, portfolioOrigin + banner);
   await b.loaded();
   assert.equal(b.cover.classList.contains('portfolio-gallery-transition--leaving'), true);
 });
 
 test('direct visits, unrelated homepages, and expired or invalid arrival markers use the normal gallery', () => {
-  const marker = { pathname: portfolioGalleryPath, at: 2400, banner: portfolioBannerPath };
+  const marker = galleryMarker();
   assert.equal(portfolioBrowser({ incoming: true }).cover, undefined);
   assert.equal(portfolioBrowser({ incoming: true, marker, reduced: true }).cover, undefined);
   assert.equal(portfolioBrowser({ incoming: true, marker: { ...marker, pathname: '/galleries/hb-atrium/' } }).cover, undefined);
@@ -426,21 +451,22 @@ test('direct visits, unrelated homepages, and expired or invalid arrival markers
   assert.equal(portfolioBrowser({ incoming: true, marker: { ...marker, banner: '/projects/hb-egypt/banner.jpg' } }).cover, undefined);
   assert.equal(portfolioBrowser({ incoming: true, marker: { ...marker, at: -8000 } }).cover, undefined);
   assert.equal(portfolioBrowser({ incoming: true, marker: { ...marker, at: 15000 } }).cover, undefined);
+  assert.equal(portfolioBrowser({ incoming: true, marker: { ...marker, box: { width: 0 } } }).cover, undefined);
 });
 
 test('a slow gallery cannot hold the banner cover past its timeout', () => {
   const b = portfolioBrowser({
-    incoming: true, marker: { pathname: portfolioGalleryPath, at: 2400, banner: portfolioBannerPath }
+    incoming: true, marker: galleryMarker()
   });
-  b.timeout(2200);
+  b.timeout(2000);
   assert.equal(b.cover.classList.contains('portfolio-gallery-transition--leaving'), true);
-  b.timeout(360);
+  b.timeout(300);
   assert.equal(b.cover, undefined);
 });
 
 test('the real Artur homepage and its recent galleries load the transition and the shared wheel scroll', () => {
-  assert.match(portfolioLayout, /page\.url == site\.data\.personal_portfolio\.home and page\.font_preview == nil[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=2" defer/);
+  assert.match(portfolioLayout, /page\.url == site\.data\.personal_portfolio\.home and page\.font_preview == nil[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=3" defer/);
   assert.match(portfolioLayout, /recent-galleries-scroll\.js' \| relative_url }}\?v=2/);
-  assert.match(layouts[0], /page\.portfolio == 'personal' and recent_gallery[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=2" data-gallery-arrival/);
-  assert.match(layouts[1], /page\.portfolio == 'personal'[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=2" data-gallery-arrival/);
+  assert.match(layouts[0], /page\.portfolio == 'personal' and recent_gallery[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=3" data-gallery-arrival/);
+  assert.match(layouts[1], /page\.portfolio == 'personal'[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=3" data-gallery-arrival/);
 });

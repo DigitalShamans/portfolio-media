@@ -4,7 +4,6 @@
   const key = 'portfolio-gallery-arrival';
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const galleryPath = /^\/artur\/galleries\/(hb-[a-z0-9-]+)\/$/;
-  const coverColor = '#121212';
 
   function bannerURL(pathname, source) {
     const folder = galleryPath.exec(pathname)?.[1];
@@ -22,26 +21,31 @@
     const cover = document.createElement('div');
     cover.className = 'portfolio-gallery-transition';
     cover.setAttribute('aria-hidden', 'true');
+    const backdrop = document.createElement('div');
+    backdrop.className = 'portfolio-gallery-transition__backdrop';
     const frame = document.createElement('div');
     frame.className = 'portfolio-gallery-transition__frame';
     const image = document.createElement('img');
     image.alt = '';
     image.src = url;
     frame.append(image);
-    cover.append(frame);
-    return { cover, frame };
-  }
-
-  function handoffBox() {
-    const viewportWidth = document.documentElement.clientWidth;
-    const viewportHeight = window.innerHeight;
-    const width = Math.min(viewportWidth * .90, viewportHeight * 1.32, 1680);
-    const height = width * 9 / 16;
-    return { left: (viewportWidth - width) / 2, top: (viewportHeight - height) / 2, width, height };
+    cover.append(backdrop, frame);
+    return { cover, backdrop, frame };
   }
 
   function place(frame, { left, top, width, height }) {
     Object.assign(frame.style, { left: left + 'px', top: top + 'px', width: width + 'px', height: height + 'px' });
+  }
+
+  function hasBannerPosition(box, inset) {
+    return box && [box.left, box.top, box.width, box.height].every(Number.isFinite) &&
+      Array.isArray(inset) && inset.length === 4 &&
+      inset.every(value => Number.isFinite(value) && value >= 0) &&
+      box.width - inset[1] - inset[3] >= 2 && box.height - inset[0] - inset[2] >= 2;
+  }
+
+  function clip(frame, inset) {
+    frame.style.clipPath = 'inset(' + inset.map(value => value + 'px').join(' ') + ')';
   }
 
   function arrive() {
@@ -55,47 +59,58 @@
     if (!marker || marker.pathname !== window.location.pathname || reducedMotion.matches ||
         !Number.isFinite(marker.at) || now < marker.at || now - marker.at > 10000) return;
     const url = bannerURL(marker.pathname, marker.banner);
-    if (!url) return;
+    if (!url || !hasBannerPosition(marker.box, marker.inset)) return;
 
     // The gallery already uses this signal to prioritise its first image
     // and avoid triggering an edge slide under the pointer on arrival.
     window.__galleryDesktopEdgeArrived = true;
     try { window.sessionStorage.removeItem('gallery-desktop-edge-arrival'); } catch {}
     const { cover, frame } = createCover(url);
-    place(frame, handoffBox());
+    place(frame, marker.box);
+    clip(frame, marker.inset);
     document.body.append(cover);
 
     let leaving = false;
-    const deadline = window.setTimeout(reveal, 2200);
-    function reveal(image) {
+    const deadline = window.setTimeout(reveal, 2000);
+    function reveal() {
       if (leaving) return;
       leaving = true;
       window.clearTimeout(deadline);
-      const box = image?.getBoundingClientRect();
       cover.classList.add('portfolio-gallery-transition--leaving');
-      if (box?.width > 0 && box.height > 0 && box.bottom > 0 && box.top < window.innerHeight) place(frame, box);
       cover.addEventListener('transitionend', event => {
         if (event.target === cover && event.propertyName === 'opacity') cover.remove();
       });
-      window.setTimeout(() => cover.remove(), 360);
+      window.setTimeout(() => cover.remove(), 300);
     }
 
     window.addEventListener('pagehide', () => cover.remove(), { once: true });
     document.addEventListener('DOMContentLoaded', async () => {
-      let image;
+      // Paint the banner in its original position before moving to the real image slot.
+      await new Promise(resolve => window.requestAnimationFrame(() => window.requestAnimationFrame(resolve)));
+      if (leaving) return;
+
+      const shot = document.querySelector('.gallery .shot-primary')?.getBoundingClientRect();
+      cover.classList.add('portfolio-gallery-transition--moving');
+      if (shot?.width > 0 && shot.height > 0) {
+        // Keep the banner's original aspect ratio while it moves into the gallery.
+        const height = shot.width * marker.box.height / marker.box.width;
+        place(frame, { left: shot.left, top: shot.top + (shot.height - height) / 2, width: shot.width, height });
+        clip(frame, [0, 0, 0, 0]);
+      }
+      if (document.querySelector('#gallery-access')) {
+        reveal();
+        return;
+      }
+
+      const timeToMove = new Promise(resolve => window.setTimeout(resolve, 180));
       try {
-        if (!document.querySelector('#gallery-access')) {
-          const gallery = await window.GalleryViewer?.ready;
-          await gallery?.firstReady;
-          const first = gallery?.items?.[0]?.image;
-          if (first?.naturalWidth) {
-            await first.decode?.().catch(() => {});
-            image = first;
-          }
-        }
+        const gallery = await window.GalleryViewer?.ready;
+        await gallery?.firstReady;
+        const first = gallery?.items?.[0]?.image;
+        if (first?.naturalWidth) await first.decode?.().catch(() => {});
       } catch { /* Reveal the destination even if gallery loading fails. */ }
-      // Let the incoming cover paint even when the first image is cached.
-      window.requestAnimationFrame(() => window.requestAnimationFrame(() => reveal(image)));
+      await timeToMove;
+      reveal();
     }, { once: true });
   }
 
@@ -152,12 +167,11 @@
 
       event.preventDefault();
       if (active) return;
-      const { cover, frame } = createCover(url);
-      const target = handoffBox();
+      const { cover, backdrop, frame } = createCover(url);
       const inset = [top - box.top, box.right - right, box.bottom - bottom, left - box.left];
-      frame.style.clipPath = 'inset(' + inset.map(value => value + 'px').join(' ') + ')';
-      cover.style.backgroundColor = 'transparent';
       place(frame, box);
+      clip(frame, inset);
+      backdrop.style.opacity = '0';
       document.body.append(cover);
       source.classList.add('portfolio-gallery-transition-source');
       const transition = { cover, source, scrollTop: region.scrollTop, navigating: false };
@@ -168,10 +182,12 @@
         transition.navigating = true;
         window.clearTimeout(transition.timer);
         transition.animation?.kill();
-        place(frame, target);
-        frame.style.clipPath = '';
-        cover.style.backgroundColor = coverColor;
-        const marker = JSON.stringify({ pathname: destination.pathname, banner: url, at: Date.now() });
+        backdrop.style.opacity = '1';
+        const { left, top, width, height } = box;
+        const marker = JSON.stringify({
+          pathname: destination.pathname, banner: url, at: Date.now(),
+          box: { left, top, width, height }, inset
+        });
         try {
           window.sessionStorage.setItem(key, marker);
           transition.marker = marker;
@@ -186,10 +202,9 @@
         window.location.assign(destination.href);
       }
 
-      transition.timer = window.setTimeout(navigate, 500);
+      transition.timer = window.setTimeout(navigate, 250);
       transition.animation = window.gsap.timeline({ onComplete: navigate });
-      transition.animation.to(cover, { backgroundColor: coverColor, duration: .34, ease: 'power1.out' }, 0)
-        .to(frame, { ...target, clipPath: 'inset(0px 0px 0px 0px)', duration: .34, ease: 'power2.inOut' }, 0);
+      transition.animation.to(backdrop, { opacity: 1, duration: .14, ease: 'power1.out' });
     });
   }
 
