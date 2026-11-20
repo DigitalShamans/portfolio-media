@@ -42,7 +42,7 @@
 </head>
 <body data-gallery-revision="{{ site.github.build_revision | escape }}"{% if gallery_asset_versions %} data-gallery-asset-versions="{{ gallery_asset_versions | jsonify | escape }}"{% endif %}>
   {% if page.portfolio == 'personal' and recent_gallery %}
-    <script src="{{ '/assets/portfolio-gallery-transition.js' | relative_url }}?v=1" data-gallery-arrival></script>
+    <script src="{{ '/assets/portfolio-gallery-transition.js' | relative_url }}?v=2" data-gallery-arrival></script>
   {% endif %}
   <div id="gallery-edge-arrival"><script src="../gallery-arrival.js?v=3"></script></div>
   {% include site-header.html %}

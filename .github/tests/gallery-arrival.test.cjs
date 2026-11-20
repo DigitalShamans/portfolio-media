@@ -228,7 +228,8 @@ const portfolioBannerPath = '/projects/hb-atrium/hb_atrium_header_400.jpg?v=artw
 const portfolioArrivalKey = 'portfolio-gallery-arrival';
 
 function portfolioBrowser({ incoming = false, pathname = incoming ? portfolioGalleryPath : '/artur/',
-    marker, reduced = false, gate = false, galleryReady, stored = new Map(), zoom = 1 } = {}) {
+    marker, reduced = false, gate = false, galleryReady, stored = new Map(), zoom = 1,
+    scrollTop = 0, historyState = null, navigationType = 'navigate' } = {}) {
   const windowEvents = {}, documentEvents = {}, clickEvents = {}, timers = new Map();
   const navigations = [], tweens = [];
   let timelineDone;
@@ -261,6 +262,7 @@ function portfolioBrowser({ incoming = false, pathname = incoming ? portfolioGal
     getBoundingClientRect: () => ({ top: 20, left: 50, bottom: 240, right: 1150, width: 1100, height: 220 })
   };
   const region = {
+    scrollTop,
     addEventListener(type, callback) { clickEvents[type] = callback; },
     getBoundingClientRect: () => ({ top: 70, left: 50, bottom: 900, right: 1150 })
   };
@@ -280,6 +282,11 @@ function portfolioBrowser({ incoming = false, pathname = incoming ? portfolioGal
     location: { origin: portfolioOrigin, pathname, href: portfolioOrigin + pathname,
       assign: url => navigations.push(url) },
     innerHeight: 800, visualViewport: { scale: zoom },
+    history: {
+      get state() { return historyState; },
+      replaceState(state) { historyState = state; }
+    },
+    performance: { getEntriesByType: () => [{ type: navigationType }] },
     matchMedia: () => ({ matches: reduced }),
     gsap: {
       timeline({ onComplete }) {
@@ -300,7 +307,7 @@ function portfolioBrowser({ incoming = false, pathname = incoming ? portfolioGal
   };
   vm.runInNewContext(portfolioTransition, { window, document, URL, Date: { now: () => 2500 } });
   return {
-    window, stored, navigations, tweens, banner, link,
+    window, stored, navigations, tweens, banner, link, region,
     get cover() { return body.children[0]; },
     click(overrides = {}) {
       let prevented = false;
@@ -336,6 +343,25 @@ test('a plain or keyboard banner click expands the selected art and hands it to 
   b.shown(true);
   assert.equal(b.cover, undefined);
   assert.equal(b.banner.classList.contains('portfolio-gallery-transition-source'), false);
+});
+
+test('Back restores the banner list position for both cached and reloaded homepages', () => {
+  const b = portfolioBrowser({ scrollTop: 320, historyState: { existing: true } });
+  assert.equal(b.click(), true);
+  b.region.scrollTop = 340;
+  b.finish();
+  const historyState = b.window.history.state;
+  assert.equal(historyState.portfolioRecentWorkScrollTop, 320);
+  assert.equal(historyState.existing, true);
+  b.region.scrollTop = 0;
+  b.shown(true);
+  assert.equal(b.region.scrollTop, 320);
+  const visitedAgain = portfolioBrowser({ historyState, navigationType: 'back_forward' });
+  visitedAgain.shown(false);
+  assert.equal(visitedAgain.region.scrollTop, 320);
+  const refreshed = portfolioBrowser({ historyState, navigationType: 'reload' });
+  refreshed.shown(false);
+  assert.equal(refreshed.region.scrollTop, 0);
 });
 
 test('ordinary link behavior is preserved for new tabs, reduced motion, zoom, and other destinations', () => {
@@ -413,8 +439,8 @@ test('a slow gallery cannot hold the banner cover past its timeout', () => {
 });
 
 test('the real Artur homepage and its recent galleries load the transition and the shared wheel scroll', () => {
-  assert.match(portfolioLayout, /page\.url == site\.data\.personal_portfolio\.home and page\.font_preview == nil[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=1" defer/);
+  assert.match(portfolioLayout, /page\.url == site\.data\.personal_portfolio\.home and page\.font_preview == nil[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=2" defer/);
   assert.match(portfolioLayout, /recent-galleries-scroll\.js' \| relative_url }}\?v=2/);
-  assert.match(layouts[0], /page\.portfolio == 'personal' and recent_gallery[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=1" data-gallery-arrival/);
-  assert.match(layouts[1], /page\.portfolio == 'personal'[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=1" data-gallery-arrival/);
+  assert.match(layouts[0], /page\.portfolio == 'personal' and recent_gallery[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=2" data-gallery-arrival/);
+  assert.match(layouts[1], /page\.portfolio == 'personal'[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=2" data-gallery-arrival/);
 });
