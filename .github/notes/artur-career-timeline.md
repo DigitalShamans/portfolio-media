@@ -1,12 +1,12 @@
-# Artur career timeline experiment
+# Artur career timeline
 
-Unlisted test route: `/artur/experiments/career-timeline/`.
+Published Resume route: `/artur/resume/`. The former `/artur/experiments/career-timeline/` URL redirects to it.
 
 ## Current layout
 
 The broad S-curve and alternating checkpoint placement follow the user's annotated screenshot supplied on 19 November 2026. The 2012 "Back to freelance" checkpoint is removed. A new final Digital Shamans checkpoint reuses the supplied draft wording and displays "Present"; its wording and precise dates are for later refinement. There are still 12 checkpoints.
 
-The original résumé dates and game details remain for the other entries. This experiment sets `seo_noindex: true` and `sitemap: false` and is not linked from the main navigation.
+The original résumé dates and game details remain for the other entries. The page is now a normal indexed portfolio page, included in the sitemap and linked as Resume in the shared personal navigation.
 
 ## Wider desktop composition
 
@@ -161,3 +161,9 @@ The top section follows the latest annotated mockup: the helper sentence and dat
 Rebellion's role is Environment artist. Its three stacked thumbnails link separately to the personal Sniper Elite 4, Battlezone VR and Strange Brigade Environment Art galleries, using each gallery's own public WebP. Couch Heroes replaces its empty slot with Couch_Heroes_Enviro_01.webp and links to /artur/galleries/couch-heroes/. The lower-card arrangement, mobile tracking, slower second half, and the two original-image dialogs remain. CSS/JavaScript URLs use ?v=13.
 
 Validation: JavaScript syntax and the 12-checkpoint preview inventory pass. Desktop/tablet/phone checks at 1363, 1100, 800, 390 and 320px find no overlapping cards or overflowing text/pages after the tablet adjustment. Phone endpoints retain access to Present and View portfolio. All three new gallery images load; clicking Couch Heroes opens the correct live gallery. Rebellion's details dialog retains all three gallery links and complete text without overflow. The GSAP-free fallback keeps every role/project readable.
+
+## Published Resume and personal navigation
+
+The timeline source is promoted to artur/resume/index.html with permalink /artur/resume/, a production Resume & Career Timeline title, personal portfolio social-preview metadata and the shared favicon. Its experimental noindex/sitemap exclusions are removed. The configured jekyll-redirect-from plugin generates a redirect from /artur/experiments/career-timeline/ so existing links continue to work; the old source file is removed to avoid duplicate routes.
+
+The personal branch of the shared site header now contains Portfolio and Resume. Portfolio keeps its destination and gallery/home highlight; Resume is active on the new page. About / CV and Contact are removed from personal navigation. The studio navigation is unchanged. The existing timeline content, image/gallery interactions, responsive layout and scroll behavior are retained.
