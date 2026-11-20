@@ -15,7 +15,7 @@ const exitLinks = fs.readFileSync(path.join(root, '_includes/rz-gallery-exit.htm
 
 function browser({ desktop = true, reduced = false, prefix = '', gsap = true, arrival = null,
     nextHref, previousHref, folder = 'hb-egypt', activeTag = 'body',
-    navigationType = 'navigate', galleryLoop = 'hard-bullet' } = {}) {
+    navigationType = 'navigate', galleryLoop = 'hard-bullet', nextGalleryName } = {}) {
   const events = {};
   const calls = [];
   const tweens = [];
@@ -71,7 +71,7 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
   const next = {
     href: nextHref || 'https://example.test' + prefix + '/galleries/' +
       (galleryLoop === 'full' ? 'phantom-covert-ops' : 'hb-helipad') + '/',
-    dataset: { galleryName: galleryLoop === 'full' ? 'Phantom: Covert Ops - Oculus VR' : 'Helipad' }
+    dataset: { galleryName: nextGalleryName || (galleryLoop === 'full' ? 'Phantom: Covert Ops - Oculus VR' : 'Helipad') }
   };
   const navigation = { dataset: { galleryLoop }, querySelector: key => key.endsWith('--next') ? next : previous };
   let dialog = false;
@@ -212,8 +212,8 @@ test('Full Portfolio edges loop through personal galleries and never touch Hard 
 test('studio Full Portfolio slides and wraps in its own card order', () => {
   const b = browser({ prefix: '', folder: 'nfs-unbound', galleryLoop: 'full',
     nextHref: 'https://example.test/galleries/vehicles-aircrafts/',
-    previousHref: 'https://example.test/galleries/vegetation/' });
-  b.next.dataset.galleryName = 'Vehicles - Aircrafts';
+    previousHref: 'https://example.test/galleries/vegetation/',
+    nextGalleryName: 'Vehicles - Aircrafts' });
   b.pointer(1439);
   b.advance(180);
   assert.equal(b.panel.children[0].children[0].textContent, 'Full Portfolio');
