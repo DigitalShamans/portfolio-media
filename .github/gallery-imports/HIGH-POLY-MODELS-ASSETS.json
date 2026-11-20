@@ -1,0 +1,67 @@
+{
+  "passed": true,
+  "images": 27,
+  "captions": 17,
+  "null_captions": 10,
+  "empty_positions": [
+    1
+  ],
+  "embeds": 0,
+  "artifacts": 59,
+  "title": "HIgh-Poly Models",
+  "description": "TTT",
+  "original_dimensions": {
+    "1920x1080": 2,
+    "1600x1200": 5,
+    "1920x1200": 3,
+    "3840x2160": 4,
+    "2560x1440": 10,
+    "2509x1354": 1,
+    "2207x1328": 1,
+    "2511x1338": 1
+  },
+  "webp_dimensions": {
+    "1920x1080": 2,
+    "1600x1200": 5,
+    "1920x1200": 3,
+    "2560x1440": 14,
+    "2509x1354": 1,
+    "2207x1328": 1,
+    "2511x1338": 1
+  },
+  "original_bytes": 10779744,
+  "webp_bytes": 5221448,
+  "byte_duplicate_groups": [],
+  "all_sha256_bytes_git_blobs_full_decodes": true,
+  "icc_preserved": true,
+  "no_crop_or_upscale": true,
+  "source_order_case_captions_and_download_urls_exact": true,
+  "filename_alias": {
+    "position27": "the-digital-shaman-009-64719152.jpg",
+    "original": "the-digital-shaman-009.jpg",
+    "stable_id": 64719152
+  },
+  "manifest": {
+    "bytes": 1897,
+    "sha256": "5f2c45d604c9ca76a853b7c7c97f891648d6d9386b8aacabcb452cfcb2c2980c",
+    "git_blob_sha": "107627f5aa778b2263aff58b06243496d4f6816c"
+  },
+  "final_filename": "the-digital-shaman-amxx-009-001.jpg",
+  "download_seconds": 6.038,
+  "measurement_seconds": 0.998,
+  "preparation_seconds": 4.387,
+  "verification_seconds": 2.225,
+  "encoder": {
+    "bounds": [
+      2560,
+      1440
+    ],
+    "exif_transpose": true,
+    "icc": true,
+    "method": 6,
+    "pillow": "13.0.0",
+    "quality": 92,
+    "resampling": "LANCZOS"
+  },
+  "checked_at_utc": "2026-11-20T06:49:06.465068+00:00"
+}
