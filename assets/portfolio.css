@@ -1,6 +1,12 @@
 .portfolio-page { background: #000; }
 .portfolio-main { padding-block: clamp(.625rem, 1vw, .875rem) 2.5rem; }
 
+.portfolio-page > .site-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 20;
+}
+
 .portfolio-heading {
   margin: 0;
   font-size: clamp(1.45rem, 2.7vw, 2.15rem);
@@ -11,7 +17,10 @@
 /* Six of the eight Recent Work banners are visible in the independent viewport.
    Residual wheel movement is handed to the page in the same event by
    recent-galleries-scroll.js, preventing the former lost-scroll-step bug. */
-#recent-work { container-type: inline-size; }
+#recent-work {
+  container-type: inline-size;
+  scroll-margin-block-start: calc(var(--home-header-height, 9rem) + 1rem);
+}
 .recent-galleries {
   --banner-gap: 4px;
   max-block-size: calc(120cqi + 5 * var(--banner-gap));
