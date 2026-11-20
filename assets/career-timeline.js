@@ -459,9 +459,26 @@
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => window.requestAnimationFrame(rebuild), 120);
   }
+
+  function setupScrollCue() {
+    const cue = track.querySelector('.career-scroll-cue');
+    if (!cue) return;
+    if (window.scrollY > 0) {
+      cue.hidden = true;
+      return;
+    }
+    function dismissOnScroll() {
+      if (window.scrollY <= 0) return;
+      cue.classList.add('career-scroll-cue--dismissed');
+      window.removeEventListener('scroll', dismissOnScroll);
+    }
+    window.addEventListener('scroll', dismissOnScroll, { passive: true });
+  }
+
   // This script runs first. Draw the curve before the deferred GSAP files
   // finish, then add the motion once those files have executed.
   document.addEventListener('DOMContentLoaded', enableAnimation, { once: true });
+  setupScrollCue();
   rebuild();
   window.addEventListener('resize', scheduleRebuild, { passive: true });
   window.addEventListener('scroll', updateScrollCamera, { passive: true });

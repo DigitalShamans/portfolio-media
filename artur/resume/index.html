@@ -18,7 +18,7 @@ redirect_from:
   {% include seo.html %}
   {% include site-favicon.html %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=14">
-  <link rel="stylesheet" href="{{ '/assets/career-timeline.css' | relative_url }}?v=15">
+  <link rel="stylesheet" href="{{ '/assets/career-timeline.css' | relative_url }}?v=16">
   {% include personal-typography.html %}
   {% include career-timeline-scripts.html %}
 </head>
@@ -41,6 +41,7 @@ redirect_from:
     </header>
 
     <section class="career-track" data-career-timeline aria-label="Career milestones, in chronological order">
+      {% include career-scroll-cue.html %}
       <div class="career-stage">
       <div class="career-canvas">
       <div class="career-rail" aria-hidden="true">
