@@ -10,13 +10,17 @@
       ['slow-2g', '2g'].includes(window.navigator?.connection?.effectiveType)) return;
 
   const prefix = window.location.pathname.split('/galleries/')[0];
+  const fullPortfolio = navigation.dataset?.galleryLoop === 'full';
   function destination(direction) {
     const link = navigation.querySelector('.gallery-navigation__link--' + direction);
     if (!link) return null;
     const url = new URL(link.href, window.location.href);
+    const localPath = url.pathname.slice(prefix.length);
     if (url.search || url.hash || url.origin !== window.location.origin ||
         url.pathname.split('/galleries/')[0] !== prefix ||
-        !/^\/galleries\/hb-[a-z0-9-]+\/$/.test(url.pathname.slice(prefix.length))) return null;
+        (fullPortfolio
+          ? prefix !== '/artur' || !/^\/galleries\/(?!hb-)[a-z0-9-]+\/$/.test(localPath)
+          : !/^\/galleries\/hb-[a-z0-9-]+\/$/.test(localPath))) return null;
     return url.href;
   }
 
