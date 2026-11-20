@@ -213,10 +213,11 @@ test('studio Full Portfolio slides and wraps in its own card order', () => {
   const b = browser({ prefix: '', folder: 'nfs-unbound', galleryLoop: 'full',
     nextHref: 'https://example.test/galleries/vehicles-aircrafts/',
     previousHref: 'https://example.test/galleries/vegetation/' });
+  b.next.dataset.galleryName = 'Vehicles - Aircrafts';
   b.pointer(1439);
   b.advance(180);
   assert.equal(b.panel.children[0].children[0].textContent, 'Full Portfolio');
-  assert.equal(b.panel.children[0].children[1].textContent, 'Phantom: Covert Ops - Oculus VR');
+  assert.equal(b.panel.children[0].children[1].textContent, 'Vehicles - Aircrafts');
   b.advance(420);
   assert.deepEqual(b.calls, [b.next.href]);
   assert.equal(b.storedArrival().loop, 'full');
