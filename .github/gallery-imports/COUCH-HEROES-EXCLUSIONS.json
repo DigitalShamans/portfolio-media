@@ -1,0 +1,59 @@
+{
+  "passed": false,
+  "publication_selection_verified": true,
+  "published_commit_webps_exactly_selected": true,
+  "all_nonselected_originals_denied": true,
+  "http_denials_confirmed": 7,
+  "unverified": [
+    {
+      "filename": "Couch_Heroes_Enviro_15.jpg",
+      "status": 503,
+      "passed": false
+    }
+  ],
+  "checks": [
+    {
+      "filename": "Couch_Heroes_Characters_01.jpg",
+      "status": 404,
+      "passed": true
+    },
+    {
+      "filename": "Couch_Heroes_Characters_02.jpg",
+      "status": 404,
+      "passed": true
+    },
+    {
+      "filename": "Couch_Heroes_Characters_03.jpg",
+      "status": 404,
+      "passed": true
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_13.jpg",
+      "status": 404,
+      "passed": true
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_14.jpg",
+      "status": 404,
+      "passed": true
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_15.jpg",
+      "status": 503,
+      "passed": false
+    },
+    {
+      "filename": "Couch_Heroes_Enviro_16.jpg",
+      "status": 404,
+      "passed": true
+    },
+    {
+      "filename": "Couch_Heroes_Logo_02.jpg",
+      "status": 404,
+      "passed": true
+    }
+  ],
+  "count": 8,
+  "checked_at_utc": "2026-11-20T09:51:30.427528+00:00",
+  "note": "HTTP 503 remains unverified; it is not relabeled as a successful 404. Published commit inventory, exact live manifest/asset hashes and service denials independently verify the requested selection."
+}

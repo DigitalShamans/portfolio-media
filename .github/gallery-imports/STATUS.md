@@ -1,4 +1,4 @@
-# Couch Heroes - Environment Art: prepared publication checkpoint
+# Couch Heroes - Environment Art: published and verified
 
 [Studio](https://digitalshamans.co.uk/galleries/couch-heroes/) and [Artur](https://digitalshamans.co.uk/artur/galleries/couch-heroes/) share the canonical12-image gallery: Couch_Heroes_Enviro_01.jpg through _12.jpg in numeric order. Both are unlisted/noindex, absent from sitemap and homepage/navigation. No captions or embeds were supplied. Neutral gallery text derives from the local folder name; no ArtStation provenance or download URLs are invented.
 
@@ -8,4 +8,6 @@ Selected originals are all2560×1440. Original selected bytes 6,349,830; full ar
 
 Actual native Gallery Editor v0.11 opened the full20-file scratch folder, showed12 Included and8 Excluded, rendered all12 selected previews and passed explicit reorder/save/reopen/restore. The saved manifest contains only the canonical12 images. All41 frozen stage files and20 scratch originals remained unchanged; closed only the owned window and preserved the user's existing editor window.
 
-Service succeeded: retain18 earlier catalogs/revisions,23 prior approval groups, other gallery overrides, the global fallback and protected RZ/access/environment controls. Only the incoming selected-image catalog/revision is added. Existing D: checkouts reused; preserve14 public user files and238 private untracked paths outside the authorized folder. Final evidence is integrated through the same temporary gallery branch before its removal. Detailed release IDs and machine-checkable evidence use the COUCH-HEROES prefix.
+Service succeeded: retain18 earlier catalogs/revisions,23 prior approval groups, other gallery overrides, the global fallback and protected RZ/access/environment controls. Only the incoming selected-image catalog/revision is added. Existing D: checkouts reused; preserve14 public user files and238 private untracked paths outside the authorized folder. Final evidence is integrated through the same gallery branch. Automatic approval review rejected deleting this gallery’s local and remote branches because it requires gallery-specific authorization; those references remain. Detailed release IDs and machine-checkable evidence use the COUCH-HEROES prefix.
+
+All27 service and25 positive public GETs passed; 7 excluded WebP paths returned404; one optional missing-file probe remains unverified (503). Both IAB routes passed mobile/wide viewer checks; Pages succeeded and capture sessions/helpers were released. Detailed acceptance and limits: COUCH-HEROES.md.
