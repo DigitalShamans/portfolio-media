@@ -8,6 +8,8 @@
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const scriptURL = document.currentScript?.src || window.location.href;
   const prefix = window.location.pathname.split('/galleries/')[0];
+  const galleryLoop = navigation.dataset?.galleryLoop === 'full' ? 'full' : 'hard-bullet';
+  const isFullPortfolio = galleryLoop === 'full';
   const interactive = 'a, button, input, textarea, select, label, iframe, video, audio, summary, '
     + '[contenteditable]:not([contenteditable="false"]), [role="button"], [role="link"], [role="slider"]';
   const holdDelay = 180;
@@ -25,10 +27,13 @@
     const link = navigation.querySelector('.gallery-navigation__link--' + which);
     if (!link) return null;
     const url = new URL(link.href, window.location.href);
-    // Preserve the source portfolio and only navigate through declared Hard Bullet pages.
-    if (url.origin !== window.location.origin ||
+    // Never cross portfolio boundaries or the independent gallery loops.
+    const localPath = url.pathname.slice(prefix.length);
+    if (url.origin !== window.location.origin || url.search || url.hash ||
         url.pathname.split('/galleries/')[0] !== prefix ||
-        !/^\/galleries\/hb-[a-z0-9-]+\/$/.test(url.pathname.slice(prefix.length))) return null;
+        (isFullPortfolio
+          ? prefix !== '/artur' || !/^\/galleries\/(?!hb-)[a-z0-9-]+\/$/.test(localPath)
+          : !/^\/galleries\/hb-[a-z0-9-]+\/$/.test(localPath))) return null;
     return {
       href: url.href, pathname: url.pathname,
       title: link.dataset.galleryName || link.getAttribute('aria-label') || 'Gallery'
@@ -45,7 +50,7 @@
   const content = document.createElement('div');
   content.className = 'gallery-desktop-edge-panel__content';
   const eyebrow = document.createElement('p');
-  eyebrow.textContent = 'Hard Bullet';
+  eyebrow.textContent = isFullPortfolio ? 'Full Portfolio' : 'Hard Bullet';
   const heading = document.createElement('h2');
   content.append(eyebrow, heading);
   panel.append(content);
@@ -147,7 +152,7 @@
     try {
       window.sessionStorage.setItem('gallery-desktop-edge-arrival', JSON.stringify({
         direction: which, pathname: target.pathname, at: Date.now(),
-        title: target.title,
+        loop: galleryLoop, title: target.title,
         headerHeight: siteHeader ? Math.ceil(siteHeader.getBoundingClientRect().height) : 0
       }));
     } catch { /* Page switching must still work without storage. */ }
