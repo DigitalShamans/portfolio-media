@@ -16,6 +16,7 @@
   const stops = track.querySelector('[data-career-stops]');
   const entries = [...track.querySelectorAll('.career-milestone')];
   const texts = entries.flatMap(entry => [...entry.querySelectorAll('.career-year, .career-copy')]);
+  const previews = entries.map(entry => [...entry.querySelectorAll('.career-preview img')]);
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const viewportMeasure = document.querySelector('.career-viewport');
   const dialog = document.querySelector('#career-details');
@@ -33,6 +34,17 @@
   let smoother;
   let signature = '';
   let resizeTimer;
+  let initialized = false;
+  let prioritizedMilestone = -1;
+
+  function prioritizePreviews(index) {
+    if (index === prioritizedMilestone) return;
+    prioritizedMilestone = index;
+    previews.forEach((images, i) => images.forEach(image => {
+      image.loading = 'eager';
+      image.fetchPriority = i >= index - 1 && i <= index + 2 ? 'high' : 'low';
+    }));
+  }
 
   function enableAnimation() {
     if (!window.gsap || !window.ScrollTrigger || !window.DrawSVGPlugin || !window.MotionPathPlugin) return;
@@ -169,7 +181,9 @@
     const c = scrollCamera;
     const scroll = smoother ? smoother.scrollTop() : window.scrollY;
     const progress = animation.progress();
-    const point = c.anchor ? path.getPointAtLength(progress * c.length) : null;
+    // The last milestone is the camera's destination; the decorative tail
+    // can finish drawing without pulling its text and preview out of view.
+    const point = c.anchor ? path.getPointAtLength(Math.min(progress, c.lastStopAt) * c.length) : null;
     const virtualScroll = scroll < c.start ? scroll : c.start + progress * c.normalDistance + Math.max(0, scroll - c.end);
     const pinnedOffset = Math.max(0, Math.min(c.outerHeight - c.viewport, scroll - c.documentTop));
     const stageTop = c.documentTop - scroll + pinnedOffset;
@@ -199,14 +213,17 @@
   function updateMilestoneReveals() {
     if (!animation) return;
     const progress = animation.progress();
-    milestoneReveals.forEach(reveal => {
+    let current = 0;
+    milestoneReveals.forEach((reveal, i) => {
       const reached = progress + .0001 >= reveal.at || reveal.entry.contains(document.activeElement);
+      if (reached) current = i;
       if (reached === reveal.reached) return;
       reveal.reached = reached;
       reveal.entry.classList.toggle('career-milestone--awaiting-reveal', !reached);
       if (reached) reveal.animation.play();
       else reveal.animation.reverse();
     });
+    prioritizePreviews(current);
   }
 
   function drawCurve(width, height, narrow, scale, desktopAspect) {
@@ -351,10 +368,23 @@
     return placed;
   }
 
+  function captureMobilePosition() {
+    if (!animation || !track.classList.contains('career-track--narrow') || !milestoneReveals.length) return null;
+    const progress = animation.progress();
+    let index = 0;
+    milestoneReveals.forEach((reveal, i) => {
+      if (progress + .0001 >= reveal.at) index = i;
+    });
+    const start = milestoneReveals[index].at;
+    const end = milestoneReveals[index + 1]?.at ?? 1;
+    const fraction = Math.max(0, Math.min(1, (progress - start) / (end - start || 1)));
+    return { index, fraction };
+  }
+
   function rebuild() {
     const width = track.clientWidth;
     const narrow = width < 720;
-    const previousMobileProgress = narrow && animation && track.classList.contains('career-track--narrow') ? animation.progress() : null;
+    const previousMobilePosition = narrow ? captureMobilePosition() : null;
     // The small viewport stays constant when a phone's address bar folds away.
     // Actual viewport/orientation changes still recalculate the geometry.
     const viewport = narrow && viewportMeasure ? Math.round(viewportMeasure.getBoundingClientRect().height) : window.innerHeight;
@@ -402,6 +432,7 @@
       return { x: exact.x, y: exact.y, progress: at };
     });
     const slowMobile = narrow && canAnimate && !reducedMotion.matches;
+    track.style.setProperty('--career-first-stop-y', points[0].y + 'px');
     const scrollMultiplier = slowMobile ? 6 : 2;
     const trackLeft = track.getBoundingClientRect().left;
     const cameraAnchor = slowMobile ? trackLeft + mobileLayout.anchor : 0;
@@ -453,7 +484,7 @@
     track.style.setProperty('--career-stage-height', viewport + 'px');
     track.style.height = outerHeight + 'px';
     if (slowMobile) track.dataset.cameraAnchor = cameraAnchor.toFixed(3);
-    scrollCamera = { documentTop, viewport, start: normalStart, end, outerHeight, normalDistance, left: trackLeft, anchor: cameraAnchor, length: metrics.length, width, labels, firstPointY: points[0].y, cardLeft: mobileLayout?.cardLeft };
+    scrollCamera = { documentTop, viewport, start: normalStart, end, outerHeight, normalDistance, left: trackLeft, anchor: cameraAnchor, length: metrics.length, firstPointY: points[0].y, lastStopAt: points[points.length - 1].progress };
     animation = gsap.timeline({
       paused: true,
       defaults: { ease: 'none' },
@@ -508,8 +539,11 @@
     track.dataset.timelineState = 'animated';
     if (smoother) ScrollTrigger.refresh();
     else scrollTween.scrollTrigger.refresh();
-    if (previousMobileProgress !== null) {
-      const restoredDistance = journeyDistance(previousMobileProgress) / 1.5;
+    if (previousMobilePosition) {
+      const { index, fraction } = previousMobilePosition;
+      const start = points[index].progress;
+      const end = points[index + 1]?.progress ?? 1;
+      const restoredDistance = journeyDistance(start + (end - start) * fraction) / 1.5;
       window.scrollTo(0, normalStart + restoredDistance * scrollDistance);
       ScrollTrigger.update();
     }
@@ -540,14 +574,36 @@
 
   // This script runs first. Draw the curve before the deferred GSAP files
   // finish, then add the motion once those files have executed.
-  document.addEventListener('DOMContentLoaded', enableAnimation, { once: true });
+  function initializeTimeline() {
+    function start() {
+      if (initialized) return;
+      initialized = true;
+      enableAnimation();
+      if (!canAnimate) {
+        signature = '';
+        rebuild();
+      }
+      document.dispatchEvent(new Event('career-layout-ready'));
+    }
+    // Measure the actual font before revealing the scene, with a bounded
+    // wait so a slow font cannot keep the timeline hidden indefinitely.
+    const deadline = window.setTimeout(start, 1800);
+    (document.fonts?.ready || Promise.resolve()).then(() => {
+      window.clearTimeout(deadline);
+      start();
+    }, start);
+  }
+  if (document.readyState === 'complete') initializeTimeline();
+  else document.addEventListener('DOMContentLoaded', initializeTimeline, { once: true });
   setupScrollCue();
+  prioritizePreviews(0);
   rebuild();
   window.addEventListener('resize', scheduleRebuild, { passive: true });
   window.addEventListener('scroll', updateScrollCamera, { passive: true });
   reducedMotion.addEventListener('change', scheduleRebuild);
   if (window.ResizeObserver) new ResizeObserver(scheduleRebuild).observe(track);
   document.fonts?.addEventListener('loadingdone', () => {
+    if (!initialized) return;
     signature = '';
     scheduleRebuild();
   });

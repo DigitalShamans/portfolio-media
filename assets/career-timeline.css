@@ -68,6 +68,7 @@
   position: relative;
   --career-copy-scale: .85;
 }
+.career-initializing .career-track { visibility: hidden; }
 .career-scroll-cue {
   position: absolute;
   z-index: 1;
@@ -278,6 +279,12 @@
   position: sticky;
   top: 0;
 }
+.career-track--narrow .career-scroll-cue {
+  inset-block-start: calc(var(--career-first-stop-y, 91px) + 24px);
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+  width: min(42%, 9rem);
+}
 .career-track--narrow .career-milestone {
   padding-block: 2px;
 }
@@ -285,7 +292,8 @@
 .career-track--narrow .career-checkpoint { background: #111; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .career-track--narrow .career-year { width: fit-content; }
 .career-track--narrow .career-copy--media {
-  grid-template-columns: minmax(0, 1fr) 88px;
+  grid-template-columns: minmax(0, max-content) 88px;
+  justify-content: start;
   gap: 12px;
 }
 .career-track--narrow .career-description { overflow-wrap: anywhere; }
