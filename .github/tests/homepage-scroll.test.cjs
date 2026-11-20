@@ -200,17 +200,17 @@ test('zoom and horizontal trackpad gestures are never hijacked', () => {
 
 test('portfolio GSAP effects are scoped, scroll-safe and reduced-motion aware', () => {
   assert.match(layout, /recent-galleries-scroll\.js' \| relative_url }}\?v=2/);
-  assert.match(layout, /portfolio-effects\.js' \| relative_url }}\?v=2/);
+  assert.match(layout, /portfolio-effects\.js' \| relative_url }}\?v=3/);
   assert.match(layout, /vendor\/gsap\/3\.15\.1\/gsap\.min\.js/);
   assert.match(layout, /vendor\/gsap\/3\.15\.1\/ScrollTrigger\.min\.js/);
   assert.match(effects, /prefers-reduced-motion: reduce/);
   assert.match(effects, /portfolio-home/);
-  assert.match(effects, /portfolio-page:not\(\.portfolio-home\) \.portfolio-grid/);
+  assert.match(effects, /\.portfolio-page \.portfolio-grid > li/);
   assert.match(effects, /ScrollTrigger\.batch\(cards/);
   assert.doesNotMatch(effects, /normalizeScroll\s*\(|preventDefault\s*\(/);
 });
 
-test('studio parallax registers only on a fine pointer and Artur uses staggered tile batches', () => {
+test('both homepages stagger the grid and studio parallax requires a fine pointer', () => {
   const images = [{}, {}], cards = [{}, {}];
   function inspect(studio, reduced = false, fine = true) {
     const calls = { set: 0, quick: 0, created: 0, batched: 0, entered: 0 };
@@ -255,7 +255,8 @@ test('studio parallax registers only on a fine pointer and Artur uses staggered 
     };
     const doc = {
       body: { classList: { contains: c => studio ? c === 'portfolio-home' : c === 'portfolio-page' } },
-      querySelector: q => q.includes('recent-galleries') ? region : { querySelectorAll: () => cards }
+      querySelector: q => q === '.portfolio-home .recent-galleries' ? region : null,
+      querySelectorAll: q => q === '.portfolio-page .portfolio-grid > li' ? cards : []
     };
     vm.runInNewContext(effects, { document: doc, window: win });
     return {
@@ -271,7 +272,8 @@ test('studio parallax registers only on a fine pointer and Artur uses staggered 
   assert.equal(studio.set, 1);
   assert.equal(studio.quick, 2);
   assert.equal(studio.created, 1);
-  assert.equal(studio.batched, 0);
+  assert.equal(studio.batched, 1);
+  assert.equal(studio.entered, 1);
   assert.ok(studio.moveBanner(-50) - studio.shift >= 5,
     'A 150px scroll should pan the artwork at least 5% of the banner height');
   assert.equal(studio.moveBanner(100), studio.shift, 'Reverse scrolling restores the original position');
@@ -281,6 +283,13 @@ test('studio parallax registers only on a fine pointer and Artur uses staggered 
   assert.equal(personal.set, 0);
   assert.equal(personal.batched, 1);
   assert.equal(personal.entered, 1);
-  assert.equal(inspect(true, true).created, 0);
-  assert.equal(inspect(true, false, false).set, 0);
+  const mobileStudio = inspect(true, false, false);
+  assert.equal(mobileStudio.set, 0);
+  assert.equal(mobileStudio.batched, 1);
+  assert.equal(mobileStudio.entered, 1);
+  for (const isStudio of [true, false]) {
+    const reduced = inspect(isStudio, true);
+    assert.equal(reduced.created, 0);
+    assert.equal(reduced.batched, 0);
+  }
 });

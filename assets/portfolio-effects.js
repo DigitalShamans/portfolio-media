@@ -7,6 +7,19 @@
   const { gsap, ScrollTrigger } = window;
   gsap.registerPlugin(ScrollTrigger);
 
+  // Reveal cards as their rows enter view, including rows farther down on mobile.
+  const cards = [...document.querySelectorAll('.portfolio-page .portfolio-grid > li')];
+  if (cards.length) {
+    ScrollTrigger.batch(cards, {
+      start: 'top 92%',
+      once: true,
+      onEnter: batch => gsap.fromTo(batch,
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: .58, stagger: .07,
+          ease: 'power2.out', clearProps: 'opacity,transform' })
+    });
+  }
+
   if (document.body.classList.contains('portfolio-home')) {
     // Only the studio's large banners receive parallax. Preserve native
     // touch scrolling and battery life on coarse-pointer devices.
@@ -61,21 +74,5 @@
       onUpdate: schedule, onRefresh: schedule
     });
     schedule();
-    return;
   }
-
-  // Artur's portfolio only: reveal each arriving batch so even a tall/mobile
-  // grid animates naturally as its later rows enter the viewport.
-  const grid = document.querySelector('.portfolio-page:not(.portfolio-home) .portfolio-grid');
-  if (!grid) return;
-  const cards = [...grid.querySelectorAll(':scope > li')];
-  if (!cards.length) return;
-  ScrollTrigger.batch(cards, {
-    start: 'top 92%',
-    once: true,
-    onEnter: batch => gsap.fromTo(batch,
-      { opacity: 0, y: 18 },
-      { opacity: 1, y: 0, duration: .58, stagger: .07,
-        ease: 'power2.out', clearProps: 'opacity,transform' })
-  });
 })();
