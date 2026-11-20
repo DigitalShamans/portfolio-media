@@ -671,8 +671,12 @@
       networkFadeStart = journeyProgress((finishDistance - fadeDistance * 2.5) / journeyDistance(1));
     }
     if (cellular) {
+      // Double the cellular scroll span and let it overlap the network fade.
+      const cellularFadeEnd = narrow
+        ? networkFadeStart
+        : journeyProgress(2 * journeyDistance(networkFadeStart) / journeyDistance(1));
       animation.fromTo(cellular, { opacity: 1 }, {
-        opacity: 0, duration: networkFadeStart, ease: 'sine.inOut'
+        opacity: 0, duration: cellularFadeEnd, ease: 'sine.inOut'
       }, 0);
     }
     if (network) {
