@@ -19,7 +19,7 @@
     if (url.search || url.hash || url.origin !== window.location.origin ||
         url.pathname.split('/galleries/')[0] !== prefix ||
         (fullPortfolio
-          ? prefix !== '/artur' || !/^\/galleries\/(?!hb-)[a-z0-9-]+\/$/.test(localPath)
+          ? (prefix !== '' && prefix !== '/artur') || !/^\/galleries\/(?!hb-)[a-z0-9-]+\/$/.test(localPath)
           : !/^\/galleries\/hb-[a-z0-9-]+\/$/.test(localPath))) return null;
     return url.href;
   }
