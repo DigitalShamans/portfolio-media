@@ -656,7 +656,13 @@
     });
     animation.fromTo(path, { drawSVG: 0 }, { drawSVG: '100%', duration: 1 }, 0);
     animation.fromTo(pointer, { autoAlpha: 0 }, { autoAlpha: 1, duration: .004 }, 0);
-    const networkFadeStart = lastStopAt * .8;
+    let networkFadeStart = lastStopAt * .8;
+    if (!narrow) {
+      // The journey changes speed, so extend the desktop fade in scroll distance.
+      const finishDistance = journeyDistance(lastStopAt);
+      const fadeDistance = finishDistance - journeyDistance(networkFadeStart);
+      networkFadeStart = journeyProgress((finishDistance - fadeDistance * 2.5) / journeyDistance(1));
+    }
     if (cellular) {
       animation.fromTo(cellular, { opacity: 1 }, {
         opacity: 0, duration: networkFadeStart, ease: 'sine.inOut'
