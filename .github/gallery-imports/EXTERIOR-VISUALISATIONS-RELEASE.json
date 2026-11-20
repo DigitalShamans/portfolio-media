@@ -1,0 +1,12 @@
+{
+  "source_id":"PeZm1",
+  "slug":"exterior-visualisations",
+  "title":"Exterior Visualisations",
+  "branch":"codex/exterior-visualisations-20261120",
+  "public_base":"eaa951a3950ffad3b8c2bcde8fd98f0a1522d956",
+  "carried_prior_evidence":"f85a0e187a71d1cb7578b4627dc9b618bae60560",
+  "images":19,"captions":0,"null_captions":19,"embeds":0,"empty_source_positions":[2],
+  "private":{"status":"verified","unchanged_approval_groups":21,"source_commit":"e40273094a8ebf630b2129d58fdc7755e549d273","pr":17,"revision":"37741ff5622207d7cb6326e3d28a33d04ec212c7","tree_verified":19},
+  "service":{"status":"succeeded","prior_catalogs":16,"project_id":"appgprj_6afbf3a4aa2c81919821379c8fde09df","source":"168d194602e2d2ab4128c4ec5c8c093e311f8ef5","version":20,"saved_version":"appgprj_6afbf3a4aa2c81919821379c8fde09df~appgver_cd176948b1ac81918d0a1f60e29ca673","deployment_id":"appgdep_6afff9e4ac78819187bb6a070dfd03f1","environment":25,"succeeded_at":"2026-11-20T07:42:41.318929+00:00"},
+  "website":{"status":"pending"}
+}

@@ -1,0 +1,2028 @@
+{
+  "checked_at_utc": "2026-11-20T06:58:51.637834+00:00",
+  "passed": true,
+  "implementation_ref": "eaa951a3950ffad3b8c2bcde8fd98f0a1522d956",
+  "media_revision": "0d8a70c4ed2f818e6ecf1c863b1e4c3477eae9f8",
+  "pillow_version": "13.0.0",
+  "deployment_evidence": {
+    "id": 44691335020,
+    "name": "Publish portfolio",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "eaa951a3950ffad3b8c2bcde8fd98f0a1522d956",
+    "event": "push",
+    "created_at": "2026-11-20T06:56:27Z",
+    "updated_at": "2026-11-20T06:57:38Z",
+    "html_url": "https://github.com/DigitalShamans/portfolio-media/actions/runs/44691335020"
+  },
+  "publication_evidence": {},
+  "actual_build_revisions": [
+    "eaa951a3950ffad3b8c2bcde8fd98f0a1522d956"
+  ],
+  "counts": {
+    "webps": 27,
+    "webps_passed": 27,
+    "webp_bytes": 5221448,
+    "routes_passed": 2,
+    "dependencies": 9,
+    "dependencies_passed": 9,
+    "homes_passed": 2,
+    "http_requests": 42
+  },
+  "elapsed_ms": 7967,
+  "webps": [
+    {
+      "name": "the-digital-shaman-artur-perzyna-two-armchairs-and-table.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-two-armchairs-and-table.webp",
+      "expected": {
+        "bytes": 188038,
+        "sha256": "3301b7a0725d4c16b7568af4a0584bc42382cfad0f5605bfb2ece38474c308e1",
+        "git_blob_sha": "39c9f401286e2f5dd5a4bd083ee5ff804a523610",
+        "format": "WEBP",
+        "width": 1920,
+        "height": 1080,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-artur-perzyna-two-armchairs-and-table.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-two-armchairs-and-table.webp",
+        "acquired_at_utc": "2026-11-20T06:58:20.7434148Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-artur-perzyna-two-armchairs-and-table.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-two-armchairs-and-table.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 188038,
+        "response_bytes": 188038,
+        "etag": "\"6affef5d-2de86\"",
+        "elapsed_ms": 471
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 188038,
+        "sha256": "3301b7a0725d4c16b7568af4a0584bc42382cfad0f5605bfb2ece38474c308e1",
+        "git_blob_sha": "39c9f401286e2f5dd5a4bd083ee5ff804a523610",
+        "format": "WEBP",
+        "width": 1920,
+        "height": 1080,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-artur-perzyna-chandeliers.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-chandeliers.webp",
+      "expected": {
+        "bytes": 207504,
+        "sha256": "dc20a7c103e2ef3432f7d53c4a22c316f08f05ae45f7b02638c5eefe2a609be2",
+        "git_blob_sha": "5e3a22852fc72bf541f877a393fa53446d403e10",
+        "format": "WEBP",
+        "width": 1920,
+        "height": 1080,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-artur-perzyna-chandeliers.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-chandeliers.webp",
+        "acquired_at_utc": "2026-11-20T06:58:21.2257658Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-artur-perzyna-chandeliers.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-chandeliers.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 207504,
+        "response_bytes": 207504,
+        "etag": "\"6affef5d-32a90\"",
+        "elapsed_ms": 219
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 207504,
+        "sha256": "dc20a7c103e2ef3432f7d53c4a22c316f08f05ae45f7b02638c5eefe2a609be2",
+        "git_blob_sha": "5e3a22852fc72bf541f877a393fa53446d403e10",
+        "format": "WEBP",
+        "width": 1920,
+        "height": 1080,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-numinatic-castle-gear-1-e435cc2b-61ym.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-numinatic-castle-gear-1-e435cc2b-61ym.webp",
+      "expected": {
+        "bytes": 104390,
+        "sha256": "072813846e0302fc14d38d4be9aab2c03b5754bc5ef55425570285e35353b10e",
+        "git_blob_sha": "c7204241eba4929056ba5c7497cf59dd1e4a203f",
+        "format": "WEBP",
+        "width": 1600,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-numinatic-castle-gear-1-e435cc2b-61ym.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-numinatic-castle-gear-1-e435cc2b-61ym.webp",
+        "acquired_at_utc": "2026-11-20T06:58:21.4473917Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-numinatic-castle-gear-1-e435cc2b-61ym.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-numinatic-castle-gear-1-e435cc2b-61ym.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 104390,
+        "response_bytes": 104390,
+        "etag": "\"6affef5d-197c6\"",
+        "elapsed_ms": 188
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 104390,
+        "sha256": "072813846e0302fc14d38d4be9aab2c03b5754bc5ef55425570285e35353b10e",
+        "git_blob_sha": "c7204241eba4929056ba5c7497cf59dd1e4a203f",
+        "format": "WEBP",
+        "width": 1600,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-numinatic-castle-gear-1-2ab34797-f0hs.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-numinatic-castle-gear-1-2ab34797-f0hs.webp",
+      "expected": {
+        "bytes": 96788,
+        "sha256": "54d922f0a00ce67591c996d6c77b1931574e7ff90d86c9f9dbbda45e4044c89a",
+        "git_blob_sha": "dee89b8e7c4ff731119e079f1f9a0cca6ac35c2a",
+        "format": "WEBP",
+        "width": 1600,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-numinatic-castle-gear-1-2ab34797-f0hs.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-numinatic-castle-gear-1-2ab34797-f0hs.webp",
+        "acquired_at_utc": "2026-11-20T06:58:21.6372638Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-numinatic-castle-gear-1-2ab34797-f0hs.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-numinatic-castle-gear-1-2ab34797-f0hs.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 96788,
+        "response_bytes": 96788,
+        "etag": "\"6affef5d-17a14\"",
+        "elapsed_ms": 169
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 96788,
+        "sha256": "54d922f0a00ce67591c996d6c77b1931574e7ff90d86c9f9dbbda45e4044c89a",
+        "git_blob_sha": "dee89b8e7c4ff731119e079f1f9a0cca6ac35c2a",
+        "format": "WEBP",
+        "width": 1600,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-reka.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-reka.webp",
+      "expected": {
+        "bytes": 72018,
+        "sha256": "ceb510d35ab54a2d86cf06949694619fee3c4bc525970a38cadd756a06e1d4d2",
+        "git_blob_sha": "02be760f8bd04bcf87a661569f2b0d36a040a088",
+        "format": "WEBP",
+        "width": 1600,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-reka.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-reka.webp",
+        "acquired_at_utc": "2026-11-20T06:58:21.8084540Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-reka.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-reka.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 72018,
+        "response_bytes": 72018,
+        "etag": "\"6affef5d-11952\"",
+        "elapsed_ms": 154
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 72018,
+        "sha256": "ceb510d35ab54a2d86cf06949694619fee3c4bc525970a38cadd756a06e1d4d2",
+        "git_blob_sha": "02be760f8bd04bcf87a661569f2b0d36a040a088",
+        "format": "WEBP",
+        "width": 1600,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-artur-perzyna-mech-daisy1.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-mech-daisy1.webp",
+      "expected": {
+        "bytes": 115802,
+        "sha256": "9d55f67e6ae68a9559bc0aea32f203542c61124777611346e66a2f994194524f",
+        "git_blob_sha": "6e9e2d6ce849cc85867cf2472fa6502dedb79793",
+        "format": "WEBP",
+        "width": 1920,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-artur-perzyna-mech-daisy1.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-mech-daisy1.webp",
+        "acquired_at_utc": "2026-11-20T06:58:21.9644141Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-artur-perzyna-mech-daisy1.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-mech-daisy1.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 115802,
+        "response_bytes": 115802,
+        "etag": "\"6affef5d-1c45a\"",
+        "elapsed_ms": 184
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 115802,
+        "sha256": "9d55f67e6ae68a9559bc0aea32f203542c61124777611346e66a2f994194524f",
+        "git_blob_sha": "6e9e2d6ce849cc85867cf2472fa6502dedb79793",
+        "format": "WEBP",
+        "width": 1920,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-artur-perzyna-mech-daisy2.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-mech-daisy2.webp",
+      "expected": {
+        "bytes": 112276,
+        "sha256": "3afc74954660e4b5948c353dbd4a46e8547c1d0ead01e37dc5c8f74b1860f4f9",
+        "git_blob_sha": "7eb8d0f08a9058e5739fb43dc726f5f8361bbd8b",
+        "format": "WEBP",
+        "width": 1920,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-artur-perzyna-mech-daisy2.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-mech-daisy2.webp",
+        "acquired_at_utc": "2026-11-20T06:58:22.1510128Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-artur-perzyna-mech-daisy2.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-mech-daisy2.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 112276,
+        "response_bytes": 112276,
+        "etag": "\"6affef5d-1b694\"",
+        "elapsed_ms": 184
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 112276,
+        "sha256": "3afc74954660e4b5948c353dbd4a46e8547c1d0ead01e37dc5c8f74b1860f4f9",
+        "git_blob_sha": "7eb8d0f08a9058e5739fb43dc726f5f8361bbd8b",
+        "format": "WEBP",
+        "width": 1920,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-artur-perzyna-mech-daisy3.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-mech-daisy3.webp",
+      "expected": {
+        "bytes": 171838,
+        "sha256": "70551b251e3c0c68160a4f99b42f1bff18a4983c93b7e9999f5d5a67027efeb0",
+        "git_blob_sha": "4610f1ef84a567571eed85cbe7f989e404f564bb",
+        "format": "WEBP",
+        "width": 1920,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-artur-perzyna-mech-daisy3.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-mech-daisy3.webp",
+        "acquired_at_utc": "2026-11-20T06:58:22.3368139Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-artur-perzyna-mech-daisy3.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-mech-daisy3.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 171838,
+        "response_bytes": 171838,
+        "etag": "\"6affef5d-29f3e\"",
+        "elapsed_ms": 157
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 171838,
+        "sha256": "70551b251e3c0c68160a4f99b42f1bff18a4983c93b7e9999f5d5a67027efeb0",
+        "git_blob_sha": "4610f1ef84a567571eed85cbe7f989e404f564bb",
+        "format": "WEBP",
+        "width": 1920,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-numinatic-porsche-carrera-gt-e-1-fa087813-myxn.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-numinatic-porsche-carrera-gt-e-1-fa087813-myxn.webp",
+      "expected": {
+        "bytes": 196982,
+        "sha256": "b7df8265f1a8f2e9cc1eb4ab6a8aefdd1df65d6efc2f76558411a7945697f6d0",
+        "git_blob_sha": "a5b6f06be92185698295b32d9452a96f5f55e8b1",
+        "format": "WEBP",
+        "width": 1600,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-numinatic-porsche-carrera-gt-e-1-fa087813-myxn.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-numinatic-porsche-carrera-gt-e-1-fa087813-myxn.webp",
+        "acquired_at_utc": "2026-11-20T06:58:22.4962369Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-numinatic-porsche-carrera-gt-e-1-fa087813-myxn.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-numinatic-porsche-carrera-gt-e-1-fa087813-myxn.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 196982,
+        "response_bytes": 196982,
+        "etag": "\"6affef5d-30176\"",
+        "elapsed_ms": 197
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 196982,
+        "sha256": "b7df8265f1a8f2e9cc1eb4ab6a8aefdd1df65d6efc2f76558411a7945697f6d0",
+        "git_blob_sha": "a5b6f06be92185698295b32d9452a96f5f55e8b1",
+        "format": "WEBP",
+        "width": 1600,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-numinatic-lego-car-wire-1-9aa175e3-57p1.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-numinatic-lego-car-wire-1-9aa175e3-57p1.webp",
+      "expected": {
+        "bytes": 261158,
+        "sha256": "6400d426dec5f0ea37b7368fdef798df76041b30d35d70d10d4be4496e36b778",
+        "git_blob_sha": "aa165816ae33bcc0cb9ee8d03796400ac824da5e",
+        "format": "WEBP",
+        "width": 1600,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-numinatic-lego-car-wire-1-9aa175e3-57p1.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-numinatic-lego-car-wire-1-9aa175e3-57p1.webp",
+        "acquired_at_utc": "2026-11-20T06:58:22.6954202Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-numinatic-lego-car-wire-1-9aa175e3-57p1.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-numinatic-lego-car-wire-1-9aa175e3-57p1.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 261158,
+        "response_bytes": 261158,
+        "etag": "\"6affef5d-3fc26\"",
+        "elapsed_ms": 205
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 261158,
+        "sha256": "6400d426dec5f0ea37b7368fdef798df76041b30d35d70d10d4be4496e36b778",
+        "git_blob_sha": "aa165816ae33bcc0cb9ee8d03796400ac824da5e",
+        "format": "WEBP",
+        "width": 1600,
+        "height": 1200,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-001.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-archivis-furnitures-presentation-ue4-27-001.webp",
+      "expected": {
+        "bytes": 523772,
+        "sha256": "ce5d0f7d62949ba9fac1413159b642a304010cbb404e0ce595c297a46b612dd7",
+        "git_blob_sha": "00cebe88d11aa31e7a3191a26789eefe0f7194e6",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-001.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-archivis-furnitures-presentation-ue4-27-001.webp",
+        "acquired_at_utc": "2026-11-20T06:58:22.9024740Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-archivis-furnitures-presentation-ue4-27-001.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-archivis-furnitures-presentation-ue4-27-001.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 523772,
+        "response_bytes": 523772,
+        "etag": "\"6affef5d-7fdfc\"",
+        "elapsed_ms": 234
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 523772,
+        "sha256": "ce5d0f7d62949ba9fac1413159b642a304010cbb404e0ce595c297a46b612dd7",
+        "git_blob_sha": "00cebe88d11aa31e7a3191a26789eefe0f7194e6",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-002.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-archivis-furnitures-presentation-ue4-27-002.webp",
+      "expected": {
+        "bytes": 399374,
+        "sha256": "70a2ef5aa87ad577451183d80a98b38e7ad6af7a846994107ddb55b41ab6815b",
+        "git_blob_sha": "48974e1ae32e414f66e5d5df245aed831da656cd",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-002.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-archivis-furnitures-presentation-ue4-27-002.webp",
+        "acquired_at_utc": "2026-11-20T06:58:23.1383932Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-archivis-furnitures-presentation-ue4-27-002.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-archivis-furnitures-presentation-ue4-27-002.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 399374,
+        "response_bytes": 399374,
+        "etag": "\"6affef5d-6180e\"",
+        "elapsed_ms": 191
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 399374,
+        "sha256": "70a2ef5aa87ad577451183d80a98b38e7ad6af7a846994107ddb55b41ab6815b",
+        "git_blob_sha": "48974e1ae32e414f66e5d5df245aed831da656cd",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-007.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-archivis-furnitures-presentation-ue4-27-007.webp",
+      "expected": {
+        "bytes": 362700,
+        "sha256": "876361f32e212bb0b3962747bb2bb19f5811f3df61cd87ae286bb3607ca641cb",
+        "git_blob_sha": "a04762f1620f25938ca689652f488fc544b885a3",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-007.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-archivis-furnitures-presentation-ue4-27-007.webp",
+        "acquired_at_utc": "2026-11-20T06:58:23.3317538Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-archivis-furnitures-presentation-ue4-27-007.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-archivis-furnitures-presentation-ue4-27-007.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 362700,
+        "response_bytes": 362700,
+        "etag": "\"6affef5d-588cc\"",
+        "elapsed_ms": 203
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 362700,
+        "sha256": "876361f32e212bb0b3962747bb2bb19f5811f3df61cd87ae286bb3607ca641cb",
+        "git_blob_sha": "a04762f1620f25938ca689652f488fc544b885a3",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-004.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-archivis-furnitures-presentation-ue4-27-004.webp",
+      "expected": {
+        "bytes": 219806,
+        "sha256": "f78c5fb6e0d9d3822e2bd81f24c4075994d3cf0a0652bbbd25b0e4e0ad60b765",
+        "git_blob_sha": "2b521a2c9d8d300af4fcc9f46af399031c3d2122",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-004.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-archivis-furnitures-presentation-ue4-27-004.webp",
+        "acquired_at_utc": "2026-11-20T06:58:23.5370829Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-archivis-furnitures-presentation-ue4-27-004.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-archivis-furnitures-presentation-ue4-27-004.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 219806,
+        "response_bytes": 219806,
+        "etag": "\"6affef5d-35a9e\"",
+        "elapsed_ms": 164
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 219806,
+        "sha256": "f78c5fb6e0d9d3822e2bd81f24c4075994d3cf0a0652bbbd25b0e4e0ad60b765",
+        "git_blob_sha": "2b521a2c9d8d300af4fcc9f46af399031c3d2122",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-set-021.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-set-021.webp",
+      "expected": {
+        "bytes": 106034,
+        "sha256": "91be8ae007dace8b8b3d6a487f38f3aaafcd08a60840b775923ac2f5b499a880",
+        "git_blob_sha": "df2a47bf1e5aa7f950265e7ba4928b778cfbaebc",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-set-021.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-set-021.webp",
+        "acquired_at_utc": "2026-11-20T06:58:23.7036964Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-set-021.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-set-021.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 106034,
+        "response_bytes": 106034,
+        "etag": "\"6affef5d-19e32\"",
+        "elapsed_ms": 163
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 106034,
+        "sha256": "91be8ae007dace8b8b3d6a487f38f3aaafcd08a60840b775923ac2f5b499a880",
+        "git_blob_sha": "df2a47bf1e5aa7f950265e7ba4928b778cfbaebc",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-set-022.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-set-022.webp",
+      "expected": {
+        "bytes": 94184,
+        "sha256": "54b34d43e4a787b603123e1a3d77399cec689742a537b29690909309cdc2491d",
+        "git_blob_sha": "d241ec09a72affe9c801eabebdb118c9cbb9c83d",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-set-022.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-set-022.webp",
+        "acquired_at_utc": "2026-11-20T06:58:23.8688130Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-set-022.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-set-022.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 94184,
+        "response_bytes": 94184,
+        "etag": "\"6affef5d-16fe8\"",
+        "elapsed_ms": 164
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 94184,
+        "sha256": "54b34d43e4a787b603123e1a3d77399cec689742a537b29690909309cdc2491d",
+        "git_blob_sha": "d241ec09a72affe9c801eabebdb118c9cbb9c83d",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-set-011.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-set-011.webp",
+      "expected": {
+        "bytes": 59036,
+        "sha256": "c2494e5b40f3dfb419d099bf54a0b351245bcf0c89ca47915d2e1eac99f303d6",
+        "git_blob_sha": "cc938b408d39958fea3ff55371020ea0dfc887cf",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-set-011.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-set-011.webp",
+        "acquired_at_utc": "2026-11-20T06:58:24.0346121Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-set-011.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-set-011.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 59036,
+        "response_bytes": 59036,
+        "etag": "\"6affef5d-e69c\"",
+        "elapsed_ms": 156
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 59036,
+        "sha256": "c2494e5b40f3dfb419d099bf54a0b351245bcf0c89ca47915d2e1eac99f303d6",
+        "git_blob_sha": "cc938b408d39958fea3ff55371020ea0dfc887cf",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-amxx-009-003.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-009-003.webp",
+      "expected": {
+        "bytes": 136722,
+        "sha256": "211b36fe4e0b7d2ca1c8f801b912cba1818170862fc0925e0884e2642b07b153",
+        "git_blob_sha": "a8d6142dc2aaf8acfefae4484b8d06d6a587d56a",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-amxx-009-003.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-009-003.webp",
+        "acquired_at_utc": "2026-11-20T06:58:24.1919398Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-amxx-009-003.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-009-003.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 136722,
+        "response_bytes": 136722,
+        "etag": "\"6affef5d-21612\"",
+        "elapsed_ms": 164
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 136722,
+        "sha256": "211b36fe4e0b7d2ca1c8f801b912cba1818170862fc0925e0884e2642b07b153",
+        "git_blob_sha": "a8d6142dc2aaf8acfefae4484b8d06d6a587d56a",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-amxx-020-00.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-020-00.webp",
+      "expected": {
+        "bytes": 215726,
+        "sha256": "040bc1161b0bd2de8f1c9a9d8eb7d676c4a677411407cc87fa39f1cc9ed07315",
+        "git_blob_sha": "195391320d128fe4ceb434b4ef866f68dc9994bc",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-amxx-020-00.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-020-00.webp",
+        "acquired_at_utc": "2026-11-20T06:58:24.3586160Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-amxx-020-00.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-020-00.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 215726,
+        "response_bytes": 215726,
+        "etag": "\"6affef5d-34aae\"",
+        "elapsed_ms": 195
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 215726,
+        "sha256": "040bc1161b0bd2de8f1c9a9d8eb7d676c4a677411407cc87fa39f1cc9ed07315",
+        "git_blob_sha": "195391320d128fe4ceb434b4ef866f68dc9994bc",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-amxx-018-01.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-018-01.webp",
+      "expected": {
+        "bytes": 195056,
+        "sha256": "667b676e3bd458cd4c47a244689f48378606ac11bf9bce8aecf1ed3255d38143",
+        "git_blob_sha": "a28fa24ef695c4f64bbdca1b7baf028a3cdc0977",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-amxx-018-01.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-018-01.webp",
+        "acquired_at_utc": "2026-11-20T06:58:24.5562560Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-amxx-018-01.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-018-01.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 195056,
+        "response_bytes": 195056,
+        "etag": "\"6affef5d-2f9f0\"",
+        "elapsed_ms": 172
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 195056,
+        "sha256": "667b676e3bd458cd4c47a244689f48378606ac11bf9bce8aecf1ed3255d38143",
+        "git_blob_sha": "a28fa24ef695c4f64bbdca1b7baf028a3cdc0977",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-amxx-018-02.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-018-02.webp",
+      "expected": {
+        "bytes": 475056,
+        "sha256": "91ba84bb7542399a379412e1dac821c5df2d036b9b960b39ca128943e3b5d716",
+        "git_blob_sha": "a224b252bcca9d2ed07985e949c0997cc46e4047",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-amxx-018-02.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-018-02.webp",
+        "acquired_at_utc": "2026-11-20T06:58:24.7308335Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-amxx-018-02.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-018-02.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 475056,
+        "response_bytes": 475056,
+        "etag": "\"6affef5d-73fb0\"",
+        "elapsed_ms": 165
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 475056,
+        "sha256": "91ba84bb7542399a379412e1dac821c5df2d036b9b960b39ca128943e3b5d716",
+        "git_blob_sha": "a224b252bcca9d2ed07985e949c0997cc46e4047",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-amxx-020-05.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-020-05.webp",
+      "expected": {
+        "bytes": 212400,
+        "sha256": "7b94c0f125fc227c9c21b2feca10ae08cc4aac014fd37a73795732796dba8384",
+        "git_blob_sha": "e6af41a073808142b6d6bb8975f1cee48f03d48f",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-amxx-020-05.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-020-05.webp",
+        "acquired_at_utc": "2026-11-20T06:58:24.8984433Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-amxx-020-05.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-020-05.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 212400,
+        "response_bytes": 212400,
+        "etag": "\"6affef5d-33db0\"",
+        "elapsed_ms": 178
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 212400,
+        "sha256": "7b94c0f125fc227c9c21b2feca10ae08cc4aac014fd37a73795732796dba8384",
+        "git_blob_sha": "e6af41a073808142b6d6bb8975f1cee48f03d48f",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-amxx-020-01.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-020-01.webp",
+      "expected": {
+        "bytes": 117692,
+        "sha256": "9cf2e4823b39ef3e02cb0c2d54b710934294ba78c7121c34fbea5240d1822229",
+        "git_blob_sha": "bf594746da4d0d67c6e7dad472d88df7802430ce",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-amxx-020-01.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-020-01.webp",
+        "acquired_at_utc": "2026-11-20T06:58:25.0789961Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-amxx-020-01.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-020-01.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 117692,
+        "response_bytes": 117692,
+        "etag": "\"6affef5d-1cbbc\"",
+        "elapsed_ms": 187
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 117692,
+        "sha256": "9cf2e4823b39ef3e02cb0c2d54b710934294ba78c7121c34fbea5240d1822229",
+        "git_blob_sha": "bf594746da4d0d67c6e7dad472d88df7802430ce",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-22-set-noui.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-22-set-noui.webp",
+      "expected": {
+        "bytes": 156784,
+        "sha256": "086a284685b957b9a91f911ab6f9e1d412a75833cb1cb87e349cee1e89c2baa5",
+        "git_blob_sha": "8ea9aaa8628eeb8269ccfe2f6945468a82945ec9",
+        "format": "WEBP",
+        "width": 2509,
+        "height": 1354,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-22-set-noui.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-22-set-noui.webp",
+        "acquired_at_utc": "2026-11-20T06:58:25.2680731Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-22-set-noui.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-22-set-noui.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 156784,
+        "response_bytes": 156784,
+        "etag": "\"6affef5d-26470\"",
+        "elapsed_ms": 224
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 156784,
+        "sha256": "086a284685b957b9a91f911ab6f9e1d412a75833cb1cb87e349cee1e89c2baa5",
+        "git_blob_sha": "8ea9aaa8628eeb8269ccfe2f6945468a82945ec9",
+        "format": "WEBP",
+        "width": 2509,
+        "height": 1354,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-009.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-009.webp",
+      "expected": {
+        "bytes": 147462,
+        "sha256": "bff0412f392b8bfba3f5a800bab11a7fcece9d88f96230229b46e4c6522b0cbe",
+        "git_blob_sha": "fe7457b2eb662296c3bbf406eeb97144b9a4b442",
+        "format": "WEBP",
+        "width": 2207,
+        "height": 1328,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-009.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-009.webp",
+        "acquired_at_utc": "2026-11-20T06:58:25.4933749Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-009.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-009.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 147462,
+        "response_bytes": 147462,
+        "etag": "\"6affef5d-24006\"",
+        "elapsed_ms": 171
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 147462,
+        "sha256": "bff0412f392b8bfba3f5a800bab11a7fcece9d88f96230229b46e4c6522b0cbe",
+        "git_blob_sha": "fe7457b2eb662296c3bbf406eeb97144b9a4b442",
+        "format": "WEBP",
+        "width": 2207,
+        "height": 1328,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-009-64719152.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-009-64719152.webp",
+      "expected": {
+        "bytes": 164578,
+        "sha256": "9eddaba4ff99b5456f5b941238ed1392a5670acf8ffdcc87272b528b58a83e7f",
+        "git_blob_sha": "c41683d5bc64ec41c2f599245ce24596f7259e7c",
+        "format": "WEBP",
+        "width": 2511,
+        "height": 1338,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-009-64719152.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-009-64719152.webp",
+        "acquired_at_utc": "2026-11-20T06:58:25.6668288Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-009-64719152.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-009-64719152.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 164578,
+        "response_bytes": 164578,
+        "etag": "\"6affef5d-282e2\"",
+        "elapsed_ms": 164
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 164578,
+        "sha256": "9eddaba4ff99b5456f5b941238ed1392a5670acf8ffdcc87272b528b58a83e7f",
+        "git_blob_sha": "c41683d5bc64ec41c2f599245ce24596f7259e7c",
+        "format": "WEBP",
+        "width": 2511,
+        "height": 1338,
+        "exif_orientation": null
+      },
+      "passed": true
+    },
+    {
+      "name": "the-digital-shaman-amxx-009-001.webp",
+      "kind": "webp",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-009-001.webp",
+      "expected": {
+        "bytes": 108272,
+        "sha256": "52b8b4af4d2a5191bed1adf3d5d2e04c4c7adf6b1050909fe9ae4fb6ef8ded0a",
+        "git_blob_sha": "01ea20f49fa28a73985c9ff7fbb8e2f98e6d6577",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "http": {
+        "name": "the-digital-shaman-amxx-009-001.webp",
+        "kind": "webp",
+        "url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-009-001.webp",
+        "acquired_at_utc": "2026-11-20T06:58:25.8325067Z",
+        "https_trust": "Windows system certificate validation",
+        "timeout_seconds": 10,
+        "file": "C:\\Users\\artur\\Documents\\Codex\\2026-11-19\\files-mentioned-by-the-user-codex\\work\\1xRNxG\\http-cache\\public\\webps\\the-digital-shaman-amxx-009-001.webp",
+        "final_url": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-amxx-009-001.webp",
+        "status": 200,
+        "content_type": "image/webp",
+        "content_length": 108272,
+        "response_bytes": 108272,
+        "etag": "\"6affef5d-1a6f0\"",
+        "elapsed_ms": 172
+      },
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "full_decode": true,
+        "response_byte_count": true,
+        "http_content_length": true,
+        "exact_bytes": true,
+        "exact_sha256": true,
+        "exact_git_blob_sha": true,
+        "exact_format": true,
+        "exact_width": true,
+        "exact_height": true,
+        "exact_exif_orientation": true
+      },
+      "actual": {
+        "bytes": 108272,
+        "sha256": "52b8b4af4d2a5191bed1adf3d5d2e04c4c7adf6b1050909fe9ae4fb6ef8ded0a",
+        "git_blob_sha": "01ea20f49fa28a73985c9ff7fbb8e2f98e6d6577",
+        "format": "WEBP",
+        "width": 2560,
+        "height": 1440,
+        "exif_orientation": null
+      },
+      "passed": true
+    }
+  ],
+  "gallery_manifest": {
+    "url": "https://digitalshamans.co.uk/galleries/high-poly-models/gallery.json",
+    "checks": {
+      "http_200": true,
+      "exact_url": true,
+      "windows_system_tls": true,
+      "no_request_error": true,
+      "exact_staged_bytes": true,
+      "canonical_order_and_schema": true
+    },
+    "passed": true,
+    "sha256": "5f2c45d604c9ca76a853b7c7c97f891648d6d9386b8aacabcb452cfcb2c2980c"
+  },
+  "companions": [],
+  "routes": [
+    {
+      "name": "studio_route",
+      "url": "https://digitalshamans.co.uk/galleries/high-poly-models/",
+      "robots": [
+        "noindex"
+      ],
+      "title": "HIgh-Poly Models | Digital Shamans",
+      "heading": "HIgh-Poly Models",
+      "base": null,
+      "build_revision": "eaa951a3950ffad3b8c2bcde8fd98f0a1522d956",
+      "resolved_scripts": [
+        "https://digitalshamans.co.uk/galleries/gallery-arrival.js?v=1",
+        "https://digitalshamans.co.uk/assets/gallery-resolution.js?v=6",
+        "https://digitalshamans.co.uk/galleries/gallery-data.js?v=3",
+        "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43",
+        "https://digitalshamans.co.uk/galleries/gallery-captions.js?v=1"
+      ],
+      "resolved_styles": [
+        "https://digitalshamans.co.uk/assets/site.css?v=12",
+        "https://digitalshamans.co.uk/galleries/gallery.css?v=27",
+        "https://digitalshamans.co.uk/galleries/gallery-captions.css?v=1"
+      ],
+      "initial_merge_revision_exact_match": true,
+      "caption_template_count": 1,
+      "caption_records": [
+        {
+          "filename": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-001.jpg",
+          "text": "Furniture meshes in Unreal with materials and raytracing."
+        },
+        {
+          "filename": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-002.jpg",
+          "text": "Furniture meshes in Unreal with materials and raytracing."
+        },
+        {
+          "filename": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-007.jpg",
+          "text": "Furniture meshes in Unreal with raytracing on."
+        },
+        {
+          "filename": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-004.jpg",
+          "text": "Furniture meshes in Unreal with raytracing on."
+        },
+        {
+          "filename": "the-digital-shaman-set-021.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-set-022.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-set-011.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-amxx-009-003.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-amxx-020-00.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-amxx-018-01.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-amxx-018-02.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-amxx-020-05.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-amxx-020-01.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-22-set-noui.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-009.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-009-64719152.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-amxx-009-001.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        }
+      ],
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "noindex": true,
+        "title_exact": true,
+        "heading_exact": true,
+        "seo_description": true,
+        "gallery_section": true,
+        "grouped_image_marker": true,
+        "viewer_controls_included": true,
+        "caption_template_exactly_one": true,
+        "all_caption_records_unique": true,
+        "exact_filename_caption_source_mapping": true,
+        "caption_script_present": true,
+        "caption_styles_present": true,
+        "companion_opt_in_matches": true,
+        "no_video_or_iframe": true,
+        "all_scripts_styles_reachable": true,
+        "expected_main_scripts": true,
+        "expected_styles": true,
+        "companion_script_present": true,
+        "companion_style_present": true,
+        "originals_origin": true,
+        "originals_revision_override": true,
+        "default_originals_revision": true,
+        "all_source_images_versioned": true,
+        "exact_asset_versions": true,
+        "fallback_lead_original": true,
+        "navigation_excludes_unlisted_gallery": true,
+        "personal_uses_shared_base": true,
+        "published_build_revision": true
+      },
+      "passed": true
+    },
+    {
+      "name": "personal_route",
+      "url": "https://digitalshamans.co.uk/artur/galleries/high-poly-models/",
+      "robots": [
+        "noindex"
+      ],
+      "title": "HIgh-Poly Models | Artur Perzyna",
+      "heading": "HIgh-Poly Models",
+      "base": "/galleries/high-poly-models/",
+      "build_revision": "eaa951a3950ffad3b8c2bcde8fd98f0a1522d956",
+      "resolved_scripts": [
+        "https://digitalshamans.co.uk/galleries/gallery-arrival.js?v=1",
+        "https://digitalshamans.co.uk/assets/gallery-resolution.js?v=6",
+        "https://digitalshamans.co.uk/galleries/gallery-data.js?v=3",
+        "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43",
+        "https://digitalshamans.co.uk/galleries/gallery-captions.js?v=1"
+      ],
+      "resolved_styles": [
+        "https://digitalshamans.co.uk/assets/site.css?v=12",
+        "https://digitalshamans.co.uk/galleries/gallery.css?v=27",
+        "https://digitalshamans.co.uk/galleries/gallery-captions.css?v=1"
+      ],
+      "initial_merge_revision_exact_match": true,
+      "caption_template_count": 1,
+      "caption_records": [
+        {
+          "filename": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-001.jpg",
+          "text": "Furniture meshes in Unreal with materials and raytracing."
+        },
+        {
+          "filename": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-002.jpg",
+          "text": "Furniture meshes in Unreal with materials and raytracing."
+        },
+        {
+          "filename": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-007.jpg",
+          "text": "Furniture meshes in Unreal with raytracing on."
+        },
+        {
+          "filename": "the-digital-shaman-archivis-furnitures-presentation-ue4-27-004.jpg",
+          "text": "Furniture meshes in Unreal with raytracing on."
+        },
+        {
+          "filename": "the-digital-shaman-set-021.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-set-022.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-set-011.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-amxx-009-003.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-amxx-020-00.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-amxx-018-01.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-amxx-018-02.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-amxx-020-05.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-amxx-020-01.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-22-set-noui.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-009.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-009-64719152.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        },
+        {
+          "filename": "the-digital-shaman-amxx-009-001.jpg",
+          "text": "Subdiv polymodeling, nCloth, UV Mapping"
+        }
+      ],
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "noindex": true,
+        "title_exact": true,
+        "heading_exact": true,
+        "seo_description": true,
+        "gallery_section": true,
+        "grouped_image_marker": true,
+        "viewer_controls_included": true,
+        "caption_template_exactly_one": true,
+        "all_caption_records_unique": true,
+        "exact_filename_caption_source_mapping": true,
+        "caption_script_present": true,
+        "caption_styles_present": true,
+        "companion_opt_in_matches": true,
+        "no_video_or_iframe": true,
+        "all_scripts_styles_reachable": true,
+        "expected_main_scripts": true,
+        "expected_styles": true,
+        "companion_script_present": true,
+        "companion_style_present": true,
+        "originals_origin": true,
+        "originals_revision_override": true,
+        "default_originals_revision": true,
+        "all_source_images_versioned": true,
+        "exact_asset_versions": true,
+        "fallback_lead_original": true,
+        "navigation_excludes_unlisted_gallery": true,
+        "personal_uses_shared_base": true,
+        "published_build_revision": true
+      },
+      "passed": true
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "dependency_00",
+      "url": "https://digitalshamans.co.uk/assets/gallery-resolution.js?v=6",
+      "kind": "script",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "104a8dbe30f2f7d7c9333f1b5101da4de06d242eb836141ed8d6e8daafcf0810"
+    },
+    {
+      "name": "dependency_01",
+      "url": "https://digitalshamans.co.uk/assets/site.css?v=12",
+      "kind": "style",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "c7d2da1cb83aa62046386138240035d54fe0d58594d1af7b7320997603f47772"
+    },
+    {
+      "name": "dependency_02",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-arrival.js?v=1",
+      "kind": "script",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "aa4ba207b480a7335059cdd47bb2bc8631fca538fbc8e8ca2e39a8b6d677aa4d"
+    },
+    {
+      "name": "dependency_03",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-captions.css?v=1",
+      "kind": "style",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "4c6c224203c6dbeeb4b5dbaf4002eb838848f53725ce304ad89b82fb0ff562bf"
+    },
+    {
+      "name": "dependency_04",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-captions.js?v=1",
+      "kind": "script",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "26396c12d13ce01bc16df0a6dc810270823e67772debc62053f0b60648e0c054"
+    },
+    {
+      "name": "dependency_05",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-data.js?v=3",
+      "kind": "script",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "5a9c94958e07d8a47bee6e3e32d7f1fa61ae154ed2d57413c1cfafef13be4379"
+    },
+    {
+      "name": "dependency_06",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-mobile-scroll.js?v=1",
+      "kind": "script",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "634d5de4e78d41c9a824a5c5b243b21e57eb42cd062975677f7fe206435d2da1"
+    },
+    {
+      "name": "dependency_07",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43",
+      "kind": "script",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "8bbc565ce8b37758759071f5c6f4370558636eff85d155dcd6ee7536adf01614"
+    },
+    {
+      "name": "dependency_08",
+      "url": "https://digitalshamans.co.uk/galleries/gallery.css?v=27",
+      "kind": "style",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "nonempty": true,
+        "appropriate_content_type": true
+      },
+      "passed": true,
+      "sha256": "9e9b6c5355be74a18b83368735233eaeac90879ea6173d6506845bbbdc23dbbd"
+    }
+  ],
+  "homes": [
+    {
+      "name": "studio_home",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "no_unlisted_gallery_link": true,
+        "no_unlisted_gallery_nav": true
+      },
+      "passed": true
+    },
+    {
+      "name": "personal_home",
+      "checks": {
+        "http_200": true,
+        "exact_url": true,
+        "windows_system_tls": true,
+        "no_request_error": true,
+        "content_type": true,
+        "no_unlisted_gallery_link": true,
+        "no_unlisted_gallery_nav": true
+      },
+      "passed": true
+    }
+  ],
+  "sitemap": {
+    "checks": {
+      "http_200": true,
+      "exact_url": true,
+      "windows_system_tls": true,
+      "no_request_error": true,
+      "excludes_both_unlisted_routes": true
+    },
+    "passed": true
+  },
+  "scope": "Root-released actual public GETs with Windows system TLS. No full historical media redownload; no browser/interaction/CI claims."
+}

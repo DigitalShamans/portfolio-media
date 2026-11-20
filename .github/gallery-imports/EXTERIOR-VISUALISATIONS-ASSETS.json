@@ -1,0 +1,352 @@
+{
+  "passed": true,
+  "images": 19,
+  "captions": 0,
+  "null_captions": 19,
+  "embeds": 0,
+  "empty_positions": [
+    2
+  ],
+  "artifacts": 43,
+  "original_bytes": 16817855,
+  "webp_bytes": 12261272,
+  "original_dimensions": {
+    "2000x1500": 19
+  },
+  "webp_dimensions": {
+    "1920x1440": 19
+  },
+  "original_facts": [
+    {
+      "filename": "artur-perzyna-018.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 984236,
+      "sha256": "1f9367ba1782a00b0c8ccb41ffafec65834c21f9c968505a17ce6971370e4099",
+      "git_blob_sha": "71dd0d831290dfbf8167a1e323912a80e9d3ce90"
+    },
+    {
+      "filename": "artur-perzyna-011.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 1096030,
+      "sha256": "b27fa5fb06c0b04186f122b2ca449449b9699929f214de8e0bb8aef4f3eb44c6",
+      "git_blob_sha": "edb0665cf3c015d2824256f503abd55a83c817b1"
+    },
+    {
+      "filename": "artur-perzyna-012.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 1021069,
+      "sha256": "cf9bde5867dd8cba12625014f57862136e56aa2dda2ecadfecdc7854a73f4a37",
+      "git_blob_sha": "88bae22c740ac96025747e7e91fdf2a4182f24d9"
+    },
+    {
+      "filename": "artur-perzyna-013.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 1000888,
+      "sha256": "401b29c00c90ec685647911fe7dc42db0152e38837e489ff42b63ae525fa28b1",
+      "git_blob_sha": "c522dbde809c7e6fcfd6ae4215b997dff0d76c51"
+    },
+    {
+      "filename": "artur-perzyna-010.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 1044045,
+      "sha256": "f8ae2f8f379ece04ed0c2dc8c48b4a062fc874795822919948f862272c46ecf4",
+      "git_blob_sha": "b45268e7977d4ec15fe29e029c294598a89b7e4e"
+    },
+    {
+      "filename": "artur-perzyna-009.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 755466,
+      "sha256": "2e0fbd4d64af17d69e53c22fe0234ee9aa09af2d7574d65a35cd66eb07cbc498",
+      "git_blob_sha": "229c2ec086f3a422ac8515b8f5c932a8995046a2"
+    },
+    {
+      "filename": "artur-perzyna-008.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 995916,
+      "sha256": "2b40c5d2c6def4ac6331077a081b4ca0d39905a1bacfa7ac01c6a0cf225ffb41",
+      "git_blob_sha": "1e6eb66847b4a31af212b6526781c6f6c913ab49"
+    },
+    {
+      "filename": "artur-perzyna-007.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 689571,
+      "sha256": "a298f60283b28b2f8b39fc33203a778720ae63e150ac4c434ab05d5c44f45c37",
+      "git_blob_sha": "15fc8ae65d2faf00877960c8d1caf13577263d7f"
+    },
+    {
+      "filename": "artur-perzyna-006.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 977546,
+      "sha256": "da0d4ddcc977c158c9714f4b1c0807811bbba952225c7bf5b4ea8ea34092e0fb",
+      "git_blob_sha": "0d35aaa5b670fc999898b6179c47d7afc8047553"
+    },
+    {
+      "filename": "artur-perzyna-005.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 826955,
+      "sha256": "23bec463653a3b91cbaebefaffa274f4165dbefdbad2299176cd939ed637bbd2",
+      "git_blob_sha": "26f9b9fb7496d75fd593cdb4906fcbcc8d3cec8f"
+    },
+    {
+      "filename": "artur-perzyna-004.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 830045,
+      "sha256": "2542cc7728d24acee901673c0d7e39d1503e532876de9f11336c525f6ca9d112",
+      "git_blob_sha": "ab01f0f40fc0242e01833bb9abf22a986a69681e"
+    },
+    {
+      "filename": "artur-perzyna-003.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 960105,
+      "sha256": "67ca460779b47cb239706cad2c17f4bf70cd19da1c931ac8ec12fee698fdf521",
+      "git_blob_sha": "3ede156c8e21c891b91614b5978dcee1318a4fec"
+    },
+    {
+      "filename": "artur-perzyna-002.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 793004,
+      "sha256": "d4e87ac8532f7fe7a422d7a26e2820accb0d9cb92b47acc5f887c74150258da9",
+      "git_blob_sha": "1d7912175c63f6e0834a7c137ef9c3b1471e7bc2"
+    },
+    {
+      "filename": "artur-perzyna-001.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 825754,
+      "sha256": "63b5671bf7041ba79f45718523c2c54dfe5fad73ec8149161773ee7cb95c6d44",
+      "git_blob_sha": "c0a4321b0b76e58e9d3d1513b720ea0a38fdd504"
+    },
+    {
+      "filename": "artur-perzyna-017.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 890091,
+      "sha256": "62f158d7bbaa881b003b0bbd65740bdbe5425f3ca9dc37e95cb4f5b333d0f5ac",
+      "git_blob_sha": "13e93fa9b2a5bdec543edf351e00c4470a7ca47a"
+    },
+    {
+      "filename": "artur-perzyna-025.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 726453,
+      "sha256": "76c764c26e6f4f7470963d1325f838c8328bf1944c7e24dc3a2f21300729b931",
+      "git_blob_sha": "8d7c108bfb60b347d9d8bfe19216fb733828e3a1"
+    },
+    {
+      "filename": "artur-perzyna-027.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 933082,
+      "sha256": "acd11cd320632ebc522d36c1d8f778113dec80218f8988201407a9257e0215f2",
+      "git_blob_sha": "a0d6e8be143c217c1be18966f13867e4ef4e3842"
+    },
+    {
+      "filename": "artur-perzyna-028.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 702309,
+      "sha256": "d26af3487915b05ec62eba759157e3e4be6f1b7826579d0d3c405a569005358e",
+      "git_blob_sha": "5ffa93ab26b467f42f2dbce5e74c75948a99cc3e"
+    },
+    {
+      "filename": "artur-perzyna-030.jpg",
+      "width": 2000,
+      "height": 1500,
+      "bytes": 765290,
+      "sha256": "4cddf2990af25650145edc448d87cb11701684fe3c77a27eed1cf84ff689645a",
+      "git_blob_sha": "eebb562eb42f89b3d83090ba38646c1eb5295b3b"
+    }
+  ],
+  "webp_facts": [
+    {
+      "filename": "artur-perzyna-018.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 665652,
+      "sha256": "2ad7fba30195ba0ecfafa3c42f4766544a4164d67ffe4123208c55d2513eccca",
+      "git_blob_sha": "d54aae8e5a0dc7ba4092d8456a67d5d16d50417f"
+    },
+    {
+      "filename": "artur-perzyna-011.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 820792,
+      "sha256": "abbda0cee8d99ef6e29a6e46cc38a2d77b408f534bfe784977072ba58870babf",
+      "git_blob_sha": "4d95bca03538ac8d284913351c83038022752a53"
+    },
+    {
+      "filename": "artur-perzyna-012.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 797734,
+      "sha256": "8643a2fdc61c585ab87a94a0776ea70f378e0409957915894226062b1e37df0b",
+      "git_blob_sha": "deb3712d7165d87a39c289e9c1db8af58d43faec"
+    },
+    {
+      "filename": "artur-perzyna-013.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 766908,
+      "sha256": "9d0330a3deaba34a7afb905980c05f0d0bf25c6237b1a7874d013198de8e68e1",
+      "git_blob_sha": "15cf4ad09366e81ab2f4a3d03f106a93d0e10d18"
+    },
+    {
+      "filename": "artur-perzyna-010.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 761004,
+      "sha256": "de038f0c525d6250fc95c1e0b53f777e8688dcbb83885e22fffa22c38ff69b21",
+      "git_blob_sha": "06279603127bb98f311062660344a44ef408e1e8"
+    },
+    {
+      "filename": "artur-perzyna-009.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 540646,
+      "sha256": "b6b33cd09f7262148877bb149a33185f5d71de7b53001abd497afd5397f8456d",
+      "git_blob_sha": "e70f02c5b85730296fb6e6a7b3ae9827fffb9666"
+    },
+    {
+      "filename": "artur-perzyna-008.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 720682,
+      "sha256": "f20beab8fb5419eb9ea3a100cc992640657abd3756c0bfbf8cc2f51756ffd038",
+      "git_blob_sha": "f5a60c96dbf5b84d66c1a953382b203c3067c3a2"
+    },
+    {
+      "filename": "artur-perzyna-007.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 492874,
+      "sha256": "2d180f760f37573c2dbc3cda578ee810853642607d6f0a9dfa9604d76077d432",
+      "git_blob_sha": "adfd705652cce8fab9057c673979b83c9736f9fb"
+    },
+    {
+      "filename": "artur-perzyna-006.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 704870,
+      "sha256": "9735616f58f916e6d75b91a033b68ab8f9564ba93a14215be0a35c36758c7eb1",
+      "git_blob_sha": "dbe83ca143965af24270cfcf015968ebe46d28b0"
+    },
+    {
+      "filename": "artur-perzyna-005.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 585700,
+      "sha256": "0e607b039763228fed97df112b98980797c74d22140aaa09e78c4978bfe917a7",
+      "git_blob_sha": "e82f1c9bb51564d846b1ec8b6e4049ad1f5d3867"
+    },
+    {
+      "filename": "artur-perzyna-004.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 586516,
+      "sha256": "5508fc4d5b9ca894c3f51ea8c000fa9a9f1d4d576074a0eabf23124d78771ab0",
+      "git_blob_sha": "2801b2c0bab20beeacd068715a1d8cf1f54b3648"
+    },
+    {
+      "filename": "artur-perzyna-003.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 736836,
+      "sha256": "11cc3e79f97ee090a732b81ae7c98a9c17a3547f95b753a6ac7c50b3c23350c3",
+      "git_blob_sha": "cb039ce2774b77d515f187d785fbd11dfa0e2532"
+    },
+    {
+      "filename": "artur-perzyna-002.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 551860,
+      "sha256": "0269e9d7731a48d4f9dffb55496732132ed419fbcbb48fec604a946a0708ef4f",
+      "git_blob_sha": "8a08471c65d15035a228280988a61976c0a77b8b"
+    },
+    {
+      "filename": "artur-perzyna-001.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 594666,
+      "sha256": "eea346e72b32f33478d594e6c8ab28eab76d2bac16ea15ea2e436c505e2a50fd",
+      "git_blob_sha": "fb410308a7ca3dbc911cdadee50823e141af00d7"
+    },
+    {
+      "filename": "artur-perzyna-017.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 642374,
+      "sha256": "a7c1d867ad10c4d9aa5e51925373e18c454514637b8dc33277076fbe31fd1deb",
+      "git_blob_sha": "601ff4c2cba7f50636d84d47def7c9ba0409c6a3"
+    },
+    {
+      "filename": "artur-perzyna-025.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 509474,
+      "sha256": "86feeb1dccb530c10c4d1311fb64ce3d33383275f23bd0286eac805d98f4d78e",
+      "git_blob_sha": "1f65c7991bdb52a5f287eb886e7756724e1e74bf"
+    },
+    {
+      "filename": "artur-perzyna-027.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 717042,
+      "sha256": "b7b0ad980c3d9155e65790e1bb54d9a6c4fb2043fc6601a0157da85309594dc1",
+      "git_blob_sha": "d27168931bd36a053bc472ff9d184a5025675037"
+    },
+    {
+      "filename": "artur-perzyna-028.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 508666,
+      "sha256": "be00ce42ecc4df4558de5ee370eacf0d8671902546506244ece6f7a97d833aea",
+      "git_blob_sha": "401cb9928e9c1338e33bb395ec837a2c578fa99e"
+    },
+    {
+      "filename": "artur-perzyna-030.webp",
+      "width": 1920,
+      "height": 1440,
+      "bytes": 556976,
+      "sha256": "256ef848614aed56e485f6c9d9ebc15fe2cae85928488966e360d9c7243d5f84",
+      "git_blob_sha": "a3c4275833f702e42cb33fef270c97bb286bab9d"
+    }
+  ],
+  "byte_duplicate_groups": [],
+  "manifest": {
+    "bytes": 877,
+    "sha256": "a9087e62f0a444ebded1e363c175a7989d4c92c7954afa79eb9554eddcb9cebf",
+    "git_blob_sha": "fc90de4afe94f78d5833b30cb38215824b7969be"
+  },
+  "pillow": "13.0.0",
+  "encoder": {
+    "bounds": [
+      2560,
+      1440
+    ],
+    "exif_transpose": true,
+    "icc": true,
+    "method": 6,
+    "pillow": "13.0.0",
+    "quality": 92,
+    "resampling": "LANCZOS"
+  },
+  "download_seconds": 2.991,
+  "preparation_seconds": 5.263,
+  "verification_seconds": 2.767,
+  "checked_at_utc": "2026-11-20T07:36:12.883982+00:00",
+  "source_order_case_urls_description_exact": true,
+  "full_decode_icc_fit_passed": true
+}
