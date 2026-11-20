@@ -169,6 +169,7 @@
     const c = scrollCamera;
     const scroll = smoother ? smoother.scrollTop() : window.scrollY;
     const progress = animation.progress();
+    const point = c.anchor ? path.getPointAtLength(progress * c.length) : null;
     const virtualScroll = scroll < c.start ? scroll : c.start + progress * c.normalDistance + Math.max(0, scroll - c.end);
     const pinnedOffset = Math.max(0, Math.min(c.outerHeight - c.viewport, scroll - c.documentTop));
     const stageTop = c.documentTop - scroll + pinnedOffset;
@@ -179,14 +180,20 @@
       canvas.style.transform = 'translate3d(0,' + y.toFixed(3) + 'px,0)';
       return;
     }
-    const point = path.getPointAtLength(progress * c.length);
     const x = c.anchor - c.left - point.x;
-    canvas.style.transform = 'translate3d(' + x.toFixed(3) + 'px,' + y.toFixed(3) + 'px,0)';
+    pointer.setAttribute('cx', point.x);
+    pointer.setAttribute('cy', point.y);
+    // Follow the actual point on the curve, rather than the height of all
+    // the labels. This keeps the arriving card below the top clipping edge.
+    const firstPointTop = c.documentTop + c.firstPointY;
+    const dockedTop = Math.min(firstPointTop, c.viewport * .38);
+    const pointTop = Math.max(dockedTop, firstPointTop - scroll) - Math.max(0, scroll - c.end);
+    const mobileY = pointTop - stageTop - point.y;
+    canvas.style.transform = 'translate3d(' + x.toFixed(3) + 'px,' + mobileY.toFixed(3) + 'px,0)';
     c.labels.forEach((box, i) => {
-      // Keep cards readable while the wider curve pans behind them.
-      const labelWidth = box.right - box.left;
-      const left = Math.max(-x, Math.min(c.width - labelWidth - x, box.left));
-      const shift = left - box.left;
+      // The curve pans at its natural width. Cards keep a stable reading
+      // column, with enough space between their text and thumbnails.
+      const shift = c.cardLeft - x - box.left;
       entries[i].style.transform = 'translateX(' + shift.toFixed(3) + 'px)';
     });
   }
@@ -206,10 +213,12 @@
 
   function drawCurve(width, height, narrow, scale, desktopAspect) {
     const desktopSpan = (height - 80 * scale) / (desktopAspect * curveExtent);
-    const span = narrow ? Math.min(300, width * .7) : Math.min(width, desktopSpan);
+    const span = narrow ? Math.max(width * 2, desktopSpan) : Math.min(width, desktopSpan);
     const offset = narrow ? 8 : (width - span) / 2;
     const x = value => offset + value * span;
-    const y = value => 56 * scale + value * (height - 80 * scale) / curveExtent;
+    const startY = narrow ? Math.max(56, entries[0].offsetHeight + 16) : 56 * scale;
+    const verticalSpan = narrow ? height - startY - 24 : height - 80 * scale;
+    const y = value => startY + value * verticalSpan / curveExtent;
     // Leave room to the left of the first date for its thumbnail.
     const startX = narrow ? x(.10) : Math.max(x(.10), 180 * scale);
     const d = 'M ' + startX + ' ' + y(0) +
@@ -255,6 +264,39 @@
       minimum = Math.min(minimum, metrics.atY(top + available).progress - metrics.atY(top).progress);
     }
     return minimum;
+  }
+
+  function measureMobileLabels(width) {
+    const anchor = Math.max(32, Math.min(56, width * .12));
+    const cardLeft = anchor + 18;
+    const cardWidth = width - cardLeft;
+    entries.forEach(entry => { entry.style.width = cardWidth + 'px'; });
+    const heights = entries.map(entry => entry.offsetHeight);
+    const minimumSpan = heights.slice(0, -1).reduce((sum, height) => sum + height + 24, 0);
+    return { anchor, cardLeft, cardWidth, heights, minimumSpan };
+  }
+
+  function placeMobileLabels(metrics, layout) {
+    const lastAt = Number(entries[entries.length - 1].dataset.curveAt);
+    const extraSpan = Math.max(0, metrics.y(lastAt) - metrics.y(0) - layout.minimumSpan);
+    const points = [];
+    const labels = [];
+    let rowY = metrics.y(0);
+    entries.forEach((entry, i) => {
+      if (i) {
+        const gap = Number(entry.dataset.curveAt) - Number(entries[i - 1].dataset.curveAt);
+        rowY += layout.heights[i - 1] + 24 + extraSpan * gap / lastAt;
+      }
+      const at = metrics.atY(rowY).progress;
+      const point = path.getPointAtLength(at * metrics.length);
+      const left = point.x + 18;
+      const top = i ? point.y - 8 : point.y - layout.heights[0] - 12;
+      entry.style.left = left + 'px';
+      entry.style.top = top + 'px';
+      points.push({ x: point.x, y: point.y, progress: at });
+      labels.push({ left, right: left + layout.cardWidth, top, bottom: top + layout.heights[i] });
+    });
+    return { points, labels };
   }
 
   function placeLabels(points, metrics, width, narrow, scale, cameraAnchor, trackLeft) {
@@ -314,6 +356,7 @@
   function rebuild() {
     const width = track.clientWidth;
     const narrow = width < 720;
+    const previousMobileProgress = narrow && animation && track.classList.contains('career-track--narrow') ? animation.progress() : null;
     // The small viewport stays constant when a phone's address bar folds away.
     // Actual viewport/orientation changes still recalculate the geometry.
     const viewport = narrow && viewportMeasure ? Math.round(viewportMeasure.getBoundingClientRect().height) : window.innerHeight;
@@ -327,28 +370,34 @@
     track.classList.add('career-track--positioned');
     track.classList.toggle('career-track--narrow', narrow);
     track.classList.toggle('career-track--tight', narrow && width < 300);
+    if (narrow) track.classList.add('career-track--compact');
+    const mobileLayout = narrow ? measureMobileLabels(width) : null;
+    const minimumHeight = narrow ? Math.ceil(mobileLayout.minimumSpan / .95 + Math.max(56, mobileLayout.heights[0] + 16) + 24) : 0;
 
     // Calibrate using actual SVG arc length, rather than only its height.
-    // Even the first viewport (with the header and title present) fits >=40%.
+    // Desktop fits >=40% even with the header and title present. On phones,
+    // preserve enough vertical space for the measured cards to stay separate.
     const documentTop = track.getBoundingClientRect().top + (smoother ? smoother.scrollTop() : window.scrollY);
     const available = Math.max(120, viewport - documentTop - 16);
     // On wide screens the reference gives the curve more room horizontally.
     const desktopAspect = desktopCurveAspect / (1 + (scale - 1) * 2 / 3);
     let height = Math.round(available * 2 * curveExtent);
+    if (narrow) height = Math.max(height, minimumHeight);
     if (!narrow) height = Math.min(height, Math.round(width * desktopAspect * curveExtent + 80 * scale));
     let metrics, visibleFraction;
     for (let i = 0; i < 9; i++) {
       metrics = drawCurve(width, height, narrow, scale, desktopAspect);
       visibleFraction = minimumVisibleFraction(metrics, height, available);
-      if (visibleFraction >= .42) break;
-      height = Math.round(height * .9);
+      if (visibleFraction >= .42 || height === minimumHeight) break;
+      height = Math.max(minimumHeight, Math.round(height * .9));
     }
     const compact = narrow || height < 1100 * scale;
     track.classList.toggle('career-track--compact', compact);
     track.dataset.visibleCurveFraction = visibleFraction.toFixed(3);
     track.dataset.curveHeight = String(height);
 
-    const points = entries.map(entry => {
+    const mobilePlacement = narrow ? placeMobileLabels(metrics, mobileLayout) : null;
+    const points = mobilePlacement ? mobilePlacement.points : entries.map(entry => {
       const targetY = metrics.y(Number(entry.dataset.curveAt));
       const at = metrics.atY(targetY).progress;
       const exact = path.getPointAtLength(at * metrics.length);
@@ -357,14 +406,23 @@
     const slowMobile = narrow && canAnimate && !reducedMotion.matches;
     const scrollMultiplier = slowMobile ? 6 : 2;
     const trackLeft = track.getBoundingClientRect().left;
-    const cameraAnchor = slowMobile ? Math.max(96, Math.min(180, window.innerWidth * .38)) : 0;
-    const labels = placeLabels(points, metrics, width, narrow, scale, cameraAnchor, trackLeft);
+    const cameraAnchor = slowMobile ? trackLeft + mobileLayout.anchor : 0;
+    const labels = mobilePlacement ? mobilePlacement.labels : placeLabels(points, metrics, width, narrow, scale, cameraAnchor, trackLeft);
+    if (narrow && !slowMobile) {
+      entries.forEach((entry, i) => {
+        entry.style.left = mobileLayout.cardLeft + 'px';
+        labels[i].left = mobileLayout.cardLeft;
+        labels[i].right = width;
+      });
+    }
     stops.replaceChildren(...points.map((point, i) => {
       const circle = element('circle', { cx: point.x, cy: point.y, r: narrow ? 6 : 8 * scale, class: 'career-stop' });
       circle.addEventListener('click', () => entries[i].querySelector('.career-checkpoint').click());
       return circle;
     }));
     pointer.setAttribute('r', String(narrow ? 7 : 7 * scale));
+    pointer.setAttribute('cx', '0');
+    pointer.setAttribute('cy', '0');
     const contentHeight = Math.ceil(Math.max(height, ...labels.map(box => box.bottom)) + 24);
     canvas.style.height = contentHeight + 'px';
     track.style.height = contentHeight + 'px';
@@ -397,7 +455,7 @@
     track.style.setProperty('--career-stage-height', viewport + 'px');
     track.style.height = outerHeight + 'px';
     if (slowMobile) track.dataset.cameraAnchor = cameraAnchor.toFixed(3);
-    scrollCamera = { documentTop, viewport, start: normalStart, end, outerHeight, normalDistance, left: trackLeft, anchor: cameraAnchor, length: metrics.length, width, labels };
+    scrollCamera = { documentTop, viewport, start: normalStart, end, outerHeight, normalDistance, left: trackLeft, anchor: cameraAnchor, length: metrics.length, width, labels, firstPointY: points[0].y, cardLeft: mobileLayout?.cardLeft };
     animation = gsap.timeline({
       paused: true,
       defaults: { ease: 'none' },
@@ -405,10 +463,12 @@
     });
     animation.fromTo(path, { drawSVG: 0 }, { drawSVG: '100%', duration: 1 }, 0);
     animation.fromTo(pointer, { autoAlpha: 0 }, { autoAlpha: 1, duration: .004 }, 0);
-    animation.to(pointer, {
-      duration: 1,
-      motionPath: { path, align: path, alignOrigin: [.5, .5] }
-    }, 0);
+    if (!narrow) {
+      animation.to(pointer, {
+        duration: 1,
+        motionPath: { path, align: path, alignOrigin: [.5, .5] }
+      }, 0);
+    }
     points.forEach((point, i) => {
       const entry = entries[i];
       const at = point.progress;
@@ -422,7 +482,7 @@
       // Animate the entry itself so its text and thumbnails reveal together.
       const content = narrow ? entry.querySelector('.career-copy') : entry;
       reveal.fromTo(content, {
-        opacity: 0, x: -24, y: 8
+        opacity: 0, x: narrow ? 0 : -24, y: 8
       }, { opacity: 1, x: 0, y: 0, duration: .6, ease: 'power3.out' }, .06);
       reveal.fromTo(stops.children[i], {
         attr: { r: narrow ? 2.5 : 3 * scale }, autoAlpha: narrow ? .3 : .4
@@ -450,6 +510,11 @@
     track.dataset.timelineState = 'animated';
     if (smoother) ScrollTrigger.refresh();
     else scrollTween.scrollTrigger.refresh();
+    if (previousMobileProgress !== null) {
+      const restoredDistance = journeyDistance(previousMobileProgress) / 1.5;
+      window.scrollTo(0, normalStart + restoredDistance * scrollDistance);
+      ScrollTrigger.update();
+    }
     scrollTween.progress(scrollTween.scrollTrigger.progress);
     updateScrollCamera();
     updateMilestoneReveals();
