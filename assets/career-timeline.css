@@ -62,7 +62,6 @@
   stroke-linejoin: round;
 }
 .career-path-background { opacity: .4; }
-.career-guide { stroke: var(--career-white); stroke-width: 1; opacity: .25; fill: none; }
 .career-stop { fill: var(--career-white); cursor: pointer; pointer-events: all; }
 .career-pointer { fill: var(--career-white); opacity: 0; }
 .career-track--narrow .career-path-background { opacity: .18; }
