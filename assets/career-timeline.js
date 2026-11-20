@@ -10,6 +10,7 @@
   const rail = track.querySelector('.career-rail');
   const stage = track.querySelector('.career-stage');
   const canvas = track.querySelector('.career-canvas');
+  const mobileScroller = document.querySelector('.career-native-scroll');
   const path = track.querySelector('[data-career-path]');
   const background = track.querySelector('[data-career-background]');
   const pointer = track.querySelector('[data-career-pointer]');
@@ -46,6 +47,7 @@
   let milestoneReveals = [];
   let scrollCamera;
   let smoother;
+  let scroller = window;
   let signature = '';
   let resizeTimer;
   let initialized = false;
@@ -65,6 +67,17 @@
       ending.remove();
       ending.removeAttribute('style');
     }
+  }
+
+  function scrollTop() {
+    if (smoother) return smoother.scrollTop();
+    return scroller === window ? window.scrollY : scroller.scrollTop;
+  }
+
+  function scrollLimit() {
+    const height = scroller === window ? document.documentElement.scrollHeight : scroller.scrollHeight;
+    const visibleHeight = scroller === window ? window.innerHeight : scroller.clientHeight;
+    return Math.max(0, height - visibleHeight);
   }
 
   function prioritizePreviews(index) {
@@ -211,7 +224,7 @@
   function updateScrollCamera() {
     if (!scrollCamera || !animation) return;
     const c = scrollCamera;
-    const scroll = smoother ? smoother.scrollTop() : window.scrollY;
+    const scroll = scrollTop();
     const progress = animation.progress();
     // Cache the reading position in either layout before resize/refresh can
     // clamp the old scroll offset or change the animation's geometry.
@@ -221,7 +234,7 @@
     }
     if (network) {
       // Counter 70% of the page movement and keep the same placement at the footer.
-      const remaining = Math.max(0, document.documentElement.scrollHeight - window.innerHeight - scroll);
+      const remaining = Math.max(0, scrollLimit() - scroll);
       network.style.transform = 'translateY(' + (-.7 * remaining).toFixed(3) + 'px)';
     }
     // Mobile finishes at the final milestone, including its ending controls.
@@ -455,9 +468,9 @@
     const start = milestoneReveals[index].at;
     const end = milestoneReveals[index + 1]?.at ?? 1;
     const fraction = Math.max(0, Math.min(1, (progress - start) / (end - start || 1)));
-    const scroll = smoother ? smoother.scrollTop() : window.scrollY;
+    const scroll = scrollTop();
     const atTop = scroll <= 1;
-    const atBottom = scroll + window.innerHeight >= document.documentElement.scrollHeight - 2;
+    const atBottom = scroll >= scrollLimit() - 2;
     return { index, fraction, atTop, atBottom };
   }
 
@@ -476,6 +489,11 @@
     signature = nextSignature;
     reset();
     setMobileEnding(false);
+    // A native scroll area keeps touch gestures off the document viewport,
+    // where Chrome moves its address bar and the entire pinned timeline.
+    const useLocalScroll = Boolean(mobileScroller && narrow && canAnimate && touchDevice.matches && !reducedMotion.matches);
+    scroller = useLocalScroll ? mobileScroller : window;
+    document.documentElement.classList.toggle('career-local-scroll', useLocalScroll);
     updateDesktopSmoothing(narrow);
     track.classList.add('career-track--positioned');
     track.classList.toggle('career-track--narrow', narrow);
@@ -490,7 +508,8 @@
     // Calibrate using actual SVG arc length, rather than only its height.
     // Desktop fits >=40% even with the header and title present. On phones,
     // preserve enough vertical space for the measured cards to stay separate.
-    const documentTop = track.getBoundingClientRect().top + (smoother ? smoother.scrollTop() : window.scrollY);
+    const viewportTop = useLocalScroll ? mobileScroller.getBoundingClientRect().top : 0;
+    const documentTop = track.getBoundingClientRect().top - viewportTop + scrollTop();
     const available = Math.max(120, viewport - documentTop - 16);
     // On wide screens the reference gives the curve more room horizontally.
     const desktopAspect = desktopCurveAspect / (1 + (scale - 1) * 2 / 3);
@@ -648,6 +667,7 @@
       onUpdate: () => animation.progress(playhead.progress),
       scrollTrigger: {
         id: 'artur-career-timeline',
+        scroller,
         trigger: track,
         start: normalStart,
         end,
@@ -665,12 +685,12 @@
       const start = points[index].progress;
       const end = points[index + 1]?.progress ?? 1;
       const restoredDistance = journeyDistance(Math.min(endAt, start + (end - start) * fraction)) / endWeight;
-      const maximumScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      const maximumScroll = scrollLimit();
       const target = atTop ? 0 : atBottom ? maximumScroll : Math.min(maximumScroll, normalStart + restoredDistance * scrollDistance);
       // Update ScrollSmoother's visual position as well as native scrolling.
       // Otherwise entering the wide layout visibly eases from the old offset.
       if (smoother) smoother.scrollTop(target);
-      else window.scrollTo(0, target);
+      else scroller.scrollTo(0, target);
       ScrollTrigger.update();
     }
     scrollTween.progress(scrollTween.scrollTrigger.progress);
@@ -686,16 +706,18 @@
   function setupScrollCue() {
     const cue = track.querySelector('.career-scroll-cue');
     if (!cue) return;
-    if (window.scrollY > 0) {
+    if (scrollTop() > 0) {
       cue.hidden = true;
       return;
     }
     function dismissOnScroll() {
-      if (window.scrollY <= 0) return;
+      if (scrollTop() <= 0) return;
       cue.classList.add('career-scroll-cue--dismissed');
       window.removeEventListener('scroll', dismissOnScroll);
+      mobileScroller?.removeEventListener('scroll', dismissOnScroll);
     }
     window.addEventListener('scroll', dismissOnScroll, { passive: true });
+    mobileScroller?.addEventListener('scroll', dismissOnScroll, { passive: true });
   }
 
   // This script runs first. Draw the curve before the deferred GSAP files
@@ -726,6 +748,7 @@
   rebuild();
   window.addEventListener('resize', scheduleRebuild, { passive: true });
   window.addEventListener('scroll', updateScrollCamera, { passive: true });
+  mobileScroller?.addEventListener('scroll', updateScrollCamera, { passive: true });
   reducedMotion.addEventListener('change', scheduleRebuild);
   touchDevice.addEventListener('change', scheduleRebuild);
   if (window.ResizeObserver) new ResizeObserver(scheduleRebuild).observe(track);

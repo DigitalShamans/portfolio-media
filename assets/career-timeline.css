@@ -36,6 +36,26 @@
 }
 #career-scroll-content { width: 100%; }
 
+@media screen {
+  .career-local-scroll { scrollbar-gutter: auto; }
+  .career-local-scroll,
+  .career-local-scroll .career-page { overflow: hidden; }
+  .career-local-scroll .career-page {
+    /* Keep this scroll area inside a clipped parent so Chrome cannot
+       promote it to the page scroller that drives the address bar. */
+    position: relative;
+    /* ScrollSmoother can still write an inline height during rotation. */
+    height: 100vh !important;
+    height: 100dvh !important;
+  }
+  .career-local-scroll .career-native-scroll {
+    height: 100%;
+    overflow: hidden auto;
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
+  }
+}
+
 .career-scene { position: relative; isolation: isolate; }
 .career-backdrops {
   position: absolute;
@@ -316,7 +336,6 @@
 .career-track--tight .career-preview { width: 64px; }
 .career-track--tight .career-preview-stack { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .375rem; }
 .career-track--tight .career-preview-stack .career-preview { width: 100%; }
-.career-track--tight #career-2004 .career-copy--media { grid-template-columns: minmax(0, 1fr) 64px; }
 .career-track--narrow .career-stage { overflow: hidden; overflow: clip; }
 .career-track--narrow.career-track--slow .career-stage {
   position: sticky;
@@ -334,18 +353,22 @@
 .career-track--narrow .career-year,
 .career-track--narrow .career-checkpoint { background: #111; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .career-track--narrow .career-year { width: fit-content; }
-.career-track--narrow { --career-mobile-thumbnail-width: 88px; }
-.career-track--narrow.career-track--tight { --career-mobile-thumbnail-width: 72px; }
+.career-track--narrow { --career-mobile-thumbnail-width: 154px; }
+.career-track--narrow.career-track--tight { --career-mobile-thumbnail-width: 126px; }
 .career-track--narrow .career-copy--media {
-  grid-template-columns: minmax(0, max-content) var(--career-mobile-thumbnail-width);
+  grid-template-columns: minmax(0, max-content);
   justify-content: start;
-  gap: 12px;
+  gap: .4rem;
 }
 .career-track--narrow .career-description { overflow-wrap: anywhere; }
 .career-track--narrow .career-preview { width: var(--career-mobile-thumbnail-width); }
-.career-track--narrow.career-track--tight #career-2004 .career-preview { width: 64px; }
+.career-track--narrow.career-track--tight #career-2004 .career-preview { width: 112px; }
 .career-track--narrow #career-2015-rebellion .career-copy--media { grid-template-columns: minmax(0, 1fr); }
-.career-track--narrow .career-preview-stack { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.career-track--narrow .career-preview-stack {
+  /* Scale the previous three-column thumbnail width by the same 75%. */
+  grid-template-columns: calc((100% - 16px) / 3 * 1.75);
+  gap: 8px;
+}
 .career-track--narrow .career-preview-stack .career-preview { width: 100%; }
 .career-copy h2 {
   margin: 0;
