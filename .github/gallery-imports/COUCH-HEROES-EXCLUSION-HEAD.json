@@ -1,0 +1,15 @@
+{
+  "prior_get_results": "public-exclusion-first-attempt.json and public-exclusion-retry-http-results.json",
+  "requests": [
+    {
+      "name": "Couch_Heroes_Enviro_15.jpg",
+      "method": "HEAD",
+      "url": "https://digitalshamans.co.uk/galleries/couch-heroes/1440p/Couch_Heroes_Enviro_15.webp",
+      "final_url": "https://digitalshamans.co.uk/galleries/couch-heroes/1440p/Couch_Heroes_Enviro_15.webp",
+      "status": 503,
+      "content_type": "text/html; charset=utf-8",
+      "https_trust": "Windows system certificate validation",
+      "error": null
+    }
+  ]
+}

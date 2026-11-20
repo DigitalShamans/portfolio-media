@@ -38,6 +38,19 @@
     "prior_catalogs": 18
   },
   "website": {
-    "status": "pending"
-  }
+    "status": "verified",
+    "source_commit": "641836825a28bf2f53dd5e91db229dd9dfbbeb37",
+    "pr": 100,
+    "revision": "291327aa0ff7b42dcab3942fc72663933f882ebd",
+    "pages_run": 44712943678,
+    "public_gets": 25,
+    "unpublished_webp_denials": 7,
+    "unpublished_webp_unverified": 1
+  },
+  "native": "passed",
+  "browser": "passed",
+  "capture": "released",
+  "protected_public_files_verified": 14,
+  "private_untracked_preserved": 238,
+  "final_evidence_target": "Merge final evidence into main; retain branch references after the automatic approval review rejection."
 }

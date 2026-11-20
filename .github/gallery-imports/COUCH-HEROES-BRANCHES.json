@@ -1,0 +1,8 @@
+{
+  "status": "retained",
+  "auto_review_rejected": true,
+  "action": "Deleting the local and remote codex/couch-heroes-20261120 branch references in both repositories",
+  "reason": "Automatic approval review said this destructive Git cleanup was not explicitly authorized for this gallery.",
+  "deletion_performed": false,
+  "safe_alternative": "Finish publication and merge evidence; preserve feature refs and select main without deleting them."
+}
