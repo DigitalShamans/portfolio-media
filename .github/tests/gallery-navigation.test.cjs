@@ -6,7 +6,7 @@ const vm = require('node:vm');
 
 const source = fs.readFileSync(path.join(__dirname, '../../galleries/gallery-navigation.js'), 'utf8');
 
-function browser({ prefix = '', touchPoints = 5, width = 412, folder = 'hb-egypt' } = {}) {
+function browser({ prefix = '', touchPoints = 5, width = 412, folder = 'hb-egypt', galleryLoop = 'hard-bullet' } = {}) {
   class Target {
     constructor(tagName = 'DIV', excluded = false) {
       this.tagName = tagName; this.excluded = excluded; this.listeners = new Map();
@@ -34,9 +34,11 @@ function browser({ prefix = '', touchPoints = 5, width = 412, folder = 'hb-egypt
   let nextTimer = 0;
   const timers = new Map();
   const calls = [];
-  const previous = { href: 'https://example.test' + prefix + '/galleries/hb-rzstart/' };
-  const next = { href: 'https://example.test' + prefix + '/galleries/hb-helipad/' };
-  const navigation = { querySelector: selector => selector.endsWith('next') ? next : previous };
+  const previous = { href: 'https://example.test' + prefix + '/galleries/' +
+    (galleryLoop === 'full' ? 'high-poly-models' : 'hb-rzstart') + '/' };
+  const next = { href: 'https://example.test' + prefix + '/galleries/' +
+    (galleryLoop === 'full' ? 'phantom-covert-ops' : 'hb-helipad') + '/' };
+  const navigation = { dataset: { galleryLoop }, querySelector: selector => selector.endsWith('next') ? next : previous };
   const background = new Target('MAIN');
   const document = new Target();
   Object.assign(document, {
@@ -86,6 +88,33 @@ test('short swipes work in both directions from the middle on both portfolios', 
       b.advance(180);
       assert.deepEqual(b.calls, ['https://example.test' + prefix + '/galleries/' + folder + '/']);
     }
+  }
+});
+
+test('personal Full Portfolio background swipes wrap in their own loop', () => {
+  const b = browser({ prefix: '/artur', folder: 'nfs-unbound', galleryLoop: 'full' });
+  b.start(); b.move(160); b.end(160); b.advance(180);
+  assert.deepEqual(b.calls, [b.next.href]);
+  const reverse = browser({ prefix: '/artur', folder: 'nfs-unbound', galleryLoop: 'full' });
+  reverse.start(); reverse.move(280); reverse.end(280); reverse.advance(180);
+  assert.deepEqual(reverse.calls, [reverse.previous.href]);
+  const wrap = browser({ prefix: '/artur', folder: 'high-poly-models', galleryLoop: 'full' });
+  wrap.next.href = 'https://example.test/artur/galleries/nfs-unbound/';
+  wrap.start(); wrap.move(160); wrap.end(160); wrap.advance(180);
+  assert.deepEqual(wrap.calls, [wrap.next.href]);
+});
+
+test('Full Portfolio touch swipes reject Hard Bullet, studio and external destinations', () => {
+  for (const href of [
+    'https://example.test/artur/galleries/hb-helipad/',
+    'https://example.test/galleries/nfs-unbound/',
+    'https://other.test/artur/galleries/props/',
+    'https://example.test/artur/galleries/props/?bad=1'
+  ]) {
+    const b = browser({ prefix: '/artur', folder: 'nfs-unbound', galleryLoop: 'full' });
+    b.next.href = href;
+    b.start(); b.move(160); b.end(160); b.advance(250);
+    assert.deepEqual(b.calls, [], href);
   }
 });
 
