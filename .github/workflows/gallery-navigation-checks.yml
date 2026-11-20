@@ -1,39 +1,21 @@
-name: Gallery navigation tests
+name: Portfolio checks
+
 on:
   pull_request:
-    paths:
-      - '_includes/gallery-navigation.html'
-      - 'galleries/gallery.css'
-      - 'galleries/gallery-navigation.js'
-      - 'galleries/gallery-desktop-panels.js'
-      - 'galleries/gallery-arrival.js'
-      - '_layouts/gallery.html'
-      - '_layouts/locked-gallery.html'
-      - 'galleries/gallery-viewer.js'
-      - 'galleries/gallery-document-prefetch.js'
-      - '.github/tests/gallery-document-prefetch.test.cjs'
-      - '.github/tests/gallery-navigation.test.cjs'
-      - '.github/tests/gallery-desktop-panels.test.cjs'
-      - '.github/tests/gallery-arrival.test.cjs'
-      - '.github/tests/personal-full-gallery-loop.test.cjs'
-      - '.github/tests/studio-full-gallery-loop.test.cjs'
-      - '_data/portfolio.json'
-      - '_data/personal_portfolio.json'
-      - 'assets/portfolio.css'
-      - '_layouts/portfolio.html'
-      - '.github/tests/homepage-scroll.test.cjs'
-      - '.github/workflows/gallery-navigation-checks.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: portfolio-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   navigation:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Check mobile and desktop gallery navigation
-        run: node --test .github/tests/gallery-navigation.test.cjs .github/tests/gallery-desktop-panels.test.cjs .github/tests/gallery-document-prefetch.test.cjs .github/tests/gallery-arrival.test.cjs .github/tests/personal-full-gallery-loop.test.cjs .github/tests/studio-full-gallery-loop.test.cjs .github/tests/homepage-scroll.test.cjs
+      - name: Validate portfolio
+        uses: ./.github/actions/validate-portfolio
