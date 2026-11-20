@@ -204,7 +204,62 @@ test('both gallery layouts construct the arriving panel before the real header a
     assert.match(layout, /<div id="gallery-edge-arrival"><script src="\.\.\/gallery-arrival\.js\?v=3"><\/script><\/div>/);
     assert.match(layout, /gallery-edge-arrival[\s\S]*include site-header\.html[\s\S]*gallery-edge-ready/);
   }
-  assert.match(layouts[0], /gallery-viewer\.js\?v=43/);
+  for (const layout of layouts) assert.match(layout, /gallery-viewer\.js\?v=44/);
+  const mapLayout = fs.readFileSync(path.join(root, '_layouts/gallery-map.html'), 'utf8');
+  assert.match(mapLayout, /gallery-viewer\.js[^\n]*\?v=44/);
+});
+
+function viewerKeyboard({ native = false } = {}) {
+  let keydown;
+  const steps = [];
+  const stage = { classList: { contains: name => native && name === 'native' } };
+  const start = viewer.indexOf("viewer.addEventListener('keydown'");
+  const end = viewer.indexOf("stage.addEventListener('click'", start);
+  assert.ok(start >= 0 && end > start, 'the viewer keyboard listener must be present');
+  vm.runInNewContext(viewer.slice(start, end), {
+    viewer: { addEventListener(type, listener) { assert.equal(type, 'keydown'); keydown = listener; } },
+    stage,
+    step: amount => steps.push(amount),
+  });
+  return {
+    stage, steps,
+    key(key, options = {}) {
+      const event = { key, target: {}, defaultPrevented: false, prevented: 0,
+        preventDefault() { this.defaultPrevented = true; this.prevented++; }, ...options };
+      keydown(event);
+      return event;
+    },
+  };
+}
+
+test('fullscreen viewer leaves modified arrows and already-handled events available to the browser', () => {
+  const b = viewerKeyboard();
+  for (const key of ['ArrowLeft', 'ArrowRight']) {
+    for (const modifier of ['altKey', 'ctrlKey', 'metaKey', 'shiftKey', 'defaultPrevented']) {
+      assert.equal(b.key(key, { [modifier]: true }).prevented, 0, key + ' with ' + modifier);
+    }
+    assert.equal(b.key(key, { ctrlKey: true, altKey: true }).prevented, 0, 'AltGraph');
+  }
+  assert.deepEqual(b.steps, []);
+});
+
+test('fullscreen viewer plain arrows still navigate screenshots and leave other keys untouched', () => {
+  const b = viewerKeyboard();
+  assert.equal(b.key('ArrowLeft').prevented, 1);
+  assert.equal(b.key('ArrowRight').prevented, 1);
+  for (const key of ['Escape', 'Tab', 'Home', 'ArrowUp', 'ArrowDown']) {
+    assert.equal(b.key(key).prevented, 0, key);
+  }
+  assert.deepEqual(b.steps, [-1, 1]);
+});
+
+test('fullscreen viewer preserves native image-stage keyboard behavior', () => {
+  const b = viewerKeyboard({ native: true });
+  assert.equal(b.key('ArrowLeft', { target: b.stage }).prevented, 0);
+  assert.equal(b.key('ArrowRight', { target: b.stage }).prevented, 0);
+  assert.deepEqual(b.steps, []);
+  assert.equal(b.key('ArrowRight').prevented, 1);
+  assert.deepEqual(b.steps, [1]);
 });
 
 test('Chrome swaps identical covered snapshots with no browser crossfade or moved title', () => {
