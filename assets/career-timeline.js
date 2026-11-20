@@ -8,6 +8,7 @@
   // tutorial. This second layout follows the user's broad S-curve sketch.
   const svg = track.querySelector('svg');
   const rail = track.querySelector('.career-rail');
+  const stage = track.querySelector('.career-stage');
   const canvas = track.querySelector('.career-canvas');
   const path = track.querySelector('[data-career-path]');
   const background = track.querySelector('[data-career-background]');
@@ -26,8 +27,9 @@
   const desktopCurveAspect = 1.25;
   const canAnimate = Boolean(window.gsap && window.ScrollTrigger && window.DrawSVGPlugin && window.MotionPathPlugin);
   let animation;
+  let scrollTween;
   let mobileReveals = [];
-  let mobileCamera;
+  let scrollCamera;
   let smoother;
   let signature = '';
   let resizeTimer;
@@ -103,6 +105,7 @@
         smoothTouch: 0,
         effects: false,
         normalizeScroll: false,
+        onUpdate: updateScrollCamera,
         onFocusIn: () => dialog.open || imageDialog.open ? false : undefined
       });
     } else if (!enabled && smoother) {
@@ -113,14 +116,19 @@
   }
 
   function reset() {
-    mobileCamera = null;
+    scrollCamera = null;
+    if (scrollTween) {
+      scrollTween.scrollTrigger.kill();
+      scrollTween.kill();
+      scrollTween = null;
+    }
     if (animation) {
-      animation.scrollTrigger.kill();
       animation.kill();
       animation = null;
     }
     mobileReveals.forEach(reveal => reveal.animation.kill());
     mobileReveals = [];
+    stage.style.removeProperty('transform');
     canvas.style.removeProperty('transform');
     entries.forEach(entry => entry.style.removeProperty('transform'));
     track.classList.remove('career-track--slow');
@@ -128,16 +136,45 @@
     track.dataset.timelineState = 'static';
   }
 
-  function updateMobileCamera() {
-    if (!mobileCamera || !animation) return;
-    const c = mobileCamera;
-    const scroll = window.scrollY;
+  // Integrate a 1x -> 2x scroll-distance weight, blending around the midpoint.
+  // Its total is 1.5: the latter half takes twice as much scrolling as before.
+  function journeyDistance(progress) {
+    if (progress <= .45) return progress;
+    if (progress >= .55) return 2 * progress - .5;
+    const t = (progress - .45) / .1;
+    return progress + .1 * (t * t * t - .5 * t * t * t * t);
+  }
+
+  function journeyProgress(distance) {
+    if (distance <= 0) return 0;
+    if (distance >= 1) return 1;
+    const target = distance * 1.5;
+    let low = 0, high = 1;
+    for (let i = 0; i < 24; i++) {
+      const middle = (low + high) / 2;
+      if (journeyDistance(middle) < target) low = middle;
+      else high = middle;
+    }
+    return (low + high) / 2;
+  }
+
+  function updateScrollCamera() {
+    if (!scrollCamera || !animation) return;
+    const c = scrollCamera;
+    const scroll = smoother ? smoother.scrollTop() : window.scrollY;
     const progress = animation.progress();
     const virtualScroll = scroll < c.start ? scroll : c.start + progress * c.normalDistance + Math.max(0, scroll - c.end);
-    const stageTop = Math.min(Math.max(c.documentTop - scroll, 0), c.documentTop + c.outerHeight - c.viewport - scroll);
+    const pinnedOffset = Math.max(0, Math.min(c.outerHeight - c.viewport, scroll - c.documentTop));
+    const stageTop = c.documentTop - scroll + pinnedOffset;
+    // Explicit positioning also works inside ScrollSmoother's transformed content.
+    stage.style.transform = 'translate3d(0,' + pinnedOffset.toFixed(3) + 'px,0)';
+    const y = c.documentTop - virtualScroll - stageTop;
+    if (!c.anchor) {
+      canvas.style.transform = 'translate3d(0,' + y.toFixed(3) + 'px,0)';
+      return;
+    }
     const point = path.getPointAtLength(progress * c.length);
     const x = c.anchor - c.left - point.x;
-    const y = c.documentTop - virtualScroll - stageTop;
     canvas.style.transform = 'translate3d(' + x.toFixed(3) + 'px,' + y.toFixed(3) + 'px,0)';
     c.labels.forEach((box, i) => {
       // Keep cards readable while the wider curve pans behind them.
@@ -335,35 +372,39 @@
     canvas.style.height = contentHeight + 'px';
     track.style.height = contentHeight + 'px';
     track.dataset.scrollMultiplier = slowMobile ? '3' : '1';
+    track.dataset.lateScrollMultiplier = slowMobile ? '6' : '2';
     delete track.dataset.cameraAnchor;
 
     if (!canAnimate || reducedMotion.matches) return;
     const revealLine = Math.round(viewport * (narrow ? .65 : .5));
     const normalStart = Math.max(0, documentTop - revealLine);
-    const normalDistance = Math.max(1, documentTop + height - revealLine - normalStart);
-    const scrollDistance = normalDistance * (slowMobile ? 3 : 1);
+    const tailHeight = (document.querySelector('.career-outro')?.offsetHeight || 0) +
+      (document.querySelector('.portfolio-footer')?.offsetHeight || 0);
+    const maximumEnd = documentTop + contentHeight + tailHeight - viewport - 1;
+    if (maximumEnd <= normalStart) {
+      gsap.set(path, { drawSVG: '100%' });
+      gsap.set(texts, { autoAlpha: 1 });
+      return;
+    }
+    const normalEnd = Math.min(maximumEnd, Math.max(documentTop + height - revealLine, documentTop + contentHeight - viewport));
+    const normalDistance = Math.max(1, normalEnd - normalStart);
+    const scrollDistance = normalDistance * (slowMobile ? 3 : 1) * 1.5;
+    const end = normalStart + scrollDistance;
+    // Reserve only the extra animation distance; do not leave an empty tail.
+    const outerHeight = contentHeight + scrollDistance - normalDistance;
     track.dataset.normalScrollDistance = normalDistance.toFixed(3);
     track.dataset.scrollDistance = scrollDistance.toFixed(3);
-    if (slowMobile) {
-      const end = normalStart + scrollDistance;
-      const outerHeight = Math.max(contentHeight, end - documentTop + viewport);
-      track.classList.add('career-track--slow');
-      track.style.setProperty('--career-stage-height', viewport + 'px');
-      track.style.height = outerHeight + 'px';
-      track.dataset.cameraAnchor = cameraAnchor.toFixed(3);
-      mobileCamera = { documentTop, viewport, start: normalStart, end, outerHeight, normalDistance, left: trackLeft, anchor: cameraAnchor, length: metrics.length, width, labels, points, guideNodes };
-    }
+    track.dataset.scrollStart = normalStart.toFixed(3);
+    track.dataset.scrollEnd = end.toFixed(3);
+    track.classList.add('career-track--slow');
+    track.style.setProperty('--career-stage-height', viewport + 'px');
+    track.style.height = outerHeight + 'px';
+    if (slowMobile) track.dataset.cameraAnchor = cameraAnchor.toFixed(3);
+    scrollCamera = { documentTop, viewport, start: normalStart, end, outerHeight, normalDistance, left: trackLeft, anchor: cameraAnchor, length: metrics.length, width, labels, points, guideNodes };
     animation = gsap.timeline({
+      paused: true,
       defaults: { ease: 'none' },
-      onUpdate: () => { updateMobileCamera(); updateMobileReveals(); },
-      scrollTrigger: {
-        id: 'artur-career-timeline',
-        trigger: slowMobile ? track : rail,
-        // Fixed small-viewport pixels also keep later refreshes stable on phones.
-        start: slowMobile ? normalStart : 'clamp(top ' + revealLine + 'px)',
-        end: slowMobile ? normalStart + scrollDistance : 'clamp(bottom ' + revealLine + 'px)',
-        scrub: narrow ? .35 : smoother ? true : .8
-      }
+      onUpdate: () => { updateScrollCamera(); updateMobileReveals(); }
     });
     animation.fromTo(path, { drawSVG: 0 }, { drawSVG: '100%', duration: 1 }, 0);
     animation.fromTo(pointer, { autoAlpha: 0 }, { autoAlpha: 1, duration: .004 }, 0);
@@ -398,11 +439,26 @@
         opacity: .8
       }, { opacity: 1, duration, ease: 'power2.out' }, at);
     });
+    const playhead = { progress: 0 };
+    scrollTween = gsap.to(playhead, {
+      progress: 1,
+      duration: 1,
+      ease: journeyProgress,
+      onUpdate: () => animation.progress(playhead.progress),
+      scrollTrigger: {
+        id: 'artur-career-timeline',
+        trigger: track,
+        start: normalStart,
+        end,
+        scrub: narrow ? .35 : smoother ? true : .8,
+        onUpdate: updateScrollCamera
+      }
+    });
     track.dataset.timelineState = 'animated';
     if (smoother) ScrollTrigger.refresh();
-    else animation.scrollTrigger.refresh();
-    animation.progress(animation.scrollTrigger.progress);
-    updateMobileCamera();
+    else scrollTween.scrollTrigger.refresh();
+    scrollTween.progress(scrollTween.scrollTrigger.progress);
+    updateScrollCamera();
     updateMobileReveals();
   }
 
@@ -412,6 +468,7 @@
   }
   rebuild();
   window.addEventListener('resize', scheduleRebuild, { passive: true });
+  window.addEventListener('scroll', updateScrollCamera, { passive: true });
   reducedMotion.addEventListener('change', scheduleRebuild);
   if (window.ResizeObserver) new ResizeObserver(scheduleRebuild).observe(track);
   if (document.fonts && document.fonts.status === 'loading') document.fonts.ready.then(() => { signature = ''; scheduleRebuild(); });
