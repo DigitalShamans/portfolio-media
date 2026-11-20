@@ -16,13 +16,13 @@ sitemap: false
   <meta name="color-scheme" content="dark">
   {% include seo.html %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
-  <link rel="stylesheet" href="{{ '/assets/career-timeline.css' | relative_url }}?v=10">
+  <link rel="stylesheet" href="{{ '/assets/career-timeline.css' | relative_url }}?v=11">
   <script src="{{ '/assets/vendor/gsap/3.15.1/gsap.min.js' | relative_url }}" defer></script>
   <script src="{{ '/assets/vendor/gsap/3.15.1/ScrollTrigger.min.js' | relative_url }}" defer></script>
   <script src="{{ '/assets/vendor/gsap/3.15.1/ScrollSmoother.min.js' | relative_url }}" defer></script>
   <script src="{{ '/assets/vendor/gsap/3.15.1/DrawSVGPlugin.min.js' | relative_url }}" defer></script>
   <script src="{{ '/assets/vendor/gsap/3.15.1/MotionPathPlugin.min.js' | relative_url }}" defer></script>
-  <script src="{{ '/assets/career-timeline.js' | relative_url }}?v=10" defer></script>
+  <script src="{{ '/assets/career-timeline.js' | relative_url }}?v=11" defer></script>
 </head>
 <body class="career-page">
   <div class="career-viewport" aria-hidden="true"></div>
@@ -42,7 +42,6 @@ sitemap: false
       <div class="career-rail" aria-hidden="true">
         <svg class="career-svg" xmlns="http://www.w3.org/2000/svg" focusable="false">
           <path class="career-path-background" data-career-background fill="none"></path>
-          <g data-career-guides></g>
           <path class="career-path" data-career-path fill="none"></path>
           <g data-career-stops></g>
           <circle class="career-pointer" data-career-pointer cx="0" cy="0" r="8"></circle>
@@ -62,7 +61,7 @@ sitemap: false
             </a>
           </div>
         </li>
-        <li class="career-milestone" id="career-2006" data-curve-at=".045" data-curve-side="right">
+        <li class="career-milestone" id="career-2006" data-curve-at="0.036885" data-curve-side="right">
           <time class="career-year" datetime="2006">2006</time>
           <div class="career-copy career-copy--media">
             <div class="career-description">
@@ -73,7 +72,7 @@ sitemap: false
             </a>
           </div>
         </li>
-        <li class="career-milestone" id="career-2010" data-curve-at=".11" data-curve-side="right">
+        <li class="career-milestone" id="career-2010" data-curve-at="0.090164" data-curve-side="right">
           <time class="career-year" datetime="2010">2010</time>
           <div class="career-copy career-copy--media">
             <div class="career-description">
@@ -89,7 +88,7 @@ sitemap: false
             </a>
           </div>
         </li>
-        <li class="career-milestone" id="career-2015-jujubee" data-curve-at=".19" data-curve-side="left">
+        <li class="career-milestone" id="career-2015-jujubee" data-curve-at="0.155738" data-curve-side="left">
           <time class="career-year" datetime="2015">2015</time>
           <div class="career-copy career-copy--media">
             <div class="career-description">
@@ -105,7 +104,7 @@ sitemap: false
             </a>
           </div>
         </li>
-        <li class="career-milestone" id="career-2015-rebellion" data-curve-at=".34" data-curve-side="right">
+        <li class="career-milestone" id="career-2015-rebellion" data-curve-at="0.278689" data-curve-side="right">
           <time class="career-year" datetime="2015">2015</time>
           <div class="career-copy career-copy--media">
             <div class="career-description">
@@ -123,7 +122,7 @@ sitemap: false
             </a>
           </div>
         </li>
-        <li class="career-milestone" id="career-2018" data-curve-at=".56" data-curve-side="right">
+        <li class="career-milestone" id="career-2018" data-curve-at="0.459016" data-curve-side="right">
           <time class="career-year" datetime="2018">2018</time>
           <div class="career-copy career-copy--media">
             <div class="career-description">
@@ -139,7 +138,7 @@ sitemap: false
             </a>
           </div>
         </li>
-        <li class="career-milestone" id="career-2020-chuhai" data-curve-at=".695" data-curve-side="left">
+        <li class="career-milestone" id="career-2020-chuhai" data-curve-at="0.569672" data-curve-side="left">
           <time class="career-year" datetime="2020">2020</time>
           <div class="career-copy career-copy--media">
             <div class="career-description">
@@ -155,7 +154,7 @@ sitemap: false
             </a>
           </div>
         </li>
-        <li class="career-milestone" id="career-2020-super-trumpers" data-curve-at=".76" data-curve-side="left">
+        <li class="career-milestone" id="career-2020-super-trumpers" data-curve-at="0.622951" data-curve-side="left">
           <time class="career-year" datetime="2020">2020</time>
           <div class="career-copy career-copy--media">
             <div class="career-description">
@@ -171,7 +170,7 @@ sitemap: false
             </a>
           </div>
         </li>
-        <li class="career-milestone" id="career-2021" data-curve-at=".80" data-curve-side="right">
+        <li class="career-milestone" id="career-2021" data-curve-at="0.655738" data-curve-side="right">
           <time class="career-year" datetime="2021">2021</time>
           <div class="career-copy career-copy--media">
             <div class="career-description">
@@ -189,7 +188,7 @@ sitemap: false
             </a>
           </div>
         </li>
-        <li class="career-milestone" id="career-2022" data-curve-at=".875" data-curve-side="left">
+        <li class="career-milestone" id="career-2022" data-curve-at="0.717213" data-curve-side="left">
           <time class="career-year" datetime="2022">2022</time>
           <div class="career-copy career-copy--media">
             <div class="career-description">
@@ -205,7 +204,7 @@ sitemap: false
             </a>
           </div>
         </li>
-        <li class="career-milestone" id="career-2023" data-curve-at=".935" data-curve-side="right">
+        <li class="career-milestone" id="career-2023" data-curve-at="0.766393" data-curve-side="right">
           <time class="career-year" datetime="2023">2023</time>
           <div class="career-copy career-copy--media">
             <div class="career-description">
@@ -215,7 +214,7 @@ sitemap: false
             <div class="career-preview career-preview--empty" role="img" aria-label="Gallery image slot"><span>Image slot</span></div>
           </div>
         </li>
-        <li class="career-milestone" id="career-current" data-curve-at=".985" data-curve-side="right">
+        <li class="career-milestone" id="career-current" data-curve-at="0.95" data-curve-side="right">
           <span class="career-year">Present</span>
           <div class="career-copy career-copy--media">
             <div class="career-description">

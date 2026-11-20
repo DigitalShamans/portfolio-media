@@ -13,7 +13,6 @@
   const path = track.querySelector('[data-career-path]');
   const background = track.querySelector('[data-career-background]');
   const pointer = track.querySelector('[data-career-pointer]');
-  const guides = track.querySelector('[data-career-guides]');
   const stops = track.querySelector('[data-career-stops]');
   const entries = [...track.querySelectorAll('.career-milestone')];
   const texts = entries.flatMap(entry => [...entry.querySelectorAll('.career-year, .career-copy')]);
@@ -25,6 +24,7 @@
   const fullImage = imageDialog.querySelector('[data-career-image-full]');
   const ns = 'http://www.w3.org/2000/svg';
   const desktopCurveAspect = 1.25;
+  const curveExtent = 1.22;
   const canAnimate = Boolean(window.gsap && window.ScrollTrigger && window.DrawSVGPlugin && window.MotionPathPlugin);
   let animation;
   let scrollTween;
@@ -182,12 +182,6 @@
       const left = Math.max(-x, Math.min(c.width - labelWidth - x, box.left));
       const shift = left - box.left;
       entries[i].style.transform = 'translateX(' + shift.toFixed(3) + 'px)';
-      const guide = c.guideNodes[i];
-      if (!guide) return;
-      const startX = c.points[i].x + 6;
-      const endX = left - 6;
-      const middle = (startX + endX) / 2;
-      guide.setAttribute('points', startX + ',' + c.points[i].y + ' ' + middle + ',' + c.points[i].y + ' ' + endX + ',' + (box.top + 9));
     });
   }
 
@@ -204,15 +198,15 @@
   }
 
   function drawCurve(width, height, narrow, scale) {
-    const span = narrow ? Math.min(300, width * .7) : Math.min(width, (height - 80 * scale) / desktopCurveAspect);
+    const span = narrow ? Math.min(300, width * .7) : Math.min(width, (height - 80 * scale) / (desktopCurveAspect * curveExtent));
     const offset = narrow ? 8 : (width - span) / 2;
     const x = value => offset + value * span;
-    const y = value => 56 * scale + value * (height - 80 * scale);
+    const y = value => 56 * scale + value * (height - 80 * scale) / curveExtent;
     const d = 'M ' + x(.10) + ' ' + y(0) +
       ' C ' + x(.51) + ' ' + y(.015) + ', ' + x(.40) + ' ' + y(.12) + ', ' + x(.29) + ' ' + y(.23) +
       ' C ' + x(.11) + ' ' + y(.40) + ', ' + x(.12) + ' ' + y(.47) + ', ' + x(.26) + ' ' + y(.58) +
       ' C ' + x(.39) + ' ' + y(.70) + ', ' + x(.65) + ' ' + y(.81) + ', ' + x(.74) + ' ' + y(.91) +
-      ' C ' + x(.79) + ' ' + y(.96) + ', ' + x(.77) + ' ' + y(.99) + ', ' + x(.76) + ' ' + y(1);
+      ' C ' + x(.80) + ' ' + y(1.05) + ', ' + x(.70) + ' ' + y(1.16) + ', ' + x(.50) + ' ' + y(curveExtent);
     svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
     path.setAttribute('d', d);
     background.setAttribute('d', d);
@@ -240,7 +234,7 @@
         progress: a.progress + (b.progress - a.progress) * mix
       };
     }
-    return { length, atY, y };
+    return { length, atY, endX: samples[256].x, y: value => y(value * curveExtent) };
   }
 
   function minimumVisibleFraction(metrics, height, available) {
@@ -278,7 +272,9 @@
           left = Math.max(0, Math.min(width - preferredWidth, point.x - 32 * scale));
         } else if (side === 'right') {
           left = maxX + 18 * scale;
-          const availableWidth = cameraAnchor ? width + trackLeft - cameraAnchor - 18 * scale : width - left;
+          // The final card must clear its node while the camera follows the leftward tail.
+          const tailClearance = cameraAnchor && i === entries.length - 1 ? Math.max(0, point.x - metrics.endX) : 0;
+          const availableWidth = cameraAnchor ? width + trackLeft - cameraAnchor - 18 * scale - tailClearance : width - left;
           labelWidth = Math.max(60, Math.min(preferredWidth, availableWidth));
         } else {
           labelWidth = Math.max(60, Math.min(preferredWidth, minX - 18 * scale));
@@ -324,8 +320,8 @@
     // Even the first viewport (with the header and title present) fits >=40%.
     const documentTop = track.getBoundingClientRect().top + (smoother ? smoother.scrollTop() : window.scrollY);
     const available = Math.max(120, viewport - documentTop - 16);
-    let height = Math.round(available * 2);
-    if (!narrow) height = Math.min(height, Math.round(width * desktopCurveAspect + 80 * scale));
+    let height = Math.round(available * 2 * curveExtent);
+    if (!narrow) height = Math.min(height, Math.round(width * desktopCurveAspect * curveExtent + 80 * scale));
     let metrics, visibleFraction;
     for (let i = 0; i < 9; i++) {
       metrics = drawCurve(width, height, narrow, scale);
@@ -348,20 +344,6 @@
     const trackLeft = track.getBoundingClientRect().left;
     const cameraAnchor = slowMobile ? Math.max(96, Math.min(180, window.innerWidth * .38)) : 0;
     const labels = placeLabels(points, metrics, width, narrow, scale, cameraAnchor, trackLeft);
-    const guideNodes = points.map((point, i) => {
-      const box = labels[i];
-      if (box.side === 'above') return null;
-      const right = box.side === 'right';
-      const endX = right ? box.left - 6 * scale : box.right + 6 * scale;
-      const endY = box.top + 9 * scale;
-      const startX = point.x + (right ? 6 * scale : -6 * scale);
-      const middle = (startX + endX) / 2;
-      return element('polyline', {
-        points: startX + ',' + point.y + ' ' + middle + ',' + point.y + ' ' + endX + ',' + endY,
-        class: 'career-guide'
-      });
-    });
-    guides.replaceChildren(...guideNodes.filter(Boolean));
     stops.replaceChildren(...points.map((point, i) => {
       const circle = element('circle', { cx: point.x, cy: point.y, r: narrow ? 6 : 8 * scale, class: 'career-stop' });
       circle.addEventListener('click', () => entries[i].querySelector('.career-checkpoint').click());
@@ -400,7 +382,7 @@
     track.style.setProperty('--career-stage-height', viewport + 'px');
     track.style.height = outerHeight + 'px';
     if (slowMobile) track.dataset.cameraAnchor = cameraAnchor.toFixed(3);
-    scrollCamera = { documentTop, viewport, start: normalStart, end, outerHeight, normalDistance, left: trackLeft, anchor: cameraAnchor, length: metrics.length, width, labels, points, guideNodes };
+    scrollCamera = { documentTop, viewport, start: normalStart, end, outerHeight, normalDistance, left: trackLeft, anchor: cameraAnchor, length: metrics.length, width, labels };
     animation = gsap.timeline({
       paused: true,
       defaults: { ease: 'none' },
