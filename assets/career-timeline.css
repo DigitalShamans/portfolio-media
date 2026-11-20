@@ -104,6 +104,17 @@
   align-items: start;
   gap: calc(.75rem * var(--career-layout-scale));
 }
+.career-track--positioned:not(.career-track--narrow) .career-copy--media {
+  display: flex;
+  flex-wrap: wrap;
+}
+.career-track--positioned:not(.career-track--narrow) .career-description {
+  flex: 1 1 120px;
+  min-width: 0;
+}
+.career-track--positioned:not(.career-track--narrow) .career-copy--media > .career-preview {
+  flex: 0 0 140px;
+}
 .career-preview {
   position: relative;
   display: block;
