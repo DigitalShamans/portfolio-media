@@ -48,9 +48,15 @@
     .gallery-access__escape a { color: var(--muted); text-underline-offset: .25em; }
     .gallery-access__escape a:hover, .gallery-access__escape a:focus-visible { color: var(--text); }
   </style>
+  {% if page.portfolio == 'personal' %}
+    <link rel="stylesheet" href="{{ '/assets/portfolio-gallery-transition.css' | relative_url }}?v=1">
+  {% endif %}
   {% include personal-typography.html %}
 </head>
 <body data-gallery-revision="{{ site.github.build_revision | escape }}">
+  {% if page.portfolio == 'personal' %}
+    <script src="{{ '/assets/portfolio-gallery-transition.js' | relative_url }}?v=1" data-gallery-arrival></script>
+  {% endif %}
   <div id="gallery-edge-arrival"><script src="../gallery-arrival.js?v=3"></script></div>
   {% include site-header.html %}
   <div id="gallery-edge-ready" hidden></div>

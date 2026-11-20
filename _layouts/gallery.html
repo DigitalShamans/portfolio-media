@@ -13,6 +13,7 @@
   {% assign gallery_seo_description = page.gallery_description %}
 {% endif %}
 {% assign gallery_folder = gallery_page.url | remove_first: '/galleries/' | split: '/' | first %}
+{% assign recent_gallery = site.data.portfolio.recent | where: 'folder', gallery_folder | first %}
 {% assign gallery_originals_revision = site.data.gallery_delivery.gallery_revisions[gallery_folder] | default: site.data.gallery_delivery.revision %}
 {% assign gallery_asset_versions = site.data.gallery_asset_versions[gallery_folder] %}
 {% assign first_image_url = site.data.portfolio_gallery_preloads[gallery_folder] | first %}
@@ -34,9 +35,15 @@
   <link rel="expect" href="#gallery-edge-ready" blocking="render">
   {% if gallery_page.gallery_embeds %}<link rel="stylesheet" href="../gallery-embeds.css?v=2">{% endif %}
   {% if gallery_page.gallery_youtube_id %}<link rel="stylesheet" href="{{ '/assets/gallery-video.css' | relative_url }}?v=1">{% endif %}
+  {% if page.portfolio == 'personal' and recent_gallery %}
+    <link rel="stylesheet" href="{{ '/assets/portfolio-gallery-transition.css' | relative_url }}?v=1">
+  {% endif %}
   {% include personal-typography.html %}
 </head>
 <body data-gallery-revision="{{ site.github.build_revision | escape }}"{% if gallery_asset_versions %} data-gallery-asset-versions="{{ gallery_asset_versions | jsonify | escape }}"{% endif %}>
+  {% if page.portfolio == 'personal' and recent_gallery %}
+    <script src="{{ '/assets/portfolio-gallery-transition.js' | relative_url }}?v=1" data-gallery-arrival></script>
+  {% endif %}
   <div id="gallery-edge-arrival"><script src="../gallery-arrival.js?v=3"></script></div>
   {% include site-header.html %}
   <div id="gallery-edge-ready" hidden></div>
