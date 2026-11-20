@@ -174,7 +174,7 @@
     entries.forEach(entry => entry.classList.remove('career-milestone--awaiting-reveal'));
     track.classList.remove('career-track--slow', 'career-track--complete');
     if (canAnimate) {
-      gsap.set(entries, { clearProps: 'opacity,transform' });
+      gsap.set(entries, { clearProps: 'opacity,visibility,transform' });
       gsap.set([...texts, pointer, path, ...stops.children], { clearProps: 'all' });
     }
     track.dataset.timelineState = 'static';
@@ -237,7 +237,11 @@
     // Their positions still follow the same canvas transform as the spline.
     entries.forEach(entry => {
       const left = parseFloat(entry.style.left) + x;
-      entry.style.opacity = Math.max(0, Math.min(1, (left - 8) / 24)).toFixed(3);
+      const opacity = Math.max(0, Math.min(1, (left - 8) / 24));
+      entry.style.opacity = opacity.toFixed(3);
+      // Fully faded previews must not leave invisible links over the map.
+      // Inherit visibility so the initial loading guard remains effective.
+      entry.style.visibility = opacity > 0 ? 'inherit' : 'hidden';
     });
     // Only the global navigation/footer stay centered. Milestone cards keep
     // the same canvas transform as their nodes throughout the whole journey.
