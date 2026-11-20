@@ -1,0 +1,107 @@
+{
+  "passed": true,
+  "title": "Exterior Visualisations",
+  "images": 19,
+  "nativePreviews": [
+    {
+      "image": "artur-perzyna-018.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-011.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-012.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-013.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-010.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-009.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-008.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-007.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-006.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-005.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-004.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-003.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-002.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-001.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-017.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-025.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-027.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-028.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "artur-perzyna-030.jpg",
+      "nativePreviewRendered": true
+    }
+  ],
+  "roundtrip": {
+    "adjacentReorderExplicitlySaved": true,
+    "reopenPersistedReorder": true,
+    "canonicalOrderRestoredAndSaved": true
+  },
+  "integrity": {
+    "stageFilesChecked": 48,
+    "stageUntouched": true,
+    "originalsUnchanged": 19,
+    "sourceOrderAndImageOnlySchema": true,
+    "scratchCanonicalBytesRestored": true,
+    "companions": 0,
+    "captionMappings": 0
+  },
+  "capture": {
+    "rootNativeCuaCompletionAndReset": true,
+    "rootNodeReset": true,
+    "globalCleanup": "root final gate after live IAB"
+  },
+  "recovery": [
+    "Initial parent-window accessibility targeting failed on the separate folder dialog. Rebound with CUA, raised the dialog, used its own screenshot coordinates, and entered the scratch path successfully.",
+    "Native Qt accessibility updates lagged immediate input snapshots; refreshed before deriving changed row indexes."
+  ],
+  "completedAtUtc": "2026-11-20T08:17:17.066Z"
+}
