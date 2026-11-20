@@ -18,7 +18,7 @@ redirect_from:
   {% include seo.html %}
   {% include site-favicon.html %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=15">
-  <link rel="stylesheet" href="{{ '/assets/career-timeline.css' | relative_url }}?v=25">
+  <link rel="stylesheet" href="{{ '/assets/career-timeline.css' | relative_url }}?v=26">
   {% include personal-typography.html %}
   {% include career-timeline-scripts.html %}
 </head>
@@ -33,9 +33,9 @@ redirect_from:
         src="{{ '/assets/career-timeline/cellular-automata-background.webp' | relative_url }}"
         decoding="async" fetchpriority="low">
       <img class="career-network" alt="" width="3840" height="1832"
-        src="{{ '/assets/career-timeline/network-background.webp' | relative_url }}"
-        srcset="{{ '/assets/career-timeline/network-background-1600.webp' | relative_url }} 1600w,
-          {{ '/assets/career-timeline/network-background.webp' | relative_url }} 3840w"
+        src="{{ '/assets/career-timeline/network-background.webp' | relative_url }}?v=2"
+        srcset="{{ '/assets/career-timeline/network-background-1600.webp' | relative_url }}?v=2 1600w,
+          {{ '/assets/career-timeline/network-background.webp' | relative_url }}?v=2 3840w"
         sizes="(max-width: 42rem) 42rem, 100vw" loading="lazy" decoding="async" fetchpriority="low">
     </div>
   <main class="career-shell">

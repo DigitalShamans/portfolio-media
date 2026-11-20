@@ -28,6 +28,8 @@
   block-size: 100lvh;
 }
 .career-shell {
+  --career-scroll-cue-width: min(40%, 582px);
+  --career-scroll-cue-inset: .5%;
   position: relative;
   width: min(calc(100% - 3rem), calc(68.75rem * var(--career-layout-scale)));
   margin-inline: auto;
@@ -74,12 +76,17 @@
   line-height: 1.15;
 }
 .career-contact {
+  --career-contact-width: calc(15rem * var(--career-layout-scale));
   position: absolute;
   top: calc(1.25rem * var(--career-layout-scale));
   right: 0;
   z-index: 1;
-  width: calc(15rem * var(--career-layout-scale));
+  width: var(--career-contact-width);
   text-align: center;
+}
+.career-scene .career-contact {
+  top: calc(1.25rem * var(--career-layout-scale) - 14px);
+  right: calc(var(--career-scroll-cue-inset) + (var(--career-scroll-cue-width) - var(--career-contact-width)) / 2);
 }
 .career-contact h2 { margin: 0 0 1rem; font-size: calc(1.4rem * var(--career-layout-scale)); font-weight: 650; line-height: 1.3; }
 .career-contact__email { color: #16b1e6; font-size: calc(.875rem * var(--career-layout-scale)); text-decoration: none; }
@@ -109,8 +116,8 @@
   position: absolute;
   z-index: 1;
   inset-block-start: clamp(5.5rem, 18svh, 18rem);
-  inset-inline-end: .5%;
-  width: min(40%, 582px);
+  inset-inline-end: var(--career-scroll-cue-inset);
+  width: var(--career-scroll-cue-width);
   height: auto;
   pointer-events: none;
   transition: opacity .32s ease-out, visibility 0s .32s;

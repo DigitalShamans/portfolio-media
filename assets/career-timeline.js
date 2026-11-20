@@ -24,6 +24,7 @@
   const outro = document.querySelector('.career-outro');
   const footer = document.querySelector('.portfolio-footer');
   const backdrops = document.querySelector('.career-backdrops');
+  const network = backdrops?.querySelector('.career-network');
   const ending = document.createElement('div');
   ending.className = 'career-ending';
   const endingHomes = [contact, outro, footer].filter(Boolean).map(node => {
@@ -162,6 +163,7 @@
   function reset() {
     scrollCamera = null;
     backdrops?.style.removeProperty('--career-backdrop-footer-space');
+    network?.style.removeProperty('transform');
     if (scrollTween) {
       scrollTween.scrollTrigger.kill();
       scrollTween.kill();
@@ -216,6 +218,11 @@
     const measuredViewport = c.narrow && viewportMeasure ? Math.round(viewportMeasure.getBoundingClientRect().height) : window.innerHeight;
     if (track.clientWidth === c.width && measuredViewport === c.viewport) {
       c.readingPosition = captureReadingPosition(false);
+    }
+    if (network) {
+      // Counter 70% of the page movement and keep the same placement at the footer.
+      const remaining = Math.max(0, document.documentElement.scrollHeight - window.innerHeight - scroll);
+      network.style.transform = 'translateY(' + (-.7 * remaining).toFixed(3) + 'px)';
     }
     // Mobile finishes at the final milestone, including its ending controls.
     const point = c.anchor ? path.getPointAtLength(Math.min(progress, c.lastStopAt) * c.length) : null;
