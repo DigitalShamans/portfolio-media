@@ -355,8 +355,9 @@
 .career-track--complete .career-ending { visibility: visible; opacity: 1; }
 .career-ending .career-outro {
   position: absolute;
-  top: var(--career-ending-outro-top);
+  bottom: var(--career-ending-footer-height, 0px);
   width: 100%;
+  padding-block: 1rem;
   pointer-events: auto;
 }
 .career-ending .portfolio-footer {
