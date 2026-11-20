@@ -204,9 +204,9 @@
     const y = value => 56 * scale + value * (height - 80 * scale) / curveExtent;
     const d = 'M ' + x(.10) + ' ' + y(0) +
       ' C ' + x(.51) + ' ' + y(.015) + ', ' + x(.40) + ' ' + y(.12) + ', ' + x(.29) + ' ' + y(.23) +
-      ' C ' + x(.11) + ' ' + y(.40) + ', ' + x(.12) + ' ' + y(.47) + ', ' + x(.26) + ' ' + y(.58) +
-      ' C ' + x(.39) + ' ' + y(.70) + ', ' + x(.65) + ' ' + y(.81) + ', ' + x(.74) + ' ' + y(.91) +
-      ' C ' + x(.80) + ' ' + y(1.05) + ', ' + x(.70) + ' ' + y(1.16) + ', ' + x(.50) + ' ' + y(curveExtent);
+      ' C ' + x(.12) + ' ' + y(.40) + ', ' + x(.12) + ' ' + y(.47) + ', ' + x(.26) + ' ' + y(.58) +
+      ' C ' + x(.40) + ' ' + y(.69) + ', ' + x(.65) + ' ' + y(.81) + ', ' + x(.74) + ' ' + y(.91) +
+      ' C ' + x(.83) + ' ' + y(1.01) + ', ' + x(.70) + ' ' + y(1.16) + ', ' + x(.50) + ' ' + y(curveExtent);
     svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
     path.setAttribute('d', d);
     background.setAttribute('d', d);
@@ -253,7 +253,8 @@
       const point = points[i];
       const above = entry.dataset.curveSide === 'above';
       const side = above ? 'above' : narrow ? 'right' : entry.dataset.curveSide;
-      const preferredWidth = narrow ? Math.min(above ? 260 : 300, width - 24) : Math.min(420 * scale, width * .36) + 40 * scale;
+      const yearGutter = !narrow && entry.dataset.yearLayout === 'inline' ? 56 * scale : 0;
+      const preferredWidth = narrow ? Math.min(above ? 260 : 300, width - 24) : Math.min(420 * scale, width * .36) + 40 * scale + yearGutter;
       entry.style.width = preferredWidth + 'px';
       let top = above ? Math.max(0, point.y - entry.offsetHeight - 12 * scale) : point.y - 16 * scale;
       let left = 0, labelWidth = preferredWidth, labelHeight = entry.offsetHeight;
