@@ -422,10 +422,9 @@
   position: static;
   width: auto;
   margin: 0;
-  text-align: left;
   pointer-events: auto;
 }
-.career-ending .career-socials { justify-content: flex-start; margin-top: .5rem; }
+.career-ending .career-socials { margin-top: .5rem; }
 .career-ending .career-outro {
   padding-block: 1.25rem .625rem;
   pointer-events: auto;
@@ -497,9 +496,9 @@
   .career-shell { width: calc(100% - 2rem); margin-inline: auto; }
   .career-scroll-cue { inset-block-start: clamp(5rem, 20svh, 11rem); width: min(44%, 11rem); }
   .career-intro { padding-bottom: 1.5rem; }
-  .career-contact { position: static; width: auto; margin-top: 1rem; text-align: left; }
+  .career-contact { position: static; width: auto; margin-top: 1rem; }
   .career-contact h2 { margin: 0 0 .35rem; font-size: .9rem; }
-  .career-socials { justify-content: flex-start; margin-top: .5rem; }
+  .career-socials { margin-top: .5rem; }
   .career-socials a { width: 1.5rem; height: 1.5rem; }
   .career-path, .career-path-background { stroke-width: 3; }
 }

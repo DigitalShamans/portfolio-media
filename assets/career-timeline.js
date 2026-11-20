@@ -16,6 +16,7 @@
   const pointer = track.querySelector('[data-career-pointer]');
   const stops = track.querySelector('[data-career-stops]');
   const entries = [...track.querySelectorAll('.career-milestone')];
+  const revealedOnTouch = new Set();
   const texts = entries.flatMap(entry => [...entry.querySelectorAll('.career-year, .career-copy')]);
   const previews = entries.map(entry => [...entry.querySelectorAll('.career-preview img')]);
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -281,34 +282,43 @@
     const mobileY = Math.max(c.minimumY, -followOffset) + pinOffset;
     // Keep the curve, text and thumbnails together as the view moves.
     canvas.style.transform = 'translate3d(' + x.toFixed(3) + 'px,' + mobileY.toFixed(3) + 'px,0)';
-    // Fade departing cards before the viewport cuts through their text.
-    // Their positions still follow the same canvas transform as the spline.
-    entries.forEach(entry => {
-      const left = parseFloat(entry.style.left) + x;
-      const opacity = Math.max(0, Math.min(1, left / mobileCardInset));
-      entry.style.opacity = opacity.toFixed(3);
-      // Fully faded previews must not leave invisible links over the map.
-      // Inherit visibility so the initial loading guard remains effective.
-      entry.style.visibility = opacity > 0 ? 'inherit' : 'hidden';
-    });
+    if (!c.keepRevealed) {
+      // Fade departing cards before the viewport cuts through their text.
+      entries.forEach(entry => {
+        const left = parseFloat(entry.style.left) + x;
+        const opacity = Math.max(0, Math.min(1, left / mobileCardInset));
+        entry.style.opacity = opacity.toFixed(3);
+        // Fully faded previews must not leave invisible links over the map.
+        // Inherit visibility so the initial loading guard remains effective.
+        entry.style.visibility = opacity > 0 ? 'inherit' : 'hidden';
+      });
+    }
     ending.style.transform = 'translateX(' + (-x).toFixed(3) + 'px)';
   }
 
   function updateMilestoneReveals() {
     if (!animation) return;
     const progress = animation.progress();
+    const keepRevealed = scrollCamera?.keepRevealed;
+    const lastIndex = milestoneReveals.length - 1;
+    const wasComplete = track.classList.contains('career-track--complete');
     let current = 0;
     milestoneReveals.forEach((reveal, i) => {
-      const threshold = reveal.reached ? reveal.hideAt : reveal.at;
+      const threshold = i === lastIndex && wasComplete ? reveal.hideAt : reveal.at;
       const reached = progress + .0001 >= threshold || reveal.entry.contains(document.activeElement);
-      if (reached) current = i;
-      if (reached === reveal.reached) return;
-      reveal.reached = reached;
-      reveal.entry.classList.toggle('career-milestone--awaiting-reveal', !reached);
-      if (reached) reveal.animation.play();
+      if (reached) {
+        current = i;
+        if (keepRevealed) revealedOnTouch.add(reveal.entry);
+      }
+      const shown = reached || (keepRevealed && revealedOnTouch.has(reveal.entry));
+      if (shown === reveal.shown) return;
+      reveal.shown = shown;
+      reveal.entry.classList.toggle('career-milestone--awaiting-reveal', !shown);
+      if (shown) reveal.animation.play();
       else reveal.animation.reverse();
     });
-    track.classList.toggle('career-track--complete', Boolean(scrollCamera?.anchor && milestoneReveals.at(-1)?.reached));
+    // Contact and the footer still follow the reader's current position.
+    track.classList.toggle('career-track--complete', Boolean(scrollCamera?.anchor && current === lastIndex));
     prioritizePreviews(current);
   }
 
@@ -634,7 +644,11 @@
     track.style.setProperty('--career-stage-height', stageHeight + 'px');
     track.style.height = outerHeight + 'px';
     if (slowMobile) track.dataset.cameraAnchor = cameraAnchor.toFixed(3);
-    scrollCamera = { documentTop, viewport, width, narrow, start: normalStart, end, outerHeight, normalDistance, anchor: cameraAnchor, length: metrics.length, lastStopAt, mobileStops, followY, minimumY };
+    scrollCamera = {
+      documentTop, viewport, width, narrow, start: normalStart, end, outerHeight, normalDistance,
+      anchor: cameraAnchor, length: metrics.length, lastStopAt, mobileStops, followY, minimumY,
+      keepRevealed: useLocalScroll
+    };
     animation = gsap.timeline({
       paused: true,
       defaults: { ease: 'none' },
@@ -676,15 +690,15 @@
         reveal.fromTo(stop, { attr: { r: 3 * scale }, autoAlpha: .4 },
           { attr: { r: 8 * scale }, autoAlpha: 1, duration: .5, ease: 'back.out(2)' }, 0);
       }
-      const reached = at === 0;
-      if (reached) reveal.progress(1);
-      entry.classList.toggle('career-milestone--awaiting-reveal', !reached);
+      const shown = at === 0 || (useLocalScroll && revealedOnTouch.has(entry));
+      if (shown) reveal.progress(1);
+      entry.classList.toggle('career-milestone--awaiting-reveal', !shown);
       // A small reverse gesture or toolbar expansion at the bottom should
       // not blink the final card and ending controls on and off.
       const lastMobile = slowMobile && i === points.length - 1;
       const reverseMargin = lastMobile ? Math.min((journeyDistance(at) - journeyDistance(points[i - 1].progress)) * normalDistance * scrollMultiplier / 3, Math.max(48, largeViewport - viewport + 24)) : 0;
       const hideAt = lastMobile ? journeyProgress(Math.max(0, journeyDistance(at) - reverseMargin / (normalDistance * scrollMultiplier)) / 1.5) : at;
-      milestoneReveals.push({ entry, at, hideAt, animation: reveal, reached });
+      milestoneReveals.push({ entry, at, hideAt, animation: reveal, shown });
     });
     const playhead = { progress: 0 };
     scrollTween = gsap.to(playhead, {
