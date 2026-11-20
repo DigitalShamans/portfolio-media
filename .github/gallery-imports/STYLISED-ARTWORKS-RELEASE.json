@@ -32,6 +32,17 @@
     "prior_catalogs": 17
   },
   "website": {
-    "status": "pending"
-  }
+    "status": "verified",
+    "source_commit": "2f589496daf87590f217d782f7dff6431ce21376",
+    "pr": 96,
+    "revision": "3ee20281d7fae18841a22df3f483e03dba379106",
+    "pages_run": 44707425907,
+    "public_gets": 29
+  },
+  "native": "passed",
+  "browser": "passed",
+  "capture": "released",
+  "protected_public_files_verified": 14,
+  "private_untracked_preserved": 238,
+  "final_evidence_target": "Merge using the same gallery branch, then remove the merged branch and select main."
 }

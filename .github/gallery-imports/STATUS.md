@@ -1,4 +1,4 @@
-# Stylised Artworks — prepared publication checkpoint
+# Stylised Artworks — published and verified
 
 [ArtStation Dv2RPR](https://www.artstation.com/artwork/Dv2RPR): 16 ordered JPGs, no captions or embeds, observed empty second container retained only in provenance. Exact title and 29-character project description preserved in metadata and visible introduction on both routes. [Studio](https://digitalshamans.co.uk/galleries/stylised-artworks/) and [Artur](https://digitalshamans.co.uk/artur/galleries/stylised-artworks/) share one canonical image-only dataset and existing viewer. Personal Full Portfolio card 6 remains external; no new home/navigation links. Both routes remain noindex and excluded from sitemap.
 
@@ -7,3 +7,5 @@ Original dimensions: {'1920x1080': 11, '3840x2160': 2, '1696x1038': 1, '1920x120
 Private PR18 pins revision d389bde2044cbc19fb94d2862e981cc2a5f273a4, with22 previous approval groups retained. Media service succeeded; retain17 prior catalogs/revisions, all protected controls and the website global fallback. Only the new gallery override and approval group are added. Release IDs and measured checks are in the STYLISED-ARTWORKS evidence files.
 
 Actual D: repositories reused. Preserve14 public user headers/PSB by SHA-256 and238 pre-existing private untracked paths/metadata. Header locations remain under website projects. One gallery per release; no next gallery started. Integrate final evidence through the same branch and remove that branch after ancestry verification; unrelated branches and shared history are preserved.
+
+All23 service and29 public GETs passed; Pages44707425907 succeeded. Both IAB routes passed mobile/wide image order, source selection and viewer navigation. Capture sessions/helpers released. Full checkpoint elapsed1533.820s; half-time target met:True. Detailed acceptance and limitations are in STYLISED-ARTWORKS.md and JSON evidence.
