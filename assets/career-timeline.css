@@ -21,6 +21,12 @@
   visibility: hidden;
   pointer-events: none;
 }
+.career-viewport::after {
+  content: '';
+  display: block;
+  block-size: 100vh;
+  block-size: 100lvh;
+}
 .career-shell {
   width: min(calc(100% - 3rem), calc(68.75rem * var(--career-layout-scale)));
   margin-inline: auto;
@@ -340,6 +346,27 @@
 .career-track--narrow .career-role { display: none; }
 
 .career-outro { padding-block: 2rem 2.5rem; text-align: center; }
+.career-ending {
+  position: absolute;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+.career-track--complete .career-ending { visibility: visible; opacity: 1; }
+.career-ending .career-outro {
+  position: absolute;
+  top: var(--career-ending-outro-top);
+  width: 100%;
+  pointer-events: auto;
+}
+.career-ending .portfolio-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  pointer-events: auto;
+}
+.career-ending .portfolio-footer .site-shell { width: 100%; margin-inline: 0; }
+.career-track--narrow.career-track--complete .career-path-background { stroke: var(--accent); opacity: 1; }
 .career-portfolio-link, .career-details-close {
   display: inline-flex;
   align-items: center;
@@ -429,5 +456,9 @@
   .career-milestone, .career-year, .career-copy { opacity: 1 !important; transform: none !important; }
   .career-track .career-role, .career-track .career-projects { display: block; }
   .career-outro { padding-block: 1rem; }
+  .career-ending, .career-ending .career-outro, .career-ending .portfolio-footer {
+    position: static; width: auto !important; height: auto !important;
+    opacity: 1; visibility: visible; transform: none !important;
+  }
   .career-details, .career-image-dialog { display: none; }
 }
