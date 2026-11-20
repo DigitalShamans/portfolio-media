@@ -233,7 +233,9 @@
     // CSS sticky owns vertical placement, including entry and exit from the
     // scene. Only advance the drawing within that scene; compensating for a
     // measured stage top makes the curve drift when native scrolling reverses.
-    const mobileY = c.firstPointY - point.y;
+    // Stop following vertically when the final entries and ending controls
+    // fit together. The drawing continues downward along the stationary curve.
+    const mobileY = Math.max(c.minimumY, c.firstPointY - point.y);
     // Move the curve, nodes, text, and thumbnails together. Each milestone
     // keeps its position relative to its node as the camera pans.
     canvas.style.transform = 'translate3d(' + x.toFixed(3) + 'px,' + mobileY.toFixed(3) + 'px,0)';
@@ -536,18 +538,24 @@
     const end = normalStart + scrollDistance;
     let stageHeight = viewport;
     let endingLeft = 0;
+    let minimumY = 0;
     if (slowMobile) {
       setMobileEnding(true);
       const lastPoint = points[points.length - 1];
-      const dockedTop = points[0].y;
-      const cardBottom = dockedTop + labels[labels.length - 1].bottom - lastPoint.y;
+      const footerHeight = footer?.offsetHeight || 0;
+      const outroHeight = outro?.offsetHeight || 0;
+      const controlsHeight = (contact?.offsetHeight || 0) + 16 + outroHeight + footerHeight;
+      const afterPoint = Math.max(labels[labels.length - 1].bottom, metrics.y(1)) - lastPoint.y;
+      const endingGap = 32;
+      stageHeight = Math.max(largeViewport, points[0].y + afterPoint + endingGap + controlsHeight);
+      const finalPointY = stageHeight - controlsHeight - endingGap - afterPoint;
+      minimumY = finalPointY - lastPoint.y;
       endingLeft = lastPoint.x - mobileLayout.anchor;
       ending.style.width = width + 'px';
       ending.style.left = endingLeft + 'px';
-      ending.style.top = lastPoint.y - dockedTop + 'px';
-      ending.style.setProperty('--career-ending-footer-height', (footer?.offsetHeight || 0) + 'px');
-      ending.style.setProperty('--career-ending-outro-height', (outro?.offsetHeight || 0) + 'px');
-      stageHeight = Math.max(largeViewport, cardBottom + 24 + (contact?.offsetHeight || 0) + 16 + (outro?.offsetHeight || 0) + (footer?.offsetHeight || 0));
+      ending.style.top = -minimumY + 'px';
+      ending.style.setProperty('--career-ending-footer-height', footerHeight + 'px');
+      ending.style.setProperty('--career-ending-outro-height', outroHeight + 'px');
       ending.style.height = stageHeight + 'px';
     }
     // Mobile unpins exactly at the final node. Any remaining native scroll
@@ -561,7 +569,7 @@
     track.style.setProperty('--career-stage-height', stageHeight + 'px');
     track.style.height = outerHeight + 'px';
     if (slowMobile) track.dataset.cameraAnchor = cameraAnchor.toFixed(3);
-    scrollCamera = { documentTop, viewport, width, narrow, start: normalStart, end, outerHeight, normalDistance, left: trackLeft, anchor: cameraAnchor, length: metrics.length, firstPointY: points[0].y, lastStopAt: points[points.length - 1].progress, endingLeft };
+    scrollCamera = { documentTop, viewport, width, narrow, start: normalStart, end, outerHeight, normalDistance, left: trackLeft, anchor: cameraAnchor, length: metrics.length, firstPointY: points[0].y, lastStopAt: points[points.length - 1].progress, endingLeft, minimumY };
     animation = gsap.timeline({
       paused: true,
       defaults: { ease: 'none' },
