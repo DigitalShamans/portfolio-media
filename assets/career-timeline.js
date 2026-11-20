@@ -222,7 +222,7 @@
       const point = points[i];
       const above = entry.dataset.curveSide === 'above';
       const side = above ? 'above' : narrow ? 'right' : entry.dataset.curveSide;
-      const preferredWidth = narrow ? Math.min(above ? 260 : 300, width - 24) : Math.min(420 * scale, width * .36);
+      const preferredWidth = narrow ? Math.min(above ? 260 : 300, width - 24) : Math.min(420 * scale, width * .36) + 40 * scale;
       entry.style.width = preferredWidth + 'px';
       let top = above ? Math.max(0, point.y - entry.offsetHeight - 12 * scale) : point.y - 16 * scale;
       let left = 0, labelWidth = preferredWidth, labelHeight = entry.offsetHeight;

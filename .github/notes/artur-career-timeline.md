@@ -119,3 +119,9 @@ Validation: JavaScript syntax and the 12-checkpoint preview build pass. Desktop 
 ## Freelance preview and gallery title correction
 
 First Freelance Work now uses the user's supplied Unreal Engine interior screenshot (`assets/career-timeline/first-freelance-work.png`, original 2048×1087 PNG) instead of the gallery's first image. Its title and thumbnail still open `/artur/galleries/high-poly-models/`. The checkpoint capitalization is updated, and `HIgh-Poly Models` is corrected to `High-Poly Models` in both gallery routes and the personal portfolio listing. The existing gallery URL and image order are preserved; no animation code or style changes are required.
+
+## Larger desktop thumbnails
+
+Desktop timeline thumbnails now use 140px boxes instead of 100px, increasing their width and height by 40% while retaining 16:9 proportions. Desktop cards request an extra 40px of width; where space is limited, the thumbnail wraps below its description to keep the text readable. The rule is scoped to positioned, non-narrow timeline cards, preserving mobile thumbnails and employment-dialog image sizes. The spline geometry and gallery/image destinations are unchanged. Both CSS and JavaScript URLs use `?v=9`.
+
+Validation: JavaScript syntax and the 12-checkpoint preview build pass. Browser measurements at 1363×936 confirm all thumbnail boxes changed from 100px to 140px. At 1363×936 and 1100×844, no overlapping cards, overflowing descriptions or horizontal page overflow were found. Narrow-layout checks at 390×844, 320×844 and 768×844 retain their previous thumbnail sizing, with no overlaps or text overflow.
