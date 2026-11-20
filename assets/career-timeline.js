@@ -18,6 +18,7 @@
   const texts = entries.flatMap(entry => [...entry.querySelectorAll('.career-year, .career-copy')]);
   const previews = entries.map(entry => [...entry.querySelectorAll('.career-preview img')]);
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const touchDevice = window.matchMedia('(any-pointer: coarse)');
   const viewportMeasure = document.querySelector('.career-viewport');
   const outro = document.querySelector('.career-outro');
   const footer = document.querySelector('.portfolio-footer');
@@ -232,6 +233,12 @@
     // Move the curve, nodes, text, and thumbnails together. Each milestone
     // keeps its position relative to its node as the camera pans.
     canvas.style.transform = 'translate3d(' + x.toFixed(3) + 'px,' + mobileY.toFixed(3) + 'px,0)';
+    // Fade departing cards before the viewport cuts through their text.
+    // Their positions still follow the same canvas transform as the spline.
+    entries.forEach(entry => {
+      const left = parseFloat(entry.style.left) + x;
+      entry.style.opacity = Math.max(0, Math.min(1, (left - 8) / 24)).toFixed(3);
+    });
     // Only the global navigation/footer stay centered. Milestone cards keep
     // the same canvas transform as their nodes throughout the whole journey.
     ending.style.transform = 'translateX(' + (-x - c.endingLeft).toFixed(3) + 'px)';
@@ -427,7 +434,7 @@
     const largeViewport = narrow && viewportMeasure ? Math.max(viewport, Math.round(parseFloat(getComputedStyle(viewportMeasure, '::after').height) || window.innerHeight)) : viewport;
     if (!width || !viewport) return;
     const scale = parseFloat(getComputedStyle(track).getPropertyValue('--career-layout-scale')) || 1;
-    const nextSignature = [width, viewport, largeViewport, scale, reducedMotion.matches, canAnimate].join(':');
+    const nextSignature = [width, viewport, largeViewport, scale, reducedMotion.matches, touchDevice.matches, canAnimate].join(':');
     if (nextSignature === signature) return;
     signature = nextSignature;
     reset();
@@ -471,7 +478,10 @@
     });
     const slowMobile = narrow && canAnimate && !reducedMotion.matches;
     track.style.setProperty('--career-first-stop-y', points[0].y + 'px');
-    const scrollMultiplier = slowMobile ? 6 : 2;
+    // Halve the required gesture distance on touch devices, preserving the
+    // existing desktop speed and the slower second half of the journey.
+    const touchScrollFactor = touchDevice.matches ? .5 : 1;
+    const scrollMultiplier = (slowMobile ? 6 : 2) * touchScrollFactor;
     const trackLeft = track.getBoundingClientRect().left;
     const cameraAnchor = slowMobile ? trackLeft + mobileLayout.anchor : 0;
     const labels = mobilePlacement ? mobilePlacement.labels : placeLabels(points, metrics, width, narrow, scale, cameraAnchor, trackLeft);
@@ -495,6 +505,7 @@
     track.style.height = contentHeight + 'px';
     track.dataset.scrollMultiplier = String(scrollMultiplier);
     track.dataset.lateScrollMultiplier = String(scrollMultiplier * 2);
+    track.dataset.touchScrollFactor = String(touchScrollFactor);
     delete track.dataset.cameraAnchor;
 
     if (!canAnimate || reducedMotion.matches) return;
@@ -525,7 +536,7 @@
       ending.style.width = width + 'px';
       ending.style.left = endingLeft + 'px';
       ending.style.top = lastPoint.y - dockedTop + 'px';
-      ending.style.setProperty('--career-ending-outro-top', cardBottom + 16 + 'px');
+      ending.style.setProperty('--career-ending-footer-height', (footer?.offsetHeight || 0) + 'px');
       stageHeight = Math.max(largeViewport, cardBottom + 16 + (outro?.offsetHeight || 0) + 16 + (footer?.offsetHeight || 0));
       ending.style.height = stageHeight + 'px';
     }
@@ -593,7 +604,9 @@
         trigger: track,
         start: normalStart,
         end,
-        scrub: narrow ? .35 : smoother ? true : .8,
+        // Native touch/momentum scrolling already provides smooth motion.
+        // Keep the camera current when a gesture reverses or reaches the top.
+        scrub: narrow ? true : smoother ? true : .8,
         onUpdate: updateScrollCamera
       }
     });
@@ -662,6 +675,7 @@
   window.addEventListener('resize', scheduleRebuild, { passive: true });
   window.addEventListener('scroll', updateScrollCamera, { passive: true });
   reducedMotion.addEventListener('change', scheduleRebuild);
+  touchDevice.addEventListener('change', scheduleRebuild);
   if (window.ResizeObserver) new ResizeObserver(scheduleRebuild).observe(track);
   document.fonts?.addEventListener('loadingdone', () => {
     if (!initialized) return;
