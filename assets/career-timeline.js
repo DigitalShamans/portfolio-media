@@ -225,6 +225,14 @@
     return (low + high) / 2;
   }
 
+  // Round the corner where a moving position reaches a stationary edge.
+  function easeMobileEdge(distance, radius) {
+    if (distance <= -radius) return 0;
+    if (distance >= radius) return distance;
+    const fraction = (distance + radius) / (2 * radius);
+    return radius * fraction * fraction;
+  }
+
   function updateScrollCamera() {
     if (!scrollCamera || !animation) return;
     const c = scrollCamera;
@@ -266,9 +274,11 @@
     const x = Math.max(Math.min(from.offset, to.offset), markerX - point.x);
     pointer.setAttribute('cx', point.x);
     pointer.setAttribute('cy', point.y);
-    // Let the marker move into the screen before following it upward. Stop
-    // following once the last card and Contact fit below the visible entries.
-    const mobileY = Math.max(c.minimumY, Math.min(0, c.followY - point.y));
+    // Blend into the native sticky position and into vertical marker tracking.
+    const distanceToPin = c.documentTop - scroll;
+    const pinOffset = easeMobileEdge(distanceToPin, 24) - Math.max(0, distanceToPin);
+    const followOffset = easeMobileEdge(point.y - c.followY, 32);
+    const mobileY = Math.max(c.minimumY, -followOffset) + pinOffset;
     // Keep the curve, text and thumbnails together as the view moves.
     canvas.style.transform = 'translate3d(' + x.toFixed(3) + 'px,' + mobileY.toFixed(3) + 'px,0)';
     // Fade departing cards before the viewport cuts through their text.
