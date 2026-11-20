@@ -1,0 +1,37 @@
+{
+  "source_id": "Dv2RPR",
+  "slug": "stylised-artworks",
+  "title": "Stylised Artworks",
+  "branch": "codex/stylised-artworks-20261120",
+  "public_base": "7752808533a542dd1f03347dc360e943c3e47c46",
+  "images": 16,
+  "captions": 0,
+  "null_captions": 16,
+  "embeds": 0,
+  "empty_source_positions": [
+    2
+  ],
+  "personal_card_ordinal": 6,
+  "private": {
+    "status": "verified",
+    "unchanged_approval_groups": 22,
+    "source_commit": "482320f26a39b9aac3a451a977f651b807e8aa26",
+    "pr": 18,
+    "revision": "d389bde2044cbc19fb94d2862e981cc2a5f273a4",
+    "tree_verified": 16
+  },
+  "service": {
+    "source": "ef8558ba76ff57530525d01d611cbd4e09ff6953",
+    "version": 21,
+    "saved_version": "appgprj_6afbf3a4aa2c81919821379c8fde09df~appgver_0ca5d6f48e8881918ad0026a9a84b849",
+    "deployment_id": "appgdep_6b000bd1ae3c8191b2b8d0f39b8fc3c5",
+    "environment": 26,
+    "succeeded_at": "2026-11-20T10:59:10.62952+02:00",
+    "status": "succeeded",
+    "project_id": "appgprj_6afbf3a4aa2c81919821379c8fde09df",
+    "prior_catalogs": 17
+  },
+  "website": {
+    "status": "pending"
+  }
+}

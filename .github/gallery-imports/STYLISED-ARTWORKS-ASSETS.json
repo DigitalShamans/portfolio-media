@@ -1,0 +1,310 @@
+{
+  "passed": true,
+  "images": 16,
+  "captions": 0,
+  "null_captions": 16,
+  "embeds": 0,
+  "empty_positions": [
+    2
+  ],
+  "artifacts": 37,
+  "original_bytes": 5047837,
+  "webp_bytes": 2520872,
+  "original_dimensions": {
+    "1920x1080": 11,
+    "3840x2160": 2,
+    "1696x1038": 1,
+    "1920x1200": 2
+  },
+  "webp_dimensions": {
+    "1920x1080": 11,
+    "2560x1440": 2,
+    "1696x1038": 1,
+    "1920x1200": 2
+  },
+  "original_facts": [
+    {
+      "filename": "the-digital-shaman-presentation-front-ue5-top.jpg",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 114165,
+      "sha256": "2b5411a6a0047d4548fc1d2350298de18fc2d6bf04392abc25bcae151a05f9bf",
+      "git_blob_sha": "36c3a3cce4383fc829f358c329be073629d3ce08"
+    },
+    {
+      "filename": "the-digital-shaman-presentation-front-ue5-bottom.jpg",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 137100,
+      "sha256": "098dd8c69a345c49e12f45e8671418ed6233abaf043f4e17ce4694a5367878ea",
+      "git_blob_sha": "e821b8662adf3b62d55d8ed9c37f437169aa8d97"
+    },
+    {
+      "filename": "the-digital-shaman-presentation-3-4-wireframe-02.jpg",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 218303,
+      "sha256": "bc251745f251529b33bc7c5457e434ba49364dcff93fbdc5e01059cc8d265b84",
+      "git_blob_sha": "ddb9c2db69a69c1e3c261b894c6fac400b2d9b6d"
+    },
+    {
+      "filename": "the-digital-shaman-presentation-3-4-wireframe-01.jpg",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 196423,
+      "sha256": "b8a3de0615464fa9677e4ca48dacecb73d57bc841220a4bb3013816032137abd",
+      "git_blob_sha": "708b69fb94bfcadee0d719780568b39f2b1ce810"
+    },
+    {
+      "filename": "the-digital-shaman-battlezone.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 680263,
+      "sha256": "160c26f4dd6436b6c8ad51adce7c4962616c7ab45deecaaa9c885f599e85bc53",
+      "git_blob_sha": "38a46528cf3156ece64e3ade24aa732f5c90247e"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-battlezone-presentation-a04-impr-denoised.jpg",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 297358,
+      "sha256": "6ba1b85ad29d4631c13218224c4df7f5299b35d91b332b2bb5e1288a3228c410",
+      "git_blob_sha": "412eca7465bd0544ad9736687148c1064f88335b"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-battlezone-presentation-a01-impr-denoised.jpg",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 474163,
+      "sha256": "a719b8c47e24ad7ea8f3b35161e36696ea6bb117f6e54127d55e5461d43fa28e",
+      "git_blob_sha": "ee20f56e94e0015580570d432152f901a5fdf836"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-battlezone-presentation-a10-impr-denoised-m.jpg",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 461838,
+      "sha256": "62ba3015c8b6448171f4948317b5b7646c1d227d83c48ed417f8e6f51c4732c4",
+      "git_blob_sha": "5b8efa2210eec693500ec9a95f0abff4f8821c14"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-battlezone-presentation-b04-impr-denoised.jpg",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 327436,
+      "sha256": "d4771e82bb6f0cb0d991cb816946bc428931ae409d0be3ec00f77b5713944867",
+      "git_blob_sha": "e26b39e0b1fb1cc209f71b885992d551647a1a8d"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-battlezone-presentation-a00b-impr2-denoised-m.jpg",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 391415,
+      "sha256": "35a9c0c9e98dfb48ba5bf03c0e4a71683ffb527ae5b366a583fd0a23c0bd5a37",
+      "git_blob_sha": "581729b5dd57386b42fe97446d18d1100678fb15"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-2014-compose4-abstract-denoised.jpg",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 446412,
+      "sha256": "65e2aebb8a8a84712ad0be9ae02b7d91b5b516c952fdc92b87fe73a20c21e9c5",
+      "git_blob_sha": "9cfd27c5e524253b5de34abcf9ed418d7d51c592"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-2014-compose2-blue-denoised.jpg",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 367496,
+      "sha256": "e8f1086e1a0296e3c6835d3f6137981a41732e9d825152383fc8fd6df4ca2734",
+      "git_blob_sha": "a6e76571255a1792c0371d4533e8f360e02be249"
+    },
+    {
+      "filename": "the-digital-shaman-ds2.jpg",
+      "width": 1696,
+      "height": 1038,
+      "bytes": 102447,
+      "sha256": "6fa2e2502067934e062726941f148b7ad248f8e03974324e03e7a8c19f013df0",
+      "git_blob_sha": "50efbb1b2050faeb62ebba1a93205fb29ecb88cc"
+    },
+    {
+      "filename": "the-digital-shaman-digitalshamans-powder-props-01.jpg",
+      "width": 3840,
+      "height": 2160,
+      "bytes": 381579,
+      "sha256": "3816ca7b66f12f2a5b142ef81c8f913075cb2632fe7264a39af5ce5c45c85e5e",
+      "git_blob_sha": "e3fa642ef61352dd0e24398ef7715056a22dc0f0"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-mech-daisy1.jpg",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 230349,
+      "sha256": "e43522c0911b67e99f419983d43737c62c20b7bae611f9e06197fe83cf759a88",
+      "git_blob_sha": "a9d04f0f949d687941cbda109bcac3f7f4e25abd"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-mech-daisy2.jpg",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 221090,
+      "sha256": "1231937488c044fae3524c40dc589ab6b628055f66a0e4f5a7d1022f40c82eaa",
+      "git_blob_sha": "32937fa5b0977e1ab2829e103e81549dad6d2cc0"
+    }
+  ],
+  "webp_facts": [
+    {
+      "filename": "the-digital-shaman-presentation-front-ue5-top.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 45760,
+      "sha256": "b0358e62e02f0945445c49d12bedca0141720d127f60c382488a1e67f9fbe5d2",
+      "git_blob_sha": "7e28d76f81098f5d90f9b8514d02ef692a6aaad1"
+    },
+    {
+      "filename": "the-digital-shaman-presentation-front-ue5-bottom.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 65992,
+      "sha256": "e22669f7ed91ce5027f4095a811561e02d66cef34b3ea8bcf6608a445a664625",
+      "git_blob_sha": "df34e5f41bb65233e1e2b597e54970fbce7b94ab"
+    },
+    {
+      "filename": "the-digital-shaman-presentation-3-4-wireframe-02.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 105922,
+      "sha256": "dbf4942a978d35c198c83c4ec23c4ab13be8e4def507e2c7fd0a3e5d6bf2a0cc",
+      "git_blob_sha": "ff6c68a7beab32ba8c27d6ea765c7bdf43404463"
+    },
+    {
+      "filename": "the-digital-shaman-presentation-3-4-wireframe-01.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 96670,
+      "sha256": "e22cdbd9f7103d2a07895abd1f80271edfdce77c38ddae40ba4aee60d38c9c3a",
+      "git_blob_sha": "7f240a34ebde93512f56fff586f289fd1508c4fd"
+    },
+    {
+      "filename": "the-digital-shaman-battlezone.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 186850,
+      "sha256": "21704fc41b161df62235d8ac2f86953c2264f295ca92b29d80d8a13d26601932",
+      "git_blob_sha": "c0f55fdd1b686fcd8a4b99d40cc46193fdd56fa7"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-battlezone-presentation-a04-impr-denoised.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 171416,
+      "sha256": "e8ac165a97a529e6f6d9b496302cb4750a5dd76e5eae8abd3d9cd0a92c7bf77b",
+      "git_blob_sha": "936d4184761ea0291ac4fe80fdefca8c88dc815d"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-battlezone-presentation-a01-impr-denoised.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 266122,
+      "sha256": "f6ca7c44687864b72777de13d2d8c4c24b4f17fab6d03388210ee1c18a198da2",
+      "git_blob_sha": "3f78f5702c85b3967479ef64a18621b84fddb858"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-battlezone-presentation-a10-impr-denoised-m.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 255760,
+      "sha256": "68a4d639d51ce81ca354571d862898bd585fc9c30996c1ebd25d856b1346d7ea",
+      "git_blob_sha": "a215d2128306b9e0e18b9dc2f46ed63e4cb35a58"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-battlezone-presentation-b04-impr-denoised.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 175568,
+      "sha256": "b0e8ef63619a561425b3c9c9be3bb7220069d2ee8033b6da0c8545da014d1bd5",
+      "git_blob_sha": "d2defe97a3629215bea229fb49b98086ce044e0a"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-battlezone-presentation-a00b-impr2-denoised-m.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 224710,
+      "sha256": "5141932dcd8d6a70f39bed4781c7cd4bab6df64a6f0688d9cabb89ded99573ff",
+      "git_blob_sha": "48dad7f5d357111b6dfa4f5d0a3011a76a84ff7a"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-2014-compose4-abstract-denoised.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 314478,
+      "sha256": "0e8355624ca2c5b3c87945845fbc7d265a016f0f331cf40bb55aace2a36fdd68",
+      "git_blob_sha": "a135688ae76f1c7769f676a9469251fe54ef6cfb"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-2014-compose2-blue-denoised.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 246266,
+      "sha256": "250689f9f2575a0f82664a56994e4d1b59ffc7b8f717f949eb747c9a31d0861b",
+      "git_blob_sha": "64ef05069ec1ce4f895c604db9689987fbdc6d94"
+    },
+    {
+      "filename": "the-digital-shaman-ds2.webp",
+      "width": 1696,
+      "height": 1038,
+      "bytes": 42822,
+      "sha256": "af4ad25e04935147473db2728316e9643643431e793bf52bd9017e1e97cd352a",
+      "git_blob_sha": "fa4ffb341e2a70f991e7b381ae827e3ca8c40ed2"
+    },
+    {
+      "filename": "the-digital-shaman-digitalshamans-powder-props-01.webp",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 94458,
+      "sha256": "5344ae94bc3d876e082e05fe5031af813372b72de17579f22c030182e91900ba",
+      "git_blob_sha": "b250d9ada0d6fe9427c877b8699bccd9f1141e4a"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-mech-daisy1.webp",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 115802,
+      "sha256": "9d55f67e6ae68a9559bc0aea32f203542c61124777611346e66a2f994194524f",
+      "git_blob_sha": "6e9e2d6ce849cc85867cf2472fa6502dedb79793"
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-mech-daisy2.webp",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 112276,
+      "sha256": "3afc74954660e4b5948c353dbd4a46e8547c1d0ead01e37dc5c8f74b1860f4f9",
+      "git_blob_sha": "7eb8d0f08a9058e5739fb43dc726f5f8361bbd8b"
+    }
+  ],
+  "byte_duplicate_groups": [],
+  "manifest": {
+    "bytes": 1344,
+    "sha256": "373187550ef127bb6a7de6267223cfe4180ef7232da4e318325b2fa15107073d",
+    "git_blob_sha": "75b9cd1b9ac7c9e8e777d4e7aca090299212225e"
+  },
+  "pillow": "13.0.0",
+  "encoder": {
+    "bounds": [
+      2560,
+      1440
+    ],
+    "exif_transpose": true,
+    "icc": true,
+    "method": 6,
+    "pillow": "13.0.0",
+    "quality": 92,
+    "resampling": "LANCZOS"
+  },
+  "download_seconds": 2.17,
+  "preparation_seconds": 2.065,
+  "verification_seconds": 1.381,
+  "checked_at_utc": "2026-11-20T08:47:30.634712+00:00",
+  "source_order_case_urls_description_exact": true,
+  "full_decode_icc_fit_passed": true
+}
