@@ -913,6 +913,7 @@ previousSide.addEventListener('click', () => step(-1));
 nextSide.addEventListener('click', () => step(1));
 
 viewer.addEventListener('keydown', event => {
+  if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
   if (stage.classList.contains('native') && event.target === stage) return;
   if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
     event.preventDefault();
