@@ -16,13 +16,13 @@ sitemap: false
   <meta name="color-scheme" content="dark">
   {% include seo.html %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
-  <link rel="stylesheet" href="{{ '/assets/career-timeline.css' | relative_url }}?v=7">
+  <link rel="stylesheet" href="{{ '/assets/career-timeline.css' | relative_url }}?v=8">
   <script src="{{ '/assets/vendor/gsap/3.15.1/gsap.min.js' | relative_url }}" defer></script>
   <script src="{{ '/assets/vendor/gsap/3.15.1/ScrollTrigger.min.js' | relative_url }}" defer></script>
   <script src="{{ '/assets/vendor/gsap/3.15.1/ScrollSmoother.min.js' | relative_url }}" defer></script>
   <script src="{{ '/assets/vendor/gsap/3.15.1/DrawSVGPlugin.min.js' | relative_url }}" defer></script>
   <script src="{{ '/assets/vendor/gsap/3.15.1/MotionPathPlugin.min.js' | relative_url }}" defer></script>
-  <script src="{{ '/assets/career-timeline.js' | relative_url }}?v=7" defer></script>
+  <script src="{{ '/assets/career-timeline.js' | relative_url }}?v=8" defer></script>
 </head>
 <body class="career-page">
   <div class="career-viewport" aria-hidden="true"></div>
@@ -52,18 +52,25 @@ sitemap: false
       <ol class="career-list">
         <li class="career-milestone" id="career-2004" data-curve-at="0" data-curve-side="above">
           <time class="career-year" datetime="2004">2004</time>
-          <div class="career-copy">
+          <div class="career-copy career-copy--media">
             <div class="career-description">
               <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">First steps in CG</button></h2>
             </div>
+            <a class="career-preview career-preview--image" href="{{ '/assets/career-timeline/porsche-carrera-gt.jpg' | relative_url }}" data-career-image aria-label="Enlarge Porsche Carrera GT image" aria-haspopup="dialog" aria-controls="career-image">
+              <img src="{{ '/assets/career-timeline/porsche-carrera-gt.jpg' | relative_url }}" alt="Porsche Carrera GT engine model in 3ds Max" width="1022" height="734" loading="lazy" decoding="async">
+              <span class="career-preview__zoom" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12" focusable="false"><circle cx="5" cy="5" r="3.5" fill="none" stroke="currentColor"/><path d="m8 8 3 3M5 3.5v3M3.5 5h3" fill="none" stroke="currentColor"/></svg></span>
+            </a>
           </div>
         </li>
         <li class="career-milestone" id="career-2006" data-curve-at=".045" data-curve-side="right">
           <time class="career-year" datetime="2006">2006</time>
-          <div class="career-copy">
+          <div class="career-copy career-copy--media">
             <div class="career-description">
-              <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">First freelance work</button></h2>
+              <h2><a class="career-checkpoint" href="{{ '/artur/galleries/high-poly-models/' | relative_url }}">First freelance work</a></h2>
             </div>
+            <a class="career-preview" href="{{ '/artur/galleries/high-poly-models/' | relative_url }}" aria-label="View High-Poly Models gallery">
+              <img src="{{ '/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-two-armchairs-and-table.webp' | relative_url }}" alt="High-poly furniture models" width="320" height="180" loading="lazy" decoding="async">
+            </a>
           </div>
         </li>
         <li class="career-milestone" id="career-2010" data-curve-at=".11" data-curve-side="right">
@@ -76,7 +83,10 @@ sitemap: false
                 <li><strong>Sniper Ghost Warrior 2</strong><span>FPP stealth shooter</span></li>
               </ul>
             </div>
-            <div class="career-preview career-preview--empty" role="img" aria-label="Gallery image slot"><span>Image slot</span></div>
+            <a class="career-preview career-preview--image" href="{{ '/assets/career-timeline/sniper-ghost-warrior-2.jpg' | relative_url }}" data-career-image aria-label="Enlarge Sniper Ghost Warrior 2 image" aria-haspopup="dialog" aria-controls="career-image">
+              <img src="{{ '/assets/career-timeline/sniper-ghost-warrior-2.jpg' | relative_url }}" alt="Sniper Ghost Warrior 2 environment artwork" width="960" height="534" loading="lazy" decoding="async">
+              <span class="career-preview__zoom" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12" focusable="false"><circle cx="5" cy="5" r="3.5" fill="none" stroke="currentColor"/><path d="m8 8 3 3M5 3.5v3M3.5 5h3" fill="none" stroke="currentColor"/></svg></span>
+            </a>
           </div>
         </li>
         <li class="career-milestone" id="career-2015-jujubee" data-curve-at=".19" data-curve-side="left">
@@ -238,6 +248,10 @@ sitemap: false
   <dialog class="career-details" id="career-details" aria-labelledby="career-details-title">
     <form method="dialog"><button class="career-details-close" type="submit">Close</button></form>
     <div data-career-details-body></div>
+  </dialog>
+  <dialog class="career-image-dialog" id="career-image" aria-label="Image preview">
+    <form method="dialog"><button class="career-details-close" type="submit">Close</button></form>
+    <img data-career-image-full alt="">
   </dialog>
 </body>
 </html>
