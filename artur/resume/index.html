@@ -18,12 +18,13 @@ redirect_from:
   {% include seo.html %}
   {% include site-favicon.html %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=15">
-  <link rel="stylesheet" href="{{ '/assets/career-timeline.css' | relative_url }}?v=26">
+  <link rel="stylesheet" href="{{ '/assets/career-timeline.css' | relative_url }}?v=27">
   {% include personal-typography.html %}
   {% include career-timeline-scripts.html %}
 </head>
 <body class="career-page">
   <div class="career-viewport" aria-hidden="true"></div>
+  <div class="career-native-scroll">
   <div id="career-scroll-wrapper">
   <div id="career-scroll-content">
   {% include site-header.html %}
@@ -270,6 +271,7 @@ redirect_from:
   </main>
   </div>
   {% include copyright-footer.html owner='Artur Perzyna' %}
+  </div>
   </div>
   </div>
   <dialog class="career-details" id="career-details" aria-labelledby="career-details-title">
