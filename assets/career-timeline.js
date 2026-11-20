@@ -57,7 +57,7 @@
 
   function setMobileEnding(enabled) {
     if (enabled) {
-      canvas.append(ending);
+      stage.append(ending);
       endingHomes.forEach(({ node }) => ending.append(node));
       footer?.setAttribute('role', 'contentinfo');
     } else {
@@ -191,6 +191,7 @@
     milestoneReveals = [];
     stage.style.removeProperty('transform');
     canvas.style.removeProperty('transform');
+    canvas.style.removeProperty('transform-origin');
     cellular?.style.removeProperty('transform');
     cellular?.style.removeProperty('opacity');
     network?.style.removeProperty('transform');
@@ -273,15 +274,17 @@
     const markerX = from.markerX + (to.markerX - from.markerX) * blend;
     // Keep the outgoing card in view if the curve bows right between nodes.
     const x = Math.max(Math.min(from.offset, to.offset), markerX - point.x);
+    // Center the wider frame horizontally so more of the bends fit on screen.
+    const cameraX = x * c.sceneScale + c.width * (1 - c.sceneScale) / 2;
     pointer.setAttribute('cx', point.x);
     pointer.setAttribute('cy', point.y);
     // Blend into the native sticky position and into vertical marker tracking.
     const distanceToPin = c.documentTop - scroll;
     const pinOffset = easeMobileEdge(distanceToPin, 24) - Math.max(0, distanceToPin);
-    const followOffset = easeMobileEdge(point.y - c.followY, 32);
+    const followOffset = easeMobileEdge(point.y * c.sceneScale - c.followY, 32);
     const mobileY = Math.max(c.minimumY, -followOffset) + pinOffset;
     // Keep the curve, text and thumbnails together as the view moves.
-    canvas.style.transform = 'translate3d(' + x.toFixed(3) + 'px,' + mobileY.toFixed(3) + 'px,0)';
+    canvas.style.transform = 'translate3d(' + cameraX.toFixed(3) + 'px,' + mobileY.toFixed(3) + 'px,0) scale(' + c.sceneScale + ')';
     if (!c.keepRevealed) {
       // Fade departing cards before the viewport cuts through their text.
       entries.forEach(entry => {
@@ -293,7 +296,7 @@
         entry.style.visibility = opacity > 0 ? 'inherit' : 'hidden';
       });
     }
-    ending.style.transform = 'translateX(' + (-x).toFixed(3) + 'px)';
+    ending.style.transform = 'translateY(' + mobileY.toFixed(3) + 'px)';
   }
 
   function updateMilestoneReveals() {
@@ -519,6 +522,8 @@
     // A native scroll area keeps touch gestures off the document viewport,
     // where Chrome moves its address bar and the entire pinned timeline.
     const useLocalScroll = Boolean(mobileScroller && narrow && canAnimate && touchDevice.matches && !reducedMotion.matches);
+    // Fit more of the timeline in the touch viewport at the same scroll speed.
+    const sceneScale = useLocalScroll ? .8 : 1;
     scroller = useLocalScroll ? mobileScroller : window;
     document.documentElement.classList.toggle('career-local-scroll', useLocalScroll);
     updateDesktopSmoothing(narrow);
@@ -563,7 +568,7 @@
       return { x: exact.x, y: exact.y, progress: at };
     });
     const slowMobile = narrow && canAnimate && !reducedMotion.matches;
-    track.style.setProperty('--career-first-stop-y', points[0].y + 'px');
+    track.style.setProperty('--career-first-stop-y', points[0].y * sceneScale + 'px');
     // Double desktop travel and keep the existing gesture distance on mobile.
     const touchScrollFactor = touchDevice.matches ? .5 : 1;
     const scrollMultiplier = (slowMobile ? 6 : 2) * touchScrollFactor * (narrow ? 1 : 2);
@@ -618,19 +623,21 @@
     let minimumY = 0;
     if (slowMobile) {
       setMobileEnding(true);
+      canvas.style.transformOrigin = 'top left';
       const lastPoint = points[points.length - 1];
-      const endingTop = Math.max(labels[labels.length - 1].bottom, metrics.y(1)) + 28;
+      const endingTop = Math.max(labels[labels.length - 1].bottom, metrics.y(1)) * sceneScale + 28;
       ending.style.width = width + 'px';
       ending.style.top = endingTop + 'px';
       const endingBottom = endingTop + ending.offsetHeight;
-      stageHeight = Math.max(largeViewport, points[0].y + endingBottom - lastPoint.y);
+      const lastMarkerY = lastPoint.y * sceneScale;
+      stageHeight = Math.max(largeViewport, points[0].y * sceneScale + endingBottom - lastMarkerY);
       minimumY = Math.min(0, stageHeight - endingBottom);
       // On mobile the footer moves into the scene, so clip the artwork above it.
       if (backdrops && footer) {
         const footerSpace = Math.ceil(footer.getBoundingClientRect().height + Math.max(0, stageHeight - endingBottom));
         backdrops.style.setProperty('--career-backdrop-footer-space', footerSpace + 'px');
       }
-      followY = Math.min(viewport * .55, lastPoint.y + minimumY);
+      followY = Math.min(viewport * .55, lastMarkerY + minimumY);
       mobileStops = frameMobileStops(points, labels, width, mobileLayout.anchor);
     }
     // Mobile unpins exactly at the final node. Any remaining native scroll
@@ -646,7 +653,7 @@
     if (slowMobile) track.dataset.cameraAnchor = cameraAnchor.toFixed(3);
     scrollCamera = {
       documentTop, viewport, width, narrow, start: normalStart, end, outerHeight, normalDistance,
-      anchor: cameraAnchor, length: metrics.length, lastStopAt, mobileStops, followY, minimumY,
+      anchor: cameraAnchor, length: metrics.length, lastStopAt, mobileStops, followY, minimumY, sceneScale,
       keepRevealed: useLocalScroll
     };
     animation = gsap.timeline({
