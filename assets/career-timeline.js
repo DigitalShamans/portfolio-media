@@ -25,7 +25,7 @@
   const ns = 'http://www.w3.org/2000/svg';
   const desktopCurveAspect = 1.25;
   const curveExtent = 1.22;
-  const canAnimate = Boolean(window.gsap && window.ScrollTrigger && window.DrawSVGPlugin && window.MotionPathPlugin);
+  let canAnimate = false;
   let animation;
   let scrollTween;
   let mobileReveals = [];
@@ -34,11 +34,14 @@
   let signature = '';
   let resizeTimer;
 
-  if (canAnimate) {
+  function enableAnimation() {
+    if (!window.gsap || !window.ScrollTrigger || !window.DrawSVGPlugin || !window.MotionPathPlugin) return;
     gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin, MotionPathPlugin);
     if (window.ScrollSmoother) gsap.registerPlugin(ScrollSmoother);
     // Collapsing mobile browser controls must not refresh the scroll journey.
     ScrollTrigger.config({ ignoreMobileResize: true });
+    canAnimate = true;
+    rebuild();
   }
 
   function element(name, attributes) {
@@ -311,7 +314,7 @@
     const viewport = narrow && viewportMeasure ? Math.round(viewportMeasure.getBoundingClientRect().height) : window.innerHeight;
     if (!width || !viewport) return;
     const scale = parseFloat(getComputedStyle(track).getPropertyValue('--career-layout-scale')) || 1;
-    const nextSignature = [width, viewport, scale, reducedMotion.matches].join(':');
+    const nextSignature = [width, viewport, scale, reducedMotion.matches, canAnimate].join(':');
     if (nextSignature === signature) return;
     signature = nextSignature;
     reset();
@@ -452,10 +455,16 @@
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => window.requestAnimationFrame(rebuild), 120);
   }
+  // This script runs first. Draw the curve before the deferred GSAP files
+  // finish, then add the motion once those files have executed.
+  document.addEventListener('DOMContentLoaded', enableAnimation, { once: true });
   rebuild();
   window.addEventListener('resize', scheduleRebuild, { passive: true });
   window.addEventListener('scroll', updateScrollCamera, { passive: true });
   reducedMotion.addEventListener('change', scheduleRebuild);
   if (window.ResizeObserver) new ResizeObserver(scheduleRebuild).observe(track);
-  if (document.fonts && document.fonts.status === 'loading') document.fonts.ready.then(() => { signature = ''; scheduleRebuild(); });
+  document.fonts?.addEventListener('loadingdone', () => {
+    signature = '';
+    scheduleRebuild();
+  });
 })();

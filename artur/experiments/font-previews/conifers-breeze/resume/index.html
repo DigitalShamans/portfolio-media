@@ -25,13 +25,8 @@ font_preview:
   {% include site-favicon.html %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
   <link rel="stylesheet" href="{{ '/assets/career-timeline.css' | relative_url }}?v=13">
-  <script src="{{ '/assets/vendor/gsap/3.15.1/gsap.min.js' | relative_url }}" defer></script>
-  <script src="{{ '/assets/vendor/gsap/3.15.1/ScrollTrigger.min.js' | relative_url }}" defer></script>
-  <script src="{{ '/assets/vendor/gsap/3.15.1/ScrollSmoother.min.js' | relative_url }}" defer></script>
-  <script src="{{ '/assets/vendor/gsap/3.15.1/DrawSVGPlugin.min.js' | relative_url }}" defer></script>
-  <script src="{{ '/assets/vendor/gsap/3.15.1/MotionPathPlugin.min.js' | relative_url }}" defer></script>
-  <script src="{{ '/assets/career-timeline.js' | relative_url }}?v=13" defer></script>
-  {% include font-preview.html %}
+  {% include personal-typography.html %}
+  {% include career-timeline-scripts.html %}
 </head>
 <body class="career-page">
   <div class="career-viewport" aria-hidden="true"></div>
