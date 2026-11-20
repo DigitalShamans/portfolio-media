@@ -119,7 +119,13 @@
     }
 
     window.addEventListener('pageshow', event => {
-      if (event.persisted) clear();
+      const historyVisit = window.performance?.getEntriesByType?.('navigation')?.[0]?.type === 'back_forward';
+      if (!event.persisted && !historyVisit) return;
+      clear();
+      const scrollTop = window.history.state?.portfolioRecentWorkScrollTop;
+      if (Number.isFinite(scrollTop) && scrollTop >= 0) {
+        window.requestAnimationFrame(() => { region.scrollTop = scrollTop; });
+      }
     });
     window.addEventListener('pagehide', () => {
       if (!active?.navigating) clear();
@@ -154,7 +160,7 @@
       place(frame, box);
       document.body.append(cover);
       source.classList.add('portfolio-gallery-transition-source');
-      const transition = { cover, source, navigating: false };
+      const transition = { cover, source, scrollTop: region.scrollTop, navigating: false };
       active = transition;
 
       function navigate() {
@@ -170,6 +176,12 @@
           window.sessionStorage.setItem(key, marker);
           transition.marker = marker;
         } catch { /* Links still navigate when storage is unavailable. */ }
+        // The browser restores the page scroll, but can reset a nested scroller on Back.
+        try {
+          window.history.replaceState({
+            ...window.history.state, portfolioRecentWorkScrollTop: transition.scrollTop
+          }, '');
+        } catch { /* The banner remains a normal navigation if history state is restricted. */ }
         transition.timer = window.setTimeout(clear, 4000);
         window.location.assign(destination.href);
       }
