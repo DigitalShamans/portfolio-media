@@ -14,7 +14,7 @@ Confirmed absent: public `galleries/high-poly-models/`, `artur/galleries/high-po
 
 Root's separate IAB lane confirmed 27 JPGs, an empty first container, 17 captions and 10 null captions, no embeds, and exact description `TTT`. This lane did not browse that source.
 
-Positions 26 and 27 are distinct CDN assets with the same source basename. Preserve both: position 26 `the-digital-shaman-009.jpg`, position 27 collision-safe alias `the-digital-shaman-009-64719152.jpg`. Root/media worker retains each source filename, asset ID and genuine download URL in provenance. Native validation must confirm both unique names and all 27 memberships, without treating this basename collision as a duplicate image.
+Source-container positions 26 and 27 are distinct CDN assets with the same source basename. Because source position 1 is empty, these are gallery image rows 25 and 26. Preserve both: `the-digital-shaman-009.jpg` and collision-safe alias `the-digital-shaman-009-64719152.jpg`. Root/media worker retains each source filename, asset ID and genuine download URL in provenance. Native validation must confirm both unique names and all 27 memberships, without treating this basename collision as a duplicate image. The final gallery image is `the-digital-shaman-amxx-009-001.jpg`.
 
 ## Current repository snapshots
 

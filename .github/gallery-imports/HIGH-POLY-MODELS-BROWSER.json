@@ -1,0 +1,273 @@
+{
+  "passed": true,
+  "completedAtUtc": "2026-11-20T07:02:05.282Z",
+  "build": "eaa951a3950ffad3b8c2bcde8fd98f0a1522d956",
+  "revision": "0d8a70c4ed2f818e6ecf1c863b1e4c3477eae9f8",
+  "checks": [
+    {
+      "build": "eaa951a3950ffad3b8c2bcde8fd98f0a1522d956",
+      "captions": 17,
+      "first": {
+        "complete": true,
+        "natural": 1920,
+        "src": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-two-armchairs-and-table.webp?v=39c9f401286e2f5dd5a4bd083ee5ff804a523610&webp=q92-m6"
+      },
+      "height": 844,
+      "horizontalOverflow": false,
+      "path": "/galleries/high-poly-models/",
+      "shots": 27,
+      "width": 390,
+      "captionPairsVerified": 17,
+      "sourceOrderVerified": true,
+      "browserPolicy": {
+        "status": "interactive-verified",
+        "attempts": [
+          {
+            "backend": "in-app",
+            "passed": true,
+            "elapsedMs": 25
+          }
+        ]
+      },
+      "navigation": {
+        "viewer": {
+          "height": 844,
+          "image": {
+            "complete": true,
+            "natural": 1920,
+            "src": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-chandeliers.webp?v=5e3a22852fc72bf541f877a393fa53446d403e10&webp=q92-m6"
+          },
+          "width": 390
+        },
+        "sequence": [
+          1,
+          2,
+          1
+        ],
+        "escapeClosed": true
+      }
+    },
+    {
+      "build": "eaa951a3950ffad3b8c2bcde8fd98f0a1522d956",
+      "captions": 17,
+      "first": {
+        "complete": true,
+        "natural": 1920,
+        "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/0d8a70c4ed2f818e6ecf1c863b1e4c3477eae9f8/high-poly-models/the-digital-shaman-artur-perzyna-two-armchairs-and-table.jpg"
+      },
+      "height": 1600,
+      "horizontalOverflow": false,
+      "path": "/galleries/high-poly-models/",
+      "shots": 27,
+      "width": 2800,
+      "captionPairsVerified": 17,
+      "sourceOrderVerified": true,
+      "browserPolicy": {
+        "status": "interactive-verified",
+        "attempts": [
+          {
+            "backend": "in-app",
+            "passed": true,
+            "elapsedMs": 20
+          }
+        ]
+      },
+      "navigation": {
+        "viewer": {
+          "height": 1600,
+          "image": {
+            "complete": true,
+            "natural": 1920,
+            "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/0d8a70c4ed2f818e6ecf1c863b1e4c3477eae9f8/high-poly-models/the-digital-shaman-artur-perzyna-chandeliers.jpg"
+          },
+          "width": 2800
+        },
+        "sequence": [
+          1,
+          2,
+          1
+        ],
+        "escapeClosed": true
+      }
+    },
+    {
+      "build": "eaa951a3950ffad3b8c2bcde8fd98f0a1522d956",
+      "captions": 17,
+      "first": {
+        "complete": true,
+        "natural": 1920,
+        "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/0d8a70c4ed2f818e6ecf1c863b1e4c3477eae9f8/high-poly-models/the-digital-shaman-artur-perzyna-two-armchairs-and-table.jpg"
+      },
+      "height": 1600,
+      "horizontalOverflow": false,
+      "path": "/artur/galleries/high-poly-models/",
+      "shots": 27,
+      "width": 2800,
+      "captionPairsVerified": 17,
+      "sourceOrderVerified": true,
+      "browserPolicy": {
+        "status": "interactive-verified",
+        "attempts": [
+          {
+            "backend": "in-app",
+            "passed": true,
+            "elapsedMs": 24
+          }
+        ]
+      },
+      "navigation": {
+        "viewer": {
+          "height": 1600,
+          "image": {
+            "complete": true,
+            "natural": 1920,
+            "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/0d8a70c4ed2f818e6ecf1c863b1e4c3477eae9f8/high-poly-models/the-digital-shaman-artur-perzyna-chandeliers.jpg"
+          },
+          "width": 2800
+        },
+        "sequence": [
+          1,
+          2,
+          1
+        ],
+        "escapeClosed": true
+      }
+    },
+    {
+      "build": "eaa951a3950ffad3b8c2bcde8fd98f0a1522d956",
+      "captions": 17,
+      "first": {
+        "complete": true,
+        "natural": 1920,
+        "src": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-two-armchairs-and-table.webp?v=39c9f401286e2f5dd5a4bd083ee5ff804a523610&webp=q92-m6"
+      },
+      "height": 844,
+      "horizontalOverflow": false,
+      "path": "/artur/galleries/high-poly-models/",
+      "shots": 27,
+      "width": 390,
+      "captionPairsVerified": 17,
+      "sourceOrderVerified": true,
+      "browserPolicy": {
+        "status": "interactive-verified",
+        "attempts": [
+          {
+            "backend": "in-app",
+            "passed": true,
+            "elapsedMs": 22
+          }
+        ]
+      },
+      "navigation": {
+        "viewer": {
+          "height": 844,
+          "image": {
+            "complete": true,
+            "natural": 1920,
+            "src": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-chandeliers.webp?v=5e3a22852fc72bf541f877a393fa53446d403e10&webp=q92-m6"
+          },
+          "width": 390
+        },
+        "sequence": [
+          1,
+          2,
+          1
+        ],
+        "escapeClosed": true
+      }
+    }
+  ],
+  "collisionChecks": [
+    {
+      "route": "studio",
+      "first": {
+        "complete": true,
+        "height": 1600,
+        "natural": 2207,
+        "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/0d8a70c4ed2f818e6ecf1c863b1e4c3477eae9f8/high-poly-models/the-digital-shaman-009.jpg",
+        "width": 2800,
+        "filename": "the-digital-shaman-009.jpg"
+      },
+      "second": {
+        "complete": true,
+        "height": 1600,
+        "natural": 2511,
+        "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/0d8a70c4ed2f818e6ecf1c863b1e4c3477eae9f8/high-poly-models/the-digital-shaman-009-64719152.jpg",
+        "width": 2800,
+        "filename": "the-digital-shaman-009-64719152.jpg"
+      },
+      "sequence": [
+        25,
+        26,
+        25
+      ],
+      "escapeClosed": true
+    },
+    {
+      "route": "personal",
+      "first": {
+        "complete": true,
+        "height": 1600,
+        "natural": 2207,
+        "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/0d8a70c4ed2f818e6ecf1c863b1e4c3477eae9f8/high-poly-models/the-digital-shaman-009.jpg",
+        "width": 2800,
+        "filename": "the-digital-shaman-009.jpg"
+      },
+      "second": {
+        "complete": true,
+        "height": 1600,
+        "natural": 2511,
+        "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/0d8a70c4ed2f818e6ecf1c863b1e4c3477eae9f8/high-poly-models/the-digital-shaman-009-64719152.jpg",
+        "width": 2800,
+        "filename": "the-digital-shaman-009-64719152.jpg"
+      },
+      "sequence": [
+        25,
+        26,
+        25
+      ],
+      "escapeClosed": true
+    }
+  ],
+  "normalDesktop": {
+    "build": "eaa951a3950ffad3b8c2bcde8fd98f0a1522d956",
+    "captions": 17,
+    "first": {
+      "complete": true,
+      "natural": 1920,
+      "src": "https://digitalshamans.co.uk/galleries/high-poly-models/1440p/the-digital-shaman-artur-perzyna-two-armchairs-and-table.webp?v=39c9f401286e2f5dd5a4bd083ee5ff804a523610&webp=q92-m6"
+    },
+    "height": 900,
+    "horizontalOverflow": false,
+    "path": "/artur/galleries/high-poly-models/",
+    "shots": 27,
+    "width": 1280,
+    "captionPairsVerified": 17,
+    "sourceOrderVerified": true,
+    "browserPolicy": {
+      "status": "interactive-verified",
+      "attempts": [
+        {
+          "backend": "in-app",
+          "passed": true,
+          "elapsedMs": 22
+        }
+      ]
+    }
+  },
+  "viewportReset": {
+    "dialogOpen": false,
+    "height": 900,
+    "width": 1280
+  },
+  "screenshots": [
+    "outputs/high-poly-models-mobile.jpg",
+    "outputs/high-poly-models-desktop.jpg"
+  ],
+  "recovery": [],
+  "limits": [
+    "Actual IAB emulated viewports; physical touch/iOS/Safari unverified.",
+    "Full-viewport overlays passed; native OS fullscreen permission not granted or claimed.",
+    "Reloaded at each target width; dynamic in-place resolution switching not claimed."
+  ]
+}

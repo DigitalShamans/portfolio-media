@@ -35,9 +35,26 @@
     "deployment_id": "appgdep_6affee81e5708191a4669bf85935f2e1",
     "status": "succeeded",
     "environment": 24,
-    "succeeded_at": "2026-11-20T06:54:06.717658+00:00"
+    "succeeded_at": "2026-11-20T06:54:06.717658+00:00",
+    "get_status": "passed",
+    "get_requests": 34,
+    "http_seconds": 15.684
   },
   "website": {
-    "status": "pending"
-  }
+    "status": "verified",
+    "source_checkpoint": "64c76a4420bf3130427730adcb126323d998cfab",
+    "pr": 89,
+    "revision": "eaa951a3950ffad3b8c2bcde8fd98f0a1522d956",
+    "pages_run": 44691335020,
+    "pages_status": "success",
+    "succeeded_at": "2026-11-20T06:57:38Z",
+    "public_gets": 42,
+    "http_seconds": 7.967
+  },
+  "native": "passed",
+  "browser": "passed",
+  "capture": "released",
+  "protected_user_files_verified": 14,
+  "private_untracked_preserved": 238,
+  "final_evidence_on_working_branch": true
 }
