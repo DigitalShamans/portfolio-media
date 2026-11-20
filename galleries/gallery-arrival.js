@@ -14,9 +14,13 @@
   } catch { return; }
 
   const now = Date.now();
+  // Older Hard Bullet markers have no loop field; keep their original behavior.
+  const loop = arrival?.loop ?? 'hard-bullet';
+  const validRoute = loop === 'hard-bullet'
+    ? /^\/(?:artur\/)?galleries\/hb-[a-z0-9-]+\/$/.test(arrival?.pathname)
+    : loop === 'full' && /^\/artur\/galleries\/(?!hb-)[a-z0-9-]+\/$/.test(arrival?.pathname);
   if (!arrival || !['next', 'previous'].includes(arrival.direction) ||
-      arrival.pathname !== window.location.pathname ||
-      !/^\/(?:artur\/)?galleries\/hb-[a-z0-9-]+\/$/.test(arrival.pathname) ||
+      arrival.pathname !== window.location.pathname || !validRoute ||
       !Number.isFinite(arrival.at) || now < arrival.at || now - arrival.at > 10000 ||
       typeof arrival.title !== 'string' || !arrival.title || arrival.title.length > 160) return;
 
@@ -34,7 +38,7 @@
   const content = document.createElement('div');
   content.className = 'gallery-desktop-edge-panel__content';
   const eyebrow = document.createElement('p');
-  eyebrow.textContent = 'Hard Bullet';
+  eyebrow.textContent = loop === 'full' ? 'Full Portfolio' : 'Hard Bullet';
   const heading = document.createElement('h2');
   heading.textContent = arrival.title;
   content.append(eyebrow, heading);

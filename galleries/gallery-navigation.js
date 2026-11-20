@@ -3,6 +3,7 @@
 
   const navigation = document.querySelector('.gallery-navigation');
   if (!navigation || navigator.maxTouchPoints < 1) return;
+  const fullPortfolio = navigation.dataset?.galleryLoop === 'full';
 
   const excluded = '.shot, .shot-entry, .comparison-indicator, picture, img, video, audio, canvas, iframe, svg, '
     + 'a, button, input, textarea, select, label, summary, '
@@ -50,7 +51,12 @@
     if (!link) return;
     const url = new URL(link.href, window.location.href);
     const prefix = window.location.pathname.split('/galleries/')[0];
-    if (url.origin === window.location.origin && url.pathname.startsWith(prefix + '/galleries/hb-')) return url;
+    const localPath = url.pathname.slice(prefix.length);
+    if (url.origin !== window.location.origin || url.search || url.hash ||
+        url.pathname.split('/galleries/')[0] !== prefix) return;
+    if (fullPortfolio) {
+      if (prefix === '/artur' && /^\/galleries\/(?!hb-)[a-z0-9-]+\/$/.test(localPath)) return url;
+    } else if (/^\/galleries\/hb-[a-z0-9-]+\/$/.test(localPath)) return url;
   }
 
   function showFeedback(dx, ready = Math.abs(dx) >= minimumSwipe) {

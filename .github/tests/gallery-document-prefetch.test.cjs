@@ -13,13 +13,15 @@ const panelSource = fs.readFileSync(path.join(root, 'galleries/gallery-desktop-p
 
 function browser({ prefix = '', desktop = true, supported = true, saveData = false,
     effectiveType = '4g', hidden = false, readyState = 'complete',
-    previousHref, nextHref } = {}) {
+    previousHref, nextHref, galleryLoop = 'hard-bullet', folder = 'hb-egypt' } = {}) {
   const listeners = new Map();
   const idle = [];
   const appended = [];
-  const previous = { href: previousHref || 'https://example.test' + prefix + '/galleries/hb-rzstart/' };
-  const next = { href: nextHref || 'https://example.test' + prefix + '/galleries/hb-helipad/' };
-  const navigation = { querySelector(name) {
+  const previous = { href: previousHref || 'https://example.test' + prefix + '/galleries/' +
+    (galleryLoop === 'full' ? 'high-poly-models' : 'hb-rzstart') + '/' };
+  const next = { href: nextHref || 'https://example.test' + prefix + '/galleries/' +
+    (galleryLoop === 'full' ? 'phantom-covert-ops' : 'hb-helipad') + '/' };
+  const navigation = { dataset: { galleryLoop }, querySelector(name) {
     return name.endsWith('--previous') ? previous : next;
   } };
   const document = {
@@ -36,8 +38,8 @@ function browser({ prefix = '', desktop = true, supported = true, saveData = fal
     navigator: { connection: { saveData, effectiveType } },
     location: {
       origin: 'https://example.test',
-      pathname: prefix + '/galleries/hb-egypt/',
-      href: 'https://example.test' + prefix + '/galleries/hb-egypt/'
+      pathname: prefix + '/galleries/' + folder + '/',
+      href: 'https://example.test' + prefix + '/galleries/' + folder + '/'
     },
     innerWidth: 1440,
     matchMedia: () => ({ matches: desktop }),
@@ -104,6 +106,25 @@ test('artur portfolio keeps its prefix and the password gate is only a document 
   ]);
 });
 
+test('personal Full Portfolio prefetch stays within its own loop and never fetches images', () => {
+  const b = browser({ prefix: '/artur', galleryLoop: 'full', folder: 'nfs-unbound' });
+  b.warm();
+  assert.deepEqual(b.sources(), [
+    'https://example.test/artur/galleries/high-poly-models/',
+    'https://example.test/artur/galleries/phantom-covert-ops/'
+  ]);
+  assert(b.sources().every(url => !/\.(?:jpg|webp|mp4)/i.test(url)));
+  for (const nextHref of [
+    'https://example.test/artur/galleries/hb-egypt/',
+    'https://example.test/galleries/props/',
+    'https://elsewhere.test/artur/galleries/props/'
+  ]) {
+    const invalid = browser({ prefix: '/artur', galleryLoop: 'full', folder: 'nfs-unbound', nextHref });
+    invalid.warm();
+    assert.deepEqual(invalid.sources(), [invalid.previous.href]);
+  }
+});
+
 test('touch browsers, data saver, 2g connections and unsupported browsers do nothing', () => {
   for (const options of [
     { desktop: false }, { supported: false }, { saveData: true },
@@ -142,8 +163,8 @@ test('hidden tabs delay speculative downloads without breaking edge behavior', (
 });
 
 test('document prefetch is isolated from the original 420ms animation and route navigation', () => {
-  assert.match(navSource, /gallery-desktop-panels\.js'.*\?v=7/);
-  assert.match(navSource, /gallery-document-prefetch\.js'.*\?v=1/);
+  assert.match(navSource, /gallery-desktop-panels\.js'.*\?v=8/);
+  assert.match(navSource, /gallery-document-prefetch\.js'.*\?v=2/);
   assert.match(panelSource, /const holdDelay = 180;/);
   assert.match(panelSource, /const slideDuration = 420;/);
   assert.doesNotMatch(script, /location\.assign|location\.replace|scrollTrigger|cloneNode/);

@@ -15,7 +15,7 @@ const exitLinks = fs.readFileSync(path.join(root, '_includes/rz-gallery-exit.htm
 
 function browser({ desktop = true, reduced = false, prefix = '', gsap = true, arrival = null,
     nextHref, previousHref, folder = 'hb-egypt', activeTag = 'body',
-    navigationType = 'navigate' } = {}) {
+    navigationType = 'navigate', galleryLoop = 'hard-bullet' } = {}) {
   const events = {};
   const calls = [];
   const tweens = [];
@@ -64,14 +64,16 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
     }
   }
   const previous = {
-    href: previousHref || 'https://example.test' + prefix + '/galleries/hb-rzstart/',
-    dataset: { galleryName: 'RZ Start (password required)' }
+    href: previousHref || 'https://example.test' + prefix + '/galleries/' +
+      (galleryLoop === 'full' ? 'high-poly-models' : 'hb-rzstart') + '/',
+    dataset: { galleryName: galleryLoop === 'full' ? 'High-Poly Models' : 'RZ Start (password required)' }
   };
   const next = {
-    href: nextHref || 'https://example.test' + prefix + '/galleries/hb-helipad/',
-    dataset: { galleryName: 'Helipad' }
+    href: nextHref || 'https://example.test' + prefix + '/galleries/' +
+      (galleryLoop === 'full' ? 'phantom-covert-ops' : 'hb-helipad') + '/',
+    dataset: { galleryName: galleryLoop === 'full' ? 'Phantom: Covert Ops - Oculus VR' : 'Helipad' }
   };
-  const navigation = { querySelector: key => key.endsWith('--next') ? next : previous };
+  const navigation = { dataset: { galleryLoop }, querySelector: key => key.endsWith('--next') ? next : previous };
   let dialog = false;
   const body = new Element('body');
   const siteHeader = new Element('header');
@@ -162,7 +164,7 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
 test('no desktop boxes/arrows and no scroll stage; fullscreen screenshot controls remain', () => {
   assert.match(markup, /gallery-navigation[^>]+hidden/);
   assert.doesNotMatch(markup, /gallery-navigation__arrow|gallery-navigation__details/);
-  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=7/);
+  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=8/);
   assert.match(styles, /\.gallery-navigation\s*\{\s*display:\s*none !important/);
   assert.match(styles, /\.viewer-arrows button/);
   assert.doesNotMatch(styles, /gallery-desktop-scroll-stage/);
@@ -187,6 +189,38 @@ test('moving mouse into right or left edge starts the slide and navigates automa
       assert.deepEqual(b.calls, [which === 'next' ? b.next.href : b.previous.href]);
     }
   }
+});
+
+test('Full Portfolio edges loop through personal galleries and never touch Hard Bullet', () => {
+  const b = browser({ prefix: '/artur', folder: 'nfs-unbound', galleryLoop: 'full' });
+  b.pointer(1439);
+  b.advance(180);
+  assert.equal(b.panel.children[0].children[0].textContent, 'Full Portfolio');
+  assert.equal(b.panel.children[0].children[1].textContent, 'Phantom: Covert Ops - Oculus VR');
+  b.advance(420);
+  assert.deepEqual(b.calls, [b.next.href]);
+  assert.equal(b.storedArrival().loop, 'full');
+  const first = browser({ prefix: '/artur', folder: 'nfs-unbound', galleryLoop: 'full' });
+  first.pointer(0); first.advance(600);
+  assert.deepEqual(first.calls, [first.previous.href]);
+  const last = browser({ prefix: '/artur', folder: 'high-poly-models', galleryLoop: 'full',
+    nextHref: 'https://example.test/artur/galleries/nfs-unbound/' });
+  last.pointer(1439); last.advance(600);
+  assert.deepEqual(last.calls, [last.next.href]);
+});
+
+test('the two loops reject cross-set, cross-portfolio and injected URL destinations', () => {
+  for (const nextHref of [
+    'https://example.test/artur/galleries/hb-egypt/',
+    'https://example.test/galleries/nfs-unbound/',
+    'https://elsewhere.test/artur/galleries/phantom-covert-ops/',
+    'https://example.test/artur/galleries/props/?redirect=1'
+  ]) {
+    const b = browser({ prefix: '/artur', folder: 'nfs-unbound', galleryLoop: 'full', nextHref });
+    assert.equal(b.events['window:pointermove'], undefined);
+  }
+  const hb = browser({ prefix: '/artur', nextHref: 'https://example.test/artur/galleries/nfs-unbound/' });
+  assert.equal(hb.events['window:pointermove'], undefined);
 });
 
 test('approaching within five percent of an edge works without touching screen border', () => {

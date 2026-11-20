@@ -1,8 +1,29 @@
+{% comment %}
+Two independent loops. Recent Work follows the shared Hard Bullet list;
+personal Full Portfolio follows its own tile order and never crosses into
+the studio portfolio or Hard Bullet gallery set.
+{% endcomment %}
+{% assign current_gallery_route = include.portfolio_url | append: 'galleries/' | append: include.current | append: '/' %}
 {% assign navigation_items = site.data.portfolio.recent %}
+{% assign navigation_loop = 'hard-bullet' %}
+{% if page.portfolio == 'personal' %}
+  {% for personal_project in site.data.personal_portfolio.full %}
+    {% if personal_project.url == current_gallery_route %}
+      {% assign navigation_items = site.data.personal_portfolio.full %}
+      {% assign navigation_loop = 'full' %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
 {% assign navigation_count = navigation_items | size %}
 {% if navigation_count > 1 %}
   {% for navigation_item in navigation_items %}
-    {% if navigation_item.folder == include.current %}
+    {% if navigation_loop == 'full' %}
+      {% assign item_url = navigation_item.url %}
+    {% else %}
+      {% assign item_url = include.portfolio_url | append: 'galleries/' | append: navigation_item.folder | append: '/' %}
+    {% endif %}
+    {% if item_url == current_gallery_route %}
       {% assign navigation_previous_index = forloop.index0 | minus: 1 %}
       {% assign navigation_next_index = forloop.index0 | plus: 1 %}
       {% if navigation_previous_index < 0 %}
@@ -13,22 +34,29 @@
       {% endif %}
       {% assign navigation_previous = navigation_items[navigation_previous_index] %}
       {% assign navigation_next = navigation_items[navigation_next_index] %}
-      {% comment %}Route data for mobile swipes and desktop mouse-edge panels; no visible desktop arrows.{% endcomment %}
-      <nav class="gallery-navigation" aria-label="Hard Bullet galleries" hidden>
+      {% if navigation_loop == 'full' %}
+        {% assign navigation_previous_url = navigation_previous.url %}
+        {% assign navigation_next_url = navigation_next.url %}
+      {% else %}
+        {% assign navigation_previous_url = include.portfolio_url | append: 'galleries/' | append: navigation_previous.folder | append: '/' %}
+        {% assign navigation_next_url = include.portfolio_url | append: 'galleries/' | append: navigation_next.folder | append: '/' %}
+      {% endif %}
+      {% comment %}Shared destination metadata; visible arrows appear only inside the fullscreen image viewer.{% endcomment %}
+      <nav class="gallery-navigation" data-gallery-loop="{{ navigation_loop }}"
+        aria-label="{% if navigation_loop == 'full' %}Full Portfolio{% else %}Hard Bullet{% endif %} galleries" hidden>
         <a class="gallery-navigation__link gallery-navigation__link--previous"
-           href="{{ include.portfolio_url | append: 'galleries/' | append: navigation_previous.folder | append: '/' | relative_url }}"
+           href="{{ navigation_previous_url | relative_url }}"
            data-gallery-name="{{ navigation_previous.title | escape }}{% if navigation_previous.locked %} (password required){% endif %}"
            aria-label="Previous gallery: {{ navigation_previous.title | escape }}{% if navigation_previous.locked %} (password required){% endif %}"></a>
         <a class="gallery-navigation__link gallery-navigation__link--next"
-           href="{{ include.portfolio_url | append: 'galleries/' | append: navigation_next.folder | append: '/' | relative_url }}"
+           href="{{ navigation_next_url | relative_url }}"
            data-gallery-name="{{ navigation_next.title | escape }}{% if navigation_next.locked %} (password required){% endif %}"
            aria-label="Next gallery: {{ navigation_next.title | escape }}{% if navigation_next.locked %} (password required){% endif %}"></a>
       </nav>
-      <script src="{{ '/galleries/gallery-navigation.js' | relative_url }}?v=2" defer></script>
-      <script src="{{ '/galleries/gallery-desktop-panels.js' | relative_url }}?v=7" defer></script>
-      <script src="{{ '/galleries/gallery-document-prefetch.js' | relative_url }}?v=1" defer></script>
+      <script src="{{ '/galleries/gallery-navigation.js' | relative_url }}?v=3" defer></script>
+      <script src="{{ '/galleries/gallery-desktop-panels.js' | relative_url }}?v=8" defer></script>
+      <script src="{{ '/galleries/gallery-document-prefetch.js' | relative_url }}?v=2" defer></script>
       {% break %}
     {% endif %}
   {% endfor %}
 {% endif %}
-

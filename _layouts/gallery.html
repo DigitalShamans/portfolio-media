@@ -37,7 +37,7 @@
   {% if gallery_page.gallery_youtube_id %}<link rel="stylesheet" href="{{ '/assets/gallery-video.css' | relative_url }}?v=1">{% endif %}
 </head>
 <body data-gallery-revision="{{ site.github.build_revision | escape }}"{% if gallery_asset_versions %} data-gallery-asset-versions="{{ gallery_asset_versions | jsonify | escape }}"{% endif %}>
-  <div id="gallery-edge-arrival"><script src="../gallery-arrival.js?v=1"></script></div>
+  <div id="gallery-edge-arrival"><script src="../gallery-arrival.js?v=2"></script></div>
   {% include site-header.html %}
   <div id="gallery-edge-ready" hidden></div>
   {% include gallery-navigation.html current=gallery_folder portfolio_url=portfolio_url %}
