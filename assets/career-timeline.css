@@ -274,6 +274,10 @@
 .career-track--tight .career-preview-stack .career-preview { width: 100%; }
 .career-track--tight #career-2004 .career-copy--media { grid-template-columns: minmax(0, 1fr) 64px; }
 .career-track--narrow .career-stage { overflow: hidden; overflow: clip; }
+.career-track--narrow.career-track--slow .career-stage {
+  position: sticky;
+  top: 0;
+}
 .career-track--narrow .career-milestone {
   padding-block: 2px;
 }

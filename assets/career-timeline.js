@@ -173,8 +173,9 @@
     const virtualScroll = scroll < c.start ? scroll : c.start + progress * c.normalDistance + Math.max(0, scroll - c.end);
     const pinnedOffset = Math.max(0, Math.min(c.outerHeight - c.viewport, scroll - c.documentTop));
     const stageTop = c.documentTop - scroll + pinnedOffset;
-    // Explicit positioning also works inside ScrollSmoother's transformed content.
-    stage.style.transform = 'translate3d(0,' + pinnedOffset.toFixed(3) + 'px,0)';
+    // Desktop needs this transform inside ScrollSmoother. Mobile is pinned by
+    // CSS sticky, so native touch scrolling cannot run ahead of a JS pin.
+    if (!c.anchor) stage.style.transform = 'translate3d(0,' + pinnedOffset.toFixed(3) + 'px,0)';
     const y = c.documentTop - virtualScroll - stageTop;
     if (!c.anchor) {
       canvas.style.transform = 'translate3d(0,' + y.toFixed(3) + 'px,0)';
@@ -188,7 +189,8 @@
     const firstPointTop = c.documentTop + c.firstPointY;
     const dockedTop = Math.min(firstPointTop, c.viewport * .38);
     const pointTop = Math.max(dockedTop, firstPointTop - scroll) - Math.max(0, scroll - c.end);
-    const mobileY = pointTop - stageTop - point.y;
+    const mobileStageTop = stage.getBoundingClientRect().top;
+    const mobileY = pointTop - mobileStageTop - point.y;
     canvas.style.transform = 'translate3d(' + x.toFixed(3) + 'px,' + mobileY.toFixed(3) + 'px,0)';
     c.labels.forEach((box, i) => {
       // The curve pans at its natural width. Cards keep a stable reading
