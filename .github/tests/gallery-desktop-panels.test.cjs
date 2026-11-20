@@ -164,7 +164,7 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
 test('no desktop boxes/arrows and no scroll stage; fullscreen screenshot controls remain', () => {
   assert.match(markup, /gallery-navigation[^>]+hidden/);
   assert.doesNotMatch(markup, /gallery-navigation__arrow|gallery-navigation__details/);
-  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=8/);
+  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=9/);
   assert.match(styles, /\.gallery-navigation\s*\{\s*display:\s*none !important/);
   assert.match(styles, /\.viewer-arrows button/);
   assert.doesNotMatch(styles, /gallery-desktop-scroll-stage/);
@@ -207,6 +207,43 @@ test('Full Portfolio edges loop through personal galleries and never touch Hard 
     nextHref: 'https://example.test/artur/galleries/nfs-unbound/' });
   last.pointer(1439); last.advance(600);
   assert.deepEqual(last.calls, [last.next.href]);
+});
+
+test('studio Full Portfolio slides and wraps in its own card order', () => {
+  const b = browser({ prefix: '', folder: 'nfs-unbound', galleryLoop: 'full',
+    nextHref: 'https://example.test/galleries/vehicles-aircrafts/',
+    previousHref: 'https://example.test/galleries/vegetation/' });
+  b.pointer(1439);
+  b.advance(180);
+  assert.equal(b.panel.children[0].children[0].textContent, 'Full Portfolio');
+  assert.equal(b.panel.children[0].children[1].textContent, 'Phantom: Covert Ops - Oculus VR');
+  b.advance(420);
+  assert.deepEqual(b.calls, [b.next.href]);
+  assert.equal(b.storedArrival().loop, 'full');
+  const backwards = browser({ prefix: '', folder: 'nfs-unbound', galleryLoop: 'full',
+    previousHref: 'https://example.test/galleries/vegetation/' });
+  backwards.pointer(1);
+  backwards.advance(600);
+  assert.deepEqual(backwards.calls, [backwards.previous.href]);
+  const last = browser({ prefix: '', folder: 'vegetation', galleryLoop: 'full',
+    nextHref: 'https://example.test/galleries/nfs-unbound/' });
+  last.pointer(1439);
+  last.advance(600);
+  assert.deepEqual(last.calls, [last.next.href]);
+});
+
+test('studio Full Portfolio rejects Hard Bullet, personal, external and unsafe destinations', () => {
+  for (const nextHref of [
+    'https://example.test/galleries/hb-egypt/',
+    'https://example.test/artur/galleries/nfs-unbound/',
+    'https://another.test/galleries/nfs-unbound/',
+    'https://example.test/galleries/vegetation/?unsafe=1',
+    'https://example.test/galleries/vegetation/#fragment'
+  ]) {
+    const b = browser({ prefix: '', folder: 'nfs-unbound', galleryLoop: 'full',
+      nextHref, previousHref: 'https://example.test/galleries/vegetation/' });
+    assert.equal(b.events['window:pointermove'], undefined, nextHref);
+  }
 });
 
 test('the two loops reject cross-set, cross-portfolio and injected URL destinations', () => {
