@@ -46,6 +46,65 @@ test('preloading and homepage navigation observe the page without swallowing whe
   assert.match(home, /addEventListener\(['"]scroll['"], scheduleNavigation, \{ passive: true \}\)/);
 });
 
+test('the homepage underline follows the active section and measures wrapped links', () => {
+  const handlers = new Map();
+  const frames = [];
+  const position = new Map();
+  let aboutTop = 850;
+  const link = (left, bottom, width) => ({
+    rect: { left, bottom, width },
+    current: null,
+    getBoundingClientRect() { return this.rect; },
+    setAttribute(name, value) { if (name === 'aria-current') this.current = value; },
+    removeAttribute(name) { if (name === 'aria-current') this.current = null; }
+  });
+  const portfolioLink = link(100, 70, 68);
+  const aboutLink = link(187, 70, 60);
+  const nav = {
+    style: { setProperty: (name, value) => position.set(name, value) },
+    setAttribute(name) { assert.equal(name, 'data-home-indicator'); },
+    getBoundingClientRect: () => ({ left: 100, top: 40 }),
+    querySelector: selector => selector.includes('"portfolio"') ? portfolioLink : aboutLink
+  };
+  const about = { getBoundingClientRect: () => ({ top: aboutTop }) };
+  const header = { querySelector: () => nav, getBoundingClientRect: () => ({ height: 80 }) };
+  const document = {
+    documentElement: { style: { setProperty() {} } },
+    querySelector: selector => selector.endsWith('#about-us') ? about : header
+  };
+  const window = {
+    innerHeight: 800,
+    addEventListener: (event, listener) => handlers.set(event, listener),
+    matchMedia: () => ({ matches: false })
+  };
+  vm.runInNewContext(home, { document, window, requestAnimationFrame: fn => frames.push(fn) });
+  const draw = () => frames.shift()();
+  const underline = () => ['x', 'y', 'width'].map(key => position.get('--home-indicator-' + key));
+
+  draw();
+  assert.deepEqual(underline(), ['0px', '30px', '68']);
+  assert.equal(portfolioLink.current, 'location');
+
+  aboutTop = 320;
+  handlers.get('scroll')();
+  draw();
+  assert.deepEqual(underline(), ['87px', '30px', '60']);
+  assert.equal(aboutLink.current, 'location');
+  assert.equal(portfolioLink.current, null);
+
+  aboutLink.rect = { left: 126, bottom: 100, width: 55 };
+  handlers.get('resize')();
+  draw();
+  assert.deepEqual(underline(), ['26px', '60px', '55']);
+
+  aboutTop = 850;
+  handlers.get('scroll')();
+  draw();
+  assert.deepEqual(underline(), ['0px', '30px', '68']);
+  assert.equal(portfolioLink.current, 'location');
+  assert.equal(aboutLink.current, null);
+});
+
 
 function wheelHarness(position = 0, page = 0, reduced = false) {
   let inner = position;
