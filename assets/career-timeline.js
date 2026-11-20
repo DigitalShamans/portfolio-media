@@ -200,12 +200,13 @@
     });
   }
 
-  function drawCurve(width, height, narrow, scale) {
-    const span = narrow ? Math.min(300, width * .7) : Math.min(width, (height - 80 * scale) / (desktopCurveAspect * curveExtent));
+  function drawCurve(width, height, narrow, scale, desktopAspect) {
+    const desktopSpan = (height - 80 * scale) / (desktopAspect * curveExtent);
+    const span = narrow ? Math.min(300, width * .7) : Math.min(width, desktopSpan);
     const offset = narrow ? 8 : (width - span) / 2;
     const x = value => offset + value * span;
     const y = value => 56 * scale + value * (height - 80 * scale) / curveExtent;
-    // Leave room to the left of the first date for its 140px thumbnail.
+    // Leave room to the left of the first date for its thumbnail.
     const startX = narrow ? x(.10) : Math.max(x(.10), 180 * scale);
     const d = 'M ' + startX + ' ' + y(0) +
       ' C ' + x(.51) + ' ' + y(.015) + ', ' + x(.40) + ' ' + y(.12) + ', ' + x(.29) + ' ' + y(.23) +
@@ -327,11 +328,13 @@
     // Even the first viewport (with the header and title present) fits >=40%.
     const documentTop = track.getBoundingClientRect().top + (smoother ? smoother.scrollTop() : window.scrollY);
     const available = Math.max(120, viewport - documentTop - 16);
+    // On wide screens the reference gives the curve more room horizontally.
+    const desktopAspect = desktopCurveAspect / (1 + (scale - 1) * 2 / 3);
     let height = Math.round(available * 2 * curveExtent);
-    if (!narrow) height = Math.min(height, Math.round(width * desktopCurveAspect * curveExtent + 80 * scale));
+    if (!narrow) height = Math.min(height, Math.round(width * desktopAspect * curveExtent + 80 * scale));
     let metrics, visibleFraction;
     for (let i = 0; i < 9; i++) {
-      metrics = drawCurve(width, height, narrow, scale);
+      metrics = drawCurve(width, height, narrow, scale, desktopAspect);
       visibleFraction = minimumVisibleFraction(metrics, height, available);
       if (visibleFraction >= .42) break;
       height = Math.round(height * .9);

@@ -132,3 +132,14 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
   letter-spacing: -.035em;
   text-decoration: none;
 }
+
+@media (min-width: 48rem) {
+  .site-header--personal .site-header__inner {
+    max-inline-size: 106.5rem;
+    min-block-size: clamp(5rem, 7.4vw, 7.75rem);
+    padding-inline: clamp(3rem, 11.75vw, 9rem);
+  }
+
+  .site-brand--personal { font-size: clamp(2rem, 3.35vw, 2.875rem); }
+  .site-header--personal .site-nav a { font-size: 1.125rem; }
+}
