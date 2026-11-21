@@ -131,6 +131,22 @@ function restoreGalleryPosition(position) {
   return shot;
 }
 
+function settleGalleryPosition(position, imageReady, embedsReady) {
+  if (!position?.top) return imageReady;
+  const input = new AbortController();
+  for (const type of ['pointerdown', 'wheel', 'keydown']) {
+    window.addEventListener(type, () => input.abort(), {
+      capture: true, passive: true, signal: input.signal
+    });
+  }
+  return Promise.all([imageReady, embedsReady, document.fonts?.ready]).then(([loaded]) => {
+    // Replace the placeholder-based position once the real image aspect ratio
+    // and any embedded rows are known, unless the viewer has interacted.
+    if (!input.signal.aborted) restoreGalleryPosition(position);
+    return loaded;
+  }).finally(() => input.abort());
+}
+
 function trackGalleryPosition() {
   if (!galleryPositionStorage) return;
   // Mobile browsers can change the viewport geometry while hiding a page.
@@ -973,29 +989,26 @@ async function loadGallery() {
     shots.push(...entries.map((entry, index) => createShot(entry, index, firstImage)));
     gallery.replaceChildren(...shots.map(shot => shot.element));
     const position = readGalleryPosition();
-    const arrivalShot = restoreGalleryPosition(position) ?? shots[0];
+    const restoredShot = restoreGalleryPosition(position);
     trackGalleryPosition();
     loadVisibleShotsFirst();
-    if (gallery.dataset.galleryEmbeds && typeof GalleryEmbeds !== 'undefined') {
-      const restoredTop = window.scrollY;
-      const embeds = GalleryEmbeds.mount(gallery, entries, shots.map(shot => shot.element),
-        galleryAssetUrl(gallery.dataset.galleryEmbeds), galleryAssetUrl);
-      if (position) void embeds.then(() => {
-        // An embed can change the rows above the saved image. Do not move
-        // the viewport again if scroll anchoring or the viewer already did.
-        if (window.scrollY === restoredTop) restoreGalleryPosition(position);
-      });
-    }
+    const embedsReady = gallery.dataset.galleryEmbeds && typeof GalleryEmbeds !== 'undefined'
+      ? GalleryEmbeds.mount(gallery, entries, shots.map(shot => shot.element),
+        galleryAssetUrl(gallery.dataset.galleryEmbeds), galleryAssetUrl)
+      : undefined;
     if (restoreFocus) shots[0].link.focus({ preventScroll: true });
     galleryStatus.hidden = true;
+
+    const arrivalShot = restoredShot ?? shots[0];
+    const arrivalReady = (restoredShot || window.__galleryDesktopEdgeArrived) && arrivalShot
+      ? prioritizeShot(arrivalShot) : arrivalShot?.primaryLoad;
     return {
       entries,
       items: shots.map(shot => ({ element: shot.element, link: shot.link, image: shot.image, filenames: shot.filenames })),
-      // Keep the desktop slide cover up until the image at the landing
-      // position completes the normal JPG retry / WebP fallback path.
+      // Uncover the desktop gallery after the landing image and scroll offset
+      // are ready, including any JPG retry / WebP fallback.
       arrivalImage: arrivalShot?.image,
-      firstReady: window.__galleryDesktopEdgeArrived && arrivalShot
-        ? prioritizeShot(arrivalShot) : arrivalShot?.primaryLoad
+      firstReady: settleGalleryPosition(position, arrivalReady, embedsReady)
     };
   } catch (error) {
     if (fallback && fallback.parentNode !== gallery) gallery.replaceChildren(fallback);

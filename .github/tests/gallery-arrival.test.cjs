@@ -175,6 +175,29 @@ test('the cover stays until the snapshot and saved arrival image are ready', asy
   assert.equal(b.body.classList.contains('gallery-edge-header-visible'), false);
 });
 
+test('a saved scroll offset waits for the real image and does not override user input', async () => {
+  const source = viewer.slice(viewer.indexOf('function settleGalleryPosition('),
+    viewer.indexOf('function trackGalleryPosition('));
+  for (const interacted of [false, true]) {
+    const image = deferred();
+    const embeds = deferred();
+    const window = new EventTarget();
+    const position = { top: 1200, filename: 'second.jpg', offset: .8 };
+    const restored = [];
+    const settle = vm.runInNewContext(source + '\nsettleGalleryPosition', {
+      AbortController, window, document: {}, restoreGalleryPosition: value => restored.push(value)
+    });
+    const ready = settle(position, image.promise, embeds.promise);
+    embeds.resolve();
+    await Promise.resolve();
+    assert.deepEqual(restored, []);
+    if (interacted) window.dispatchEvent(new Event('wheel'));
+    image.resolve(true);
+    assert.equal(await ready, true);
+    assert.deepEqual(restored, interacted ? [] : [position]);
+  }
+});
+
 test('the RZ Start password gate needs no image and still waits for the snapshot', async () => {
   const b = browser({ pathname: '/artur/galleries/hb-rzstart/', title: 'RZ Start (password required)', gate: true });
   b.loaded();
@@ -211,9 +234,9 @@ test('both gallery layouts construct the arriving panel before the real header a
     assert.match(layout, /<div id="gallery-edge-arrival"><script src="\.\.\/gallery-arrival\.js\?v=4"><\/script><\/div>/);
     assert.match(layout, /gallery-edge-arrival[\s\S]*include site-header\.html[\s\S]*gallery-edge-ready/);
   }
-  for (const layout of layouts) assert.match(layout, /gallery-viewer\.js\?v=45/);
+  for (const layout of layouts) assert.match(layout, /gallery-viewer\.js\?v=46/);
   const mapLayout = fs.readFileSync(path.join(root, '_layouts/gallery-map.html'), 'utf8');
-  assert.match(mapLayout, /gallery-viewer\.js[^\n]*\?v=45/);
+  assert.match(mapLayout, /gallery-viewer\.js[^\n]*\?v=46/);
 });
 
 function viewerKeyboard({ native = false } = {}) {
@@ -276,7 +299,7 @@ test('Chrome swaps identical covered snapshots with no browser crossfade or move
   assert.match(controller, /title:\s*target\.title/);
   assert.match(controller, /headerHeight:\s*siteHeader/);
   assert.match(controller, /if \(!navigating\) clear\(\)/);
-  assert.match(viewer, /firstReady:\s*window\.__galleryDesktopEdgeArrived/);
+  assert.match(viewer, /firstReady:\s*settleGalleryPosition\(position, arrivalReady, embedsReady\)/);
   assert.match(viewer, /prioritizeShot\(arrivalShot\)/);
   assert.match(controller, /const slideDuration = 420/);
   assert.match(controller, /const holdDelay = 180/);
