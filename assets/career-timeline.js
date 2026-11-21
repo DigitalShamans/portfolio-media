@@ -436,8 +436,11 @@
     track.style.setProperty('--career-description-width', frameRight - cardLeft + 'px');
     entries.forEach(entry => { entry.style.width = cardWidth + 'px'; });
     const heights = entries.map(entry => entry.offsetHeight);
+    const contentParts = touchLayout.matches
+      ? '.career-year, .career-description h2, .career-summary, .career-preview'
+      : '.career-year, .career-description, .career-preview';
     const contentWidths = entries.map(entry => {
-      const parts = entry.querySelectorAll('.career-year, .career-description, .career-preview');
+      const parts = entry.querySelectorAll(contentParts);
       const right = Math.max(...Array.from(parts, part => part.getBoundingClientRect().right));
       return right - entry.getBoundingClientRect().left;
     });

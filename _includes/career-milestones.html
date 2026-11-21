@@ -16,7 +16,9 @@
     <div class="career-copy career-copy--media">
       <div class="career-description">
         <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">First Freelance Work</button></h2>
-        <p class="career-role">Architectural Visualisations</p>
+        <div class="career-summary">
+          <p class="career-role">Architectural Visualisations</p>
+        </div>
       </div>
       <a class="career-preview" href="{{ '/artur/galleries/high-poly-models/' | relative_url }}" aria-label="View High-Poly Models gallery">
         <img src="{{ '/assets/career-timeline/thumbnails/career-2006.webp' | relative_url }}" alt="Bright furnished interior rendered in Unreal Engine" width="2048" height="1087" loading="eager" fetchpriority="low" decoding="async">
@@ -28,16 +30,18 @@
     <div class="career-copy career-copy--media">
       <div class="career-description">
         <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">CI Games</button></h2>
-        <p class="career-role">3D Artist</p>
-        <ul class="career-projects">
-          <li>
-            <strong><a class="career-project-link" href="https://store.steampowered.com/app/34870/Sniper_Ghost_Warrior_2/" target="_blank" rel="noopener noreferrer">Sniper Ghost Warrior 2</a></strong>
-            <dl class="career-project-facts">
-              <div><dt>Platforms</dt><dd>PC, PlayStation 3, Xbox 360</dd></div>
-              <div><dt>Engine</dt><dd>CryEngine 3</dd></div>
-            </dl>
-          </li>
-        </ul>
+        <div class="career-summary">
+          <p class="career-role">3D Artist</p>
+          <ul class="career-projects">
+            <li>
+              <strong><a class="career-project-link" href="https://store.steampowered.com/app/34870/Sniper_Ghost_Warrior_2/" target="_blank" rel="noopener noreferrer">Sniper Ghost Warrior 2</a></strong>
+              <dl class="career-project-facts">
+                <div><dt>Platforms</dt><dd>PC, PlayStation 3, Xbox 360</dd></div>
+                <div><dt>Engine</dt><dd>CryEngine 3</dd></div>
+              </dl>
+            </li>
+          </ul>
+        </div>
       </div>
       <a class="career-preview career-preview--image" href="{{ '/assets/career-timeline/sniper-ghost-warrior-2.jpg' | relative_url }}" data-career-image aria-label="Enlarge Sniper Ghost Warrior 2 image" aria-haspopup="dialog" aria-controls="career-image">
         <img src="{{ '/assets/career-timeline/thumbnails/career-2010.webp' | relative_url }}" alt="Sniper Ghost Warrior 2 environment artwork" width="960" height="534" loading="eager" fetchpriority="low" decoding="async">
@@ -50,15 +54,17 @@
     <div class="career-copy career-copy--media">
       <div class="career-description">
         <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Jujubee</button></h2>
-        <p class="career-role">Vehicle 3D Artist</p>
-        <ul class="career-projects">
-          <li>
-            <strong><a class="career-project-link" href="https://store.steampowered.com/app/657470/Take_Off_The_Flight_Simulator/" target="_blank" rel="noopener noreferrer">Take Off</a></strong>
-            <dl class="career-project-facts">
-              <div><dt>Platforms</dt><dd>iOS, Android, PC</dd></div>
-            </dl>
-          </li>
-        </ul>
+        <div class="career-summary">
+          <p class="career-role">Vehicle 3D Artist</p>
+          <ul class="career-projects">
+            <li>
+              <strong><a class="career-project-link" href="https://store.steampowered.com/app/657470/Take_Off_The_Flight_Simulator/" target="_blank" rel="noopener noreferrer">Take Off</a></strong>
+              <dl class="career-project-facts">
+                <div><dt>Platforms</dt><dd>iOS, Android, PC</dd></div>
+              </dl>
+            </li>
+          </ul>
+        </div>
       </div>
       <a class="career-preview" href="{{ '/artur/galleries/vehicles-aircrafts/' | relative_url }}" aria-label="View Take Off aircraft gallery">
         <img src="{{ '/assets/career-timeline/thumbnails/career-2015-jujubee.webp' | relative_url }}" alt="Take Off aircraft artwork" width="320" height="180" loading="eager" fetchpriority="low" decoding="async">
@@ -71,9 +77,11 @@
     <div class="career-copy career-copy--sequenced">
       <div class="career-description">
         <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Rebellion Developments</button></h2>
-        <p class="career-role">Environment artist</p>
-        {% assign first_project = site.data.career-rebellion | first %}
-        <strong class="career-touch-project"><a class="career-project-link" href="{{ first_project.official_url | escape }}" target="_blank" rel="noopener noreferrer">{{ first_project.title | escape }}</a></strong>
+        <div class="career-summary">
+          <p class="career-role">Environment artist</p>
+          {% assign first_project = site.data.career-rebellion | first %}
+          <strong class="career-touch-project"><a class="career-project-link" href="{{ first_project.official_url | escape }}" target="_blank" rel="noopener noreferrer">{{ first_project.title | escape }}</a></strong>
+        </div>
       </div>
       <ul class="career-projects career-projects--sequenced">
         {% for project in site.data.career-rebellion %}
@@ -101,16 +109,18 @@
     <div class="career-copy career-copy--media">
       <div class="career-description">
         <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">nDreams Ltd</button></h2>
-        <p class="career-role">Environment Artist</p>
-        <ul class="career-projects">
-          <li>
-            <strong><a class="career-project-link" href="https://ndreams.com/games/phantom-covert-ops/" target="_blank" rel="noopener noreferrer">Phantom: Covert Ops</a></strong>
-            <dl class="career-project-facts">
-              <div><dt>Platforms</dt><dd>Oculus Quest, Oculus Rift</dd></div>
-              <div><dt>Engine</dt><dd>Unreal Engine<span class="career-desktop-only"> 4</span></dd></div>
-            </dl>
-          </li>
-        </ul>
+        <div class="career-summary">
+          <p class="career-role">Environment Artist</p>
+          <ul class="career-projects">
+            <li>
+              <strong><a class="career-project-link" href="https://ndreams.com/games/phantom-covert-ops/" target="_blank" rel="noopener noreferrer">Phantom: Covert Ops</a></strong>
+              <dl class="career-project-facts">
+                <div><dt>Platforms</dt><dd>Oculus Quest, Oculus Rift</dd></div>
+                <div><dt>Engine</dt><dd>Unreal Engine<span class="career-desktop-only"> 4</span></dd></div>
+              </dl>
+            </li>
+          </ul>
+        </div>
       </div>
       <a class="career-preview" href="{{ '/artur/galleries/phantom-covert-ops/' | relative_url }}" aria-label="View Phantom: Covert Ops gallery">
         <img src="{{ '/assets/career-timeline/thumbnails/career-2018.webp' | relative_url }}" alt="Phantom: Covert Ops artwork" width="320" height="180" loading="eager" fetchpriority="low" decoding="async">
@@ -124,16 +134,18 @@
     <div class="career-copy career-copy--media">
       <div class="career-description">
         <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Super Trampers Studio</button></h2>
-        <p class="career-role">3D Artist</p>
-        <ul class="career-projects">
-          <li>
-            <strong><a class="career-project-link" href="https://store.steampowered.com/app/839630/Survisland/" target="_blank" rel="noopener noreferrer">SurvIsland</a></strong>
-            <dl class="career-project-facts">
-              <div><dt>Platforms</dt><dd>PC</dd></div>
-              <div><dt>Engine</dt><dd>Unity</dd></div>
-            </dl>
-          </li>
-        </ul>
+        <div class="career-summary">
+          <p class="career-role">3D Artist</p>
+          <ul class="career-projects">
+            <li>
+              <strong><a class="career-project-link" href="https://store.steampowered.com/app/839630/Survisland/" target="_blank" rel="noopener noreferrer">SurvIsland</a></strong>
+              <dl class="career-project-facts">
+                <div><dt>Platforms</dt><dd>PC</dd></div>
+                <div><dt>Engine</dt><dd>Unity</dd></div>
+              </dl>
+            </li>
+          </ul>
+        </div>
       </div>
       <a class="career-preview" href="{{ '/artur/galleries/survisland-concept-art/' | relative_url }}" aria-label="View SurvIsland gallery">
         <img src="{{ '/assets/career-timeline/thumbnails/career-2020-super-trumpers.webp' | relative_url }}" alt="SurvIsland artwork" width="320" height="180" loading="eager" fetchpriority="low" decoding="async">
@@ -147,16 +159,18 @@
     <div class="career-copy career-copy--media">
       <div class="career-description">
         <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Chuhai Labs</button></h2>
-        <p class="career-role">Art Director</p>
-        <ul class="career-projects">
-          <li>
-            <strong><a class="career-project-link" href="https://www.meta.com/experiences/carve-snowboarding/3317083428365473/" target="_blank" rel="noopener noreferrer">Carve: Snowboarding</a></strong>
-            <dl class="career-project-facts">
-              <div><dt>Platforms</dt><dd>Meta Quest 2</dd></div>
-              <div><dt>Engine</dt><dd>Unreal Engine 4</dd></div>
-            </dl>
-          </li>
-        </ul>
+        <div class="career-summary">
+          <p class="career-role">Art Director</p>
+          <ul class="career-projects">
+            <li>
+              <strong><a class="career-project-link" href="https://www.meta.com/experiences/carve-snowboarding/3317083428365473/" target="_blank" rel="noopener noreferrer">Carve: Snowboarding</a></strong>
+              <dl class="career-project-facts">
+                <div><dt>Platforms</dt><dd>Meta Quest 2</dd></div>
+                <div><dt>Engine</dt><dd>Unreal Engine 4</dd></div>
+              </dl>
+            </li>
+          </ul>
+        </div>
       </div>
       <a class="career-preview" href="{{ '/artur/galleries/carve-snowboarding-vr-concept-art-design/' | relative_url }}" aria-label="View Carve: Snowboarding gallery">
         <img src="{{ '/assets/career-timeline/thumbnails/career-2020-chuhai.webp' | relative_url }}" alt="Carve: Snowboarding artwork" width="320" height="180" loading="eager" fetchpriority="low" decoding="async">
@@ -170,15 +184,17 @@
     <div class="career-copy career-copy--media">
       <div class="career-description">
         <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Digital Shamans</button></h2>
-        <p class="career-role">Lead Artist</p>
-        <ul class="career-projects">
-          <li><strong>Hex Journey</strong></li>
-          <li><strong>MerCorp: The Retrieval</strong></li>
-        </ul>
-        <dl class="career-project-facts">
-          <div><dt>Platforms</dt><dd>PC, Switch</dd></div>
-          <div><dt>Engine</dt><dd>Unreal Engine 5</dd></div>
-        </dl>
+        <div class="career-summary">
+          <p class="career-role">Lead Artist</p>
+          <ul class="career-projects">
+            <li><strong>Hex Journey</strong></li>
+            <li><strong>MerCorp: The Retrieval</strong></li>
+          </ul>
+          <dl class="career-project-facts">
+            <div><dt>Platforms</dt><dd>PC, Switch</dd></div>
+            <div><dt>Engine</dt><dd>Unreal Engine 5</dd></div>
+          </dl>
+        </div>
       </div>
       <a class="career-preview" href="{{ '/artur/galleries/stylised-artworks/' | relative_url }}" aria-label="View Hex Journey in the Stylised Artworks gallery">
         <img src="{{ '/assets/career-timeline/thumbnails/career-2021-hex.webp' | relative_url }}" alt="Hex Journey character artwork shown on a Nintendo Switch" width="320" height="180" loading="eager" fetchpriority="low" decoding="async">
@@ -192,16 +208,18 @@
     <div class="career-copy career-copy--media">
       <div class="career-description">
         <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Realtime UK</button></h2>
-        <p class="career-role">3D Artist</p>
-        <ul class="career-projects">
-          <li>
-            <strong><a class="career-project-link" href="https://www.ea.com/games/need-for-speed/need-for-speed-unbound" target="_blank" rel="noopener noreferrer">The Need For Speed: Unbound</a></strong>
-            <dl class="career-project-facts">
-              <div><dt>Platforms</dt><dd>PC, PlayStation 5, Xbox X|S</dd></div>
-              <div><dt>Engine</dt><dd>Frostbite</dd></div>
-            </dl>
-          </li>
-        </ul>
+        <div class="career-summary">
+          <p class="career-role">3D Artist</p>
+          <ul class="career-projects">
+            <li>
+              <strong><a class="career-project-link" href="https://www.ea.com/games/need-for-speed/need-for-speed-unbound" target="_blank" rel="noopener noreferrer">The Need For Speed: Unbound</a></strong>
+              <dl class="career-project-facts">
+                <div><dt>Platforms</dt><dd>PC, PlayStation 5, Xbox X|S</dd></div>
+                <div><dt>Engine</dt><dd>Frostbite</dd></div>
+              </dl>
+            </li>
+          </ul>
+        </div>
       </div>
       <a class="career-preview" href="{{ '/artur/galleries/nfs-unbound/' | relative_url }}" aria-label="View Need for Speed Unbound gallery">
         <img src="{{ '/assets/career-timeline/thumbnails/career-2022.webp' | relative_url }}?v=2" alt="Need for Speed Unbound artwork" width="320" height="180" loading="eager" fetchpriority="low" decoding="async">
@@ -215,14 +233,16 @@
     <div class="career-copy career-copy--media">
       <div class="career-description">
         <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Couch Heroes</button></h2>
-        <p class="career-role">Lead Environment Artist<span class="career-role-continuation"> Creative Art Director</span></p>
-        <ul class="career-projects">
-          <li><strong><a class="career-project-link" href="https://couch-heroes.com/game" target="_blank" rel="noopener noreferrer">Couch Heroes</a></strong></li>
-        </ul>
-        <dl class="career-project-facts">
-          <div><dt>Platforms</dt><dd>PC</dd></div>
-          <div><dt>Engine</dt><dd>Unreal Engine 5.4+</dd></div>
-        </dl>
+        <div class="career-summary">
+          <p class="career-role">Lead Environment Artist<span class="career-role-continuation"> Creative Art Director</span></p>
+          <ul class="career-projects">
+            <li><strong><a class="career-project-link" href="https://couch-heroes.com/game" target="_blank" rel="noopener noreferrer">Couch Heroes</a></strong></li>
+          </ul>
+          <dl class="career-project-facts">
+            <div><dt>Platforms</dt><dd>PC</dd></div>
+            <div><dt>Engine</dt><dd>Unreal Engine 5.4+</dd></div>
+          </dl>
+        </div>
       </div>
       <a class="career-preview" href="{{ '/artur/galleries/couch-heroes/' | relative_url }}" aria-label="View Couch Heroes gallery">
         <img src="{{ '/assets/career-timeline/thumbnails/career-2023.webp' | relative_url }}" alt="Couch Heroes environment artwork" width="320" height="180" loading="eager" fetchpriority="low" decoding="async">
@@ -236,17 +256,19 @@
     <time class="career-year" datetime="2025">2025</time>
     <div class="career-copy career-copy--media">
       <div class="career-description">
-        <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details"><span class="career-touch-only">Digital Shamans</span><span class="career-desktop-only">Digital Shamans x Gexagon VR</span></button></h2>
-        <p class="career-role">Principal Environment Artist</p>
-        <ul class="career-projects">
-          <li>
-            <strong><a class="career-project-link" href="https://www.meta.com/experiences/hard-bullet/8116626111777808/" target="_blank" rel="noopener noreferrer">Hard Bullet VR</a></strong>
-            <dl class="career-project-facts">
-              <div><dt>Platforms</dt><dd>Meta Quest 3</dd></div>
-              <div><dt>Engine</dt><dd>Unity 6.6+</dd></div>
-            </dl>
-          </li>
-        </ul>
+        <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Digital Shamans x Gexagon VR</button></h2>
+        <div class="career-summary">
+          <p class="career-role">Principal Environment Artist</p>
+          <ul class="career-projects">
+            <li>
+              <strong><a class="career-project-link" href="https://www.meta.com/experiences/hard-bullet/8116626111777808/" target="_blank" rel="noopener noreferrer">Hard Bullet VR</a></strong>
+              <dl class="career-project-facts">
+                <div><dt>Platforms</dt><dd>Meta Quest 3</dd></div>
+                <div><dt>Engine</dt><dd>Unity 6.6+</dd></div>
+              </dl>
+            </li>
+          </ul>
+        </div>
       </div>
       <a class="career-preview" href="{{ '/artur/galleries/hb-atrium/' | relative_url }}" aria-label="View Hard Bullet: Atrium gallery">
         <img src="{{ '/assets/career-timeline/thumbnails/career-current.webp' | relative_url }}?v=2" alt="Hard Bullet key art" width="320" height="180" loading="eager" fetchpriority="low" decoding="async">
