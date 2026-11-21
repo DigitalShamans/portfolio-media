@@ -226,7 +226,7 @@
     if (!openingWeight) return distance;
     // Shorten the first swipe and blend back to the usual pace at its end.
     const opening = Math.min(1, distance / openingWeight);
-    return distance - .4 * openingWeight * opening * (2 - opening);
+    return distance - .8 * openingWeight * (opening - opening ** 4 / 4);
   }
 
   function journeyProgress(distance, openingWeight = 0) {
