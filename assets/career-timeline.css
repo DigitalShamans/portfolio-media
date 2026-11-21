@@ -621,6 +621,13 @@
 .career-details-close { min-height: 2.5rem; padding: .35rem .9rem; }
 .career-details .career-copy h2 { font-size: calc(1.5rem * var(--career-layout-scale)); }
 .career-details .career-projects { gap: .65rem; margin-top: 1rem; }
+.career-details .career-project-facts > div:first-child {
+  white-space: nowrap;
+  overflow-x: auto;
+}
+@media not ((hover: none) and (pointer: coarse)) {
+  .career-details { width: min(35rem, calc(100% - 2rem)); }
+}
 .career-page .portfolio-footer {
   padding-block: 1.5rem;
   border-top: 1px solid var(--border);
