@@ -187,7 +187,10 @@
       animation.kill();
       animation = null;
     }
-    milestoneReveals.forEach(reveal => reveal.animation.kill());
+    milestoneReveals.forEach(reveal => {
+      reveal.animation.kill();
+      reveal.projects.forEach(({ row }) => row.classList.remove('career-project--awaiting-reveal'));
+    });
     milestoneReveals = [];
     stage.style.removeProperty('transform');
     canvas.style.removeProperty('transform');
@@ -319,11 +322,18 @@
         if (keepRevealed) revealedOnTouch.add(reveal.entry);
       }
       const shown = reached || (keepRevealed && revealedOnTouch.has(reveal.entry));
-      if (shown === reveal.shown) return;
-      reveal.shown = shown;
-      reveal.entry.classList.toggle('career-milestone--awaiting-reveal', !shown);
-      if (shown) reveal.animation.play();
-      else reveal.animation.reverse();
+      if (shown !== reveal.shown) {
+        reveal.shown = shown;
+        reveal.entry.classList.toggle('career-milestone--awaiting-reveal', !shown);
+        if (shown) reveal.animation.play();
+        else reveal.animation.reverse();
+      }
+      reveal.projects.forEach(({ row, at }) => {
+        const projectReached = progress + .0001 >= at ||
+          (at === reveal.at && shown) || row.contains(document.activeElement);
+        if (keepRevealed && projectReached) revealedOnTouch.add(row);
+        row.classList.toggle('career-project--awaiting-reveal', !projectReached && !(keepRevealed && revealedOnTouch.has(row)));
+      });
     });
     // Contact and the footer still follow the reader's current position.
     track.classList.toggle('career-track--complete', Boolean(scrollCamera?.anchor && current === lastIndex));
@@ -397,8 +407,9 @@
       const right = Math.max(...Array.from(parts, part => part.getBoundingClientRect().right));
       return right - entry.getBoundingClientRect().left;
     });
-    const minimumSpan = heights.slice(0, -1).reduce((sum, height) => sum + height + 24, 0);
-    return { width, frameRight, anchor, cardLeft, contentWidths, heights, minimumSpan };
+    const minimumGaps = entries.slice(1).map((entry, i) => (heights[i] + 24) * Number(entry.dataset.mobileGapScale ?? 1));
+    const minimumSpan = minimumGaps.reduce((sum, gap) => sum + gap, 0);
+    return { width, frameRight, anchor, cardLeft, contentWidths, heights, minimumGaps, minimumSpan };
   }
 
   function placeMobileLabels(metrics, layout) {
@@ -410,7 +421,7 @@
     entries.forEach((entry, i) => {
       if (i) {
         const gap = Number(entry.dataset.curveAt) - Number(entries[i - 1].dataset.curveAt);
-        rowY += layout.heights[i - 1] + 24 + extraSpan * gap / lastAt;
+        rowY += layout.minimumGaps[i - 1] + extraSpan * gap / lastAt;
       }
       const at = metrics.atY(rowY).progress;
       const point = path.getPointAtLength(at * metrics.length);
@@ -698,9 +709,19 @@
         motionPath: { path, align: path, alignOrigin: [.5, .5] }
       }, 0);
     }
+    const canvasTop = canvas.getBoundingClientRect().top;
     points.forEach((point, i) => {
       const entry = entries[i];
       const at = point.progress;
+      const nextAt = points[i + 1]?.progress ?? 1;
+      const projects = [...entry.querySelectorAll('.career-projects--sequenced > .career-project')].map((row, j, rows) => {
+        const staggeredAt = at + (nextAt - at) * j / rows.length;
+        if (narrow) return { row, at: staggeredAt };
+        // Give the image time to enter the frame on short, wide screens.
+        const imageBottom = row.querySelector('.career-preview').getBoundingClientRect().bottom - canvasTop;
+        const inViewAt = (documentTop + imageBottom - normalStart - viewport) / normalDistance;
+        return { row, at: Math.min(1, Math.max(staggeredAt, inViewAt)) };
+      });
       const stop = stops.children[i];
       const reveal = gsap.timeline({ paused: true });
       if (narrow) {
@@ -723,7 +744,7 @@
       const lastMobile = slowMobile && i === points.length - 1;
       const reverseMargin = lastMobile ? Math.min((journeyDistance(at) - journeyDistance(points[i - 1].progress)) * normalDistance * scrollMultiplier / 3, Math.max(48, largeViewport - viewport + 24)) : 0;
       const hideAt = lastMobile ? journeyProgress(Math.max(0, journeyDistance(at) - reverseMargin / (normalDistance * scrollMultiplier)) / 1.5) : at;
-      milestoneReveals.push({ entry, at, hideAt, animation: reveal, shown });
+      milestoneReveals.push({ entry, at, hideAt, animation: reveal, shown, projects });
     });
     const playhead = { progress: 0 };
     scrollTween = gsap.to(playhead, {
