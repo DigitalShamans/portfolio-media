@@ -441,9 +441,16 @@
       const right = Math.max(...Array.from(parts, part => part.getBoundingClientRect().right));
       return right - entry.getBoundingClientRect().left;
     });
+    const headingBounds = entries.map(entry => {
+      if (!touchLayout.matches || !entry.hasAttribute('data-mobile-clear-heading')) return null;
+      const heading = entry.querySelector('.career-description')?.getBoundingClientRect();
+      if (!heading) return null;
+      const top = entry.getBoundingClientRect().top;
+      return { top: heading.top - top, bottom: heading.bottom - top };
+    });
     const minimumGaps = entries.slice(1).map((entry, i) => (heights[i] + 24) * Number(entry.dataset.mobileGapScale ?? 1));
     const minimumSpan = minimumGaps.reduce((sum, gap) => sum + gap, 0);
-    return { width, frameRight, anchor, cardLeft, contentWidths, heights, minimumGaps, minimumSpan };
+    return { width, frameRight, anchor, cardLeft, contentWidths, headingBounds, heights, minimumGaps, minimumSpan };
   }
 
   function placeMobileLabels(metrics, layout) {
@@ -459,8 +466,18 @@
       }
       const at = metrics.atY(rowY).progress;
       const point = path.getPointAtLength(at * metrics.length);
-      const left = point.x + 18;
       const top = i ? point.y - 8 : point.y - layout.heights[0] - 12;
+      let left = point.x + 18;
+      const heading = layout.headingBounds[i];
+      if (heading) {
+        // Allow for the marker just above and below the heading as it passes.
+        const fromY = top + heading.top - 8;
+        const toY = top + heading.bottom + 8;
+        for (let sample = 0; sample <= 4; sample++) {
+          const y = fromY + (toY - fromY) * sample / 4;
+          left = Math.max(left, metrics.atY(y).x + mobileCardInset);
+        }
+      }
       entry.style.left = left + 'px';
       entry.style.top = top + 'px';
       points.push({ x: point.x, y: point.y, progress: at });
