@@ -3,10 +3,10 @@
   gallery: /artur/galleries/sniper-elite-4/
   thumbnail: /assets/career-timeline/thumbnails/career-2015-rebellion-1.webp
   image_alt: Sniper Elite 4 artwork
-  platforms: PC, PlayStation 4, Xbox One, Nintendo Switch
+  platforms: PC, PlayStation 4, Xbox
   engine: Asura
 - year: 2016
-  title: Battlezone
+  title: Battlezone VR
   gallery: /artur/galleries/battlezone-vr/
   thumbnail: /assets/career-timeline/thumbnails/career-2015-rebellion-2.webp
   image_alt: Battlezone VR environment artwork
@@ -17,5 +17,5 @@
   gallery: /artur/galleries/strange-brigade-environment-art/
   thumbnail: /assets/career-timeline/thumbnails/career-2015-rebellion-3.webp
   image_alt: Strange Brigade environment artwork
-  platforms: PC, PlayStation 4, Xbox One, Nintendo Switch
+  platforms: PC, PlayStation 4, Xbox
   engine: Asura
