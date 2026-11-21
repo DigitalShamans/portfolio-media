@@ -15,7 +15,7 @@ const exitLinks = fs.readFileSync(path.join(root, '_includes/rz-gallery-exit.htm
 
 function browser({ desktop = true, reduced = false, prefix = '', gsap = true, arrival = null,
     nextHref, previousHref, folder = 'hb-egypt', activeTag = 'body',
-    navigationType = 'navigate', galleryLoop = 'hard-bullet', nextGalleryName } = {}) {
+    navigationType = 'navigate', galleryLoop = 'hard-bullet', nextGalleryName, clientWidth = 1440 } = {}) {
   const events = {};
   const calls = [];
   const tweens = [];
@@ -83,6 +83,7 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
   const document = {
     currentScript: { src: 'https://example.test/galleries/gallery-desktop-panels.js?v=3' },
     hidden: false, fullscreenElement: null,
+    documentElement: { clientWidth },
     activeElement, body, head: new Element('head'),
     createElement(tag) { return new Element(tag); },
     querySelector(key) {
@@ -164,7 +165,7 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
 test('no desktop boxes/arrows and no scroll stage; fullscreen screenshot controls remain', () => {
   assert.match(markup, /gallery-navigation[^>]+hidden/);
   assert.doesNotMatch(markup, /gallery-navigation__arrow|gallery-navigation__details/);
-  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=9/);
+  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=10/);
   assert.match(styles, /\.gallery-navigation\s*\{\s*display:\s*none !important/);
   assert.match(styles, /\.viewer-arrows button/);
   assert.doesNotMatch(styles, /gallery-desktop-scroll-stage/);
@@ -173,7 +174,7 @@ test('no desktop boxes/arrows and no scroll stage; fullscreen screenshot control
 
 test('moving mouse into right or left edge starts the slide and navigates automatically', () => {
   for (const prefix of ['', '/artur']) {
-    for (const [x, which] of [[1439, 'next'], [1, 'previous']]) {
+    for (const [x, which] of [[1400, 'next'], [1, 'previous']]) {
       const b = browser({ prefix });
       b.pointer(x);
       assert.equal(b.panel.hidden, true, 'short edge brushes show nothing');
@@ -193,7 +194,7 @@ test('moving mouse into right or left edge starts the slide and navigates automa
 
 test('Full Portfolio edges loop through personal galleries and never touch Hard Bullet', () => {
   const b = browser({ prefix: '/artur', folder: 'nfs-unbound', galleryLoop: 'full' });
-  b.pointer(1439);
+  b.pointer(1400);
   b.advance(180);
   assert.equal(b.panel.children[0].children[0].textContent, 'Full Portfolio');
   assert.equal(b.panel.children[0].children[1].textContent, 'Phantom: Covert Ops - Oculus VR');
@@ -205,7 +206,7 @@ test('Full Portfolio edges loop through personal galleries and never touch Hard 
   assert.deepEqual(first.calls, [first.previous.href]);
   const last = browser({ prefix: '/artur', folder: 'high-poly-models', galleryLoop: 'full',
     nextHref: 'https://example.test/artur/galleries/nfs-unbound/' });
-  last.pointer(1439); last.advance(600);
+  last.pointer(1400); last.advance(600);
   assert.deepEqual(last.calls, [last.next.href]);
 });
 
@@ -214,7 +215,7 @@ test('studio Full Portfolio slides and wraps in its own card order', () => {
     nextHref: 'https://example.test/galleries/vehicles-aircrafts/',
     previousHref: 'https://example.test/galleries/vegetation/',
     nextGalleryName: 'Vehicles - Aircrafts' });
-  b.pointer(1439);
+  b.pointer(1400);
   b.advance(180);
   assert.equal(b.panel.children[0].children[0].textContent, 'Full Portfolio');
   assert.equal(b.panel.children[0].children[1].textContent, 'Vehicles - Aircrafts');
@@ -228,7 +229,7 @@ test('studio Full Portfolio slides and wraps in its own card order', () => {
   assert.deepEqual(backwards.calls, [backwards.previous.href]);
   const last = browser({ prefix: '', folder: 'vegetation', galleryLoop: 'full',
     nextHref: 'https://example.test/galleries/nfs-unbound/' });
-  last.pointer(1439);
+  last.pointer(1400);
   last.advance(600);
   assert.deepEqual(last.calls, [last.next.href]);
 });
@@ -268,10 +269,49 @@ test('approaching within five percent of an edge works without touching screen b
   assert.deepEqual(b.calls, [b.previous.href]);
 });
 
+test('standard, wide and overlay scrollbar gutters never start a gallery slide', () => {
+  for (const clientWidth of [1440, 1425, 1392]) {
+    const b = browser({ clientWidth });
+    const boundary = Math.min(clientWidth, 1416);
+    for (const x of [boundary, 1439]) {
+      b.pointer(x);
+      b.advance(700);
+      assert.equal(b.panel.hidden, true);
+      assert.deepEqual(b.calls, []);
+    }
+    b.pointer(boundary - 1);
+    b.advance(600);
+    assert.deepEqual(b.calls, [b.next.href]);
+  }
+});
+
+test('moving onto a scrollbar cancels both the hover delay and an in-progress slide', () => {
+  for (const elapsed of [100, 250]) {
+    const b = browser({ clientWidth: 1425 });
+    b.pointer(1400);
+    b.advance(elapsed);
+    b.pointer(1432);
+    b.advance(700);
+    assert.equal(b.panel.hidden, true);
+    assert.deepEqual(b.calls, []);
+  }
+});
+
+test('leaving page content for a native scrollbar can cancel without another pointermove', () => {
+  const b = browser();
+  b.pointer(1400);
+  b.advance(250);
+  assert.equal(b.panel.hidden, false);
+  b.event('pointerout', { pointerType: 'mouse', relatedTarget: null });
+  b.advance(700);
+  assert.equal(b.panel.hidden, true);
+  assert.deepEqual(b.calls, []);
+});
+
 test('moving out of the edge before or during animation cancels the transition', () => {
   for (const elapsed of [80, 360]) {
     const b = browser();
-    b.pointer(1439);
+    b.pointer(1400);
     b.advance(elapsed);
     b.pointer(720);
     b.advance(1500);
@@ -282,7 +322,7 @@ test('moving out of the edge before or during animation cancels the transition',
 
 test('moving between edges changes direction instead of leaving a stale navigation', () => {
   const b = browser();
-  b.pointer(1439);
+  b.pointer(1400);
   b.advance(200);
   b.pointer(0);
   b.advance(180 + 420);
@@ -291,11 +331,11 @@ test('moving between edges changes direction instead of leaving a stale navigati
 
 test('page visits do not automatically chain to another gallery until the mouse exits the edge', () => {
   const b = browser({ arrival: { direction: 'next', pathname: '/galleries/hb-egypt/', at: 0 } });
-  b.pointer(1439);
+  b.pointer(1400);
   b.advance(1700);
   assert.equal(b.calls.length, 0);
   b.pointer(700);
-  b.pointer(1439);
+  b.pointer(1400);
   b.advance(600);
   assert.deepEqual(b.calls, [b.next.href]);
 });
@@ -305,7 +345,7 @@ test('touch and coarse-pointer devices do not install desktop navigation handler
   assert.equal(coarse.events['window:pointermove'], undefined);
   assert.equal(coarse.panel, undefined);
   const touch = browser();
-  touch.pointer(1439, { type: 'touch' });
+  touch.pointer(1400, { type: 'touch' });
   touch.advance(2000);
   assert.deepEqual(touch.calls, []);
 });
@@ -318,13 +358,13 @@ test('gallery fullscreen, dialogs, editable targets and zoom block edge navigati
   ]) {
     const b = browser();
     setup(b);
-    b.pointer(1439);
+    b.pointer(1400);
     b.advance(2000);
     assert.deepEqual(b.calls, []);
   }
   for (const tag of ['a', 'input', 'button', 'label']) {
     const b = browser({ activeTag: 'input' });
-    b.pointer(1439, { target: new b.Element(tag) });
+    b.pointer(1400, { target: new b.Element(tag) });
     b.advance(1000);
     assert.equal(b.calls.length, 0, 'interactive element: ' + tag);
   }
@@ -332,7 +372,7 @@ test('gallery fullscreen, dialogs, editable targets and zoom block edge navigati
 
 test('mouse button press cancels an active edge transition', () => {
   const b = browser();
-  b.pointer(1439);
+  b.pointer(1400);
   b.advance(240);
   b.event('pointerdown');
   b.advance(1000);
@@ -352,11 +392,11 @@ test('keyboard arrows remain a click-free fallback outside interactive elements'
 
 test('reduced motion and GSAP failure both preserve auto navigation', () => {
   const reduced = browser({ reduced: true });
-  reduced.pointer(1439);
+  reduced.pointer(1400);
   reduced.advance(430);
   assert.deepEqual(reduced.calls, [reduced.next.href]);
   const css = browser({ gsap: false });
-  css.pointer(1439);
+  css.pointer(1400);
   css.advance(180 + 460);
   assert.deepEqual(css.calls, [css.next.href]);
 });
@@ -369,7 +409,7 @@ test('invalid, cross-origin or cross-portfolio destinations do not activate', ()
   ]) {
     const b = browser({ nextHref: href });
     assert.equal(b.events['window:pointermove'], undefined);
-    b.pointer(1439);
+    b.pointer(1400);
     b.advance(2000);
     assert.deepEqual(b.calls, []);
   }
@@ -382,7 +422,7 @@ test('RZ Start password focus does not trap edge navigation on either portfolio'
       previousHref: 'https://example.test' + prefix + '/galleries/hb-spybase/',
       nextHref: 'https://example.test' + prefix + '/galleries/hb-egypt/'
     };
-    for (const [x, expected] of [[1, options.previousHref], [1439, options.nextHref]]) {
+    for (const [x, expected] of [[1, options.previousHref], [1400, options.nextHref]]) {
       const b = browser(options);
       b.pointer(x);
       b.advance(600);
@@ -407,11 +447,11 @@ test('Back/Forward history restoration stays disarmed until mouse leaves edge', 
   ]) {
     const b = browser(options);
     b.event('pageshow', event);
-    b.pointer(1439);
+    b.pointer(1400);
     b.advance(1400);
     assert.deepEqual(b.calls, [], 'history restore must not automatically advance');
     b.pointer(700);
-    b.pointer(1439);
+    b.pointer(1400);
     b.advance(600);
     assert.deepEqual(b.calls, [b.next.href]);
   }
@@ -465,7 +505,7 @@ test('the original logo/navigation/accent header stays above the panel without c
     const originalHeader = b.siteHeader;
     const childrenBefore = b.document.body.children.length;
     assert.equal(b.document.body.classList.contains('gallery-edge-header-visible'), false);
-    b.pointer(1439);
+    b.pointer(1400);
     b.advance(179);
     assert.equal(b.document.body.classList.contains('gallery-edge-header-visible'), false,
       'hover initiation remains unchanged');
@@ -484,7 +524,7 @@ test('the original logo/navigation/accent header stays above the panel without c
 
 test('navigation retains an identical cover for document snapshots and records stationary title', () => {
   const b = browser();
-  b.pointer(1439);
+  b.pointer(1400);
   b.advance(600);
   assert.deepEqual(b.calls, [b.next.href]);
   const marker = b.storedArrival();
@@ -501,7 +541,7 @@ test('navigation retains an identical cover for document snapshots and records s
 test('cancelled edge slide restores original header and panel geometry after reverse animation', () => {
   for (const gsap of [true, false]) {
     const b = browser({ gsap });
-    b.pointer(1439);
+    b.pointer(1400);
     b.advance(200);
     assert.equal(b.document.body.classList.contains('gallery-edge-header-visible'), true);
     b.pointer(700);
@@ -533,7 +573,7 @@ test('mobile and reduced-motion navigation never enable floating original header
   assert.equal(mobile.events['window:pointermove'], undefined);
   assert.equal(mobile.document.body.classList.contains('gallery-edge-header-visible'), false);
   const reduced = browser({ reduced: true });
-  reduced.pointer(1439);
+  reduced.pointer(1400);
   reduced.advance(200);
   assert.equal(reduced.document.body.classList.contains('gallery-edge-header-visible'), false);
   reduced.advance(300);

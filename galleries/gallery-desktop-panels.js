@@ -12,6 +12,7 @@
   const isFullPortfolio = galleryLoop === 'full';
   const interactive = 'a, button, input, textarea, select, label, iframe, video, audio, summary, '
     + '[contenteditable]:not([contenteditable="false"]), [role="button"], [role="link"], [role="slider"]';
+  const scrollbarClearance = 24;
   const holdDelay = 180;
   const slideDuration = 420;
   const editable = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])';
@@ -205,7 +206,9 @@
 
   function pointerMove(event) {
     if (event.pointerType !== 'mouse') return;
-    if (navigating || blocked() || event.target?.closest?.(interactive)) {
+    // The scrollbar may occupy its own gutter or overlay the page content.
+    const contentRight = Math.min(document.documentElement.clientWidth, window.innerWidth - scrollbarClearance);
+    if (navigating || blocked() || event.clientX >= contentRight || event.target?.closest?.(interactive)) {
       if (!navigating) clear(true);
       return;
     }
@@ -246,6 +249,9 @@
   function interrupt() { if (!navigating) clear(); }
 
   window.addEventListener('pointermove', pointerMove, { passive: true });
+  window.addEventListener('pointerout', event => {
+    if (event.pointerType === 'mouse' && event.relatedTarget === null) interrupt();
+  }, { passive: true });
   window.addEventListener('pointerdown', () => { pressed = true; interrupt(); }, { passive: true });
   window.addEventListener('pointerup', () => { pressed = false; }, { passive: true });
   window.addEventListener('pointercancel', () => { pressed = false; interrupt(); });
