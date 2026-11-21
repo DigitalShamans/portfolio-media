@@ -398,7 +398,7 @@
       return right - entry.getBoundingClientRect().left;
     });
     const minimumSpan = heights.slice(0, -1).reduce((sum, height) => sum + height + 24, 0);
-    return { anchor, cardLeft, contentWidths, heights, minimumSpan };
+    return { width, frameRight, anchor, cardLeft, contentWidths, heights, minimumSpan };
   }
 
   function placeMobileLabels(metrics, layout) {
@@ -424,17 +424,20 @@
     return { points, labels };
   }
 
-  function frameMobileStops(points, labels, frameRight, anchor, steadyOpening) {
+  function frameMobileStops(points, labels, { width, frameRight, anchor }) {
     return points.map((point, i) => {
       const card = labels[i];
-      const neighbor = labels[i === 0 && steadyOpening ? 1 : Math.max(0, i - 1)];
+      // Use the spare space beside the zoomed opening to frame the next card.
+      const openingPadding = i === 0 ? frameRight - width : 0;
+      const neighbor = labels[openingPadding > 0 ? 1 : Math.max(0, i - 1)];
+      const leftInset = mobileCardInset - openingPadding;
       const preferredOffset = anchor - point.x;
-      const bothLeft = mobileCardInset - Math.min(card.left, neighbor.left);
+      const bothLeft = leftInset - Math.min(card.left, neighbor.left);
       const bothRight = frameRight - Math.max(card.right, neighbor.right);
       const sharedOffset = Math.max(bothLeft, Math.min(preferredOffset, bothRight));
       // If both cards cannot fit, give the newly revealed card priority.
-      const offset = Math.min(frameRight - card.right, Math.max(mobileCardInset - card.left, sharedOffset));
-      const markerX = Math.max(10, Math.min(frameRight - 10, point.x + offset));
+      const offset = Math.min(frameRight - card.right, Math.max(leftInset - card.left, sharedOffset));
+      const markerX = Math.max(10 - openingPadding, Math.min(frameRight - 10, point.x + offset));
       return { progress: point.progress, markerX, offset: markerX - point.x };
     });
   }
@@ -537,7 +540,7 @@
     track.classList.toggle('career-track--narrow', narrow);
     track.classList.toggle('career-track--tight', narrow && width < 300);
     // Use the extra space at the edge of the scaled touch scene for longer titles.
-    const mobileFrameRight = (width + width / sceneScale) / 2;
+    const mobileFrameRight = useLocalScroll ? (width + width / sceneScale) / 2 - 1 : width;
     const mobileLayout = narrow ? measureMobileLabels(width, mobileFrameRight) : null;
     // Leave a stable inset for the final card even when browser controls
     // reappear and native scrolling exposes the shorter ending viewport.
@@ -643,7 +646,7 @@
         backdrops.style.setProperty('--career-backdrop-footer-space', footerSpace + 'px');
       }
       followY = Math.min(viewport * .55, lastMarkerY + minimumY);
-      mobileStops = frameMobileStops(points, labels, mobileFrameRight, mobileLayout.anchor, useLocalScroll);
+      mobileStops = frameMobileStops(points, labels, mobileLayout);
     }
     // Mobile unpins exactly at the final node. Any remaining native scroll
     // is the actual ending viewport, including space under browser controls.
