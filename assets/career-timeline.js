@@ -44,6 +44,7 @@
   const fullImage = imageDialog.querySelector('[data-career-image-full]');
   const ns = 'http://www.w3.org/2000/svg';
   const desktopCurveAspect = 1.25;
+  const minimumDesktopCardScale = .64;
   const curveExtent = 1.22;
   const mobileCardInset = 16;
   let canAnimate = false;
@@ -507,16 +508,15 @@
     });
   }
 
-  function placeDesktopLabel(entry, point, scale, viewportWidth, trackLeft, placed) {
+  function placeDesktopLabel(entry, point, { viewportWidth, preferredScale }, trackLeft, placed) {
     if (!entry.dataset.desktopLayout) return null;
     const { desktopLayout, desktopWidth, desktopInset, desktopTop, desktopYearClearance, desktopTailGap } = entry.dataset;
     const leftSide = desktopLayout === 'year-right';
-    const preferredScale = Math.min(scale, viewportWidth / 1850);
     const inset = Number(desktopInset) * preferredScale;
     const edge = leftSide ? point.x - inset : point.x + inset;
     const availableWidth = leftSide ? trackLeft + edge - 24 : viewportWidth - trackLeft - edge - 24;
     const cardScale = Math.min(preferredScale, availableWidth / Number(desktopWidth));
-    if (cardScale < .64) return null;
+    if (cardScale < minimumDesktopCardScale) return null;
 
     const width = Number(desktopWidth) * cardScale;
     const left = leftSide ? edge - width : edge;
@@ -569,11 +569,11 @@
     };
   }
 
-  function placeLabels(points, metrics, width, scale, desktop, trackLeft) {
+  function placeLabels(points, metrics, width, scale, desktopLayout, trackLeft) {
     const placed = [];
     entries.forEach((entry, i) => {
       const point = points[i];
-      const aligned = desktop ? placeDesktopLabel(entry, point, scale, document.documentElement.clientWidth, trackLeft, placed) : null;
+      const aligned = desktopLayout ? placeDesktopLabel(entry, point, desktopLayout, trackLeft, placed) : null;
       if (aligned) {
         placed.push(aligned);
         return;
@@ -622,7 +622,45 @@
       entry.style.top = top + 'px';
       placed.push({ left, right: left + labelWidth, top, bottom: top + entry.offsetHeight, side });
     });
+    if (desktopLayout) centerChuhaiCard(placed, trackLeft);
     return placed;
+  }
+
+  function centerChuhaiCard(labels, trackLeft) {
+    const index = entries.findIndex(entry => entry.id === 'career-2020-chuhai');
+    const card = labels[index];
+    const above = labels.find((_, i) => entries[i].id === 'career-2020-super-trumpers');
+    const below = labels.find((_, i) => entries[i].id === 'career-2022');
+    if (!card?.boxes || !above || !below) return;
+
+    const verticalShift = (above.bottom + below.top - card.top - card.bottom) / 2;
+    if (card.top + verticalShift < above.bottom || Math.abs(verticalShift) < .5) return;
+
+    // If the centered card meets a card on the other side of the curve,
+    // move it left by the smallest distance that clears the occupied boxes.
+    const otherBoxes = labels.flatMap(label => label === card ? [] : label.boxes ?? [label]);
+    const blocked = otherBoxes.flatMap(other => card.boxes
+      .filter(box => box.top + verticalShift < other.bottom && box.bottom + verticalShift > other.top)
+      .map(box => ({ left: other.left - box.right - 4, right: other.right - box.left + 4 })));
+    let horizontalShift = 0;
+    for (const interval of blocked.sort((a, b) => b.right - a.right)) {
+      if (horizontalShift > interval.left && horizontalShift < interval.right) horizontalShift = interval.left;
+    }
+    if (trackLeft + card.left + horizontalShift < 24) return;
+
+    const entry = entries[index];
+    entry.style.top = card.top + verticalShift + 'px';
+    entry.style.left = parseFloat(entry.style.left) + horizontalShift + 'px';
+    card.top += verticalShift;
+    card.bottom += verticalShift;
+    card.left += horizontalShift;
+    card.right += horizontalShift;
+    card.boxes.forEach(box => {
+      box.top += verticalShift;
+      box.bottom += verticalShift;
+      box.left += horizontalShift;
+      box.right += horizontalShift;
+    });
   }
 
   function captureReadingPosition(useCached = true) {
@@ -653,11 +691,12 @@
     const largeViewport = narrow && viewportMeasure ? Math.max(viewport, Math.round(parseFloat(getComputedStyle(viewportMeasure, '::after').height) || window.innerHeight)) : viewport;
     if (!width || !viewport) return;
     const scale = parseFloat(getComputedStyle(track).getPropertyValue('--career-layout-scale')) || 1;
+    const viewportWidth = document.documentElement.clientWidth;
     // A native scroll area keeps touch gestures off the document viewport,
     // where Chrome moves its address bar and the entire pinned timeline.
     const useLocalScroll = Boolean(mobileScroller && narrow && canAnimate && touchDevice.matches && !reducedMotion.matches);
     const portraitOpening = useLocalScroll && touchLayout.matches && portrait.matches;
-    const nextSignature = [width, viewport, largeViewport, scale, reducedMotion.matches, touchDevice.matches, desktop, canAnimate, portraitOpening].join(':');
+    const nextSignature = [width, viewport, largeViewport, scale, reducedMotion.matches, touchDevice.matches, desktop ? viewportWidth : 0, canAnimate, portraitOpening].join(':');
     if (nextSignature === signature) return;
     signature = nextSignature;
     reset();
@@ -671,9 +710,10 @@
     track.classList.toggle('career-track--narrow', narrow);
     track.classList.toggle('career-track--tight', narrow && width < 300);
     track.classList.toggle('career-track--desktop', desktop);
-    if (desktop && !narrow) {
-      const desktopStageInset = (document.documentElement.clientWidth - width) / 2;
-      track.style.setProperty('--career-desktop-stage-inset', desktopStageInset + 'px');
+    const desktopLayout = desktop ? { viewportWidth, preferredScale: Math.min(scale, viewportWidth / 1850) } : null;
+    if (desktopLayout) {
+      track.style.setProperty('--career-desktop-thumbnail-scale', String(Math.max(minimumDesktopCardScale, desktopLayout.preferredScale)));
+      if (!narrow) track.style.setProperty('--career-desktop-stage-inset', (viewportWidth - width) / 2 + 'px');
     }
     entries.forEach(entry => entry.classList.remove('career-milestone--desktop-aligned'));
     // Use the extra space at the edge of the scaled touch scene for longer titles.
@@ -719,7 +759,7 @@
     const scrollMultiplier = (slowMobile ? 6 : 2) * touchScrollFactor * (narrow ? 1 : 2);
     const trackLeft = track.getBoundingClientRect().left;
     const cameraAnchor = slowMobile ? trackLeft + mobileLayout.anchor : 0;
-    const labels = mobilePlacement ? mobilePlacement.labels : placeLabels(points, metrics, width, scale, desktop, trackLeft);
+    const labels = mobilePlacement ? mobilePlacement.labels : placeLabels(points, metrics, width, scale, desktopLayout, trackLeft);
     if (narrow && !slowMobile) {
       entries.forEach((entry, i) => {
         entry.style.left = mobileLayout.cardLeft + 'px';
