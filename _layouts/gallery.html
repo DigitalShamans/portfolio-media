@@ -43,7 +43,7 @@
   {% include personal-typography.html %}
 </head>
 <body data-gallery-revision="{{ site.github.build_revision | escape }}"{% if gallery_asset_versions %} data-gallery-asset-versions="{{ gallery_asset_versions | jsonify | escape }}"{% endif %}>
-  <div id="gallery-edge-arrival"><script src="../gallery-arrival.js?v=3"></script></div>
+  <div id="gallery-edge-arrival"><script src="../gallery-arrival.js?v=4"></script></div>
   {% include site-header.html %}
   <div id="gallery-edge-ready" hidden></div>
   {% include gallery-navigation.html current=gallery_folder portfolio_url=portfolio_url %}
@@ -100,7 +100,7 @@
   <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=6"></script>
   <script src="../gallery-data.js?v=3"></script>
   {% if gallery_page.gallery_embeds %}<script src="../gallery-embeds.js?v=3"></script>{% endif %}
-  <script src="../gallery-viewer.js?v=44"></script>
+  <script src="../gallery-viewer.js?v=45"></script>
   {% if gallery_page.gallery_captions %}<script src="../gallery-captions.js?v=1"></script>{% endif %}
 </body>
 </html>

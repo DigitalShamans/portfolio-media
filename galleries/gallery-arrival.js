@@ -79,7 +79,7 @@
     if (!loaded || typeof loaded.then !== 'function') return;
     const result = await loaded;
     if (result?.firstReady) await result.firstReady;
-    const image = result?.items?.[0]?.image;
+    const image = result?.arrivalImage ?? result?.items?.[0]?.image;
     if (image?.naturalWidth && typeof image.decode === 'function') {
       await image.decode().catch(() => {});
     }

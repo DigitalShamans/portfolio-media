@@ -73,6 +73,96 @@ const imageRetryDelay = 1000;
 const foregroundLoads = new Set();
 let nextBackgroundIndex = 0;
 let backgroundLoading = false;
+const galleryPositionKey = 'gallery-scroll-position:' + window.location.pathname;
+
+function getGalleryPositionStorage() {
+  if (!galleryContent.classList.contains('gallery-content') || window.location.hash) return null;
+  try {
+    const storage = window.sessionStorage;
+    storage.getItem(galleryPositionKey);
+    window.history.scrollRestoration = 'manual';
+    return storage;
+  } catch {
+    return null;
+  }
+}
+
+const galleryPositionStorage = getGalleryPositionStorage();
+
+function readGalleryPosition() {
+  try {
+    const position = JSON.parse(galleryPositionStorage?.getItem(galleryPositionKey) ?? 'null');
+    if (Number.isFinite(position?.top) && position.top >= 0) return position;
+  } catch { /* Treat unavailable or unreadable storage as a first visit. */ }
+}
+
+function currentGalleryPosition() {
+  const top = Math.max(0, window.scrollY);
+  const position = { top };
+  if (top > 0) {
+    const height = document.documentElement.clientHeight;
+    const center = height / 2;
+    let nearest = Infinity;
+    for (const shot of shots) {
+      const rect = shot.element.getBoundingClientRect();
+      if (rect.top >= height) break;
+      if (rect.bottom <= 0 || rect.height <= 0) continue;
+      const distance = Math.abs(center - (rect.top + rect.height / 2));
+      if (distance >= nearest) continue;
+      nearest = distance;
+      position.filename = shot.filenames[0];
+      position.offset = (center - rect.top) / rect.height;
+    }
+  }
+  return position;
+}
+
+function restoreGalleryPosition(position) {
+  if (!position || window.location.hash) return;
+  const shot = Number.isFinite(position.offset)
+    ? shots.find(item => item.filenames.includes(position.filename))
+    : undefined;
+  let top = position.top;
+  if (shot) {
+    const rect = shot.element.getBoundingClientRect();
+    top = window.scrollY + rect.top + position.offset * rect.height - document.documentElement.clientHeight / 2;
+  }
+  window.scrollTo({ top, behavior: 'instant' });
+  return shot;
+}
+
+function trackGalleryPosition() {
+  if (!galleryPositionStorage) return;
+  // Mobile browsers can change the viewport geometry while hiding a page.
+  // Use the last position measured while the gallery was visible.
+  let position = currentGalleryPosition();
+  let frame;
+  function updatePosition() {
+    if (frame !== undefined) return;
+    frame = window.requestAnimationFrame(() => {
+      frame = undefined;
+      if (!document.hidden && !viewer.open) position = currentGalleryPosition();
+    });
+  }
+  function savePosition() {
+    try {
+      galleryPositionStorage.setItem(galleryPositionKey, JSON.stringify(position));
+    } catch { /* Navigating still works without storage. */ }
+  }
+  window.addEventListener('scroll', updatePosition, { passive: true });
+  window.addEventListener('resize', updatePosition);
+  window.addEventListener('pagehide', savePosition);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) savePosition();
+    else updatePosition();
+  });
+  window.addEventListener('pageshow', event => {
+    if (event.persisted) {
+      restoreGalleryPosition(readGalleryPosition());
+      updatePosition();
+    }
+  });
+}
 
 function setupClassicGalleryScroll() {
   if (gallery.hasAttribute('data-native-gallery-scroll')) return;
@@ -882,20 +972,30 @@ async function loadGallery() {
     const restoreFocus = fallback && document.activeElement === fallback;
     shots.push(...entries.map((entry, index) => createShot(entry, index, firstImage)));
     gallery.replaceChildren(...shots.map(shot => shot.element));
+    const position = readGalleryPosition();
+    const arrivalShot = restoreGalleryPosition(position) ?? shots[0];
+    trackGalleryPosition();
     loadVisibleShotsFirst();
     if (gallery.dataset.galleryEmbeds && typeof GalleryEmbeds !== 'undefined') {
-      void GalleryEmbeds.mount(gallery, entries, shots.map(shot => shot.element),
+      const restoredTop = window.scrollY;
+      const embeds = GalleryEmbeds.mount(gallery, entries, shots.map(shot => shot.element),
         galleryAssetUrl(gallery.dataset.galleryEmbeds), galleryAssetUrl);
+      if (position) void embeds.then(() => {
+        // An embed can change the rows above the saved image. Do not move
+        // the viewport again if scroll anchoring or the viewer already did.
+        if (window.scrollY === restoredTop) restoreGalleryPosition(position);
+      });
     }
     if (restoreFocus) shots[0].link.focus({ preventScroll: true });
     galleryStatus.hidden = true;
     return {
       entries,
       items: shots.map(shot => ({ element: shot.element, link: shot.link, image: shot.image, filenames: shot.filenames })),
-      // On a desktop gallery handoff, reveal only after its first image has
-      // completed the normal JPG retry / WebP fallback path.
-      firstReady: window.__galleryDesktopEdgeArrived && shots[0]
-        ? prioritizeShot(shots[0]) : shots[0]?.primaryLoad
+      // Keep the desktop slide cover up until the image at the landing
+      // position completes the normal JPG retry / WebP fallback path.
+      arrivalImage: arrivalShot?.image,
+      firstReady: window.__galleryDesktopEdgeArrived && arrivalShot
+        ? prioritizeShot(arrivalShot) : arrivalShot?.primaryLoad
     };
   } catch (error) {
     if (fallback && fallback.parentNode !== gallery) gallery.replaceChildren(fallback);
