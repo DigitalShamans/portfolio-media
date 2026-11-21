@@ -259,7 +259,13 @@
   .career-track--positioned:not(.career-track--narrow) [data-year-layout="heading"] h2 { grid-column: 2; grid-row: 1; }
   .career-track--positioned:not(.career-track--narrow) [data-year-layout="heading"] .career-role { grid-column: 2 / -1; grid-row: 2; margin: 0; }
   .career-track--positioned:not(.career-track--narrow) [data-year-layout="heading"] .career-projects { grid-column: 2 / -1; grid-row: 3; margin: .15rem 0 0; }
-  .career-track--positioned:not(.career-track--narrow) [data-year-layout="heading"] .career-preview { grid-column: 1; grid-row: 2 / span 2; }
+  .career-track--positioned:not(.career-track--narrow) [data-year-layout="heading"] .career-preview {
+    grid-column: 1;
+    grid-row: 2 / span 2;
+    inline-size: var(--career-thumbnail-width);
+    max-inline-size: calc(100% + var(--career-desktop-stage-inset, 0px));
+    justify-self: end;
+  }
 }
 .career-track--positioned:not(.career-track--narrow) [data-curve-side="left"] .career-copy--media {
   flex-direction: row-reverse;
