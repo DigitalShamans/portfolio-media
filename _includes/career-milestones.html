@@ -31,7 +31,7 @@
         <p class="career-role">3D Artist</p>
         <ul class="career-projects">
           <li>
-            <strong>Sniper Ghost Warrior 2</strong>
+            <strong><a class="career-project-link" href="https://store.steampowered.com/app/34870/Sniper_Ghost_Warrior_2/">Sniper Ghost Warrior 2</a></strong>
             <dl class="career-project-facts">
               <div><dt>Platforms</dt><dd>PC, PlayStation 3, Xbox 360</dd></div>
               <div><dt>Engine</dt><dd>CryEngine 3</dd></div>
@@ -50,12 +50,12 @@
     <div class="career-copy career-copy--media">
       <div class="career-description">
         <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Jujubee</button></h2>
-        <p class="career-role">Freelance Vehicle 3D Artist</p>
+        <p class="career-role">Vehicle 3D Artist</p>
         <ul class="career-projects">
           <li>
-            <strong>Take Off</strong>
+            <strong><a class="career-project-link" href="https://store.steampowered.com/app/657470/Take_Off_The_Flight_Simulator/">Take Off</a></strong>
             <dl class="career-project-facts">
-              <div><dt>Platforms</dt><dd>iOS, Android, PC, macOS, Nintendo Switch</dd></div>
+              <div><dt>Platforms</dt><dd>iOS, Android, PC</dd></div>
             </dl>
           </li>
         </ul>
@@ -73,14 +73,14 @@
         <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Rebellion Developments</button></h2>
         <p class="career-role">Environment artist</p>
         {% assign first_project = site.data.career-rebellion | first %}
-        <strong class="career-touch-project"><a class="career-project-link" href="{{ first_project.gallery | relative_url }}">{{ first_project.title | escape }}</a></strong>
+        <strong class="career-touch-project"><a class="career-project-link" href="{{ first_project.official_url | escape }}">{{ first_project.title | escape }}</a></strong>
       </div>
       <ul class="career-projects career-projects--sequenced">
         {% for project in site.data.career-rebellion %}
         {% assign gallery_url = project.gallery | relative_url %}
         <li class="career-project">
           <div class="career-project-details">
-            <strong><span class="career-project-year">{{ project.year }} · </span><a class="career-project-link" href="{{ gallery_url }}">{{ project.title | escape }}</a></strong>
+            <strong><span class="career-project-year">{{ project.year }} · </span><a class="career-project-link" href="{{ project.official_url | escape }}">{{ project.title | escape }}</a></strong>
             <dl class="career-project-facts">
               {% if project.platforms %}<div><dt>Platforms</dt><dd>{{ project.platforms | escape }}</dd></div>{% endif %}
               {% if project.engine %}<div><dt>Engine</dt><dd>{{ project.engine | escape }}</dd></div>{% endif %}
@@ -104,7 +104,7 @@
         <p class="career-role">Environment Artist</p>
         <ul class="career-projects">
           <li>
-            <strong>Phantom: Covert Ops</strong>
+            <strong><a class="career-project-link" href="https://ndreams.com/games/phantom-covert-ops/">Phantom: Covert Ops</a></strong>
             <dl class="career-project-facts">
               <div><dt>Platforms</dt><dd>Oculus Quest, Oculus Rift</dd></div>
               <div><dt>Engine</dt><dd>Unreal Engine<span class="career-desktop-only"> 4</span></dd></div>
@@ -127,7 +127,7 @@
         <p class="career-role">Freelancer</p>
         <ul class="career-projects">
           <li>
-            <strong>SurvIsland</strong>
+            <strong><a class="career-project-link" href="https://store.steampowered.com/app/839630/Survisland/">SurvIsland</a></strong>
             <dl class="career-project-facts">
               <div><dt>Platforms</dt><dd>PC</dd></div>
               <div><dt>Engine</dt><dd>Unity</dd></div>
@@ -150,7 +150,7 @@
         <p class="career-role">Art Director</p>
         <ul class="career-projects">
           <li>
-            <strong>Carve: Snowboarding</strong>
+            <strong><a class="career-project-link" href="https://www.meta.com/experiences/carve-snowboarding/3317083428365473/">Carve: Snowboarding</a></strong>
             <dl class="career-project-facts">
               <div><dt>Platforms</dt><dd>Meta Quest 2</dd></div>
               <div><dt>Engine</dt><dd>Unreal Engine 4</dd></div>
@@ -199,7 +199,7 @@
         <p class="career-role">3D Artist</p>
         <ul class="career-projects">
           <li>
-            <strong>The Need For Speed: Unbound</strong>
+            <strong><a class="career-project-link" href="https://www.ea.com/games/need-for-speed/need-for-speed-unbound">The Need For Speed: Unbound</a></strong>
             <dl class="career-project-facts">
               <div><dt>Platforms</dt><dd>PC, PlayStation 5, Xbox X|S</dd></div>
               <div><dt>Engine</dt><dd>Frostbite</dd></div>
@@ -220,6 +220,9 @@
       <div class="career-description">
         <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Couch Heroes</button></h2>
         <p class="career-role"><span class="career-touch-only">Art Direction</span><span class="career-desktop-only">Lead Environment Artist<br>Creative Art Director</span></p>
+        <ul class="career-projects">
+          <li><strong><a class="career-project-link" href="https://couch-heroes.com/game">Couch Heroes</a></strong></li>
+        </ul>
         <dl class="career-project-facts">
           <div><dt>Platforms</dt><dd>PC</dd></div>
           <div><dt>Engine</dt><dd>Unreal Engine 5.4+</dd></div>
@@ -243,7 +246,7 @@
           <li><strong>MerCorp: The Retrieval</strong></li>
           <li><strong>Hex Journey</strong></li>
           <li>
-            <strong>Carve: Snowboarding</strong>
+            <strong><a class="career-project-link" href="https://www.meta.com/experiences/carve-snowboarding/3317083428365473/">Carve: Snowboarding</a></strong>
             <dl class="career-project-facts">
               <div><dt>Platforms</dt><dd>Meta Quest 2</dd></div>
               <div><dt>Engine</dt><dd>Unreal Engine 4</dd></div>
@@ -252,7 +255,7 @@
         </ul>
         <ul class="career-projects career-desktop-only">
           <li>
-            <strong>Hard Bullet VR</strong>
+            <strong><a class="career-project-link" href="https://www.meta.com/experiences/hard-bullet/8116626111777808/">Hard Bullet VR</a></strong>
             <dl class="career-project-facts">
               <div><dt>Platforms</dt><dd>Meta Quest 3</dd></div>
               <div><dt>Engine</dt><dd>Unity 6.6+</dd></div>

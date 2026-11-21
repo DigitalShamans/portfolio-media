@@ -1,5 +1,6 @@
 - year: 2015
   title: Sniper Elite 4
+  official_url: https://rebellion.com/games/sniper-elite-4/
   gallery: /artur/galleries/sniper-elite-4/
   thumbnail: /assets/career-timeline/thumbnails/career-2015-rebellion-1.webp
   image_alt: Sniper Elite 4 artwork
@@ -7,6 +8,7 @@
   engine: Asura
 - year: 2016
   title: Battlezone VR
+  official_url: https://rebellion.com/games/battlezone/
   gallery: /artur/galleries/battlezone-vr/
   thumbnail: /assets/career-timeline/thumbnails/career-2015-rebellion-2.webp
   image_alt: Battlezone VR environment artwork
@@ -14,6 +16,7 @@
   engine: Asura
 - year: 2017
   title: Strange Brigade
+  official_url: https://rebellion.com/games/strange-brigade/
   gallery: /artur/galleries/strange-brigade-environment-art/
   thumbnail: /assets/career-timeline/thumbnails/career-2015-rebellion-3.webp
   image_alt: Strange Brigade environment artwork
