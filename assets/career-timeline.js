@@ -273,7 +273,12 @@
     // needed to frame the cards so the marker doesn't drift and correct itself.
     const markerX = from.markerX + (to.markerX - from.markerX) * blend;
     // Keep the outgoing card in view if the curve bows right between nodes.
-    const x = Math.max(Math.min(from.offset, to.offset), markerX - point.x);
+    let x = Math.max(Math.min(from.offset, to.offset), markerX - point.x);
+    if (c.keepRevealed && endStopIndex <= 2) {
+      // The first bend fits in the opening view. Resume tracking before CI Games.
+      const openingX = c.mobileStops[0].offset;
+      x = endStopIndex === 1 ? openingX : openingX + (x - openingX) * blend;
+    }
     // Center the wider frame horizontally so more of the bends fit on screen.
     const cameraX = x * c.sceneScale + c.width * (1 - c.sceneScale) / 2;
     pointer.setAttribute('cx', point.x);
