@@ -306,6 +306,9 @@
   .career-track--positioned:not(.career-track--narrow) #career-2021 .career-projects { grid-column: 1 / -1; grid-row: 3; margin: .15rem 0 0; }
   .career-track--positioned:not(.career-track--narrow) #career-2021 .career-preview { grid-column: 2; grid-row: 1 / span 2; }
 }
+.career-track--desktop {
+  --career-thumbnail-width: calc(140px * var(--career-desktop-thumbnail-scale) * var(--career-thumbnail-scale));
+}
 .career-track--desktop [data-desktop-layout] .career-role { font-weight: 600; }
 .career-track--desktop [data-desktop-layout] .career-projects strong { font-weight: 650; }
 .career-track--desktop #career-current .career-year { margin-bottom: 0; }
@@ -314,7 +317,6 @@
 .career-track--desktop #career-current .career-project-facts { margin-top: .75em; }
 
 .career-track--desktop .career-milestone--desktop-aligned {
-  --career-thumbnail-width: calc(168px * var(--career-desktop-card-scale));
   --career-copy-scale: calc(.85 * var(--career-desktop-card-scale) / var(--career-layout-scale));
 }
 .career-track--desktop .career-milestone--desktop-aligned .career-copy--media {
@@ -443,7 +445,7 @@
 }
 .career-track--narrow .career-description { overflow-wrap: anywhere; }
 .career-track--narrow .career-preview { width: calc(var(--career-mobile-thumbnail-width) * var(--career-thumbnail-scale)); }
-.career-track--narrow.career-track--tight #career-2004 .career-preview { width: calc(112px * var(--career-thumbnail-scale)); }
+.career-track--narrow.career-track--tight:not(.career-track--desktop) #career-2004 .career-preview { width: calc(112px * var(--career-thumbnail-scale)); }
 .career-copy h2 {
   margin: 0;
   color: var(--accent);
@@ -510,6 +512,10 @@
 }
 .career-track--narrow .career-project .career-preview {
   inline-size: calc((100% - 16px) / 3 * 1.75 * var(--career-thumbnail-scale));
+}
+.career-track--desktop.career-track--narrow .career-preview {
+  inline-size: var(--career-thumbnail-width);
+  max-inline-size: 100%;
 }
 .career-track--slow .career-project { transition: opacity .28s ease-out; }
 .career-track--slow .career-project--awaiting-reveal { opacity: 0; visibility: hidden; }
