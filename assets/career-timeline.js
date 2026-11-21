@@ -116,8 +116,20 @@
     const year = entry.querySelector('.career-year').cloneNode(true);
     copy.removeAttribute('style');
     year.removeAttribute('style');
-    heading.querySelectorAll(touchLayout.matches ? '.career-desktop-only' : '.career-touch-only').forEach(item => item.remove());
-    heading.textContent = heading.textContent;
+    heading.querySelectorAll('.career-touch-only').forEach(item => item.remove());
+    const title = heading.textContent.trim();
+    const companyUrl = entry.dataset.companyUrl;
+    if (companyUrl) {
+      const link = document.createElement('a');
+      link.className = 'career-company-link';
+      link.href = companyUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = title;
+      heading.replaceChildren(link);
+    } else {
+      heading.textContent = title;
+    }
     heading.id = 'career-details-title';
     dialogBody.replaceChildren(year, copy);
     dialog.showModal();

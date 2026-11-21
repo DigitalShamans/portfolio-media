@@ -626,8 +626,17 @@
   white-space: nowrap;
   overflow-x: auto;
 }
+.career-details .career-company-link { color: inherit; text-decoration: none; }
+.career-details .career-company-link:is(:hover, :focus-visible) {
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
 @media not ((hover: none) and (pointer: coarse)) {
-  .career-details { width: min(35rem, calc(100% - 2rem)); }
+  .career-details { width: min(38rem, calc(100% - 2rem)); }
+  .career-details .career-copy--media {
+    grid-template-columns: minmax(0, 1fr) min(calc(140px * var(--career-thumbnail-scale)), 40%);
+  }
+  .career-details .career-project .career-preview { inline-size: calc(1.4 * var(--career-thumbnail-width)); }
 }
 .career-page .portfolio-footer {
   padding-block: 1.5rem;

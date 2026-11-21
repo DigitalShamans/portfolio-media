@@ -23,7 +23,7 @@
       </a>
     </div>
   </li>
-  <li class="career-milestone" id="career-2010" data-curve-at="0.090164" data-curve-side="right">
+  <li class="career-milestone" id="career-2010" data-company-url="https://cigames.com/en/" data-curve-at="0.090164" data-curve-side="right">
     <time class="career-year" datetime="2010">2010</time>
     <div class="career-copy career-copy--media">
       <div class="career-description">
@@ -31,7 +31,7 @@
         <p class="career-role">3D Artist</p>
         <ul class="career-projects">
           <li>
-            <strong><a class="career-project-link" href="https://store.steampowered.com/app/34870/Sniper_Ghost_Warrior_2/">Sniper Ghost Warrior 2</a></strong>
+            <strong><a class="career-project-link" href="https://store.steampowered.com/app/34870/Sniper_Ghost_Warrior_2/" target="_blank" rel="noopener noreferrer">Sniper Ghost Warrior 2</a></strong>
             <dl class="career-project-facts">
               <div><dt>Platforms</dt><dd>PC, PlayStation 3, Xbox 360</dd></div>
               <div><dt>Engine</dt><dd>CryEngine 3</dd></div>
@@ -45,7 +45,7 @@
       </a>
     </div>
   </li>
-  <li class="career-milestone" id="career-2015-jujubee" data-curve-at="0.155738" data-curve-side="left" data-year-layout="heading">
+  <li class="career-milestone" id="career-2015-jujubee" data-company-url="https://jujubee.pl/?lang=en" data-curve-at="0.155738" data-curve-side="left" data-year-layout="heading">
     <time class="career-year" datetime="2015">2015</time>
     <div class="career-copy career-copy--media">
       <div class="career-description">
@@ -53,7 +53,7 @@
         <p class="career-role">Vehicle 3D Artist</p>
         <ul class="career-projects">
           <li>
-            <strong><a class="career-project-link" href="https://store.steampowered.com/app/657470/Take_Off_The_Flight_Simulator/">Take Off</a></strong>
+            <strong><a class="career-project-link" href="https://store.steampowered.com/app/657470/Take_Off_The_Flight_Simulator/" target="_blank" rel="noopener noreferrer">Take Off</a></strong>
             <dl class="career-project-facts">
               <div><dt>Platforms</dt><dd>iOS, Android, PC</dd></div>
             </dl>
@@ -66,21 +66,21 @@
       </a>
     </div>
   </li>
-  <li class="career-milestone" id="career-2015-rebellion" data-curve-at="0.278689" data-curve-side="right">
+  <li class="career-milestone" id="career-2015-rebellion" data-company-url="https://rebellion.com/" data-curve-at="0.278689" data-curve-side="right">
     <time class="career-year" datetime="2015">2015</time>
     <div class="career-copy career-copy--sequenced">
       <div class="career-description">
         <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Rebellion Developments</button></h2>
         <p class="career-role">Environment artist</p>
         {% assign first_project = site.data.career-rebellion | first %}
-        <strong class="career-touch-project"><a class="career-project-link" href="{{ first_project.official_url | escape }}">{{ first_project.title | escape }}</a></strong>
+        <strong class="career-touch-project"><a class="career-project-link" href="{{ first_project.official_url | escape }}" target="_blank" rel="noopener noreferrer">{{ first_project.title | escape }}</a></strong>
       </div>
       <ul class="career-projects career-projects--sequenced">
         {% for project in site.data.career-rebellion %}
         {% assign gallery_url = project.gallery | relative_url %}
         <li class="career-project">
           <div class="career-project-details">
-            <strong><span class="career-project-year">{{ project.year }} · </span><a class="career-project-link" href="{{ project.official_url | escape }}">{{ project.title | escape }}</a></strong>
+            <strong><span class="career-project-year">{{ project.year }} · </span><a class="career-project-link" href="{{ project.official_url | escape }}" target="_blank" rel="noopener noreferrer">{{ project.title | escape }}</a></strong>
             <dl class="career-project-facts">
               {% if project.platforms %}<div><dt>Platforms</dt><dd>{{ project.platforms | escape }}</dd></div>{% endif %}
               {% if project.engine %}<div><dt>Engine</dt><dd>{{ project.engine | escape }}</dd></div>{% endif %}
@@ -95,7 +95,7 @@
       </ul>
     </div>
   </li>
-  <li class="career-milestone" id="career-2018" data-curve-at="0.459016" data-curve-side="right" data-year-layout="inline"
+  <li class="career-milestone" id="career-2018" data-company-url="https://ndreams.com/" data-curve-at="0.459016" data-curve-side="right" data-year-layout="inline"
       data-desktop-at="0.5825" data-desktop-layout="year-left" data-desktop-width="436" data-desktop-inset="112" data-desktop-top="-10">
     <time class="career-year" datetime="2018">2018</time>
     <div class="career-copy career-copy--media">
@@ -104,7 +104,7 @@
         <p class="career-role">Environment Artist</p>
         <ul class="career-projects">
           <li>
-            <strong><a class="career-project-link" href="https://ndreams.com/games/phantom-covert-ops/">Phantom: Covert Ops</a></strong>
+            <strong><a class="career-project-link" href="https://ndreams.com/games/phantom-covert-ops/" target="_blank" rel="noopener noreferrer">Phantom: Covert Ops</a></strong>
             <dl class="career-project-facts">
               <div><dt>Platforms</dt><dd>Oculus Quest, Oculus Rift</dd></div>
               <div><dt>Engine</dt><dd>Unreal Engine<span class="career-desktop-only"> 4</span></dd></div>
@@ -118,16 +118,16 @@
       </a>
     </div>
   </li>
-  <li class="career-milestone" id="career-2020-super-trumpers" data-curve-at="0.569672" data-curve-side="left"
+  <li class="career-milestone" id="career-2020-super-trumpers" data-company-url="https://store.steampowered.com/app/839630/Survisland_%E5%AE%9E%E5%A2%83%E6%B1%82%E7%94%9F/" data-curve-at="0.569672" data-curve-side="left"
       data-desktop-at="0.623" data-desktop-layout="year-right" data-desktop-width="304" data-desktop-inset="93" data-desktop-top="-8" data-desktop-year-clearance="44">
     <time class="career-year" datetime="2020">2020</time>
     <div class="career-copy career-copy--media">
       <div class="career-description">
-        <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Super Trumpers</button></h2>
-        <p class="career-role">Freelancer</p>
+        <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Super Trampers Studio</button></h2>
+        <p class="career-role">3D Artist</p>
         <ul class="career-projects">
           <li>
-            <strong><a class="career-project-link" href="https://store.steampowered.com/app/839630/Survisland/">SurvIsland</a></strong>
+            <strong><a class="career-project-link" href="https://store.steampowered.com/app/839630/Survisland/" target="_blank" rel="noopener noreferrer">SurvIsland</a></strong>
             <dl class="career-project-facts">
               <div><dt>Platforms</dt><dd>PC</dd></div>
               <div><dt>Engine</dt><dd>Unity</dd></div>
@@ -141,7 +141,7 @@
       </a>
     </div>
   </li>
-  <li class="career-milestone" id="career-2020-chuhai" data-curve-at="0.622951" data-curve-side="left"
+  <li class="career-milestone" id="career-2020-chuhai" data-company-url="https://www.chuhailabs.com/" data-curve-at="0.622951" data-curve-side="left"
       data-desktop-at="0.69" data-desktop-layout="year-right" data-desktop-width="347" data-desktop-inset="32" data-desktop-top="5" data-desktop-year-clearance="26">
     <time class="career-year" datetime="2020">2020</time>
     <div class="career-copy career-copy--media">
@@ -150,7 +150,7 @@
         <p class="career-role">Art Director</p>
         <ul class="career-projects">
           <li>
-            <strong><a class="career-project-link" href="https://www.meta.com/experiences/carve-snowboarding/3317083428365473/">Carve: Snowboarding</a></strong>
+            <strong><a class="career-project-link" href="https://www.meta.com/experiences/carve-snowboarding/3317083428365473/" target="_blank" rel="noopener noreferrer">Carve: Snowboarding</a></strong>
             <dl class="career-project-facts">
               <div><dt>Platforms</dt><dd>Meta Quest 2</dd></div>
               <div><dt>Engine</dt><dd>Unreal Engine 4</dd></div>
@@ -164,7 +164,7 @@
       </a>
     </div>
   </li>
-  <li class="career-milestone" id="career-2021" data-curve-at="0.655738" data-curve-side="right" data-year-layout="aside"
+  <li class="career-milestone" id="career-2021" data-company-url="https://digitalshamans.co.uk/" data-curve-at="0.655738" data-curve-side="right" data-year-layout="aside"
       data-desktop-at="0.755" data-desktop-layout="year-left" data-desktop-width="349" data-desktop-inset="87" data-desktop-top="4">
     <time class="career-year" datetime="2021">2021</time>
     <div class="career-copy career-copy--media">
@@ -186,7 +186,7 @@
       </a>
     </div>
   </li>
-  <li class="career-milestone" id="career-2022" data-curve-at="0.717213" data-curve-side="left"
+  <li class="career-milestone" id="career-2022" data-company-url="https://realtimeuk.com/" data-curve-at="0.717213" data-curve-side="left"
       data-desktop-at="0.81" data-desktop-layout="year-right" data-desktop-width="436" data-desktop-inset="26" data-desktop-top="-10" data-desktop-year-clearance="48">
     <time class="career-year" datetime="2022">2022</time>
     <div class="career-copy career-copy--media">
@@ -195,7 +195,7 @@
         <p class="career-role">3D Artist</p>
         <ul class="career-projects">
           <li>
-            <strong><a class="career-project-link" href="https://www.ea.com/games/need-for-speed/need-for-speed-unbound">The Need For Speed: Unbound</a></strong>
+            <strong><a class="career-project-link" href="https://www.ea.com/games/need-for-speed/need-for-speed-unbound" target="_blank" rel="noopener noreferrer">The Need For Speed: Unbound</a></strong>
             <dl class="career-project-facts">
               <div><dt>Platforms</dt><dd>PC, PlayStation 5, Xbox X|S</dd></div>
               <div><dt>Engine</dt><dd>Frostbite</dd></div>
@@ -209,7 +209,7 @@
       </a>
     </div>
   </li>
-  <li class="career-milestone" id="career-2023" data-curve-at="0.766393" data-curve-side="right"
+  <li class="career-milestone" id="career-2023" data-company-url="https://couch-heroes.com/" data-curve-at="0.766393" data-curve-side="right"
       data-desktop-at="0.86" data-desktop-layout="year-above" data-desktop-width="366" data-desktop-inset="22" data-desktop-top="2">
     <time class="career-year" datetime="2023">2023</time>
     <div class="career-copy career-copy--media">
@@ -217,7 +217,7 @@
         <h2><button class="career-checkpoint" type="button" aria-haspopup="dialog" aria-controls="career-details">Couch Heroes</button></h2>
         <p class="career-role">Lead Environment Artist<span class="career-role-continuation"> Creative Art Director</span></p>
         <ul class="career-projects">
-          <li><strong><a class="career-project-link" href="https://couch-heroes.com/game">Couch Heroes</a></strong></li>
+          <li><strong><a class="career-project-link" href="https://couch-heroes.com/game" target="_blank" rel="noopener noreferrer">Couch Heroes</a></strong></li>
         </ul>
         <dl class="career-project-facts">
           <div><dt>Platforms</dt><dd>PC</dd></div>
@@ -230,7 +230,7 @@
       </a>
     </div>
   </li>
-  <li class="career-milestone" id="career-current" data-curve-at="0.95" data-curve-side="right"
+  <li class="career-milestone" id="career-current" data-company-url="https://gexagon.com/" data-curve-at="0.95" data-curve-side="right"
       data-desktop-layout="year-above" data-desktop-width="421" data-desktop-inset="41" data-desktop-top="-15"
       data-desktop-tail-gap="24">
     <time class="career-year" datetime="2025">2025</time>
@@ -240,7 +240,7 @@
         <p class="career-role">Principal Environment Artist</p>
         <ul class="career-projects">
           <li>
-            <strong><a class="career-project-link" href="https://www.meta.com/experiences/hard-bullet/8116626111777808/">Hard Bullet VR</a></strong>
+            <strong><a class="career-project-link" href="https://www.meta.com/experiences/hard-bullet/8116626111777808/" target="_blank" rel="noopener noreferrer">Hard Bullet VR</a></strong>
             <dl class="career-project-facts">
               <div><dt>Platforms</dt><dd>Meta Quest 3</dd></div>
               <div><dt>Engine</dt><dd>Unity 6.6+</dd></div>
