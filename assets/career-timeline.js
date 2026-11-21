@@ -385,19 +385,20 @@
     return minimum;
   }
 
-  function measureMobileLabels(width) {
+  function measureMobileLabels(width, frameRight) {
     const anchor = Math.max(32, Math.min(56, width * .12));
     const cardLeft = anchor + 18;
     const cardWidth = width - cardLeft;
+    track.style.setProperty('--career-description-width', frameRight - cardLeft + 'px');
     entries.forEach(entry => { entry.style.width = cardWidth + 'px'; });
     const heights = entries.map(entry => entry.offsetHeight);
     const contentWidths = entries.map(entry => {
-      const parts = entry.querySelectorAll('.career-year, .career-checkpoint, .career-preview');
+      const parts = entry.querySelectorAll('.career-year, .career-description, .career-preview');
       const right = Math.max(...Array.from(parts, part => part.getBoundingClientRect().right));
       return right - entry.getBoundingClientRect().left;
     });
     const minimumSpan = heights.slice(0, -1).reduce((sum, height) => sum + height + 24, 0);
-    return { anchor, cardLeft, contentWidths, heights, minimumSpan };
+    return { width, frameRight, anchor, cardLeft, contentWidths, heights, minimumSpan };
   }
 
   function placeMobileLabels(metrics, layout) {
@@ -423,17 +424,20 @@
     return { points, labels };
   }
 
-  function frameMobileStops(points, labels, width, anchor) {
+  function frameMobileStops(points, labels, { width, frameRight, anchor }) {
     return points.map((point, i) => {
       const card = labels[i];
-      const previous = labels[Math.max(0, i - 1)];
+      // Use the spare space beside the zoomed opening to frame the next card.
+      const openingPadding = i === 0 ? frameRight - width : 0;
+      const neighbor = labels[openingPadding > 0 ? 1 : Math.max(0, i - 1)];
+      const leftInset = mobileCardInset - openingPadding;
       const preferredOffset = anchor - point.x;
-      const bothLeft = mobileCardInset - Math.min(card.left, previous.left);
-      const bothRight = width - Math.max(card.right, previous.right);
+      const bothLeft = leftInset - Math.min(card.left, neighbor.left);
+      const bothRight = frameRight - Math.max(card.right, neighbor.right);
       const sharedOffset = Math.max(bothLeft, Math.min(preferredOffset, bothRight));
       // If both cards cannot fit, give the newly revealed card priority.
-      const offset = Math.min(width - card.right, Math.max(mobileCardInset - card.left, sharedOffset));
-      const markerX = Math.max(10, Math.min(width - 10, point.x + offset));
+      const offset = Math.min(frameRight - card.right, Math.max(leftInset - card.left, sharedOffset));
+      const markerX = Math.max(10 - openingPadding, Math.min(frameRight - 10, point.x + offset));
       return { progress: point.progress, markerX, offset: markerX - point.x };
     });
   }
@@ -535,8 +539,9 @@
     track.classList.add('career-track--positioned');
     track.classList.toggle('career-track--narrow', narrow);
     track.classList.toggle('career-track--tight', narrow && width < 300);
-    if (narrow) track.classList.add('career-track--compact');
-    const mobileLayout = narrow ? measureMobileLabels(width) : null;
+    // Use the extra space at the edge of the scaled touch scene for longer titles.
+    const mobileFrameRight = useLocalScroll ? (width + width / sceneScale) / 2 - 1 : width;
+    const mobileLayout = narrow ? measureMobileLabels(width, mobileFrameRight) : null;
     // Leave a stable inset for the final card even when browser controls
     // reappear and native scrolling exposes the shorter ending viewport.
     const mobileTopInset = narrow ? Math.max(56, mobileLayout.heights[0] + 16, largeViewport - viewport + 24) : 0;
@@ -560,8 +565,6 @@
       if (visibleFraction >= .42 || height === minimumHeight) break;
       height = Math.max(minimumHeight, Math.round(height * .9));
     }
-    const compact = narrow || height < 1100 * scale;
-    track.classList.toggle('career-track--compact', compact);
     track.dataset.visibleCurveFraction = visibleFraction.toFixed(3);
     track.dataset.curveHeight = String(height);
 
@@ -643,7 +646,7 @@
         backdrops.style.setProperty('--career-backdrop-footer-space', footerSpace + 'px');
       }
       followY = Math.min(viewport * .55, lastMarkerY + minimumY);
-      mobileStops = frameMobileStops(points, labels, width, mobileLayout.anchor);
+      mobileStops = frameMobileStops(points, labels, mobileLayout);
     }
     // Mobile unpins exactly at the final node. Any remaining native scroll
     // is the actual ending viewport, including space under browser controls.
