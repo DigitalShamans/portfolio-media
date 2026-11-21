@@ -467,6 +467,9 @@
   cursor: pointer;
 }
 .career-checkpoint:hover { text-decoration: underline; text-underline-offset: .2em; }
+@media (hover: hover) {
+  button.career-checkpoint:hover { text-decoration: none; }
+}
 .career-role { margin: .2rem 0 0; font-size: calc(1rem * var(--career-layout-scale) * var(--career-copy-scale, 1)); line-height: 1.35; }
 .career-role-continuation { display: block; }
 .career-projects {
