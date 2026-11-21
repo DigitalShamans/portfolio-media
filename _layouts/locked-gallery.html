@@ -54,7 +54,7 @@
   {% include personal-typography.html %}
 </head>
 <body data-gallery-revision="{{ site.github.build_revision | escape }}">
-  <div id="gallery-edge-arrival"><script src="../gallery-arrival.js?v=3"></script></div>
+  <div id="gallery-edge-arrival"><script src="../gallery-arrival.js?v=4"></script></div>
   {% include site-header.html %}
   <div id="gallery-edge-ready" hidden></div>
   {% include gallery-navigation.html current='hb-rzstart' portfolio_url=portfolio_url %}
@@ -256,7 +256,7 @@
       document.querySelector('#gallery-access').replaceWith(template.content);
       try {
         await loadScript('../gallery-data.js?v=3');
-        await loadScript('../gallery-viewer.js?v=44');
+        await loadScript('../gallery-viewer.js?v=45');
       } catch {
         document.querySelector('#gallery-status').textContent =
           'The gallery could not be loaded. Please reload to try again.';

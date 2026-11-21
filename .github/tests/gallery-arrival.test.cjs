@@ -150,11 +150,14 @@ test('studio Full Portfolio preserves its stationary title on arrival', async ()
   assert.equal(invalid.panel, undefined);
 });
 
-test('the completed cover stays until both browser snapshot and first image are ready', async () => {
-  const firstShot = deferred();
+test('the cover stays until the snapshot and saved arrival image are ready', async () => {
+  const arrivalLoaded = deferred();
+  const arrivalDecoded = deferred();
+  let firstImageDecoded = false;
   const b = browser({ ready: Promise.resolve({
-    firstReady: firstShot.promise,
-    items: [{ image: { naturalWidth: 2560, decode: () => Promise.resolve() } }]
+    firstReady: arrivalLoaded.promise,
+    arrivalImage: { naturalWidth: 2560, decode: () => arrivalDecoded.promise },
+    items: [{ image: { naturalWidth: 2560, decode: async () => { firstImageDecoded = true; } } }]
   }) });
   b.loaded();
   await b.flush();
@@ -162,7 +165,11 @@ test('the completed cover stays until both browser snapshot and first image are 
   b.revealed();
   await b.flush();
   assert.ok(b.panel, 'snapshot alone cannot reveal an unfinished JPG/WebP');
-  firstShot.resolve(true);
+  arrivalLoaded.resolve(true);
+  await b.flush();
+  assert.ok(b.panel, 'the saved arrival image still needs to decode');
+  assert.equal(firstImageDecoded, false);
+  arrivalDecoded.resolve();
   await b.flush();
   assert.equal(b.panel, undefined, 'new page reveals without a second animation');
   assert.equal(b.body.classList.contains('gallery-edge-header-visible'), false);
@@ -201,12 +208,12 @@ test('both gallery layouts construct the arriving panel before the real header a
   for (const layout of layouts) {
     assert.match(layout, /gallery\.css\?v=27/);
     assert.match(layout, /<link rel="expect" href="#gallery-edge-ready" blocking="render">/);
-    assert.match(layout, /<div id="gallery-edge-arrival"><script src="\.\.\/gallery-arrival\.js\?v=3"><\/script><\/div>/);
+    assert.match(layout, /<div id="gallery-edge-arrival"><script src="\.\.\/gallery-arrival\.js\?v=4"><\/script><\/div>/);
     assert.match(layout, /gallery-edge-arrival[\s\S]*include site-header\.html[\s\S]*gallery-edge-ready/);
   }
-  for (const layout of layouts) assert.match(layout, /gallery-viewer\.js\?v=44/);
+  for (const layout of layouts) assert.match(layout, /gallery-viewer\.js\?v=45/);
   const mapLayout = fs.readFileSync(path.join(root, '_layouts/gallery-map.html'), 'utf8');
-  assert.match(mapLayout, /gallery-viewer\.js[^\n]*\?v=44/);
+  assert.match(mapLayout, /gallery-viewer\.js[^\n]*\?v=45/);
 });
 
 function viewerKeyboard({ native = false } = {}) {
@@ -270,7 +277,7 @@ test('Chrome swaps identical covered snapshots with no browser crossfade or move
   assert.match(controller, /headerHeight:\s*siteHeader/);
   assert.match(controller, /if \(!navigating\) clear\(\)/);
   assert.match(viewer, /firstReady:\s*window\.__galleryDesktopEdgeArrived/);
-  assert.match(viewer, /prioritizeShot\(shots\[0\]\)/);
+  assert.match(viewer, /prioritizeShot\(arrivalShot\)/);
   assert.match(controller, /const slideDuration = 420/);
   assert.match(controller, /const holdDelay = 180/);
 });
