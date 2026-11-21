@@ -457,6 +457,7 @@
 }
 .career-checkpoint:hover { text-decoration: underline; text-underline-offset: .2em; }
 .career-role { margin: .2rem 0 0; font-size: calc(1rem * var(--career-layout-scale) * var(--career-copy-scale, 1)); line-height: 1.35; }
+.career-role-continuation { display: block; }
 .career-projects {
   display: grid;
   gap: .2rem;
@@ -519,6 +520,8 @@
     font-size: inherit;
     line-height: inherit;
   }
+  .career-track .career-role-continuation { display: inline; }
+  .career-track .career-role-continuation::before { content: ", "; }
   .career-track .career-description :is(.career-role, .career-projects, .career-touch-project)::before { content: " - "; }
   .career-track .career-description .career-projects li:not(:last-child)::after { content: ","; }
   .career-track--positioned:not(.career-track--narrow) .career-copy--media > .career-description {
