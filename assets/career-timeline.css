@@ -133,6 +133,7 @@
   --career-copy-scale: .85;
 }
 .career-initializing .career-track { visibility: hidden; }
+.career-scroll-cue-container { display: contents; }
 .career-scroll-cue {
   position: absolute;
   z-index: 1;
@@ -633,6 +634,17 @@
   .career-socials { margin-top: .5rem; }
   .career-socials a { width: 1.5rem; height: 1.5rem; }
   .career-path, .career-path-background { stroke-width: 3; }
+}
+@media screen and (orientation: portrait) and (hover: none) and (pointer: coarse) {
+  .career-scroll-cue-container {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+  .career-scroll-cue-container .career-scroll-cue { position: static; }
 }
 @media (prefers-reduced-motion: reduce) {
   .career-pointer { display: none; }
