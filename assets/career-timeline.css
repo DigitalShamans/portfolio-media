@@ -455,6 +455,7 @@
   letter-spacing: -.015em;
   line-height: 1.25;
 }
+.career-heading--single-line { white-space: nowrap; }
 .career-checkpoint {
   display: inline;
   padding: 0;
@@ -660,6 +661,11 @@
 .career-details form { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
 .career-details-close { min-height: 2.5rem; padding: .35rem .9rem; }
 .career-details .career-copy h2 { font-size: calc(1.5rem * var(--career-layout-scale)); }
+.career-details .career-description:has(> .career-heading--single-line) { display: contents; }
+.career-details .career-copy .career-heading--single-line {
+  grid-column: 1 / -1;
+  font-size: min(calc(1.5rem * var(--career-layout-scale)), 5.5vw);
+}
 .career-details .career-projects { gap: .65rem; margin-top: 1rem; }
 .career-details .career-project-facts > div:first-child {
   white-space: nowrap;
