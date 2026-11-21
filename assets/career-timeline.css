@@ -410,6 +410,16 @@
   position: sticky;
   top: 0;
 }
+@media screen {
+  .career-portrait-opening :is(.site-header, .font-preview-note, .career-intro) {
+    position: sticky;
+    top: calc(var(--career-opening-inset) - var(--career-opening-offset));
+    z-index: 1;
+  }
+  .career-portrait-opening .career-track--narrow.career-track--slow .career-stage {
+    top: var(--career-opening-inset);
+  }
+}
 .career-track--narrow .career-scroll-cue {
   inset-block-start: calc(var(--career-first-stop-y, 91px) + 24px);
   inset-inline-start: 0;
