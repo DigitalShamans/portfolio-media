@@ -21,6 +21,7 @@
   const previews = entries.map(entry => [...entry.querySelectorAll('.career-preview img')]);
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const touchDevice = window.matchMedia('(any-pointer: coarse)');
+  const touchLayout = window.matchMedia('(hover: none) and (pointer: coarse)');
   const viewportMeasure = document.querySelector('.career-viewport');
   const contact = document.querySelector('.career-contact');
   const outro = document.querySelector('.career-outro');
@@ -113,6 +114,7 @@
     const year = entry.querySelector('.career-year').cloneNode(true);
     copy.removeAttribute('style');
     year.removeAttribute('style');
+    heading.querySelectorAll(touchLayout.matches ? '.career-desktop-only' : '.career-touch-only').forEach(item => item.remove());
     heading.textContent = heading.textContent;
     heading.id = 'career-details-title';
     dialogBody.replaceChildren(year, copy);
@@ -257,12 +259,11 @@
     const point = c.anchor ? path.getPointAtLength(Math.min(progress, c.lastStopAt) * c.length) : null;
     const virtualScroll = scroll < c.start ? scroll : c.start + progress * c.normalDistance + Math.max(0, scroll - c.end);
     const pinnedOffset = Math.max(0, Math.min(c.outerHeight - c.viewport, scroll - c.documentTop));
-    const stageTop = c.documentTop - scroll + pinnedOffset;
     // Desktop needs this transform inside ScrollSmoother. Mobile is pinned by
     // CSS sticky, so native touch scrolling cannot run ahead of a JS pin.
-    if (!c.anchor) stage.style.transform = 'translate3d(0,' + pinnedOffset.toFixed(3) + 'px,0)';
-    const y = c.documentTop - virtualScroll - stageTop;
     if (!c.anchor) {
+      stage.style.transform = 'translate3d(0,' + pinnedOffset.toFixed(3) + 'px,0)';
+      const y = scroll - virtualScroll - pinnedOffset;
       canvas.style.transform = 'translate3d(0,' + y.toFixed(3) + 'px,0)';
       return;
     }
@@ -382,7 +383,7 @@
         progress: a.progress + (b.progress - a.progress) * mix
       };
     }
-    return { length, atY, endX: samples[256].x, y: value => y(value * curveExtent) };
+    return { length, atY, y: value => y(value * curveExtent) };
   }
 
   function minimumVisibleFraction(metrics, height, available) {
@@ -453,16 +454,83 @@
     });
   }
 
-  function placeLabels(points, metrics, width, narrow, scale, cameraAnchor, trackLeft) {
+  function placeDesktopLabel(entry, point, scale, viewportWidth, trackLeft, placed) {
+    if (!entry.dataset.desktopLayout) return null;
+    const { desktopLayout, desktopWidth, desktopInset, desktopTop, desktopYearClearance, desktopTailGap } = entry.dataset;
+    const leftSide = desktopLayout === 'year-right';
+    const preferredScale = Math.min(scale, viewportWidth / 1850);
+    const inset = Number(desktopInset) * preferredScale;
+    const edge = leftSide ? point.x - inset : point.x + inset;
+    const availableWidth = leftSide ? trackLeft + edge - 24 : viewportWidth - trackLeft - edge - 24;
+    const cardScale = Math.min(preferredScale, availableWidth / Number(desktopWidth));
+    if (cardScale < .64) return null;
+
+    const width = Number(desktopWidth) * cardScale;
+    const left = leftSide ? edge - width : edge;
+    const preferredTop = point.y + Number(desktopTop) * preferredScale;
+
+    entry.classList.add('career-milestone--desktop-aligned');
+    entry.style.width = width + 'px';
+    entry.style.left = left + 'px';
+    entry.style.top = preferredTop + 'px';
+    entry.style.setProperty('--career-desktop-card-scale', String(cardScale));
+    if (leftSide) {
+      entry.style.setProperty('--career-desktop-year-right', Number(desktopYearClearance) * preferredScale - inset + 'px');
+    }
+
+    const parts = [...entry.querySelectorAll('.career-year, .career-description, .career-preview')]
+      .filter(part => part.getClientRects().length)
+      .map(part => part.getBoundingClientRect());
+    const entryRect = entry.getBoundingClientRect();
+    const boxes = parts.map(rect => ({
+      left: left + rect.left - entryRect.left,
+      right: left + rect.right - entryRect.left,
+      top: rect.top - entryRect.top,
+      bottom: rect.bottom - entryRect.top
+    }));
+    // The date may sit outside the card. Use the individual boxes so dates
+    // and neighboring cards can sit on opposite sides of a narrow bend.
+    let top = preferredTop;
+    const otherBoxes = placed.flatMap(card => card.boxes ?? [card]);
+    if (desktopTailGap) {
+      const tailLeft = left - Number(desktopTailGap) * preferredScale;
+      otherBoxes.push(...placed.slice(-1).flatMap(card => card.boxes ?? [card])
+        .filter(box => box.right > tailLeft)
+        .map(box => ({ ...box, left: tailLeft })));
+    }
+    for (const other of otherBoxes.sort((a, b) => a.top - b.top)) {
+      for (const box of boxes) {
+        if (box.left < other.right && box.right > other.left &&
+          top + box.top < other.bottom && top + box.bottom > other.top) {
+          top = other.bottom - box.top + 4;
+        }
+      }
+    }
+    entry.style.top = top + 'px';
+    return {
+      left: Math.min(...boxes.map(box => box.left)),
+      right: Math.max(...boxes.map(box => box.right)),
+      top,
+      bottom: top + entry.offsetHeight,
+      boxes: boxes.map(box => ({ ...box, top: top + box.top, bottom: top + box.bottom }))
+    };
+  }
+
+  function placeLabels(points, metrics, width, scale, desktop, trackLeft) {
     const placed = [];
     entries.forEach((entry, i) => {
       const point = points[i];
+      const aligned = desktop ? placeDesktopLabel(entry, point, scale, document.documentElement.clientWidth, trackLeft, placed) : null;
+      if (aligned) {
+        placed.push(aligned);
+        return;
+      }
       const above = entry.dataset.curveSide === 'above';
-      const side = above ? 'above' : narrow ? 'right' : entry.dataset.curveSide;
-      const yearGutter = !narrow && entry.dataset.yearLayout === 'inline' ? 56 * scale : 0;
-      const preferredWidth = narrow ? Math.min(above ? 260 : 300, width - 24) : Math.min(420 * scale, width * .36) + 40 * scale + yearGutter;
+      const side = entry.dataset.curveSide;
+      const yearGutter = entry.dataset.yearLayout === 'inline' ? 56 * scale : 0;
+      const preferredWidth = Math.min(420 * scale, width * .36) + 40 * scale + yearGutter;
       entry.style.width = preferredWidth + 'px';
-      const headingOffset = above && !narrow ? entry.querySelector('.career-year').offsetLeft : 32 * scale;
+      const headingOffset = above ? entry.querySelector('.career-year').offsetLeft : 32 * scale;
       let top = above ? Math.max(0, point.y - entry.offsetHeight - 12 * scale) : point.y - 16 * scale;
       let left = 0, labelWidth = preferredWidth, labelHeight = entry.offsetHeight;
 
@@ -480,10 +548,7 @@
           left = Math.max(0, Math.min(width - preferredWidth, point.x - headingOffset));
         } else if (side === 'right') {
           left = maxX + 18 * scale;
-          // The final card must clear its node while the camera follows the leftward tail.
-          const tailClearance = cameraAnchor && i === entries.length - 1 ? Math.max(0, point.x - metrics.endX) : 0;
-          const availableWidth = cameraAnchor ? width + trackLeft - cameraAnchor - 18 * scale - tailClearance : width - left;
-          labelWidth = Math.max(60, Math.min(preferredWidth, availableWidth));
+          labelWidth = Math.max(60, Math.min(preferredWidth, width - left));
         } else {
           labelWidth = Math.max(60, Math.min(preferredWidth, minX - 18 * scale));
           left = Math.max(0, minX - 18 * scale - labelWidth);
@@ -492,7 +557,7 @@
         labelHeight = entry.offsetHeight;
         let nextTop = top;
         for (const other of placed) {
-          const horizontalOverlap = narrow || (left < other.right + 8 * scale && left + labelWidth > other.left - 8 * scale);
+          const horizontalOverlap = left < other.right + 8 * scale && left + labelWidth > other.left - 8 * scale;
           if (horizontalOverlap && nextTop < other.bottom + 12 * scale && nextTop + labelHeight > other.top - 12 * scale) {
             nextTop = other.bottom + 12 * scale;
           }
@@ -527,6 +592,7 @@
   function rebuild() {
     const width = track.clientWidth;
     const narrow = width < 720;
+    const desktop = !touchLayout.matches;
     const previousReadingPosition = captureReadingPosition();
     // The small viewport stays constant when a phone's address bar folds away.
     // Actual viewport/orientation changes still recalculate the geometry.
@@ -534,7 +600,7 @@
     const largeViewport = narrow && viewportMeasure ? Math.max(viewport, Math.round(parseFloat(getComputedStyle(viewportMeasure, '::after').height) || window.innerHeight)) : viewport;
     if (!width || !viewport) return;
     const scale = parseFloat(getComputedStyle(track).getPropertyValue('--career-layout-scale')) || 1;
-    const nextSignature = [width, viewport, largeViewport, scale, reducedMotion.matches, touchDevice.matches, canAnimate].join(':');
+    const nextSignature = [width, viewport, largeViewport, scale, reducedMotion.matches, touchDevice.matches, desktop, canAnimate].join(':');
     if (nextSignature === signature) return;
     signature = nextSignature;
     reset();
@@ -550,6 +616,12 @@
     track.classList.add('career-track--positioned');
     track.classList.toggle('career-track--narrow', narrow);
     track.classList.toggle('career-track--tight', narrow && width < 300);
+    track.classList.toggle('career-track--desktop', desktop);
+    if (desktop && !narrow) {
+      const desktopStageInset = (document.documentElement.clientWidth - width) / 2;
+      track.style.setProperty('--career-desktop-stage-inset', desktopStageInset + 'px');
+    }
+    entries.forEach(entry => entry.classList.remove('career-milestone--desktop-aligned'));
     // Use the extra space at the edge of the scaled touch scene for longer titles.
     const mobileFrameRight = useLocalScroll ? (width + width / sceneScale) / 2 - 1 : width;
     const mobileLayout = narrow ? measureMobileLabels(width, mobileFrameRight) : null;
@@ -581,7 +653,7 @@
 
     const mobilePlacement = narrow ? placeMobileLabels(metrics, mobileLayout) : null;
     const points = mobilePlacement ? mobilePlacement.points : entries.map(entry => {
-      const targetY = metrics.y(Number(entry.dataset.curveAt));
+      const targetY = metrics.y(Number(desktop ? entry.dataset.desktopAt ?? entry.dataset.curveAt : entry.dataset.curveAt));
       const at = metrics.atY(targetY).progress;
       const exact = path.getPointAtLength(at * metrics.length);
       return { x: exact.x, y: exact.y, progress: at };
@@ -593,7 +665,7 @@
     const scrollMultiplier = (slowMobile ? 6 : 2) * touchScrollFactor * (narrow ? 1 : 2);
     const trackLeft = track.getBoundingClientRect().left;
     const cameraAnchor = slowMobile ? trackLeft + mobileLayout.anchor : 0;
-    const labels = mobilePlacement ? mobilePlacement.labels : placeLabels(points, metrics, width, narrow, scale, cameraAnchor, trackLeft);
+    const labels = mobilePlacement ? mobilePlacement.labels : placeLabels(points, metrics, width, scale, desktop, trackLeft);
     if (narrow && !slowMobile) {
       entries.forEach((entry, i) => {
         entry.style.left = mobileLayout.cardLeft + 'px';
@@ -839,6 +911,7 @@
   mobileScroller?.addEventListener('scroll', updateScrollCamera, { passive: true });
   reducedMotion.addEventListener('change', scheduleRebuild);
   touchDevice.addEventListener('change', scheduleRebuild);
+  touchLayout.addEventListener('change', scheduleRebuild);
   if (window.ResizeObserver) new ResizeObserver(scheduleRebuild).observe(track);
   document.fonts?.addEventListener('loadingdone', () => {
     if (!initialized) return;
