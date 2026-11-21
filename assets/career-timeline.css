@@ -245,7 +245,7 @@
   .career-track--positioned:not(.career-track--narrow) [data-year-layout="heading"] {
     display: grid;
     grid-template-columns: minmax(0, var(--career-thumbnail-width)) minmax(min-content, 1fr) max-content;
-    gap: .35rem calc(1rem * var(--career-layout-scale));
+    gap: .35rem min(.85vw, calc(1rem * var(--career-layout-scale)));
   }
   .career-track--positioned:not(.career-track--narrow) [data-year-layout="heading"] .career-year {
     grid-column: 3;
@@ -474,10 +474,10 @@
 }
 .career-project-facts dt { display: inline; font-weight: 650; }
 .career-project-facts dd { display: inline; margin: 0 0 0 .4em; }
+#career-2015-jujubee :is(.career-role, .career-project-facts),
 #career-2022 .career-project-facts > div:first-child { white-space: nowrap; }
 
 .career-project-link { color: inherit; text-decoration: none; }
-.career-project-link:is(:hover, :focus-visible) { text-decoration: underline; text-underline-offset: .2em; }
 .career-touch-project { display: none; }
 .career-copy--sequenced { display: grid; grid-template-columns: minmax(0, 1fr); gap: .45rem; }
 .career-projects--sequenced { gap: .75rem; margin-top: 0; }
