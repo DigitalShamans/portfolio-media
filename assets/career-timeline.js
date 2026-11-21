@@ -11,6 +11,7 @@
   const stage = track.querySelector('.career-stage');
   const canvas = track.querySelector('.career-canvas');
   const mobileScroller = document.querySelector('.career-native-scroll');
+  const openingItems = document.querySelectorAll('#career-scroll-content > .site-header, #career-scroll-content > .font-preview-note, .career-intro');
   const path = track.querySelector('[data-career-path]');
   const background = track.querySelector('[data-career-background]');
   const pointer = track.querySelector('[data-career-pointer]');
@@ -22,6 +23,7 @@
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const touchDevice = window.matchMedia('(any-pointer: coarse)');
   const touchLayout = window.matchMedia('(hover: none) and (pointer: coarse)');
+  const portrait = window.matchMedia('(orientation: portrait)');
   const viewportMeasure = document.querySelector('.career-viewport');
   const contact = document.querySelector('.career-contact');
   const outro = document.querySelector('.career-outro');
@@ -179,6 +181,8 @@
 
   function reset() {
     scrollCamera = null;
+    document.documentElement.classList.remove('career-portrait-opening');
+    document.documentElement.style.removeProperty('--career-opening-inset');
     backdrops?.style.removeProperty('--career-backdrop-footer-space');
     if (scrollTween) {
       scrollTween.scrollTrigger.kill();
@@ -211,22 +215,28 @@
   }
 
   // Integrate a 1x -> 2x scroll-distance weight, blending around the midpoint.
-  // Its total is 1.5: the latter half takes twice as much scrolling as before.
-  function journeyDistance(progress) {
-    if (progress <= .45) return progress;
-    if (progress >= .55) return 2 * progress - .5;
-    const t = (progress - .45) / .1;
-    return progress + .1 * (t * t * t - .5 * t * t * t * t);
+  function journeyDistance(progress, openingWeight = 0) {
+    let distance = progress;
+    if (progress >= .55) {
+      distance = 2 * progress - .5;
+    } else if (progress > .45) {
+      const t = (progress - .45) / .1;
+      distance += .1 * (t * t * t - .5 * t * t * t * t);
+    }
+    if (!openingWeight) return distance;
+    // Shorten the first swipe and blend back to the usual pace at its end.
+    const opening = Math.min(1, distance / openingWeight);
+    return distance - .8 * openingWeight * (opening - opening ** 4 / 4);
   }
 
-  function journeyProgress(distance) {
+  function journeyProgress(distance, openingWeight = 0) {
     if (distance <= 0) return 0;
     if (distance >= 1) return 1;
     const target = distance * 1.5;
     let low = 0, high = 1;
     for (let i = 0; i < 24; i++) {
       const middle = (low + high) / 2;
-      if (journeyDistance(middle) < target) low = middle;
+      if (journeyDistance(middle, openingWeight) < target) low = middle;
       else high = middle;
     }
     return (low + high) / 2;
@@ -287,11 +297,22 @@
     const cameraX = x * c.sceneScale + c.width * (1 - c.sceneScale) / 2;
     pointer.setAttribute('cx', point.x);
     pointer.setAttribute('cy', point.y);
-    // Blend into the native sticky position and into vertical marker tracking.
-    const distanceToPin = c.documentTop - scroll;
-    const pinOffset = easeMobileEdge(distanceToPin, 24) - Math.max(0, distanceToPin);
-    const followOffset = easeMobileEdge(point.y * c.sceneScale - c.followY, 32);
-    const mobileY = Math.max(c.minimumY, -followOffset) + pinOffset;
+    const markerY = point.y * c.sceneScale;
+    const followOffset = easeMobileEdge(markerY - c.followY, 32);
+    let mobileY = Math.max(c.minimumY, -followOffset);
+    if (c.portraitRelease) {
+      // Hold the whole opening frame until the next card is revealed.
+      const { start, distance } = c.portraitRelease;
+      const fraction = Math.max(0, Math.min(1, (markerY - start) / distance));
+      const release = fraction * fraction * (3 - 2 * fraction);
+      const inset = c.documentTop * (1 - release);
+      document.documentElement.style.setProperty('--career-opening-inset', inset.toFixed(3) + 'px');
+      mobileY *= release;
+    } else {
+      // Blend into the native sticky position.
+      const distanceToPin = c.documentTop - scroll;
+      mobileY += easeMobileEdge(distanceToPin, 24) - Math.max(0, distanceToPin);
+    }
     // Keep the curve, text and thumbnails together as the view moves.
     canvas.style.transform = 'translate3d(' + cameraX.toFixed(3) + 'px,' + mobileY.toFixed(3) + 'px,0) scale(' + c.sceneScale + ')';
     if (!c.keepRevealed) {
@@ -600,14 +621,15 @@
     const largeViewport = narrow && viewportMeasure ? Math.max(viewport, Math.round(parseFloat(getComputedStyle(viewportMeasure, '::after').height) || window.innerHeight)) : viewport;
     if (!width || !viewport) return;
     const scale = parseFloat(getComputedStyle(track).getPropertyValue('--career-layout-scale')) || 1;
-    const nextSignature = [width, viewport, largeViewport, scale, reducedMotion.matches, touchDevice.matches, desktop, canAnimate].join(':');
+    // A native scroll area keeps touch gestures off the document viewport,
+    // where Chrome moves its address bar and the entire pinned timeline.
+    const useLocalScroll = Boolean(mobileScroller && narrow && canAnimate && touchDevice.matches && !reducedMotion.matches);
+    const portraitOpening = useLocalScroll && touchLayout.matches && portrait.matches;
+    const nextSignature = [width, viewport, largeViewport, scale, reducedMotion.matches, touchDevice.matches, desktop, canAnimate, portraitOpening].join(':');
     if (nextSignature === signature) return;
     signature = nextSignature;
     reset();
     setMobileEnding(false);
-    // A native scroll area keeps touch gestures off the document viewport,
-    // where Chrome moves its address bar and the entire pinned timeline.
-    const useLocalScroll = Boolean(mobileScroller && narrow && canAnimate && touchDevice.matches && !reducedMotion.matches);
     // Fit more of the timeline in the touch viewport at the same scroll speed.
     const sceneScale = useLocalScroll ? .8 : 1;
     scroller = useLocalScroll ? mobileScroller : window;
@@ -705,13 +727,15 @@
     const normalDistance = Math.max(1, normalEnd - normalStart);
     const lastStopAt = points[points.length - 1].progress;
     const endAt = slowMobile ? lastStopAt : 1;
-    const endWeight = journeyDistance(endAt);
+    const openingWeight = portraitOpening ? journeyDistance(points[1].progress) : 0;
+    const endWeight = journeyDistance(endAt, openingWeight);
     const scrollDistance = normalDistance * scrollMultiplier * endWeight;
     const end = normalStart + scrollDistance;
     let stageHeight = viewport;
     let mobileStops;
     let followY = 0;
     let minimumY = 0;
+    let portraitRelease;
     if (slowMobile) {
       setMobileEnding(true);
       canvas.style.transformOrigin = 'top left';
@@ -730,6 +754,17 @@
       }
       followY = Math.min(viewport * .55, lastMarkerY + minimumY);
       mobileStops = frameMobileStops(points, labels, mobileLayout);
+      if (portraitOpening) {
+        const scrollOrigin = scrollTop() - viewportTop;
+        for (const item of openingItems) {
+          const top = item.getBoundingClientRect().top + scrollOrigin;
+          item.style.setProperty('--career-opening-offset', (documentTop - top) + 'px');
+        }
+        document.documentElement.style.setProperty('--career-opening-inset', documentTop + 'px');
+        document.documentElement.classList.add('career-portrait-opening');
+        const start = Math.max(points[1].y * sceneScale, followY - documentTop);
+        portraitRelease = { start, distance: Math.max(64, followY - start) };
+      }
     }
     // Mobile unpins exactly at the final node. Any remaining native scroll
     // is the actual ending viewport, including space under browser controls.
@@ -745,7 +780,7 @@
     scrollCamera = {
       documentTop, viewport, width, narrow, start: normalStart, end, outerHeight, normalDistance,
       anchor: cameraAnchor, length: metrics.length, lastStopAt, mobileStops, followY, minimumY, sceneScale,
-      keepRevealed: useLocalScroll
+      keepRevealed: useLocalScroll, portraitRelease
     };
     animation = gsap.timeline({
       paused: true,
@@ -814,15 +849,16 @@
       // A small reverse gesture or toolbar expansion at the bottom should
       // not blink the final card and ending controls on and off.
       const lastMobile = slowMobile && i === points.length - 1;
-      const reverseMargin = lastMobile ? Math.min((journeyDistance(at) - journeyDistance(points[i - 1].progress)) * normalDistance * scrollMultiplier / 3, Math.max(48, largeViewport - viewport + 24)) : 0;
-      const hideAt = lastMobile ? journeyProgress(Math.max(0, journeyDistance(at) - reverseMargin / (normalDistance * scrollMultiplier)) / 1.5) : at;
+      const distance = journeyDistance(at, openingWeight);
+      const reverseMargin = lastMobile ? Math.min((distance - journeyDistance(points[i - 1].progress, openingWeight)) * normalDistance * scrollMultiplier / 3, Math.max(48, largeViewport - viewport + 24)) : 0;
+      const hideAt = lastMobile ? journeyProgress(Math.max(0, distance - reverseMargin / (normalDistance * scrollMultiplier)) / 1.5, openingWeight) : at;
       milestoneReveals.push({ entry, at, hideAt, animation: reveal, shown, projects });
     });
     const playhead = { progress: 0 };
     scrollTween = gsap.to(playhead, {
       progress: endAt,
       duration: 1,
-      ease: slowMobile ? distance => distance >= 1 ? 1 : journeyProgress(distance * endWeight / 1.5) / endAt : journeyProgress,
+      ease: slowMobile ? distance => distance >= 1 ? 1 : journeyProgress(distance * endWeight / 1.5, openingWeight) / endAt : journeyProgress,
       onUpdate: () => animation.progress(playhead.progress),
       scrollTrigger: {
         id: 'artur-career-timeline',
@@ -844,7 +880,7 @@
       const { index, fraction, atTop, atBottom } = previousReadingPosition;
       const start = points[index].progress;
       const end = points[index + 1]?.progress ?? 1;
-      const restoredDistance = journeyDistance(Math.min(endAt, start + (end - start) * fraction)) / endWeight;
+      const restoredDistance = journeyDistance(Math.min(endAt, start + (end - start) * fraction), openingWeight) / endWeight;
       const maximumScroll = scrollLimit();
       const target = atTop ? 0 : atBottom ? maximumScroll : Math.min(maximumScroll, normalStart + restoredDistance * scrollDistance);
       // Update ScrollSmoother's visual position as well as native scrolling.
@@ -912,6 +948,7 @@
   reducedMotion.addEventListener('change', scheduleRebuild);
   touchDevice.addEventListener('change', scheduleRebuild);
   touchLayout.addEventListener('change', scheduleRebuild);
+  portrait.addEventListener('change', scheduleRebuild);
   if (window.ResizeObserver) new ResizeObserver(scheduleRebuild).observe(track);
   document.fonts?.addEventListener('loadingdone', () => {
     if (!initialized) return;
