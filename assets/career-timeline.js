@@ -370,8 +370,9 @@
         row.classList.toggle('career-project--awaiting-reveal', !projectReached && !(keepRevealed && revealedOnTouch.has(row)));
       });
     });
-    // Contact and the footer still follow the reader's current position.
     track.classList.toggle('career-track--complete', Boolean(scrollCamera?.anchor && current === lastIndex));
+    // On touch, keep the ending visible until it scrolls out of the frame.
+    ending.classList.toggle('career-ending--revealed', Boolean(keepRevealed && revealedOnTouch.has(entries[lastIndex])));
     prioritizePreviews(current);
   }
 

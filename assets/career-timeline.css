@@ -38,7 +38,10 @@
 #career-scroll-content { width: 100%; }
 
 @media screen {
-  .career-local-scroll { scrollbar-gutter: auto; }
+  .career-local-scroll {
+    overscroll-behavior-y: none;
+    scrollbar-gutter: auto;
+  }
   .career-local-scroll,
   .career-local-scroll .career-page { overflow: hidden; }
   .career-local-scroll .career-page {
@@ -52,7 +55,7 @@
   .career-local-scroll .career-native-scroll {
     height: 100%;
     overflow: hidden auto;
-    overscroll-behavior-y: contain;
+    overscroll-behavior-y: none;
     scrollbar-gutter: stable;
   }
 }
@@ -600,7 +603,8 @@
   opacity: 0;
   pointer-events: none;
 }
-.career-track--complete .career-ending { visibility: visible; opacity: 1; }
+.career-track--complete .career-ending,
+.career-ending--revealed { visibility: visible; opacity: 1; }
 .career-ending .career-contact {
   position: static;
   width: auto;
