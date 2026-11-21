@@ -524,10 +524,11 @@
     white-space: nowrap;
     overflow: auto hidden;
     overscroll-behavior-x: contain;
-    scrollbar-width: thin;
+    scrollbar-width: none;
     font-size: calc(1rem * var(--career-layout-scale) * var(--career-copy-scale));
     line-height: 1.25;
   }
+  .career-track .career-description::-webkit-scrollbar { display: none; }
   .career-track .career-description :is(h2, .career-role, .career-projects, .career-projects li, .career-projects strong, .career-touch-project) {
     display: inline;
     margin: 0;
