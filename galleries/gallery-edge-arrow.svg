@@ -6,5 +6,5 @@
     </linearGradient>
   </defs>
   <path d="M109 31 77 4v18C36 22 8 38 3 65l-1 12c14-23 39-33 73-34v16z"
-    fill="url(#arrow-ink)"/>
+    fill="url(#arrow-ink)" transform="translate(14 0) scale(.75 1)"/>
 </svg>

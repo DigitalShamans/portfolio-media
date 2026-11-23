@@ -265,7 +265,7 @@ body:where(:has(> .gallery-edge-cues)) > .site-header {
   inset-block: 0;
   padding-block-start: min(var(--gallery-edge-header-height), 40dvh);
   opacity: .3;
-  --gallery-edge-arrow: url("gallery-edge-arrow.svg?v=2");
+  --gallery-edge-arrow: url("gallery-edge-arrow.svg?v=3");
   --gallery-edge-arrow-size: min(88%, 112px) var(--gallery-edge-arrow-slot);
   background:
     var(--gallery-edge-arrow) center top / var(--gallery-edge-arrow-size) no-repeat content-box,
