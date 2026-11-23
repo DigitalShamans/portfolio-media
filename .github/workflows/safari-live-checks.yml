@@ -1,0 +1,82 @@
+name: Safari live portfolio checks
+
+on:
+  push:
+    branches: [qa/safari-portfolio-2026-11-24]
+    paths:
+      - .github/scripts/safari_smoke.py
+      - .github/workflows/safari-live-checks.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: safari-live-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  safari:
+    name: Actual Safari on macOS
+    if: github.ref == 'refs/heads/qa/safari-portfolio-2026-11-24'
+    runs-on: macos-15
+    timeout-minutes: 12
+    env:
+      SAFARI_WEBDRIVER_URL: http://127.0.0.1:4444
+      SAFARI_OUTPUT_DIR: ${{ runner.temp }}/safari-live-output
+      PORTFOLIO_SOURCE_SHA: 7489099be6212f8417976a629d34e4ae7de269c1
+    steps:
+      - name: Check out test script
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+          lfs: false
+
+      - name: Record native Safari and macOS versions
+        run: |
+          mkdir -p "$SAFARI_OUTPUT_DIR"
+          sw_vers | tee "$SAFARI_OUTPUT_DIR/macos-version.txt"
+          /usr/bin/safaridriver --version | tee "$SAFARI_OUTPUT_DIR/safaridriver-version.txt"
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' /Applications/Safari.app/Contents/Info.plist | tee "$SAFARI_OUTPUT_DIR/safari-version.txt"
+
+      - name: Enable native Safari test automation
+        run: sudo /usr/bin/safaridriver --enable
+
+      - name: Test the live portfolios in Safari
+        run: |
+          /usr/bin/safaridriver -p 4444 > "$SAFARI_OUTPUT_DIR/safaridriver.log" 2>&1 &
+          safari_driver_pid=$!
+          trap 'kill "$safari_driver_pid" 2>/dev/null || true' EXIT
+          python3 - <<'PY'
+          import time, urllib.request
+          for attempt in range(30):
+              try:
+                  with urllib.request.urlopen('http://127.0.0.1:4444/status', timeout=2) as response:
+                      print(response.read().decode())
+                  break
+              except Exception:
+                  if attempt == 29:
+                      raise
+                  time.sleep(1)
+          PY
+          python3 .github/scripts/safari_smoke.py
+
+      - name: Publish test summary
+        if: always()
+        run: |
+          if test -f "$SAFARI_OUTPUT_DIR/report.md"; then
+            cat "$SAFARI_OUTPUT_DIR/report.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if test -f "$SAFARI_OUTPUT_DIR/report.json"; then
+            cat "$SAFARI_OUTPUT_DIR/report.json"
+          fi
+
+      - name: Keep screenshots and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: safari-live-${{ github.run_number }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/safari-live-output/
+          if-no-files-found: warn
+          retention-days: 3
