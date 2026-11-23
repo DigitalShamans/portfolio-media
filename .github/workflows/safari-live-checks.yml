@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 12
     env:
       SAFARI_WEBDRIVER_URL: http://127.0.0.1:4444
-      SAFARI_OUTPUT_DIR: ${{ runner.temp }}/safari-live-output
+      SAFARI_OUTPUT_DIR: artifacts/safari-live-output
       PORTFOLIO_SOURCE_SHA: 7489099be6212f8417976a629d34e4ae7de269c1
     steps:
       - name: Check out test script
@@ -77,6 +77,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: safari-live-${{ github.run_number }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/safari-live-output/
+          path: artifacts/safari-live-output/
           if-no-files-found: warn
           retention-days: 3
