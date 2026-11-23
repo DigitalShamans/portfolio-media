@@ -46,6 +46,7 @@ class Safari:
         self.session_id = None
         self.capabilities = {}
         self.wheel_sequence = 0
+        self.click_waits = []
 
     def request(self, method, path, payload=None, session=True):
         remaining = DEADLINE - time.monotonic()
@@ -105,8 +106,25 @@ class Safari:
 
     def click(self, selector):
         self.wait("return !!document.querySelector(" + json.dumps(selector) + ")", label=selector)
-        element = self.request("POST", "/element", {"using": "css selector", "value": selector})
-        self.request("POST", f"/element/{element[ELEMENT_KEY]}/click", {})
+        started = time.monotonic()
+        end = min(DEADLINE, started + 8)
+        attempts = 0
+        while True:
+            element = self.request("POST", "/element", {"using": "css selector", "value": selector})
+            attempts += 1
+            try:
+                self.request("POST", f"/element/{element[ELEMENT_KEY]}/click", {})
+                if attempts > 1:
+                    self.click_waits.append({"selector": selector, "attempts": attempts,
+                                             "waitSeconds": round(time.monotonic() - started, 3)})
+                return
+            except WebDriverError as error:
+                # Native Element Click scrolls an offscreen card into view.
+                # Give its entrance animation a bounded opportunity to finish;
+                # keep native hit-testing and never force a JavaScript click.
+                if error.code not in ("element not interactable", "element click intercepted") or time.monotonic() >= end:
+                    raise
+                time.sleep(0.2)
 
     def key(self, key):
         self.request("POST", "/actions", {"actions": [{
@@ -629,6 +647,7 @@ def main():
         suite.report["fatalTraceback"] = traceback.format_exc(limit=8)
         print("FATAL", str(error), flush=True)
     finally:
+        suite.report["environment"]["nativeClickWaits"] = driver.click_waits
         try:
             driver.close()
         except Exception as error:
