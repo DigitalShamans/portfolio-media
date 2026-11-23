@@ -28,6 +28,7 @@ ENDPOINT = os.environ.get("SAFARI_WEBDRIVER_URL", "http://127.0.0.1:4444").rstri
 OUTPUT = Path(os.environ.get("SAFARI_OUTPUT_DIR", "artifacts"))
 SOURCE_SHA = os.environ.get("PORTFOLIO_SOURCE_SHA", "7489099be6212f8417976a629d34e4ae7de269c1")
 DIAGNOSTIC_ONLY = os.environ.get("SAFARI_DIAGNOSTIC_ONLY") == "1"
+REQUIRE_NORMAL_MOTION = os.environ.get("SAFARI_REQUIRE_NORMAL_MOTION") == "1"
 ELEMENT_KEY = "element-6066-11e4-a52e-4f735466cecf"
 START = time.monotonic()
 DEADLINE = START + float(os.environ.get("SAFARI_TEST_BUDGET_SECONDS", "300"))
@@ -44,6 +45,7 @@ class Safari:
     def __init__(self):
         self.session_id = None
         self.capabilities = {}
+        self.wheel_sequence = 0
 
     def request(self, method, path, payload=None, session=True):
         remaining = DEADLINE - time.monotonic()
@@ -114,11 +116,19 @@ class Safari:
 
     def wheel(self, delta_y):
         size = self.js("return {width:innerWidth,height:innerHeight}")
-        self.request("POST", "/actions", {"actions": [{
-            "type": "wheel", "id": "native-wheel",
-            "actions": [{"type": "scroll", "x": int(size["width"] * .5), "y": int(size["height"] * .65),
-                         "deltaX": 0, "deltaY": int(delta_y), "duration": 350, "origin": "viewport"}],
-        }]})
+        self.wheel_sequence += 1
+        # Observed Safari runs dispatched only the first wheel gesture when the
+        # source ID was reused. Release prior input state and use a fresh source
+        # identity to test whether retained driver state caused that behavior.
+        self.request("DELETE", "/actions")
+        try:
+            self.request("POST", "/actions", {"actions": [{
+                "type": "wheel", "id": f"native-wheel-{self.wheel_sequence}",
+                "actions": [{"type": "scroll", "x": int(size["width"] * .5), "y": int(size["height"] * .65),
+                             "deltaX": 0, "deltaY": int(delta_y), "duration": 350, "origin": "viewport"}],
+            }]})
+        finally:
+            self.request("DELETE", "/actions")
 
     def screenshot(self, name):
         data = self.request("GET", "/screenshot")
@@ -181,7 +191,7 @@ function describe(n){
 const point={x:Math.floor(innerWidth*.5),y:Math.floor(innerHeight*.65)};
 const hit=document.elementFromPoint(point.x,point.y),ancestors=[];
 for(let n=hit;n;n=n.parentElement)ancestors.push(describe(n));
-return {point,hasFocus:document.hasFocus(),visibilityState:document.visibilityState,
+return {url:location.href,point,hasFocus:document.hasFocus(),visibilityState:document.visibilityState,
  innerWidth,innerHeight,windowScrollY:scrollY,scrollingElement:describe(document.scrollingElement),
  html:describe(document.documentElement),body:describe(document.body),
  activeElement:describe(document.activeElement),hit:describe(hit),ancestors,
@@ -283,6 +293,7 @@ class Suite:
             "origin": ORIGIN, "sourceCommit": SOURCE_SHA,
             "testCommit": os.environ.get("GITHUB_SHA"), "githubRunId": os.environ.get("GITHUB_RUN_ID"),
             "diagnosticOnly": DIAGNOSTIC_ONLY,
+            "requireNormalMotion": REQUIRE_NORMAL_MOTION,
             "scope": "Actual desktop Safari on macOS; narrow windows are responsive desktop tests, never iOS or touch emulation.",
             "limitations": [
                 "No real iPhone/iPad, touch gestures, browser toolbar collapse, or mobile momentum scrolling were tested.",
@@ -327,16 +338,16 @@ class Suite:
                 self.case["captureError"] = str(capture_error)
         self.case["durationSeconds"] = round(time.monotonic() - start, 2)
         log_case = {k: self.case[k] for k in ("status", "durationSeconds", "screenshots", "error", "limitations") if k in self.case}
-        log_case["evidence"] = {k: v for k, v in self.case["details"].items() if k not in ("page", "gallery", "scrollContextBefore", "scrollContextAfter", "scrollFailureProbes", "timelineDiagnosticBefore", "beforeViewerScrollContext", "inputEventProbe")}
+        log_case["evidence"] = {k: v for k, v in self.case["details"].items() if k not in ("page", "gallery", "scrollContextBefore", "scrollContextAfter", "scrollFailureProbes", "timelineDiagnosticBefore", "beforeViewerScrollContext", "inputEventProbe", "inputEventsAfterFirstWheel")}
         if DIAGNOSTIC_ONLY:
             log_case["diagnostic"] = {k: self.case.get(k) for k in ("failureTimelineContext",) if self.case.get(k)}
             for probe in self.case["details"].get("scrollFailureProbes", []):
                 context = probe.get("context", {})
-                log_case.setdefault("scrollProbes", []).append({"action": probe["action"], "error": probe.get("error"), "windowScrollY": context.get("windowScrollY"), "scrollables": context.get("scrollables"), "activeElement": context.get("activeElement")})
+                log_case.setdefault("scrollProbes", []).append({"action": probe["action"], "error": probe.get("error"), "url": context.get("url"), "windowScrollY": context.get("windowScrollY"), "scrollables": context.get("scrollables"), "activeElement": context.get("activeElement")})
             for key in ("scrollContextBefore", "scrollContextAfter"):
                 context=self.case["details"].get(key)
                 if context:
-                    log_case[key]={k:context[k] for k in ("hasFocus","reducedMotion","windowScrollY","scrollingElement","ancestors","scrollables")}
+                    log_case[key]={k:context[k] for k in ("url","hasFocus","reducedMotion","windowScrollY","scrollingElement","ancestors","scrollables")}
             probe=self.case["details"].get("inputEventProbe")
             if probe:
                 wheel_phases = {}
@@ -446,6 +457,7 @@ class Suite:
         self.detail("scrollInputMethod", method)
         if DIAGNOSTIC_ONLY:
             self.detail("scrollContextAfter", d.js(SCROLL_DIAGNOSTIC))
+            self.detail("inputEventsAfterFirstWheel", d.js("return window.__dsSafariReadOnlyProbe"))
             if (after["top"] - before["top"]) * direction <= 5:
                 probes = self.detail("scrollFailureProbes", [])
                 for action, callback in (
@@ -460,9 +472,12 @@ class Suite:
                         callback()
                         time.sleep(1.2)
                         probe["context"] = d.js(SCROLL_DIAGNOSTIC)
+                        probe["inputEventProbe"] = d.js("return window.__dsSafariReadOnlyProbe||null")
                     except Exception as error:
                         probe["error"] = str(error)
-            self.detail("inputEventProbe", d.js("return window.__dsSafariReadOnlyProbe"))
+            final_probe = d.js("return window.__dsSafariReadOnlyProbe||null")
+            self.detail("inputEventProbe", final_probe or self.case["details"].get("inputEventsAfterFirstWheel"))
+            self.detail("inputObserverMissingAfterProbes", final_probe is None)
         require((after["top"] - before["top"]) * direction > 5, "Scrolling did not move in the requested direction", {"before": before, "after": after, "method": method})
 
     def gallery_before_viewer_scroll(self):
@@ -590,7 +605,11 @@ def main():
         driver.start()
         suite.report["environment"]["capabilities"] = driver.capabilities
         suite.report["environment"]["userAgent"] = driver.js("return navigator.userAgent")
+        reduced_motion = driver.js("return matchMedia('(prefers-reduced-motion:reduce)').matches")
+        suite.report["environment"]["reducedMotionAtSessionStart"] = reduced_motion
         require(driver.capabilities.get("browserName", "").lower() == "safari", "The driver did not create a native Safari session", driver.capabilities)
+        if REQUIRE_NORMAL_MOTION:
+            require(not reduced_motion, "Runner configuration error: SAFARI_REQUIRE_NORMAL_MOTION=1 but Safari reports prefers-reduced-motion:reduce. This is not a site failure.")
         if DIAGNOSTIC_ONLY:
             for label, width, height in (("desktop", 1440, 900), ("narrow-desktop", 390, 844)):
                 suite.run(label + "-viewport", lambda w=width, h=height: suite.dimensions(w, h))
