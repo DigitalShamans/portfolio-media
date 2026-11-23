@@ -182,7 +182,7 @@ test('hidden tabs delay speculative downloads without breaking edge behavior', (
 });
 
 test('document prefetch is isolated from the original 420ms animation and route navigation', () => {
-  assert.match(navSource, /gallery-desktop-panels\.js'.*\?v=10/);
+  assert.match(navSource, /gallery-desktop-panels\.js'.*\?v=11/);
   assert.match(navSource, /gallery-document-prefetch\.js'.*\?v=3/);
   assert.match(panelSource, /const holdDelay = 180;/);
   assert.match(panelSource, /const slideDuration = 420;/);

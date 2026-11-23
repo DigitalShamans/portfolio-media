@@ -49,7 +49,7 @@ order, never crossing into the other site or the Hard Bullet gallery set.
         {% assign navigation_previous_url = include.portfolio_url | append: 'galleries/' | append: navigation_previous.folder | append: '/' %}
         {% assign navigation_next_url = include.portfolio_url | append: 'galleries/' | append: navigation_next.folder | append: '/' %}
       {% endif %}
-      {% comment %}Shared destination metadata; visible arrows appear only inside the fullscreen image viewer.{% endcomment %}
+      {% comment %}Shared destination metadata for gallery gestures and desktop edge cues.{% endcomment %}
       <nav class="gallery-navigation" data-gallery-loop="{{ navigation_loop }}"
         aria-label="{% if navigation_loop == 'full' %}Full Portfolio{% else %}Hard Bullet{% endif %} galleries" hidden>
         <a class="gallery-navigation__link gallery-navigation__link--previous"
@@ -62,7 +62,7 @@ order, never crossing into the other site or the Hard Bullet gallery set.
            aria-label="Next gallery: {{ navigation_next.title | escape }}{% if navigation_next.locked %} (password required){% endif %}"></a>
       </nav>
       <script src="{{ '/galleries/gallery-navigation.js' | relative_url }}?v=4" defer></script>
-      <script src="{{ '/galleries/gallery-desktop-panels.js' | relative_url }}?v=10" defer></script>
+      <script src="{{ '/galleries/gallery-desktop-panels.js' | relative_url }}?v=11" defer></script>
       <script src="{{ '/galleries/gallery-document-prefetch.js' | relative_url }}?v=3" defer></script>
       {% break %}
     {% endif %}

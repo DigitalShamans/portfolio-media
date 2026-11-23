@@ -13,6 +13,7 @@
   const interactive = 'a, button, input, textarea, select, label, iframe, video, audio, summary, '
     + '[contenteditable]:not([contenteditable="false"]), [role="button"], [role="link"], [role="slider"]';
   const scrollbarClearance = 24;
+  const maxCueWidth = 144;
   const holdDelay = 180;
   const slideDuration = 420;
   const editable = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])';
@@ -21,6 +22,7 @@
   let navigating = false;
   let pressed = false;
   let armed = true;
+  let cueWidth = 0;
   let startTimer, finishTimer, hideTimer;
   let animationId = 0;
 
@@ -44,6 +46,9 @@
   const destinations = { next: destination('next'), previous: destination('previous') };
   if (!destinations.next || !destinations.previous) return;
 
+  const cues = document.createElement('div');
+  cues.className = 'gallery-edge-cues';
+  cues.setAttribute('aria-hidden', 'true');
   const panel = document.createElement('div');
   panel.className = 'gallery-desktop-edge-panel';
   panel.hidden = true;
@@ -55,7 +60,7 @@
   const heading = document.createElement('h2');
   content.append(eyebrow, heading);
   panel.append(content);
-  document.body.append(panel);
+  document.body.append(cues, panel);
 
   // Use the existing header, not a clone. Sticky positioning keeps it in
   // document flow while drawing the logo/nav/accent above the sliding panel.
@@ -91,11 +96,37 @@
       window.getSelection?.()?.isCollapsed === false;
   }
 
-  function edgeAt(x) {
+  function edgeWidth(width) {
+    return Math.max(52, Math.min(96, width * .06));
+  }
+
+  function contentRightEdge() {
+    // The scrollbar may occupy its own gutter or overlay the page content.
+    return Math.min(document.documentElement.clientWidth, window.innerWidth - scrollbarClearance);
+  }
+
+  function sizeEdgeCues() {
+    const edge = edgeWidth(window.innerWidth);
+    const right = contentRightEdge();
+    const gallery = document.querySelector('.gallery-content, .gallery-access')?.getBoundingClientRect();
+    // Use matching rails sized to the smaller of the two clear margins.
+    const width = gallery ? Math.min(maxCueWidth, gallery.left - 4, right - gallery.right - 4)
+      : right - (window.innerWidth - edge);
+    cueWidth = Math.max(0, Math.floor(width));
+    cues.hidden = cueWidth === 0;
+    cues.style.setProperty('--gallery-edge-cue-width', cueWidth + 'px');
+    cues.style.setProperty('--gallery-edge-scrollbar-inset', (document.documentElement.clientWidth - right) + 'px');
+    cues.style.setProperty('--gallery-edge-header-height', (siteHeader?.getBoundingClientRect().height ?? 0) + 'px');
+  }
+
+  function edgeAt(x, contentRight) {
     const width = window.innerWidth;
-    const edge = Math.max(52, Math.min(96, width * .06));
+    const edge = edgeWidth(width);
     if (x < 0 || x > width) return null;
-    return x <= edge ? 'previous' : x >= width - edge ? 'next' : null;
+    // Offer the extra gutter as a target while retaining the original hit areas.
+    if (x <= Math.max(edge, cueWidth)) return 'previous';
+    if (x >= Math.min(width - edge, contentRight - cueWidth)) return 'next';
+    return null;
   }
 
   function clearTimers() {
@@ -206,13 +237,12 @@
 
   function pointerMove(event) {
     if (event.pointerType !== 'mouse') return;
-    // The scrollbar may occupy its own gutter or overlay the page content.
-    const contentRight = Math.min(document.documentElement.clientWidth, window.innerWidth - scrollbarClearance);
+    const contentRight = contentRightEdge();
     if (navigating || blocked() || event.clientX >= contentRight || event.target?.closest?.(interactive)) {
       if (!navigating) clear(true);
       return;
     }
-    const which = edgeAt(event.clientX);
+    const which = edgeAt(event.clientX, contentRight);
     if (!which) {
       armed = true;
       if (direction) clear(true);
@@ -257,7 +287,10 @@
   window.addEventListener('pointercancel', () => { pressed = false; interrupt(); });
   window.addEventListener('keydown', keyboard);
   window.addEventListener('blur', interrupt);
-  window.addEventListener('resize', interrupt);
+  window.addEventListener('resize', () => {
+    interrupt();
+    sizeEdgeCues();
+  });
   window.addEventListener('pagehide', () => {
     // Preserve the completed panel until Chrome captures the outgoing page.
     // pageshow will clear it if this document later returns from BFCache.
@@ -279,6 +312,15 @@
   document.addEventListener('visibilitychange', interrupt);
   document.addEventListener('pointerleave', interrupt);
   desktop.addEventListener?.('change', interrupt);
+
+  sizeEdgeCues();
+  if (typeof ResizeObserver !== 'undefined') {
+    // Covers header and gallery layout changes, including when the password
+    // form is replaced by the unlocked gallery. Scrolling needs no observer.
+    const cueLayout = new ResizeObserver(sizeEdgeCues);
+    cueLayout.observe(document.body);
+    if (siteHeader) cueLayout.observe(siteHeader);
+  }
 
   // GSAP is used only for the edge panel; no ScrollTrigger/scroll-locking is installed.
   if (!window.gsap) {

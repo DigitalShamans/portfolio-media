@@ -229,7 +229,7 @@ test('bounded failure escape removes the arrival cover and original header state
 
 test('both gallery layouts construct the arriving panel before the real header and wait for header parsing', () => {
   for (const layout of layouts) {
-    assert.match(layout, /gallery\.css\?v=27/);
+    assert.match(layout, /gallery\.css\?v=28/);
     assert.match(layout, /<link rel="expect" href="#gallery-edge-ready" blocking="render">/);
     assert.match(layout, /<div id="gallery-edge-arrival"><script src="\.\.\/gallery-arrival\.js\?v=4"><\/script><\/div>/);
     assert.match(layout, /gallery-edge-arrival[\s\S]*include site-header\.html[\s\S]*gallery-edge-ready/);

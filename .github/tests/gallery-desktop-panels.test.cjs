@@ -14,7 +14,7 @@ const locked = fs.readFileSync(path.join(root, '_layouts/locked-gallery.html'), 
 const exitLinks = fs.readFileSync(path.join(root, '_includes/rz-gallery-exit.html'), 'utf8');
 
 function browser({ desktop = true, reduced = false, prefix = '', gsap = true, arrival = null,
-    nextHref, previousHref, folder = 'hb-egypt', activeTag = 'body',
+    artwork, nextHref, previousHref, folder = 'hb-egypt', activeTag = 'body',
     navigationType = 'navigate', galleryLoop = 'hard-bullet', nextGalleryName, clientWidth = 1440 } = {}) {
   const events = {};
   const calls = [];
@@ -47,7 +47,7 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
       this.children = [];
       this.dataset = {};
       this.hidden = false;
-      this.style = {};
+      this.style = { setProperty(name, value) { this[name] = value; } };
       this.className = '';
       this.classes = new Set();
       this.classList = {
@@ -89,6 +89,7 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
     querySelector(key) {
       if (key === '.gallery-navigation') return navigation;
       if (key === 'body > .site-header') return siteHeader;
+      if (key === '.gallery-content, .gallery-access' && artwork) return { getBoundingClientRect: () => artwork };
       if (key === 'dialog[open]' && dialog) return {};
       return null;
     },
@@ -157,19 +158,40 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
     window, document, siteHeader, events, calls, historyCalls, tweens, pointer, advance, keydown, next, previous, Element,
     storedArrival() { return JSON.parse(storage.get('gallery-desktop-edge-arrival') || 'null'); },
     setDialog(value) { dialog = value; },
+    get cues() { return body.children.find(node => node.className === 'gallery-edge-cues'); },
     get panel() { return body.children.find(node => node.className === 'gallery-desktop-edge-panel'); },
     event(type, payload = {}) { events['window:' + type]?.(payload); }
   };
 }
 
-test('no desktop boxes/arrows and no scroll stage; fullscreen screenshot controls remain', () => {
+test('desktop cues use the existing hover zones and leave fullscreen screenshot controls available', () => {
   assert.match(markup, /gallery-navigation[^>]+hidden/);
   assert.doesNotMatch(markup, /gallery-navigation__arrow|gallery-navigation__details/);
-  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=10/);
+  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=11/);
   assert.match(styles, /\.gallery-navigation\s*\{\s*display:\s*none !important/);
   assert.match(styles, /\.viewer-arrows button/);
   assert.doesNotMatch(styles, /gallery-desktop-scroll-stage/);
   assert.match(styles, /\.gallery-desktop-edge-panel\s*\{/);
+  assert.match(styles, /\.gallery-edge-cues:not\(\[hidden\]\)\s*\{[^}]*pointer-events: none/);
+  assert.match(styles, /body:has\(dialog\[open\]\) \.gallery-edge-cues\s*\{\s*display: none/);
+
+  const desktop = browser({ artwork: { left: 72, right: 1368 } });
+  assert.equal(desktop.cues['aria-hidden'], 'true');
+  assert.equal(desktop.cues.style['--gallery-edge-cue-width'], '44px');
+  assert.equal(desktop.cues.style['--gallery-edge-scrollbar-inset'], '24px');
+  assert.equal(desktop.cues.style['--gallery-edge-header-height'], '96px');
+  assert.equal(browser({ desktop: false }).cues, undefined);
+  assert.equal(browser({ nextHref: 'https://example.test/artur/galleries/hb-egypt/' }).cues, undefined);
+});
+
+test('wide gallery margins expand both hover zones while preserving scrollbar clearance', () => {
+  for (const [x, which] of [[125, 'previous'], [1300, 'next']]) {
+    const b = browser({ artwork: { left: 210, right: 1230 } });
+    assert.equal(b.cues.style['--gallery-edge-cue-width'], '144px');
+    b.pointer(x);
+    b.advance(600);
+    assert.deepEqual(b.calls, [which === 'previous' ? b.previous.href : b.next.href]);
+  }
 });
 
 test('moving mouse into right or left edge starts the slide and navigates automatically', () => {

@@ -234,8 +234,50 @@ dialog {
 
 #gallery-edge-arrival { display: contents; }
 
-/* Hard Bullet gallery destinations remain in the DOM for navigation, but have no boxes/arrows. */
+/* Shared destinations for gallery gestures and edge navigation. */
 .gallery-navigation { display: none !important; }
+
+/* The guides paint only within the desktop hover zones. They pass input
+   through to the page so the existing edge transition still handles it. */
+.gallery-edge-cues { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  .gallery-edge-cues:not([hidden]) {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    display: block;
+    pointer-events: none;
+    --gallery-edge-repeat: 50%;
+  }
+}
+@media (min-height: 900px) {
+  .gallery-edge-cues:not([hidden]) { --gallery-edge-repeat: calc(100% / 3); }
+}
+body:has(dialog[open]) .gallery-edge-cues { display: none; }
+body:where(:has(> .gallery-edge-cues)) > .site-header {
+  position: relative;
+  z-index: 2;
+}
+.gallery-edge-cues::before,
+.gallery-edge-cues::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  padding-block-start: min(var(--gallery-edge-header-height), 40dvh);
+  background:
+    url("gallery-edge-arrow.svg") center top / min(88%, 112px) var(--gallery-edge-repeat) repeat-y content-box,
+    linear-gradient(to left, #1c1c1c, #303032 24%, #202022 59%, transparent) border-box;
+}
+.gallery-edge-cues::before {
+  left: 0;
+  width: var(--gallery-edge-cue-width);
+  transform: scaleX(-1);
+}
+.gallery-edge-cues::after {
+  right: 0;
+  width: calc(var(--gallery-edge-cue-width) + var(--gallery-edge-scrollbar-inset));
+  padding-right: var(--gallery-edge-scrollbar-inset);
+}
 
 /* Preserve the actual site header, including its accent stripe, while the
    new gallery panel slides beneath it. position:sticky preserves layout height:
