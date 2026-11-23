@@ -24,8 +24,8 @@ jobs:
     env:
       SAFARI_WEBDRIVER_URL: http://127.0.0.1:4444
       SAFARI_OUTPUT_DIR: artifacts/safari-live-output
-      PORTFOLIO_SOURCE_SHA: 7489099be6212f8417976a629d34e4ae7de269c1
-      SAFARI_DIAGNOSTIC_ONLY: '1'
+      PORTFOLIO_SOURCE_SHA: 5b0e1a6afe3fd753edd1375cfd84fe16424b1497
+      SAFARI_DIAGNOSTIC_ONLY: '0'
       SAFARI_REQUIRE_NORMAL_MOTION: '1'
     steps:
       - name: Check out test script
