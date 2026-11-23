@@ -1,5 +1,7 @@
 'use strict';
 
+const galleryDiagnostics = window.PortfolioDiagnostics;
+
 const galleryContent = document.querySelector('.gallery-content, .gallery-map-page');
 const gallery = document.querySelector('.gallery');
 const galleryRevision = document.body.dataset.galleryRevision;
@@ -37,11 +39,17 @@ const galleryStatus = document.querySelector('#gallery-status');
 const shots = [];
 const viewer = document.querySelector('#viewer');
 // This optional enhancement must never block gallery loading or desktop scrolling.
-if (window.matchMedia('(pointer: coarse)').matches && navigator.maxTouchPoints > 0) {
+const primaryTouch = window.matchMedia('(pointer: coarse)').matches && navigator.maxTouchPoints > 0;
+galleryDiagnostics?.state('gallery-touch', 'Native touch scrolling', primaryTouch
+  ? 'Waiting for the mobile scroll controller.' : 'GSAP touch normalization needs a coarse primary pointer and touch support.');
+if (primaryTouch) {
   const mobileScrollScript = document.createElement('script');
-  mobileScrollScript.src = new URL('./gallery-mobile-scroll.js?v=1', document.currentScript.src).href;
+  mobileScrollScript.src = new URL('./gallery-mobile-scroll.js?v=2', document.currentScript.src).href;
   mobileScrollScript.addEventListener('load', () => {
     window.GalleryMobileScroll?.start({ gallery, viewer });
+  }, { once: true });
+  mobileScrollScript.addEventListener('error', () => {
+    galleryDiagnostics?.state('gallery-touch', 'Native touch scrolling', 'The mobile scroll controller could not load.');
   }, { once: true });
   document.head.append(mobileScrollScript);
 }
@@ -181,8 +189,13 @@ function trackGalleryPosition() {
 }
 
 function setupClassicGalleryScroll() {
-  if (gallery.hasAttribute('data-native-gallery-scroll')) return;
+  if (gallery.hasAttribute('data-native-gallery-scroll')) {
+    galleryDiagnostics?.state('gallery-wheel', 'Native wheel scrolling', 'This gallery uses native scrolling.');
+    return;
+  }
   const desktopScrolling = window.matchMedia('(any-hover: hover) and (any-pointer: fine)');
+  galleryDiagnostics?.state('gallery-wheel', desktopScrolling.matches ? 'Image stepping available' : 'Native wheel scrolling',
+    'The wheel controller is independent of GSAP.', { imageResolution });
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const scroller = document.scrollingElement;
   const twoImageScroll = gallery.hasAttribute('data-two-image-scroll');
@@ -194,6 +207,7 @@ function setupClassicGalleryScroll() {
 
   function cancelGalleryStep() {
     if (!activeStep) return;
+    galleryDiagnostics?.count('gallery-wheel', 'step cancelled');
     cancelAnimationFrame(activeStep.frame);
     activeStep = undefined;
     movingDirection = 0;
@@ -267,7 +281,9 @@ function setupClassicGalleryScroll() {
       }
       window.scrollTo({ top: start + offset * progress + extra, behavior: 'instant' });
       lastPosition = scroller.scrollTop;
+      galleryDiagnostics?.sample('gallery-wheel', lastPosition);
       if (progress === 1 && !extending) {
+        galleryDiagnostics?.count('gallery-wheel', 'step completed');
         activeStep = undefined;
         movingDirection = 0;
       } else {
@@ -330,6 +346,7 @@ function setupClassicGalleryScroll() {
   document.addEventListener('wheel', event => {
     if (!desktopScrolling.matches || viewer.open || event.defaultPrevented ||
         event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {
+      galleryDiagnostics?.count('gallery-wheel', 'wheel bypassed by input or viewer');
       interruptGalleryScroll();
       return;
     }
@@ -341,6 +358,7 @@ function setupClassicGalleryScroll() {
     const direction = Math.sign(delta);
     const stroke = groupedImageScroll && vertical ? recordWheelStroke(direction, event.timeStamp) : undefined;
     if (!event.cancelable) {
+      galleryDiagnostics?.count('gallery-wheel', 'browser-owned wheel');
       cancelGalleryStep();
       return;
     }
@@ -349,6 +367,9 @@ function setupClassicGalleryScroll() {
       return;
     }
     if (!vertical || (mode === 0 && distance < 32)) {
+      galleryDiagnostics?.count('gallery-wheel', vertical ? 'small wheel delta left native' : 'horizontal wheel left native');
+      galleryDiagnostics?.state('gallery-wheel', 'Native wheel scrolling', vertical
+        ? 'Small wheel deltas stay with the browser.' : 'Horizontal wheel movement stays with the browser.');
       cancelGalleryStep();
       movingDirection = 0;
       return;
@@ -368,7 +389,10 @@ function setupClassicGalleryScroll() {
     let extraOffset;
     if (groupedImageScroll) {
       const targets = groupedCenterOffsets(direction);
-      if (!targets) return;
+      if (!targets) {
+        galleryDiagnostics?.count('gallery-wheel', 'no step target');
+        return;
+      }
       movement = targets.movement;
       extraOffset = targets.extraOffset;
       if (extraOffset !== undefined) oneImageOffset = movement;
@@ -402,8 +426,13 @@ function setupClassicGalleryScroll() {
     if (stroke) stroke.handled = true;
     movingDirection = reducedMotion.matches ? 0 : direction;
     if (oneImageOffset !== undefined && !reducedMotion.matches) {
+      galleryDiagnostics?.state('gallery-wheel', 'JavaScript image step', 'This wheel animation uses requestAnimationFrame.');
+      galleryDiagnostics?.count('gallery-wheel', 'animated step started');
       animateGalleryStep(movement, oneImageOffset, extraOffset);
     } else {
+      galleryDiagnostics?.state('gallery-wheel', reducedMotion.matches ? 'Instant step' : 'Browser smooth step',
+        reducedMotion.matches ? 'Reduced motion is enabled.' : 'The browser receives a smooth scroll request.');
+      galleryDiagnostics?.count('gallery-wheel', 'browser step requested');
       window.scrollBy({ top: movement, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
     }
   }, { passive: false });

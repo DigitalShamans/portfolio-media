@@ -2,9 +2,14 @@
   'use strict';
 
   // Desktop mouse-edge navigation; mobile touch swipes remain separate.
+  const diagnostics = window.PortfolioDiagnostics;
   const navigation = document.querySelector('.gallery-navigation');
   const desktop = window.matchMedia('(hover: hover) and (pointer: fine)');
-  if (!navigation || !desktop.matches) return;
+  if (!navigation || !desktop.matches) {
+    diagnostics?.state('gallery-edge', 'Unavailable', navigation
+      ? 'Chrome reports no hovering primary fine pointer.' : 'This gallery has no adjacent gallery navigation.');
+    return;
+  }
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const scriptURL = document.currentScript?.src || window.location.href;
   const prefix = window.location.pathname.split('/galleries/')[0];
@@ -20,6 +25,7 @@
   let direction = null;
   let hovering = false;
   let navigating = false;
+  let transitionEngine;
   let pressed = false;
   let armed = true;
   let cueWidth = 0;
@@ -44,7 +50,11 @@
   }
 
   const destinations = { next: destination('next'), previous: destination('previous') };
-  if (!destinations.next || !destinations.previous) return;
+  if (!destinations.next || !destinations.previous) {
+    diagnostics?.state('gallery-edge', 'Unavailable', 'Gallery destinations did not pass validation.');
+    return;
+  }
+  diagnostics?.state('gallery-edge', 'Ready', 'Hold the mouse or trackpad cursor in a side margin.');
 
   const cues = document.createElement('div');
   cues.className = 'gallery-edge-cues';
@@ -143,6 +153,10 @@
     direction = null;
     hovering = false;
     if (navigating) return;
+    if (transitionEngine) {
+      diagnostics?.event('gallery-edge', 'cancelled', { engine: transitionEngine, direction: old });
+      transitionEngine = undefined;
+    }
     const id = animationId;
     window.gsap?.killTweensOf?.(panel);
     if (animate && old && !panel.hidden && !reducedMotion.matches) {
@@ -181,6 +195,9 @@
     const target = destinations[which];
     if (!target) return clear();
     navigating = true;
+    diagnostics?.event('gallery-edge', 'navigation started', {
+      engine: transitionEngine, direction: which, destination: target.pathname
+    });
     try {
       window.sessionStorage.setItem('gallery-desktop-edge-arrival', JSON.stringify({
         direction: which, pathname: target.pathname, at: Date.now(),
@@ -198,6 +215,11 @@
     heading.textContent = destinations[which].title;
     panel.dataset.direction = which;
     panel.hidden = false;
+    if (diagnostics) {
+      transitionEngine = reducedMotion.matches ? 'Reduced motion' : window.gsap?.fromTo ? 'GSAP' : 'CSS fallback';
+      diagnostics.state('gallery-edge', transitionEngine, 'Last edge transition via ' + which + ' edge.');
+      diagnostics.event('gallery-edge', 'transition started', { engine: transitionEngine, direction: which });
+    }
     if (reducedMotion.matches) {
       panel.hidden = true;
       finishTimer = setTimeout(() => navigate(which, id), 250);
@@ -208,6 +230,7 @@
         { xPercent: offset, autoAlpha: 1 },
         { xPercent: 0, autoAlpha: 1, duration: slideDuration / 1000,
           ease: 'power2.inOut', overwrite: true,
+          onUpdate: diagnostics ? function () { diagnostics.sample('gallery-edge', this.progress()); } : undefined,
           onComplete: () => navigate(which, id) });
     } else {
       // If GSAP fails to load, CSS still performs a timed slide and navigation.
@@ -298,6 +321,7 @@
   });
   window.addEventListener('pageshow', event => {
     navigating = false;
+    transitionEngine = undefined;
     clear();
     // History restorations may not rerun the script (BFCache). Keep the
     // stationary pointer from immediately forwarding the user again.
@@ -311,7 +335,11 @@
   });
   document.addEventListener('visibilitychange', interrupt);
   document.addEventListener('pointerleave', interrupt);
-  desktop.addEventListener?.('change', interrupt);
+  desktop.addEventListener?.('change', () => {
+    interrupt();
+    diagnostics?.state('gallery-edge', desktop.matches ? 'Ready' : 'Unavailable',
+      desktop.matches ? 'Hold the mouse or trackpad cursor in a side margin.' : 'Chrome changed its primary pointer.');
+  });
 
   sizeEdgeCues();
   if (typeof ResizeObserver !== 'undefined') {

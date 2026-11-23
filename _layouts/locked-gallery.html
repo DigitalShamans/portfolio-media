@@ -9,6 +9,7 @@
 <html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}">
 <head>
   <meta charset="utf-8">
+  {% include portfolio-diagnostics.html section='gallery' %}
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
   <meta name="robots" content="noindex">
@@ -257,7 +258,7 @@
       document.querySelector('#gallery-access').replaceWith(template.content);
       try {
         await loadScript('../gallery-data.js?v=3');
-        await loadScript('../gallery-viewer.js?v=46');
+        await loadScript('../gallery-viewer.js?v=47');
       } catch {
         document.querySelector('#gallery-status').textContent =
           'The gallery could not be loaded. Please reload to try again.';

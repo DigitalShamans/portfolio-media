@@ -3,6 +3,7 @@
 
   const track = document.querySelector('[data-career-timeline]');
   if (!track) return;
+  const diagnostics = window.PortfolioDiagnostics;
 
   // ScrollTrigger + DrawSVG + MotionPath, following the supplied snorklTV
   // tutorial. This second layout follows the user's broad S-curve sketch.
@@ -182,7 +183,10 @@
         smoothTouch: 0,
         effects: false,
         normalizeScroll: false,
-        onUpdate: updateScrollCamera,
+        onUpdate: diagnostics ? instance => {
+          updateScrollCamera();
+          diagnostics.sample('resume-smoother', instance?.scrollTop?.(), window.scrollY);
+        } : updateScrollCamera,
         onFocusIn: () => dialog.open || imageDialog.open ? false : undefined
       });
     } else if (!enabled && smoother) {
@@ -190,6 +194,14 @@
       smoother = null;
     }
     track.dataset.desktopSmoothing = smoother ? '.8' : '0';
+    if (diagnostics) {
+      const duration = smoother?.smooth?.();
+      diagnostics.state('resume-smoother', smoother ? (duration > 0 ? 'GSAP ScrollSmoother' : 'Native motion') : 'Native scrolling',
+        smoother ? 'Effective smoothing: ' + duration + ' s'
+          : reducedMotion.matches ? 'Reduced motion is enabled.'
+            : narrow ? 'Narrow timeline uses native scrolling.'
+              : !canAnimate ? 'Timeline plugins did not initialize.' : 'ScrollSmoother is unavailable.');
+    }
   }
 
   function reset() {
@@ -360,6 +372,7 @@
       if (shown !== reveal.shown) {
         reveal.shown = shown;
         reveal.entry.classList.toggle('career-milestone--awaiting-reveal', !shown);
+        diagnostics?.event('resume-reveals', shown ? 'reveal started' : 'reversed', { card: reveal.entry.id });
         if (shown) reveal.animation.play();
         else reveal.animation.reverse();
       }
@@ -784,7 +797,13 @@
     track.dataset.touchScrollFactor = String(touchScrollFactor);
     delete track.dataset.cameraAnchor;
 
-    if (!canAnimate || reducedMotion.matches) return;
+    if (!canAnimate || reducedMotion.matches) {
+      const reason = reducedMotion.matches ? 'Reduced motion is enabled.' : initialized
+        ? 'A required GSAP plugin was unavailable during initialization.' : 'Waiting for the timeline scripts and fonts.';
+      diagnostics?.state('resume-timeline', 'Static layout', reason);
+      diagnostics?.state('resume-reveals', 'Cards shown together', reason);
+      return;
+    }
     const revealLine = Math.round(viewport * (narrow ? .65 : .5));
     const normalStart = Math.max(0, documentTop - revealLine);
     const tailHeight = (narrow ? (contact?.offsetHeight || 0) + 16 : 0) +
@@ -792,6 +811,8 @@
       (document.querySelector('.portfolio-footer')?.offsetHeight || 0);
     const maximumEnd = documentTop + contentHeight + tailHeight - viewport - 1;
     if (maximumEnd <= normalStart) {
+      diagnostics?.state('resume-timeline', 'Static layout', 'The timeline had no scroll range.');
+      diagnostics?.state('resume-reveals', 'Cards shown together', 'The timeline had no scroll range.');
       gsap.set(path, { drawSVG: '100%' });
       gsap.set(texts, { autoAlpha: 1 });
       return;
@@ -858,7 +879,11 @@
     animation = gsap.timeline({
       paused: true,
       defaults: { ease: 'none' },
-      onUpdate: () => { updateScrollCamera(); updateMilestoneReveals(); }
+      onUpdate: () => {
+        updateScrollCamera();
+        updateMilestoneReveals();
+        diagnostics?.sample('resume-timeline', animation?.progress());
+      }
     });
     animation.fromTo(path, { drawSVG: 0 }, { drawSVG: '100%', duration: 1 }, 0);
     animation.fromTo(pointer, { autoAlpha: 0 }, { autoAlpha: 1, duration: .004 }, 0);
@@ -918,6 +943,9 @@
       }
       const shown = at === 0 || (useLocalScroll && revealedOnTouch.has(entry));
       if (shown) reveal.progress(1);
+      if (diagnostics) reveal.eventCallback('onComplete', () => {
+        diagnostics.event('resume-reveals', 'reveal completed', { card: entry.id });
+      });
       entry.classList.toggle('career-milestone--awaiting-reveal', !shown);
       // A small reverse gesture or toolbar expansion at the bottom should
       // not blink the final card and ending controls on and off.
@@ -965,6 +993,10 @@
     scrollTween.progress(scrollTween.scrollTrigger.progress);
     updateScrollCamera();
     updateMilestoneReveals();
+    diagnostics?.state('resume-timeline', 'GSAP ScrollTrigger',
+      (narrow ? 'Narrow' : 'Wide') + ' timeline · ' + (useLocalScroll ? 'local' : 'window') + ' scroller',
+      { scrollDistance, touchScrollFactor, triggerCreated: Boolean(scrollTween.scrollTrigger) });
+    diagnostics?.state('resume-reveals', 'GSAP reveals armed', 'Image loading is tracked separately.');
   }
 
   function scheduleRebuild() {
@@ -995,7 +1027,13 @@
     function start() {
       if (initialized) return;
       initialized = true;
-      enableAnimation();
+      try {
+        enableAnimation();
+      } catch (error) {
+        diagnostics?.state('resume-timeline', 'Initialization failed', 'GSAP setup threw an exception.');
+        diagnostics?.event('resume-timeline', 'setup exception', { type: error?.name });
+        throw error;
+      }
       if (!canAnimate) {
         signature = '';
         rebuild();

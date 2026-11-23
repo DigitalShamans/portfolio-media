@@ -1,11 +1,17 @@
 (function () {
   'use strict';
 
+  const diagnostics = window.PortfolioDiagnostics;
   const navigation = document.querySelector('.gallery-navigation');
-  if (!navigation || navigator.maxTouchPoints < 1) return;
+  if (!navigation || navigator.maxTouchPoints < 1) {
+    diagnostics?.state('gallery-swipe', 'Unavailable', navigation
+      ? 'Chrome reports no touchscreen.' : 'This gallery has no adjacent gallery navigation.');
+    return;
+  }
+  diagnostics?.state('gallery-swipe', 'Touch swipe ready', 'Swipe horizontally from the gallery background.');
   const fullPortfolio = navigation.dataset?.galleryLoop === 'full';
 
-  const excluded = '.shot, .shot-entry, .comparison-indicator, picture, img, video, audio, canvas, iframe, svg, '
+  const excluded = '.shot, .shot-entry, .comparison-indicator, picture, img, video, audio, canvas, iframe, svg, .portfolio-diagnostics, '
     + 'a, button, input, textarea, select, label, summary, '
     + '[contenteditable]:not([contenteditable="false"]), [role="button"], [role="link"], [role="slider"]';
   const editables = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])';
@@ -128,6 +134,7 @@
     navigationTimer = setTimeout(() => {
       navigationTimer = undefined;
       if (unavailable()) { cancel(); return; }
+      diagnostics?.event('gallery-swipe', 'navigation started', { destination: url.pathname });
       window.location.assign(url.href);
     }, feedbackDuration);
   }

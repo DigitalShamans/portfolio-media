@@ -2,6 +2,7 @@
 <html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}" data-gallery-webp-revision="{{ site.gallery_webp_revision | escape }}"{% if site.data.gallery_delivery.revision %} data-gallery-originals-origin="{{ site.data.gallery_delivery.service_origin | escape }}" data-gallery-originals-revision="{{ site.data.gallery_delivery.revision | escape }}" data-gallery-originals-gallery-revisions="{{ site.data.gallery_delivery.gallery_revisions | jsonify | escape }}"{% endif %}>
 <head>
   <meta charset="utf-8">
+  {% include portfolio-diagnostics.html section='gallery' %}
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
   <meta name="robots" content="noindex, nofollow">
@@ -28,7 +29,7 @@
   <script id="gallery-map-options" type="application/json">
   {
     "defaultGallery": {{ page.gallery | default: 'hb-atrium' | jsonify }},
-    "viewerScript": {{ '/galleries/gallery-viewer.js' | relative_url | append: '?v=46' | jsonify }},
+    "viewerScript": {{ '/galleries/gallery-viewer.js' | relative_url | append: '?v=47' | jsonify }},
     "personal": {% if page.portfolio == 'personal' %}true{% else %}false{% endif %},
     "galleryRoot": {{ '/galleries/' | relative_url | jsonify }},
     "media": {{ site.gallery_4k_media | jsonify }},

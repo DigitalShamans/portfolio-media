@@ -261,7 +261,7 @@ test('zoom and horizontal trackpad gestures are never hijacked', () => {
 
 test('portfolio GSAP effects are scoped, scroll-safe and reduced-motion aware', () => {
   assert.match(layout, /recent-galleries-scroll\.js' \| relative_url }}\?v=2/);
-  assert.match(layout, /portfolio-effects\.js' \| relative_url }}\?v=4/);
+  assert.match(layout, /portfolio-effects\.js' \| relative_url }}\?v=5/);
   assert.match(layout, /vendor\/gsap\/3\.15\.1\/gsap\.min\.js/);
   assert.match(layout, /vendor\/gsap\/3\.15\.1\/ScrollTrigger\.min\.js/);
   assert.match(effects, /prefers-reduced-motion: reduce/);

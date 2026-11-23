@@ -15,7 +15,7 @@ const exitLinks = fs.readFileSync(path.join(root, '_includes/rz-gallery-exit.htm
 
 function browser({ desktop = true, reduced = false, prefix = '', gsap = true, arrival = null,
     artwork, nextHref, previousHref, folder = 'hb-egypt', activeTag = 'body',
-    navigationType = 'navigate', galleryLoop = 'hard-bullet', nextGalleryName, clientWidth = 1440 } = {}) {
+    navigationType = 'navigate', galleryLoop = 'hard-bullet', nextGalleryName, clientWidth = 1440, diagnostics } = {}) {
   const events = {};
   const calls = [];
   const tweens = [];
@@ -100,6 +100,7 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
   const media = { matches: desktop, addEventListener(type, cb) { events['media:' + type] = cb; } };
   const motion = { matches: reduced };
   const window = {
+    PortfolioDiagnostics: diagnostics,
     innerWidth: 1440, innerHeight: 900, visualViewport: { scale: 1 },
     location: {
       origin: 'https://example.test',
@@ -167,7 +168,7 @@ function browser({ desktop = true, reduced = false, prefix = '', gsap = true, ar
 test('desktop cues use the existing hover zones and leave fullscreen screenshot controls available', () => {
   assert.match(markup, /gallery-navigation[^>]+hidden/);
   assert.doesNotMatch(markup, /gallery-navigation__arrow|gallery-navigation__details/);
-  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=11/);
+  assert.match(markup, /gallery-desktop-panels\.js'.*\?v=12/);
   assert.match(styles, /\.gallery-navigation\s*\{\s*display:\s*none !important/);
   assert.match(styles, /\.viewer-arrows button/);
   assert.doesNotMatch(styles, /gallery-desktop-scroll-stage/);
@@ -191,6 +192,20 @@ test('wide gallery margins expand both hover zones while preserving scrollbar cl
     b.pointer(x);
     b.advance(600);
     assert.deepEqual(b.calls, [which === 'previous' ? b.previous.href : b.next.href]);
+  }
+});
+
+test('diagnostics identify the engine used for each completed edge navigation', () => {
+  for (const [gsap, reduced, engine] of [[true, false, 'GSAP'], [false, false, 'CSS fallback'], [true, true, 'Reduced motion']]) {
+    const events = [];
+    const diagnostics = { state() {}, sample() {}, event: (feature, action, data) => events.push({ feature, action, data }) };
+    const b = browser({ gsap, reduced, diagnostics });
+    b.pointer(1);
+    b.advance(700);
+    assert.equal(b.calls.length, 1);
+    assert.deepEqual(events.map(event => [event.action, event.data.engine]), [
+      ['transition started', engine], ['navigation started', engine]
+    ]);
   }
 });
 

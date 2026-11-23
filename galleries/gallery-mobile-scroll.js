@@ -29,6 +29,7 @@
   }
 
   function start({ gallery, viewer }) {
+    const diagnostics = window.PortfolioDiagnostics;
     if (controllers.has(gallery)) return controllers.get(gallery);
     const viewport = window.visualViewport;
     const coarse = window.matchMedia('(pointer: coarse)');
@@ -63,6 +64,7 @@
     };
     if (!gallery || !viewport || !coarse.matches || !navigator.maxTouchPoints
         || !window.CSS?.supports('height', '100lvh') || !window.CSS.supports('height', '100svh')) {
+      diagnostics?.state('gallery-touch', 'Native touch scrolling', 'The mobile viewport or input requirements were not met.');
       return { suspend() {}, resume() {}, destroy() {} };
     }
     controllers.set(gallery, controller);
@@ -91,7 +93,11 @@
     }
 
     function stop() {
-      if (normalizer) release(normalizer);
+      if (normalizer) {
+        release(normalizer);
+        diagnostics?.event('gallery-touch', 'normalizer released');
+        diagnostics?.state('gallery-touch', 'Native touch scrolling', 'The normalizer paused after a viewport or interaction change.');
+      }
       normalizer = undefined;
       restoreStyles?.();
       restoreStyles = undefined;
@@ -144,10 +150,15 @@
           // Some browsers insist on showing their toolbar. Stay native thereafter.
           failed = true;
           reset();
+          diagnostics?.state('gallery-touch', 'Native touch scrolling', 'Browser controls reappeared during normalization.');
         }
         return;
       }
-      if (!armed || touches || !toolbarHidden()) return;
+      if (!armed || touches || !toolbarHidden()) {
+        if (!failed) diagnostics?.state('gallery-touch', 'Native touch scrolling', armed
+          ? 'Waiting for browser controls to collapse and the gesture to finish.' : 'Waiting for an initial vertical swipe.');
+        return;
+      }
       timer = setTimeout(activate, idleDelay);
     }
 
@@ -162,6 +173,7 @@
         }).catch(() => {
           failed = true;
           reset();
+          diagnostics?.state('gallery-touch', 'Native touch scrolling', 'GSAP touch dependencies could not load.');
         });
         return;
       }
@@ -171,6 +183,7 @@
         // Do not take ownership from another component using ScrollTrigger.
         if (window.ScrollTrigger.normalizeScroll()) {
           failed = true;
+          diagnostics?.state('gallery-touch', 'Native touch scrolling', 'Another controller already owns touch normalization.');
           return;
         }
         existingObservers = new Set(Observer?.getAll() || []);
@@ -188,6 +201,7 @@
           // Keep those events available to the existing comparison handlers.
           allowNestedScroll: false
         });
+        if (normalizer) diagnostics?.state('gallery-touch', 'GSAP touch normalizer', 'ScrollTrigger enabled touch normalization.');
       } catch (_) {
         failed = true;
         // Initialization can register observers and change root touch-action
@@ -196,6 +210,7 @@
           if (existingObservers && !existingObservers.has(partial)) release(partial);
         }
         stop();
+        diagnostics?.state('gallery-touch', 'Native touch scrolling', 'ScrollTrigger could not start touch normalization.');
       }
     }
 
@@ -229,7 +244,10 @@
     listen(window, 'touchstart', touchStart, { capture: true, passive: true });
     listen(window, 'touchend', touchEnd, { capture: true, passive: true });
     listen(window, 'touchcancel', touchEnd, { capture: true, passive: true });
-    listen(window, 'scroll', refresh, { passive: true });
+    listen(window, 'scroll', () => {
+      if (normalizer) diagnostics?.sample('gallery-touch', window.scrollY);
+      refresh();
+    }, { passive: true });
     listen(window, 'resize', refresh, { passive: true });
     listen(viewport, 'resize', refresh, { passive: true });
     listen(coarse, 'change', refresh);
