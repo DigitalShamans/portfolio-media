@@ -25,6 +25,7 @@ jobs:
       SAFARI_WEBDRIVER_URL: http://127.0.0.1:4444
       SAFARI_OUTPUT_DIR: artifacts/safari-live-output
       PORTFOLIO_SOURCE_SHA: 7489099be6212f8417976a629d34e4ae7de269c1
+      SAFARI_DIAGNOSTIC_ONLY: '1'
     steps:
       - name: Check out test script
         uses: actions/checkout@v6
@@ -39,6 +40,7 @@ jobs:
           sw_vers | tee "$SAFARI_OUTPUT_DIR/macos-version.txt"
           /usr/bin/safaridriver --version | tee "$SAFARI_OUTPUT_DIR/safaridriver-version.txt"
           /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' /Applications/Safari.app/Contents/Info.plist | tee "$SAFARI_OUTPUT_DIR/safari-version.txt"
+          defaults read com.apple.universalaccess reduceMotion > "$SAFARI_OUTPUT_DIR/reduced-motion-setting.txt" 2>&1 || true
 
       - name: Enable native Safari test automation
         run: sudo /usr/bin/safaridriver --enable

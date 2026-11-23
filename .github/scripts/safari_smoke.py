@@ -27,6 +27,7 @@ ORIGIN = os.environ.get("PORTFOLIO_ORIGIN", "https://digitalshamans.co.uk").rstr
 ENDPOINT = os.environ.get("SAFARI_WEBDRIVER_URL", "http://127.0.0.1:4444").rstrip("/")
 OUTPUT = Path(os.environ.get("SAFARI_OUTPUT_DIR", "artifacts"))
 SOURCE_SHA = os.environ.get("PORTFOLIO_SOURCE_SHA", "7489099be6212f8417976a629d34e4ae7de269c1")
+DIAGNOSTIC_ONLY = os.environ.get("SAFARI_DIAGNOSTIC_ONLY") == "1"
 ELEMENT_KEY = "element-6066-11e4-a52e-4f735466cecf"
 START = time.monotonic()
 DEADLINE = START + float(os.environ.get("SAFARI_TEST_BUDGET_SECONDS", "300"))
@@ -147,6 +148,7 @@ return {
   scrollWidth:document.documentElement.scrollWidth,clientWidth:document.documentElement.clientWidth,
   scrollY,bodyOverflow:getComputedStyle(document.body).overflow,rootOverflow:getComputedStyle(document.documentElement).overflow,
   pointerCoarse:matchMedia('(pointer:coarse)').matches,hoverNone:matchMedia('(hover:none)').matches,maxTouchPoints:navigator.maxTouchPoints,
+  reducedMotion:matchMedia('(prefers-reduced-motion:reduce)').matches,
   header:{visible:isVisible(header),rect:rect(header),font:header?getComputedStyle(header).fontFamily:null},
   mainVisible:isVisible(document.querySelector('main')),
   fontStatus:document.fonts?document.fonts.status:null,
@@ -164,6 +166,77 @@ SCROLL_STATE = r"""
 const local=document.documentElement.classList.contains('career-local-scroll');
 const scroller=local?document.querySelector('.career-native-scroll'):document.scrollingElement;
 return {local,top:local?scroller.scrollTop:scrollY,max:Math.max(0,scroller.scrollHeight-(local?scroller.clientHeight:innerHeight))};
+"""
+
+SCROLL_DIAGNOSTIC = r"""
+function describe(n){
+ if(!n)return null;
+ const s=getComputedStyle(n),r=n.getBoundingClientRect();
+ return {tag:n.tagName,id:n.id,className:typeof n.className==='string'?n.className:'',
+  top:n.scrollTop,left:n.scrollLeft,scrollHeight:n.scrollHeight,clientHeight:n.clientHeight,
+  max:Math.max(0,n.scrollHeight-n.clientHeight),clientWidth:n.clientWidth,scrollWidth:n.scrollWidth,
+  overflowX:s.overflowX,overflowY:s.overflowY,display:s.display,visibility:s.visibility,
+  position:s.position,contain:s.contain,inert:n.inert,rect:{x:r.x,y:r.y,width:r.width,height:r.height}};
+}
+const point={x:Math.floor(innerWidth*.5),y:Math.floor(innerHeight*.65)};
+const hit=document.elementFromPoint(point.x,point.y),ancestors=[];
+for(let n=hit;n;n=n.parentElement)ancestors.push(describe(n));
+return {point,hasFocus:document.hasFocus(),visibilityState:document.visibilityState,
+ innerWidth,innerHeight,windowScrollY:scrollY,scrollingElement:describe(document.scrollingElement),
+ html:describe(document.documentElement),body:describe(document.body),
+ activeElement:describe(document.activeElement),hit:describe(hit),ancestors,
+ scrollables:[...document.querySelectorAll('*')].filter(n=>n.clientHeight>0&&n.scrollHeight>n.clientHeight+5).map(describe).slice(0,50),
+ viewer:describe(document.querySelector('#viewer')),stage:describe(document.querySelector('#stage')),
+ openDialogs:[...document.querySelectorAll('dialog[open]')].map(n=>n.id),
+ fullscreenElement:describe(document.fullscreenElement),
+ galleryStatus:document.querySelector('#gallery-status')?{text:document.querySelector('#gallery-status').textContent,hidden:document.querySelector('#gallery-status').hidden}:null,
+ reducedMotion:matchMedia('(prefers-reduced-motion:reduce)').matches};
+"""
+
+TIMELINE_DIAGNOSTIC = r"""
+function dimensions(n){if(!n)return null;const r=n.getBoundingClientRect(),s=getComputedStyle(n);return {clientWidth:n.clientWidth,clientHeight:n.clientHeight,scrollHeight:n.scrollHeight,rect:{x:r.x,y:r.y,width:r.width,height:r.height},display:s.display,visibility:s.visibility,transform:s.transform};}
+const track=document.querySelector('[data-career-timeline]');
+return {readyState:document.readyState,rootClasses:document.documentElement.className,
+ reducedMotion:matchMedia('(prefers-reduced-motion:reduce)').matches,
+ pointerCoarse:matchMedia('(any-pointer:coarse)').matches,hoverNone:matchMedia('(hover:none)').matches,
+ libraries:Object.fromEntries(['gsap','ScrollTrigger','ScrollSmoother','DrawSVGPlugin','MotionPathPlugin'].map(name=>[name,{present:!!window[name],version:window[name]?.version||null}])),
+ dataset:track?{...track.dataset}:null,classes:track?.className,
+ track:dimensions(track),canvas:dimensions(track?.querySelector('.career-canvas')),stage:dimensions(track?.querySelector('.career-stage')),
+ wrapper:dimensions(document.querySelector('#career-scroll-wrapper')),content:dimensions(document.querySelector('#career-scroll-content')),
+ viewportMeasure:dimensions(document.querySelector('.career-viewport')),
+ contact:dimensions(document.querySelector('.career-contact')),outro:dimensions(document.querySelector('.career-outro')),footer:dimensions(document.querySelector('.portfolio-footer')),
+ scrollTriggers:window.ScrollTrigger?.getAll?.().map(t=>({id:t.vars.id||null,start:t.start,end:t.end,progress:t.progress,isActive:t.isActive}))||[],
+ scripts:[...document.scripts].filter(s=>s.src).map(s=>({src:s.src,defer:s.defer,type:s.type})),
+ scriptResources:performance.getEntriesByType('resource').filter(r=>r.initiatorType==='script').map(r=>({name:r.name,duration:r.duration,transferSize:r.transferSize,decodedBodySize:r.decodedBodySize,responseStatus:r.responseStatus??null})),
+ innerWidth,innerHeight,scrollY,scrollHeight:document.documentElement.scrollHeight,
+ fontStatus:document.fonts?.status};
+"""
+
+INSTALL_INPUT_OBSERVER = r"""
+// Passive diagnostic observers only: never prevent or stop an event and never
+// modify site content, scrolling, focus, preferences, or application state.
+if(!window.__dsSafariReadOnlyProbe){
+ const state={events:[],counts:{},phase:'initial-wheel'};
+ window.__dsSafariReadOnlyProbe=state;
+ const targetName=n=>n?(n.tagName||n.nodeName)+(n.id?'#'+n.id:''):null;
+ const position=()=>({window:scrollY,html:document.documentElement.scrollTop,body:document.body.scrollTop,scrollingElement:document.scrollingElement?.scrollTop});
+ function record(event){
+  const item={type:event.type,phase:state.phase,at:performance.now(),isTrusted:event.isTrusted,
+   target:targetName(event.target),cancelable:event.cancelable,defaultPreventedAtCapture:event.defaultPrevented,
+   before:position()};
+  if(event.type==='wheel')Object.assign(item,{clientX:event.clientX,clientY:event.clientY,deltaX:event.deltaX,deltaY:event.deltaY,deltaMode:event.deltaMode});
+  else item.targetScrollTop=event.target?.scrollTop??null;
+  state.counts[event.type]=(state.counts[event.type]||0)+1;
+  if(state.events.length<180)state.events.push(item);
+  setTimeout(()=>{item.defaultPreventedAfterDispatch=event.defaultPrevented;item.after=position();},0);
+ }
+ document.addEventListener('wheel',record,{capture:true,passive:true});
+ document.addEventListener('scroll',record,{capture:true,passive:true});
+}
+window.__dsSafariReadOnlyProbe.events=[];
+window.__dsSafariReadOnlyProbe.counts={};
+window.__dsSafariReadOnlyProbe.phase='initial-wheel';
+return true;
 """
 
 TIMELINE_STATE = r"""
@@ -209,6 +282,7 @@ class Suite:
             "startedUtc": dt.datetime.now(dt.timezone.utc).isoformat(),
             "origin": ORIGIN, "sourceCommit": SOURCE_SHA,
             "testCommit": os.environ.get("GITHUB_SHA"), "githubRunId": os.environ.get("GITHUB_RUN_ID"),
+            "diagnosticOnly": DIAGNOSTIC_ONLY,
             "scope": "Actual desktop Safari on macOS; narrow windows are responsive desktop tests, never iOS or touch emulation.",
             "limitations": [
                 "No real iPhone/iPad, touch gestures, browser toolbar collapse, or mobile momentum scrolling were tested.",
@@ -244,16 +318,43 @@ class Suite:
             self.case["traceback"] = traceback.format_exc(limit=6)
             try:
                 self.case["failurePage"] = self.driver.js(PAGE_STATE)
+                if DIAGNOSTIC_ONLY:
+                    self.case["failureScrollContext"] = self.driver.js(SCROLL_DIAGNOSTIC)
+                    if self.driver.js("return !!document.querySelector('[data-career-timeline]')"):
+                        self.case["failureTimelineContext"] = self.driver.js(TIMELINE_DIAGNOSTIC)
                 self.shot("failure")
             except Exception as capture_error:
                 self.case["captureError"] = str(capture_error)
         self.case["durationSeconds"] = round(time.monotonic() - start, 2)
         log_case = {k: self.case[k] for k in ("status", "durationSeconds", "screenshots", "error", "limitations") if k in self.case}
-        log_case["evidence"] = {k: v for k, v in self.case["details"].items() if k not in ("page", "gallery")}
+        log_case["evidence"] = {k: v for k, v in self.case["details"].items() if k not in ("page", "gallery", "scrollContextBefore", "scrollContextAfter", "scrollFailureProbes", "timelineDiagnosticBefore", "beforeViewerScrollContext", "inputEventProbe")}
+        if DIAGNOSTIC_ONLY:
+            log_case["diagnostic"] = {k: self.case.get(k) for k in ("failureTimelineContext",) if self.case.get(k)}
+            for probe in self.case["details"].get("scrollFailureProbes", []):
+                context = probe.get("context", {})
+                log_case.setdefault("scrollProbes", []).append({"action": probe["action"], "error": probe.get("error"), "windowScrollY": context.get("windowScrollY"), "scrollables": context.get("scrollables"), "activeElement": context.get("activeElement")})
+            for key in ("scrollContextBefore", "scrollContextAfter"):
+                context=self.case["details"].get(key)
+                if context:
+                    log_case[key]={k:context[k] for k in ("hasFocus","reducedMotion","windowScrollY","scrollingElement","ancestors","scrollables")}
+            probe=self.case["details"].get("inputEventProbe")
+            if probe:
+                wheel_phases = {}
+                for event in probe["events"]:
+                    if event["type"] != "wheel":
+                        continue
+                    phase = wheel_phases.setdefault(event["phase"], {"count": 0, "deltaY": 0, "trusted": 0, "preventedAfterDispatch": 0, "targets": []})
+                    phase["count"] += 1
+                    phase["deltaY"] += event.get("deltaY", 0)
+                    phase["trusted"] += bool(event.get("isTrusted"))
+                    phase["preventedAfterDispatch"] += bool(event.get("defaultPreventedAfterDispatch"))
+                    if event["target"] not in phase["targets"]:
+                        phase["targets"].append(event["target"])
+                log_case["inputEventProbe"]={"counts":probe["counts"],"wheelPhases":wheel_phases,"firstEvents":probe["events"][:3],"lastEvents":probe["events"][-3:]}
         for page_key in ("page", "gallery"):
             page = self.case["details"].get(page_key)
             if page:
-                log_case[page_key] = {k: page[k] for k in ("url", "innerWidth", "innerHeight", "buildRevision", "fontStatus", "fontFaces", "rootFont", "pointerCoarse", "maxTouchPoints")}
+                log_case[page_key] = {k: page[k] for k in ("url", "innerWidth", "innerHeight", "buildRevision", "fontStatus", "fontFaces", "rootFont", "pointerCoarse", "maxTouchPoints", "reducedMotion")}
         print(self.case["status"].upper(), name, json.dumps(log_case, ensure_ascii=False), flush=True)
         self.write()
 
@@ -324,6 +425,9 @@ class Suite:
     def wheel_check(self):
         d = self.driver
         before = self.detail("wheelBefore", d.js(SCROLL_STATE))
+        if DIAGNOSTIC_ONLY:
+            d.js(INSTALL_INPUT_OBSERVER)
+            self.detail("scrollContextBefore", d.js(SCROLL_DIAGNOSTIC))
         require(before["max"] > 30, "No scrollable document range exists")
         direction = -1 if before["top"] >= before["max"] - 100 else 1
         method = "native W3C wheel action"
@@ -340,11 +444,46 @@ class Suite:
         time.sleep(1.2)
         after = self.detail("wheelAfter", d.js(SCROLL_STATE))
         self.detail("scrollInputMethod", method)
+        if DIAGNOSTIC_ONLY:
+            self.detail("scrollContextAfter", d.js(SCROLL_DIAGNOSTIC))
+            if (after["top"] - before["top"]) * direction <= 5:
+                probes = self.detail("scrollFailureProbes", [])
+                for action, callback in (
+                    ("second native wheel (original first-wheel failure retained)", lambda: d.wheel(direction * 650)),
+                    ("native PageDown/PageUp after wheel failure", lambda: d.key("\ue00f" if direction > 0 else "\ue00e")),
+                    ("explicit programmatic window.scrollBy after native-input failures", lambda: d.js("window.scrollBy(0,arguments[0]);", direction * 650)),
+                ):
+                    probe = {"action": action}
+                    probes.append(probe)
+                    try:
+                        d.js("window.__dsSafariReadOnlyProbe.phase=arguments[0];", action)
+                        callback()
+                        time.sleep(1.2)
+                        probe["context"] = d.js(SCROLL_DIAGNOSTIC)
+                    except Exception as error:
+                        probe["error"] = str(error)
+            self.detail("inputEventProbe", d.js("return window.__dsSafariReadOnlyProbe"))
         require((after["top"] - before["top"]) * direction > 5, "Scrolling did not move in the requested direction", {"before": before, "after": after, "method": method})
+
+    def gallery_before_viewer_scroll(self):
+        self.driver.navigate("/artur/galleries/hb-atrium/")
+        self.ensure_gallery("artur")
+        time.sleep(.8)
+        self.detail("page", self.driver.js(PAGE_STATE))
+        self.shot("before-input")
+        self.wheel_check()
+        self.shot("after-input")
 
     def viewer(self, prefix):
         d = self.driver
+        if DIAGNOSTIC_ONLY:
+            d.navigate(("/artur" if prefix == "artur" else "") + "/galleries/hb-atrium/")
+            d.js("window.scrollTo(0,0);")
+            time.sleep(.5)
+            self.detail("diagnosticSetup", "Fresh gallery navigation and explicitly programmatic window.scrollTo(0,0) before the viewer sequence.")
         self.detail("galleryPath", self.ensure_gallery(prefix))
+        if DIAGNOSTIC_ONLY:
+            self.detail("beforeViewerScrollContext", d.js(SCROLL_DIAGNOSTIC))
         primary = self.detail("primaryImage", d.js("const i=document.querySelector('.gallery .shot img.shot-primary');return {src:i.currentSrc||i.src,width:i.naturalWidth,height:i.naturalHeight}"))
         self.detail("webpRendered", bool(re.search(r"\.webp(?:[?#]|$)", primary["src"], re.I)))
         d.click(".gallery .shot")
@@ -380,6 +519,8 @@ class Suite:
     def resume(self):
         d = self.driver
         d.navigate("/artur/resume/")
+        if DIAGNOSTIC_ONLY:
+            self.detail("timelineDiagnosticBefore", d.js(TIMELINE_DIAGNOSTIC))
         d.wait("return document.querySelector('[data-career-timeline]')?.dataset.timelineState==='animated'&&!document.documentElement.classList.contains('career-initializing')", timeout=12, label="visible initialized animated timeline")
         d.wait("return (()=>{" + TIMELINE_STATE + "})()?.readable?.length>0", timeout=6, label="first readable milestone after initial animation frame")
         d.wait("const i=document.querySelector('.career-cellular');return i&&i.complete&&i.naturalWidth>0", timeout=15, label="rendered WebP timeline background")
@@ -450,16 +591,23 @@ def main():
         suite.report["environment"]["capabilities"] = driver.capabilities
         suite.report["environment"]["userAgent"] = driver.js("return navigator.userAgent")
         require(driver.capabilities.get("browserName", "").lower() == "safari", "The driver did not create a native Safari session", driver.capabilities)
-        suite.run("desktop-viewport", lambda: suite.dimensions(1440, 900))
-        for prefix in ("studio", "artur"):
-            suite.run(prefix + "-homepage", lambda p=prefix: suite.loaded_home("/artur/" if p == "artur" else "/", personal=p == "artur"))
-            suite.run(prefix + "-gallery-navigation-history", lambda p=prefix: suite.gallery_navigation(p))
-            suite.run(prefix + "-viewer-controls-scroll", lambda p=prefix: suite.viewer(p))
-        suite.run("resume-desktop-scroll", suite.resume)
-        suite.run("narrow-viewport-request-390x844", lambda: suite.dimensions(390, 844))
-        suite.run("artur-homepage-narrow-desktop", lambda: suite.loaded_home("/artur/", personal=True))
-        suite.run("artur-viewer-narrow-desktop", lambda: suite.viewer("artur"))
-        suite.run("resume-narrow-desktop-scroll", suite.resume)
+        if DIAGNOSTIC_ONLY:
+            for label, width, height in (("desktop", 1440, 900), ("narrow-desktop", 390, 844)):
+                suite.run(label + "-viewport", lambda w=width, h=height: suite.dimensions(w, h))
+                suite.run("artur-previewer-scroll-" + label, suite.gallery_before_viewer_scroll)
+                suite.run("artur-viewer-scroll-" + label, lambda: suite.viewer("artur"))
+                suite.run("resume-scroll-" + label, suite.resume)
+        else:
+            suite.run("desktop-viewport", lambda: suite.dimensions(1440, 900))
+            for prefix in ("studio", "artur"):
+                suite.run(prefix + "-homepage", lambda p=prefix: suite.loaded_home("/artur/" if p == "artur" else "/", personal=p == "artur"))
+                suite.run(prefix + "-gallery-navigation-history", lambda p=prefix: suite.gallery_navigation(p))
+                suite.run(prefix + "-viewer-controls-scroll", lambda p=prefix: suite.viewer(p))
+            suite.run("resume-desktop-scroll", suite.resume)
+            suite.run("narrow-viewport-request-390x844", lambda: suite.dimensions(390, 844))
+            suite.run("artur-homepage-narrow-desktop", lambda: suite.loaded_home("/artur/", personal=True))
+            suite.run("artur-viewer-narrow-desktop", lambda: suite.viewer("artur"))
+            suite.run("resume-narrow-desktop-scroll", suite.resume)
     except Exception as error:
         suite.report["fatalError"] = str(error)
         suite.report["fatalTraceback"] = traceback.format_exc(limit=8)
