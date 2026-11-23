@@ -264,13 +264,13 @@ body:where(:has(> .gallery-edge-cues)) > .site-header {
   position: absolute;
   inset-block: 0;
   padding-block-start: min(var(--gallery-edge-header-height), 40dvh);
-  opacity: .3;
+  opacity: .2;
   --gallery-edge-arrow: url("gallery-edge-arrow.svg?v=3");
   --gallery-edge-arrow-size: min(88%, 112px) var(--gallery-edge-arrow-slot);
   background:
     var(--gallery-edge-arrow) center top / var(--gallery-edge-arrow-size) no-repeat content-box,
     var(--gallery-edge-arrow) center bottom / var(--gallery-edge-arrow-size) no-repeat content-box,
-    linear-gradient(to left, #1c1c1c, #303032 24%, #202022 59%, transparent) border-box;
+    url("gallery-edge-gradient.svg?v=1") center / 100% 100% no-repeat border-box;
 }
 .gallery-edge-cues::before {
   left: 0;
