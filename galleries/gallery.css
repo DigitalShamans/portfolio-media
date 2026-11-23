@@ -264,7 +264,7 @@ body:where(:has(> .gallery-edge-cues)) > .site-header {
   position: absolute;
   inset-block: 0;
   padding-block-start: min(var(--gallery-edge-header-height), 40dvh);
-  opacity: .4;
+  opacity: .3;
   background:
     url("gallery-edge-arrow.svg?v=2") center top / min(88%, 112px) var(--gallery-edge-repeat) repeat-y content-box,
     linear-gradient(to left, #1c1c1c, #303032 24%, #202022 59%, transparent) border-box;
