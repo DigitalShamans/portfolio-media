@@ -65,7 +65,8 @@
     </header>
     <form id="gallery-access-form" method="post">
       <label for="gallery-password">Gallery password</label>
-      <input id="gallery-password" type="password" autocomplete="current-password" aria-describedby="access-message" required>
+      <input id="gallery-password" type="text" autocomplete="current-password" autocapitalize="none"
+        autocorrect="off" spellcheck="false" aria-describedby="access-message" required>
       <button type="submit" disabled>Unlock gallery</button>
       <p id="access-message" role="status"></p>
     </form>
