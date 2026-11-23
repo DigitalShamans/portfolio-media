@@ -117,18 +117,15 @@ class Safari:
     def wheel(self, delta_y):
         size = self.js("return {width:innerWidth,height:innerHeight}")
         self.wheel_sequence += 1
-        # Observed Safari runs dispatched only the first wheel gesture when the
-        # source ID was reused. Release prior input state and use a fresh source
-        # identity to test whether retained driver state caused that behavior.
-        self.request("DELETE", "/actions")
-        try:
-            self.request("POST", "/actions", {"actions": [{
-                "type": "wheel", "id": f"native-wheel-{self.wheel_sequence}",
-                "actions": [{"type": "scroll", "x": int(size["width"] * .5), "y": int(size["height"] * .65),
-                             "deltaX": 0, "deltaY": int(delta_y), "duration": 350, "origin": "viewport"}],
-            }]})
-        finally:
-            self.request("DELETE", "/actions")
+        # Safari 27.2 dispatched no later event when reusing a wheel source.
+        # Release Actions then emitted an inverse wheel at (0, 0), undoing
+        # the intended scroll. A fresh source avoids both observed artifacts;
+        # session teardown performs cleanup after all assertions are complete.
+        self.request("POST", "/actions", {"actions": [{
+            "type": "wheel", "id": f"native-wheel-{self.wheel_sequence}",
+            "actions": [{"type": "scroll", "x": int(size["width"] * .5), "y": int(size["height"] * .65),
+                         "deltaX": 0, "deltaY": int(delta_y), "duration": 350, "origin": "viewport"}],
+        }]})
 
     def screenshot(self, name):
         data = self.request("GET", "/screenshot")
