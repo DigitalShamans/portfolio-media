@@ -172,7 +172,7 @@ test('desktop cues use the existing hover zones and leave fullscreen screenshot 
   assert.match(styles, /\.viewer-arrows button/);
   assert.doesNotMatch(styles, /gallery-desktop-scroll-stage/);
   assert.match(styles, /\.gallery-desktop-edge-panel\s*\{/);
-  assert.match(styles, /\.gallery-edge-cues:not\(\[hidden\]\)\s*\{[^}]*pointer-events: none/);
+  assert.match(styles, /\.gallery-edge-cues:not\(\[hidden\]\)\s*\{[^}]*position: absolute;[^}]*z-index: -1;[^}]*pointer-events: none/);
   assert.match(styles, /body:has\(dialog\[open\]\) \.gallery-edge-cues\s*\{\s*display: none/);
 
   const desktop = browser({ artwork: { left: 72, right: 1368 } });

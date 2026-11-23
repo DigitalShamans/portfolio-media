@@ -237,40 +237,42 @@ dialog {
 /* Shared destinations for gallery gestures and edge navigation. */
 .gallery-navigation { display: none !important; }
 
-/* The guides paint only within the desktop hover zones. They pass input
-   through to the page so the existing edge transition still handles it. */
+/* Keep the desktop guides behind gallery content in document coordinates. */
 .gallery-edge-cues { display: none; }
 @media (hover: hover) and (pointer: fine) {
+  body:where(:has(> .gallery-edge-cues:not([hidden]))) {
+    position: relative;
+    isolation: isolate;
+  }
   .gallery-edge-cues:not([hidden]) {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
+    position: absolute;
+    inset: var(--gallery-edge-header-height) 0 0;
+    z-index: -1;
     display: block;
     pointer-events: none;
-    --gallery-edge-arrow-slot: 50%;
+    --gallery-edge-arrow-area: max(0px, calc(100dvh - var(--gallery-edge-header-height)));
+    --gallery-edge-arrow-inset: calc(var(--gallery-edge-arrow-area) / 4);
   }
 }
 @media (min-height: 900px) {
-  .gallery-edge-cues:not([hidden]) { --gallery-edge-arrow-slot: calc(100% / 3); }
+  .gallery-edge-cues:not([hidden]) { --gallery-edge-arrow-inset: calc(var(--gallery-edge-arrow-area) / 6); }
 }
 body:has(dialog[open]) .gallery-edge-cues { display: none; }
-body:where(:has(> .gallery-edge-cues)) > .site-header {
-  position: relative;
-  z-index: 2;
-}
 .gallery-edge-cues::before,
 .gallery-edge-cues::after {
   content: "";
   position: absolute;
   inset-block: 0;
-  padding-block-start: min(var(--gallery-edge-header-height), 40dvh);
   opacity: .2;
   --gallery-edge-arrow: url("gallery-edge-arrow.svg?v=3");
-  --gallery-edge-arrow-size: min(88%, 112px) var(--gallery-edge-arrow-slot);
+  --gallery-edge-arrow-size: min(88%, 112px) 100dvh;
+  /* Keep the first pair in its original positions, then repeat down the page. */
+  --gallery-edge-arrow-first: calc(var(--gallery-edge-arrow-inset) - 50dvh);
+  --gallery-edge-arrow-last: calc(var(--gallery-edge-arrow-area) - var(--gallery-edge-arrow-inset) - 50dvh);
   background:
-    var(--gallery-edge-arrow) center top / var(--gallery-edge-arrow-size) no-repeat content-box,
-    var(--gallery-edge-arrow) center bottom / var(--gallery-edge-arrow-size) no-repeat content-box,
-    url("gallery-edge-gradient.svg?v=1") center / 100% 100% no-repeat border-box;
+    var(--gallery-edge-arrow) center var(--gallery-edge-arrow-first) / var(--gallery-edge-arrow-size) repeat-y content-box,
+    var(--gallery-edge-arrow) center var(--gallery-edge-arrow-last) / var(--gallery-edge-arrow-size) repeat-y content-box,
+    url("gallery-edge-gradient.svg?v=2") left top / 100% 256px repeat-y border-box;
 }
 .gallery-edge-cues::before {
   left: 0;
