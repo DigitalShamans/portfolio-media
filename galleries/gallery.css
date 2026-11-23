@@ -247,11 +247,11 @@ dialog {
     z-index: 1;
     display: block;
     pointer-events: none;
-    --gallery-edge-repeat: 50%;
+    --gallery-edge-arrow-slot: 50%;
   }
 }
 @media (min-height: 900px) {
-  .gallery-edge-cues:not([hidden]) { --gallery-edge-repeat: calc(100% / 3); }
+  .gallery-edge-cues:not([hidden]) { --gallery-edge-arrow-slot: calc(100% / 3); }
 }
 body:has(dialog[open]) .gallery-edge-cues { display: none; }
 body:where(:has(> .gallery-edge-cues)) > .site-header {
@@ -265,8 +265,11 @@ body:where(:has(> .gallery-edge-cues)) > .site-header {
   inset-block: 0;
   padding-block-start: min(var(--gallery-edge-header-height), 40dvh);
   opacity: .3;
+  --gallery-edge-arrow: url("gallery-edge-arrow.svg?v=2");
+  --gallery-edge-arrow-size: min(88%, 112px) var(--gallery-edge-arrow-slot);
   background:
-    url("gallery-edge-arrow.svg?v=2") center top / min(88%, 112px) var(--gallery-edge-repeat) repeat-y content-box,
+    var(--gallery-edge-arrow) center top / var(--gallery-edge-arrow-size) no-repeat content-box,
+    var(--gallery-edge-arrow) center bottom / var(--gallery-edge-arrow-size) no-repeat content-box,
     linear-gradient(to left, #1c1c1c, #303032 24%, #202022 59%, transparent) border-box;
 }
 .gallery-edge-cues::before {
