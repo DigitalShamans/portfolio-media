@@ -1379,6 +1379,111 @@ test('fullscreen desktop modifier-wheel zoom eases toward the cursor without zoo
   assert.deepEqual(errors, []);
 });
 
+test('page-end motion rebounds without changing the scroll limit', async t => {
+  for (const scene of ['gallery', 'Atrium', 'reduced motion']) {
+    await t.test(scene, async t => {
+      const map = scene === 'Atrium';
+      const reducedMotion = scene === 'reduced motion' ? 'reduce' : 'no-preference';
+      const { page, errors } = await openPage(t, { width: 1440, map, diagnostics: map, reducedMotion });
+      const surface = map ? '#map-screenshots' : '.gallery-content';
+      await page.locator(surface + ' .shot-primary').nth(2).waitFor();
+      if (map) {
+        await gallerySmootherReady(page);
+        await gallerySmootherLayoutReady(page);
+      }
+
+      await page.evaluate(({ surface, map }) => {
+        const content = document.querySelector(surface);
+        if (!map) {
+          content.setAttribute('data-page-scroll-motion', '');
+          const gutter = document.createElement('footer');
+          gutter.style.height = '80px';
+          content.after(gutter);
+        }
+        window.bottomMotion = { starts: 0, limit: document.scrollingElement.scrollHeight - innerHeight };
+        const animate = content.animate;
+        content.animate = function(frames, options) {
+          window.bottomMotion.starts++;
+          window.bottomMotion.offsets = frames.map(frame => Number.parseFloat(frame.translate.split(' ')[1]));
+          const animation = animate.call(this, frames, options);
+          animation.oncancel = () => { window.bottomMotion.cancelled = true; };
+          return animation;
+        };
+        const limit = window.bottomMotion.limit;
+        if (map) window.ScrollSmoother.get().scrollTo(limit, false);
+        else window.scrollTo({ top: limit, behavior: 'instant' });
+      }, { surface, map });
+
+      if (reducedMotion === 'reduce') {
+        await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+        assert.equal(await page.evaluate(() => window.bottomMotion.starts), 0);
+      } else {
+        await page.waitForFunction(() => window.bottomMotion.starts === 1);
+        const track = await page.evaluate(() => window.bottomMotion);
+        assert.equal(track.offsets[0], 0);
+        assert.ok(Math.min(...track.offsets) <= -18 && Math.max(...track.offsets) > 0);
+        assert.ok(track.offsets.at(-1) === 0);
+        assert.equal(await page.evaluate(() => document.scrollingElement.scrollHeight - innerHeight), track.limit);
+        await page.mouse.wheel(0, -120);
+        await page.waitForFunction(() => window.bottomMotion.cancelled);
+      }
+      assert.deepEqual(errors, []);
+    });
+  }
+});
+
+test('studio About Us scroll uses power4.out for travel and elastic.out for arrival', async t => {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
+  t.after(() => page.close());
+  page.setDefaultTimeout(5000);
+  const markup = `<!doctype html><link rel="stylesheet" href="/assets/site.css">
+    <link rel="stylesheet" href="/assets/home-sections.css">
+    <body class="portfolio-page portfolio-home">
+      <header class="site-header" style="position:sticky;top:0;height:80px">
+        <nav class="site-nav"><a href="#portfolio" data-home-link="portfolio">Portfolio</a>
+        <a href="#about-us" data-home-link="about">About Us</a></nav>
+      </header>
+      <main data-page-scroll-motion><div id="portfolio" style="height:2200px"></div>
+        <section id="about-us" style="height:340px"><h2>About Us</h2></section>
+      </main><footer style="height:64px">Copyright</footer>
+      <script src="/assets/vendor/gsap/3.15.1/gsap.min.js"></script>
+      <script src="/assets/home-sections.js"></script>
+      <script src="/assets/page-scroll-motion.js"></script>
+    </body>`;
+  await page.route('http://localhost:3000/**', route => {
+    const { pathname } = new URL(route.request().url());
+    if (pathname === '/') return route.fulfill({ contentType: 'text/html', body: markup });
+    return route.fulfill({ path: resolve(root, pathname.slice(1)) });
+  });
+  await page.goto('http://localhost:3000/');
+  await page.evaluate(() => {
+    window.aboutEases = [];
+    window.extraSprings = 0;
+    const createTimeline = window.gsap.timeline;
+    window.gsap.timeline = options => {
+      const timeline = createTimeline(options);
+      const to = timeline.to;
+      timeline.to = function(target, vars) {
+        window.aboutEases.push(vars.ease);
+        return to.call(this, target, vars);
+      };
+      return timeline;
+    };
+    const content = document.querySelector('[data-page-scroll-motion]');
+    const animate = content.animate;
+    content.animate = function(frames, options) {
+      window.extraSprings++;
+      return animate.call(this, frames, options);
+    };
+  });
+  await page.getByRole('link', { name: 'About Us' }).click();
+  await page.waitForFunction(() => document.activeElement?.id === 'about-us');
+  assert.equal(new URL(page.url()).hash, '#about-us');
+  assert.deepEqual(await page.evaluate(() => window.aboutEases), ['power4.out', 'elastic.out']);
+  assert.equal(await page.evaluate(() => window.extraSprings), 0);
+  assert.equal(await page.evaluate(() => document.scrollingElement.scrollHeight - innerHeight - scrollY), 0);
+});
+
 test('back to top follows the gallery scroll and respects the active scroll controller', async t => {
   await t.test('desktop button fades in and out, stays in the gutter and restores keyboard focus', async t => {
     const { page, errors } = await openPage(t, { width: 2300, reducedMotion: 'no-preference' });

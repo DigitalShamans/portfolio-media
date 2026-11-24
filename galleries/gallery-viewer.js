@@ -308,7 +308,8 @@ function setupClassicGalleryScroll() {
 
   function scrollDuration(offset) {
     // Match Chromium's desktop programmatic scroll for the original distance.
-    return Math.min(1500, Math.sqrt(Math.abs(offset)) * 1000 / 60);
+    const duration = Math.min(1500, Math.sqrt(Math.abs(offset)) * 1000 / 60);
+    return useExpoOut ? duration * 2 : duration;
   }
 
   function easedProgress(elapsed) {

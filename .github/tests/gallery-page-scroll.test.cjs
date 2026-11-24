@@ -172,20 +172,20 @@ test('listed galleries retain their single native step controller and ignore unr
   assert.equal(page.getCalls, 0, 'classic pages do not consult or adopt a smoother');
 });
 
-test('configured expo.out wheel steps match the vendored GSAP curve in both directions', () => {
+test('configured expo.out wheel steps match GSAP in both directions over double the usual duration', () => {
   const expoOut = gsapEases.parseEase('expo.out');
-  const duration = Math.sqrt(800) * 1000 / 60;
+  const duration = 2 * Math.sqrt(800) * 1000 / 60;
   for (const [start, destination, deltaY] of [[300, 1100, 120], [1100, 300, -120]]) {
     const page = wheelPage({ position: start, scrollEase: 'expo.out' });
     assert.equal(page.wheel({ deltaY }).defaultPrevented, true);
     let elapsed = 0;
-    for (const sample of [16, 100, 235, 420]) {
+    for (const sample of [16, 200, 470, 840]) {
       page.advance(sample - elapsed);
       elapsed = sample;
       const expected = start + (destination - start) * expoOut(elapsed / duration);
       assert.ok(Math.abs(page.native - expected) < 1e-8, 'rendered position follows expo.out at ' + sample + 'ms');
     }
-    page.advance(100);
+    page.advance(200);
     assert.equal(page.native, destination);
     assert.equal(page.pendingFrames, 0);
     assert.equal(page.getCalls, 0);

@@ -33,6 +33,7 @@
   {% endif %}
   {% if page.font_preview == nil %}
     {% if page.url == '/' or page.url == site.data.personal_portfolio.home %}
+      <script src="{{ '/assets/page-scroll-motion.js' | relative_url }}?v=1" defer></script>
       <link rel="stylesheet" href="{{ '/assets/portfolio-gallery-transition.css' | relative_url }}?v=6">
       <script src="{{ '/assets/portfolio-gallery-transition.js' | relative_url }}?v=6"></script>
     {% endif %}
@@ -41,7 +42,7 @@
 </head>
 <body class="portfolio-page{% unless page.portfolio == 'personal' %} portfolio-home{% endunless %}">
   {% include site-header.html %}
-  <main class="site-shell portfolio-main">
+  <main class="site-shell portfolio-main" data-page-scroll-motion>
     {% unless page.portfolio == 'personal' %}<div id="portfolio" data-home-section="portfolio">{% endunless %}
     <section id="recent-work" aria-label="Recent Work">
       <!-- Evenly spaced samples of a spline through the Photoshop RGB points (0, 0), (45, 48), (191, 205), (255, 255). -->
