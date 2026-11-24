@@ -77,45 +77,21 @@ test('diagnostics distinguish a pending library from a loaded or failed request'
   const current = visit('https://example.test/galleries/hb-egypt/?diagnostics=1', 1);
   const gsap = { tagName: 'SCRIPT', src: 'https://example.test/assets/gsap.min.js' };
   const scrollTrigger = { tagName: 'SCRIPT', src: 'https://example.test/assets/ScrollTrigger.min.js' };
-  const flip = { tagName: 'SCRIPT', src: 'https://example.test/assets/Flip.min.js' };
-  current.scripts.push(gsap, scrollTrigger, flip);
+  current.scripts.push(gsap, scrollTrigger);
   current.load();
   const diagnostic = current.window.PortfolioDiagnostics;
-  assert.deepEqual([...diagnostic.report().pages[0].loadingLibraries], ['gsap', 'ScrollTrigger', 'Flip']);
+  assert.deepEqual([...diagnostic.report().pages[0].loadingLibraries], ['gsap', 'ScrollTrigger']);
 
   current.window.gsap = { version: '3.15.1' };
   current.listeners.load({ target: gsap });
-  current.window.Flip = { version: '3.15.1' };
-  current.listeners.load({ target: flip });
   current.listeners.error({ target: scrollTrigger });
   const page = diagnostic.report().pages[0];
   assert.equal(page.loadingLibraries, undefined);
   assert.equal(page.libraries.gsap, '3.15.1');
-  assert.equal(page.libraries.Flip, '3.15.1');
   assert.equal(page.events[0].details.file, 'gsap.min.js');
   assert.equal(page.events[0].activity, 'loaded');
-  assert.equal(page.events[1].details.file, 'Flip.min.js');
-  assert.equal(page.events[1].activity, 'loaded');
-  assert.equal(page.events[2].activity, 'load failed');
-  assert.equal(page.features['gallery-map-preview'], undefined, 'loading Flip alone does not claim that a map animation ran');
-  assert.equal(page.motion['gallery-map-preview'], undefined);
-  assert.equal(page.tallies['gallery-map-preview'], undefined);
+  assert.equal(page.events[1].activity, 'load failed');
   assert.equal(page.input.wheel, 0);
-});
-
-test('a failed Flip request stops loading without inventing library or animation success', () => {
-  const current = visit('https://example.test/experiments/atrium-overview/?diagnostics=1', 1);
-  const flip = { tagName: 'SCRIPT', src: 'https://example.test/assets/Flip.min.js' };
-  current.scripts.push(flip);
-  current.load();
-  current.listeners.error({ target: flip });
-  const page = current.window.PortfolioDiagnostics.report().pages[0];
-  assert.equal(page.loadingLibraries, undefined);
-  assert.equal(page.libraries.Flip, false);
-  assert.equal(page.events[0].details.file, 'Flip.min.js');
-  assert.equal(page.events[0].activity, 'load failed');
-  assert.equal(page.motion['gallery-map-preview'], undefined);
-  assert.equal(page.tallies['gallery-map-preview'], undefined);
 });
 
 test('callbacks at the same position are separate from motion and trace storage is bounded', () => {
@@ -133,3 +109,4 @@ test('callbacks at the same position are separate from motion and trace storage 
   assert.equal(page.tallies['resume-reveals']['reveal completed'], 80);
   assert.equal(page.events.length, 64);
 });
+

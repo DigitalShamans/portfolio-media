@@ -12,7 +12,6 @@
     'gallery-edge': 'Gallery edge transition',
     'gallery-wheel': 'Gallery wheel scrolling',
     'gallery-smoother': 'Gallery scroll smoothing',
-    'gallery-map-preview': 'Map thumbnail animation',
     'gallery-touch': 'Gallery touch scrolling',
     'gallery-swipe': 'Gallery touch navigation',
     'portfolio-reveals': 'Portfolio card reveals'
@@ -60,7 +59,7 @@
   }
 
   function libraries() {
-    return Object.fromEntries(['gsap', 'Flip', 'ScrollTrigger', 'ScrollSmoother', 'DrawSVGPlugin', 'MotionPathPlugin']
+    return Object.fromEntries(['gsap', 'ScrollTrigger', 'ScrollSmoother', 'DrawSVGPlugin', 'MotionPathPlugin']
       .map(name => [name, window[name]?.version || Boolean(window[name])]));
   }
 
@@ -163,7 +162,7 @@
       actions.querySelector('[data-record]').textContent = 'Record 10 seconds';
       status.textContent = movingIntervals
         ? movingIntervals + ' frame intervals during motion. Longest: ' + lastTest.worstMovingIntervalMs + ' ms. Over 34 ms: ' + longMovingIntervals + '.'
-        : 'The sample ended without observing motion.';
+        : 'The sample ended without observing scroll motion.';
     }
     render();
   }
@@ -176,7 +175,7 @@
       longMovingIntervals: 0, worstMovingInterval: 0, lastMovement: movement
     };
     summary.textContent = 'Diagnostics · recording';
-    status.textContent = 'Scroll or animate the feature you want to test.';
+    status.textContent = 'Scroll with the input you want to test.';
     actions.querySelector('[data-record]').textContent = 'Stop recording';
     function frame(now) {
       const test = activeTest;
@@ -265,9 +264,6 @@
       results.append(title, details);
     }
     const visibleFeatures = [...(expected[section] || [])];
-    if (section === 'gallery' && document.querySelector('#public-map')) {
-      visibleFeatures.unshift('gallery-map-preview');
-    }
     if (section === 'gallery' && document.querySelector('[data-gsap-gallery-scroll]')) {
       visibleFeatures.splice(visibleFeatures.indexOf('gallery-wheel') + 1, 0, 'gallery-smoother');
     }

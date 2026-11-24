@@ -6,12 +6,8 @@ Unmodified browser distributions from the official GreenSock repository:
 - Source commit: `5e6c35ff8eedea12d4f229129def635277d8b0f2`
 - `gsap.min.js`: https://github.com/greensock/GSAP/blob/5e6c35ff8eedea12d4f229129def635277d8b0f2/dist/gsap.min.js
 - `ScrollTrigger.min.js`: https://github.com/greensock/GSAP/blob/5e6c35ff8eedea12d4f229129def635277d8b0f2/dist/ScrollTrigger.min.js
-- `ScrollSmoother.min.js`: https://github.com/greensock/GSAP/blob/5e6c35ff8eedea12d4f229129def635277d8b0f2/dist/ScrollSmoother.min.js
-- `Flip.min.js`: https://github.com/greensock/GSAP/blob/5e6c35ff8eedea12d4f229129def635277d8b0f2/dist/Flip.min.js
 - License: https://gsap.com/standard-license/
 
-Copyright and license notices are retained in the distributions. These files are
-served locally by the portfolio's animation features. The experimental map uses
-ScrollSmoother for page movement and Flip for thumbnail enlargement and shrinking;
-the shared galleries also use GSAP for navigation and optional touch normalization.
-The matching source maps are not included.
+Copyright and license notices are retained in both distributions. These files are
+served from this website and loaded only for the optional mobile gallery scroll
+normalizer. ScrollSmoother is not used. The matching source maps are not included.

@@ -1,16 +1,6 @@
 'use strict';
 
 const GalleryMap = (() => {
-  let registeredFlip;
-  function getFlip() {
-    const flip = window.gsap && window.Flip;
-    if (flip && registeredFlip !== flip) {
-      window.gsap.registerPlugin(flip);
-      registeredFlip = flip;
-    }
-    return flip;
-  }
-
   function mount(stage, map, resolveImage, { interactive = true, caption, help, onNavigate, navigateOnClick = true, navigateExpandedPreview = true, previewSize = 1, isInteractionLocked = () => false, closeOnEscape = true } = {}) {
     const cleanup = [];
     const listen = (target, type, handler) => { target.addEventListener(type, handler); cleanup.push(() => target.removeEventListener(type, handler)); };
@@ -60,13 +50,7 @@ const GalleryMap = (() => {
     if (!interactive) return { cards, destroy() { stage.replaceChildren(); } };
 
     const hover = matchMedia('(hover: hover) and (pointer: fine)');
-    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-    const diagnostics = window.PortfolioDiagnostics;
-    const previewFeature = 'gallery-map-preview';
-    const animationReports = diagnostics ? new Map() : null;
-    const diagnosticsEnabled = () => diagnostics && window.PortfolioDiagnostics === diagnostics;
     const blocked = new Set();
-    let destroyed = false;
     let active = null, mode = null, pointer = null;
     const hoverDelay = 400;
     let pendingCard = null, hoverTimer;
@@ -111,90 +95,14 @@ const GalleryMap = (() => {
         thumb: clientRect(anchorX - thumbWidth / 2, anchorY - thumbHeight / 2, thumbWidth, thumbHeight) };
     }
     const edgeDistance = (point, rect) => Math.min(point.x - rect.left, rect.left + rect.width - point.x, point.y - rect.top, rect.top + rect.height - point.y);
-    function reportReady() {
-      if (!diagnosticsEnabled() || destroyed) return;
-      if (reducedMotion.matches) {
-        diagnostics.state(previewFeature, 'Reduced motion', 'Thumbnail sizes change immediately.');
-      } else if (getFlip()) {
-        diagnostics.state(previewFeature, 'GSAP Flip ready', 'Hover or tap a thumbnail to verify enlargement and shrink animations.');
-      } else if (diagnostics.loadingLibraries().some(name => name === 'gsap' || name === 'Flip')) {
-        diagnostics.state(previewFeature, 'Loading GSAP Flip', 'CSS thumbnail transitions remain available while the libraries load.');
-      } else {
-        diagnostics.state(previewFeature, 'CSS fallback', 'GSAP Flip is unavailable; CSS handles thumbnail transitions.');
-      }
-    }
-    function interruptReport(card) {
-      const report = animationReports?.get(card);
-      if (!report) return;
-      // Flip may complete a previous timeline while capturing or settling it.
-      // Invalidate its report first so this is not counted as a natural completion.
-      animationReports.delete(card);
-      if (diagnosticsEnabled()) {
-        diagnostics.event(previewFeature, 'Flip interrupted', { action: report.action, map: stage.id });
-        diagnostics.state(previewFeature, 'GSAP Flip', 'Last interrupted: thumbnail ' + report.action + '.');
-      }
-    }
-    function finishAnimations() {
-      animationReports?.forEach((report, card) => interruptReport(card));
-      getFlip()?.killFlipsOf(cards);
-      reportReady();
-    }
-    function transition(card, updateState) {
-      const flip = getFlip();
-      const action = active === card ? 'enlarge' : 'shrink';
-      interruptReport(card);
-      if (!flip || destroyed || reducedMotion.matches || !stage.clientWidth || !stage.clientHeight) {
-        flip?.killFlipsOf(card);
-        updateState();
-        if (diagnosticsEnabled() && !destroyed) {
-          reportReady();
-          const activity = reducedMotion.matches || !stage.clientWidth || !stage.clientHeight
-            ? 'instant changes' : action === 'enlarge' ? 'CSS enlargements' : 'CSS shrinks';
-          diagnostics.event(previewFeature, activity, { map: stage.id });
-        }
-        return;
-      }
-      const initialWidth = diagnosticsEnabled() ? card.getBoundingClientRect().width : undefined;
-      // Capture the visible position before ending an interrupted Flip or
-      // adopting a CSS animation that began while the plugin was loading.
-      const state = flip.getState(card);
-      card.classList.add('uses-flip');
-      updateState();
-      const options = { scale: true, duration: .28, ease: 'power2.out' };
-      if (diagnosticsEnabled()) {
-        const report = { action };
-        animationReports.set(card, report);
-        const reporting = () => diagnosticsEnabled() && animationReports.get(card) === report;
-        diagnostics.state(previewFeature, 'GSAP Flip', action === 'enlarge' ? 'Enlarging a thumbnail.' : 'Shrinking a thumbnail.');
-        diagnostics.event(previewFeature, action === 'enlarge' ? 'Flip enlargements' : 'Flip shrinks', { map: stage.id });
-        diagnostics.sample(previewFeature, initialWidth);
-        options.onUpdate = () => {
-          if (reporting()) diagnostics.sample(previewFeature, card.getBoundingClientRect().width);
-        };
-        options.onComplete = () => {
-          if (!reporting()) return;
-          animationReports.delete(card);
-          diagnostics.event(previewFeature, 'Flip completed', { action, map: stage.id });
-          diagnostics.state(previewFeature, 'GSAP Flip', 'Last completed: thumbnail ' + action + '.');
-        };
-        options.onInterrupt = () => {
-          if (!reporting()) return;
-          interruptReport(card);
-          reportReady();
-        };
-      }
-      flip.from(state, options);
-    }
     function close(block = false) {
       cancelPendingHover();
       if (!active) return;
       const card = active; if (block) blocked.add(card);
       active = null; mode = null;
-      transition(card, () => {
-        card.classList.remove('is-open'); card.setAttribute('aria-expanded', 'false');
-        for (const property of ['--scale', '--shift-x', '--shift-y']) card.style.removeProperty(property);
-        stage.classList.remove('has-open-region'); if (caption) caption.textContent = 'Whole-level overview';
-      });
+      card.classList.remove('is-open'); card.setAttribute('aria-expanded', 'false');
+      for (const property of ['--scale', '--shift-x', '--shift-y']) card.style.removeProperty(property);
+      stage.classList.remove('has-open-region'); if (caption) caption.textContent = 'Whole-level overview';
     }
     function place(card) {
       const layout = geometry(card); card.style.setProperty('--scale', layout.scale);
@@ -202,11 +110,9 @@ const GalleryMap = (() => {
     }
     function open(card, inputMode) {
       if (active === card) return; close(); active = card; mode = inputMode;
-      transition(card, () => {
-        place(card);
-        card.classList.add('is-open'); card.setAttribute('aria-expanded', 'true'); stage.classList.add('has-open-region');
-        if (caption) caption.textContent = map.regions[cards.indexOf(card)].label;
-      });
+      place(card);
+      card.classList.add('is-open'); card.setAttribute('aria-expanded', 'true'); stage.classList.add('has-open-region');
+      if (caption) caption.textContent = map.regions[cards.indexOf(card)].label;
     }
     function scheduleHover(card) {
       if (pendingCard === card) return;
@@ -272,28 +178,13 @@ const GalleryMap = (() => {
       event.preventDefault(); close(true);
     });
     listen(stage, 'focusout', event => { if (mode === 'keyboard' && !stage.contains(event.relatedTarget)) close(); });
-    let width = stage.clientWidth, height = stage.clientHeight;
-    const resize = new ResizeObserver(() => {
-      if (width !== stage.clientWidth || height !== stage.clientHeight) {
-        width = stage.clientWidth; height = stage.clientHeight;
-        finishAnimations();
-        if (active && width && height) place(active);
-      }
-      checkHoverPosition();
-    }); resize.observe(stage);
+    const resize = new ResizeObserver(() => { if (active) place(active); checkHoverPosition(); }); resize.observe(stage);
     listen(document, 'scroll', checkHoverPosition);
     listen(document, 'gallery-scrollupdate', checkHoverPosition);
-    listen(reducedMotion, 'change', finishAnimations);
     listen(hover, 'change', () => { close(); blocked.clear(); updateHelp(); }); updateHelp();
-    if (diagnostics) {
-      for (const script of document.scripts) {
-        if (!/\/(gsap|Flip)\.min\.js(?:\?|$)/.test(script.src)) continue;
-        listen(script, 'load', reportReady);
-        listen(script, 'error', reportReady);
-      }
-      reportReady();
-    }
-    return { cards, close, refresh: checkHoverPosition, picture, destroy() { destroyed = true; close(); finishAnimations(); resize.disconnect(); cleanup.forEach(remove => remove()); stage.replaceChildren(); } };
+    return { cards, close, refresh: checkHoverPosition, picture, destroy() { close(); resize.disconnect(); cleanup.forEach(remove => remove()); stage.replaceChildren(); } };
   }
   return { mount };
 })();
+
+
