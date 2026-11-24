@@ -133,3 +133,4 @@ test('callbacks at the same position are separate from motion and trace storage 
   assert.equal(page.tallies['resume-reveals']['reveal completed'], 80);
   assert.equal(page.events.length, 64);
 });
+

@@ -64,7 +64,7 @@
       });
     }, { capture: true, signal: observer.signal });
     const script = document.createElement('script');
-    script.src = {{ '/assets/portfolio-diagnostics.js?v=4' | relative_url | jsonify }};
+    script.src = {{ '/assets/portfolio-diagnostics.js?v=5' | relative_url | jsonify }};
     script.addEventListener('error', () => {
       const message = document.createElement('p');
       message.textContent = 'Website diagnostics could not load. Reload to retry.';
