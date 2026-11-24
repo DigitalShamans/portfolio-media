@@ -72,6 +72,7 @@ let viewerWheel;
 let mousePan;
 let suppressViewerClick = false;
 let lastViewerPointer;
+let viewerAspect = 0;
 let viewerRequest = 0;
 let comparisonsInitialized = false;
 let viewerHover = null;
@@ -585,6 +586,7 @@ function showImage(index, initialVariant = 0) {
   if (selectedImage?.naturalWidth) {
     displayOriginal(selectedImage);
   } else if (!sources[0].fallbackUrl) {
+    viewerAspect = 0;
     original.removeAttribute('src');
   }
 
@@ -597,6 +599,8 @@ function showImage(index, initialVariant = 0) {
 
 function displayOriginal(image) {
   const source = imageUrl(image);
+  // A pending comparison can temporarily clear the viewer element's intrinsic size.
+  viewerAspect = image.naturalWidth / image.naturalHeight;
   original.alt = shots[current].image.alt;
   if (original.src !== source) original.src = source;
   if (original.complete && original.naturalWidth) queueMicrotask(imageLoaded);
@@ -710,9 +714,8 @@ function setupImageTouch(surface, getInteraction) {
 }
 
 function viewerImageBounds(rect = original.getBoundingClientRect()) {
-  const ratio = original.naturalWidth / original.naturalHeight;
-  const width = Math.min(rect.width, rect.height * ratio);
-  const height = width / ratio;
+  const width = Math.min(rect.width, rect.height * viewerAspect);
+  const height = viewerAspect ? width / viewerAspect : 0;
   return { left: rect.left + (rect.width - width) / 2, top: rect.top + (rect.height - height) / 2, width, height };
 }
 
@@ -1070,8 +1073,8 @@ viewer.addEventListener('keydown', event => {
 function setViewerZoom(scale, x, y) {
   const viewport = stage.getBoundingClientRect();
   const bounds = viewerImageBounds(viewport);
-  const maxX = scale > 1 && original.naturalWidth ? Math.max(0, (bounds.width * scale - viewport.width) / 2) : 0;
-  const maxY = scale > 1 && original.naturalWidth ? Math.max(0, (bounds.height * scale - viewport.height) / 2) : 0;
+  const maxX = scale > 1 && viewerAspect ? Math.max(0, (bounds.width * scale - viewport.width) / 2) : 0;
+  const maxY = scale > 1 && viewerAspect ? Math.max(0, (bounds.height * scale - viewport.height) / 2) : 0;
   viewerZoom.scale = scale;
   viewerZoom.x = Math.max(-maxX, Math.min(maxX, x));
   viewerZoom.y = Math.max(-maxY, Math.min(maxY, y));
@@ -1112,7 +1115,7 @@ function moveViewerTouch(event) {
   const point = pointFor(event);
   viewerTouches.set(event.pointerId, point);
   if (viewerGesture.mode === 'pinch') {
-    if (!original.naturalWidth) return;
+    if (!viewerAspect) return;
     const next = pinchGeometry();
     const scale = Math.max(1, Math.min(4, viewerGesture.zoom.scale * next.distance / viewerGesture.distance));
     zoomViewerAt(scale, viewerGesture.point, next.point, viewerGesture.zoom);
@@ -1145,7 +1148,7 @@ function endViewerTouch(event) {
 }
 
 function viewerHitImage(event) {
-  return original.naturalWidth && isInsideImage(event, viewerImageBounds());
+  return isInsideImage(event, viewerImageBounds());
 }
 
 stage.addEventListener('click', event => {
@@ -1252,6 +1255,7 @@ viewer.addEventListener('close', () => {
   viewerTouches.clear();
   viewerGesture = viewerWheel = mousePan = undefined;
   lastViewerPointer = undefined;
+  viewerAspect = 0;
   suppressViewerClick = false;
   stage.classList.remove('dragging');
   if (document.fullscreenElement === frame) void setFullscreen(false);
