@@ -85,12 +85,16 @@
     GalleryMap.mount(stage, map, resolveImage, {
       caption, help: document.querySelector('#map-help'),
       previewSize: options.previewSize, navigateOnClick: options.navigateOnClick,
+      navigateExpandedPreview: options.navigateExpandedPreview,
       onNavigate(region) {
         const target = targets.get(region.image);
         if (!target) return;
         viewerApi.selectImage(region.image);
         target.focus({ preventScroll: true });
-        target.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+        const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const smoother = window.ScrollSmoother?.get?.();
+        if (smoother?.content().contains(target)) smoother.scrollTo(target, !reducedMotion, 'top top');
+        else target.scrollIntoView({ behavior: reducedMotion ? 'instant' : 'smooth', block: 'start' });
       }
     });
 
@@ -105,6 +109,7 @@
       if (overview && !fullscreenRenderer) {
         fullscreenRenderer = GalleryMap.mount(fullscreenStage, map, resolveImage, {
           previewSize: options.previewSize, navigateOnClick: options.navigateOnClick,
+          navigateExpandedPreview: options.navigateExpandedPreview,
           isInteractionLocked: () => viewerStage.classList.contains('zoomed'), closeOnEscape: false,
           onNavigate(region) { viewerApi.openImage(region.image); }
         });
@@ -138,3 +143,4 @@
     caption.textContent = '';
   }
 })();
+

@@ -1,7 +1,7 @@
 'use strict';
 
 const GalleryMap = (() => {
-  function mount(stage, map, resolveImage, { interactive = true, caption, help, onNavigate, navigateOnClick = true, previewSize = 1, isInteractionLocked = () => false, closeOnEscape = true } = {}) {
+  function mount(stage, map, resolveImage, { interactive = true, caption, help, onNavigate, navigateOnClick = true, navigateExpandedPreview = true, previewSize = 1, isInteractionLocked = () => false, closeOnEscape = true } = {}) {
     const cleanup = [];
     const listen = (target, type, handler) => { target.addEventListener(type, handler); cleanup.push(() => target.removeEventListener(type, handler)); };
     const navigationEnabled = interactive && navigateOnClick && typeof onNavigate === 'function';
@@ -60,9 +60,13 @@ const GalleryMap = (() => {
     }
     const updateHelp = () => {
       if (!help) return;
-      help.textContent = navigationEnabled
-        ? (hover.matches ? 'Hover to enlarge. Click to scroll to the screenshot below.' : 'Tap to preview. Tap the enlarged screenshot again to scroll to it.')
-        : (hover.matches ? 'Hover a screenshot to enlarge it. Move away from its thumbnail position to return.' : 'Tap a screenshot to enlarge it. Tap again or outside it to return.');
+      if (navigationEnabled && navigateExpandedPreview) {
+        help.textContent = hover.matches ? 'Hover to enlarge. Click to scroll to the screenshot below.' : 'Tap to preview. Tap the enlarged screenshot again to scroll to it.';
+      } else if (navigationEnabled && hover.matches) {
+        help.textContent = 'Click a thumbnail to go to its screenshot. Hover to enlarge. Enlarged previews do not navigate.';
+      } else {
+        help.textContent = hover.matches ? 'Hover a screenshot to enlarge it. Move away from its thumbnail position to return.' : 'Tap a screenshot to enlarge it. Tap again or outside it to return.';
+      }
     };
     function geometry(card) {
       const width = stage.clientWidth, height = stage.clientHeight;
@@ -146,7 +150,7 @@ const GalleryMap = (() => {
       pointer = null; blocked.clear();
     });
     cards.forEach((card, index) => {
-      listen(card, 'focus', () => { if (navigationEnabled && card.matches(':focus-visible')) open(card, 'keyboard'); });
+      listen(card, 'focus', () => { if (navigationEnabled && navigateExpandedPreview && card.matches(':focus-visible')) open(card, 'keyboard'); });
       listen(card, 'pointerenter', event => {
         if (!hover.matches || event.pointerType === 'touch' || event.buttons || isInteractionLocked() || active || blocked.has(card)) return;
         pointer = { x: event.clientX, y: event.clientY }; scheduleHover(card);
@@ -154,7 +158,10 @@ const GalleryMap = (() => {
       listen(card, 'pointerleave', () => { if (pendingCard === card) cancelPendingHover(); });
       listen(card, 'click', event => {
         if (isInteractionLocked() && event.detail !== 0) return;
-        if (navigationEnabled && (hover.matches || event.detail === 0 || active === card)) {
+        const expanded = active === card;
+        if (navigationEnabled && (!expanded || navigateExpandedPreview) && (hover.matches || event.detail === 0 || expanded)) {
+          // Selecting a screenshot must not also trigger the viewer's click-to-zoom.
+          event.stopPropagation();
           close(true);
           onNavigate(map.regions[index]);
           return;
@@ -179,4 +186,5 @@ const GalleryMap = (() => {
   }
   return { mount };
 })();
+
 

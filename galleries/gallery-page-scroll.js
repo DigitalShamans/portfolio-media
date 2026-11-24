@@ -125,7 +125,9 @@
         onFocusIn(self, event) {
           // Pointer clicks and returning from the viewer must not move the page.
           // Keyboard navigation can still bring an offscreen focus target into view.
+          // Map destinations request their own scroll after receiving focus.
           if (!keyboardFocus || opening || closing || viewer.open || self.paused()
+              || event.target.matches?.('.gallery-map-shot[tabindex="-1"]')
               || document.fullscreenElement || suppressFocus || !content.contains(event.target)) return false;
         },
         onUpdate(self) {
@@ -188,3 +190,4 @@
   });
   update();
 })();
+

@@ -150,7 +150,7 @@ function mapRenderer(hoverEnabled = true, position = { x: 25, y: 29 }) {
     }
     addEventListener(name, handler) { if (!this.listeners.has(name)) this.listeners.set(name, new Set()); this.listeners.get(name).add(handler); }
     removeEventListener(name, handler) { this.listeners.get(name)?.delete(handler); }
-    fire(name, event = {}) { for (const handler of this.listeners.get(name) || []) handler(event); }
+    fire(name, event = {}) { event.stopPropagation ||= () => {}; for (const handler of this.listeners.get(name) || []) handler(event); }
     append(...children) { this.children.push(...children); }
     replaceChildren(...children) { this.children = children; }
     setAttribute(name, value) { this.attributes.set(name, value); }
@@ -245,6 +245,51 @@ test('desktop clicks navigate to the exact screenshot and close its preview', ()
   card.fire('click', { detail: 1 });
   assert.deepEqual(destinations, ['Office.jpg']);
   assert.equal(card.getAttribute('aria-expanded'), 'false');
+  view.destroy();
+});
+
+test('collapsed thumbnails navigate while enlarged previews stay in place', () => {
+  const { mount, advance } = mapRenderer();
+  const destinations = [], help = {};
+  let consumed = 0;
+  const view = mount({ navigateExpandedPreview: false, previewSize: .8, help,
+    onNavigate: region => destinations.push(region.image) });
+  const card = view.cards[0];
+  card.fire('click', { detail: 1, stopPropagation() { consumed++; } });
+  assert.deepEqual(destinations, ['Office.jpg']);
+  assert.equal(consumed, 1, 'the navigation click cannot also zoom the selected image');
+  card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 163 });
+  advance(400);
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  assert.equal(card.style.getPropertyValue('--scale'), 4);
+  card.fire('click', { detail: 1, stopPropagation() { consumed++; } });
+  assert.deepEqual(destinations, ['Office.jpg']);
+  assert.equal(consumed, 1, 'a preview click remains available to the existing viewer controls');
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  assert.match(help.textContent, /Enlarged previews do not navigate/);
+  view.destroy();
+});
+
+test('preview-only expansion keeps touch toggles and collapsed keyboard navigation', () => {
+  const { mount } = mapRenderer(false);
+  const destinations = [], help = {};
+  const view = mount({ navigateExpandedPreview: false, help,
+    onNavigate: region => destinations.push(region.image) });
+  const card = view.cards[0];
+  card.matches = () => true;
+  card.fire('focus');
+  assert.equal(card.getAttribute('aria-expanded'), 'false', 'keyboard focus leaves a thumbnail available to navigate');
+  card.fire('click', { detail: 0 });
+  assert.deepEqual(destinations, ['Office.jpg']);
+  card.fire('click', { detail: 1 });
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  card.fire('click', { detail: 1 });
+  assert.equal(card.getAttribute('aria-expanded'), 'false');
+  card.fire('click', { detail: 1 });
+  card.fire('click', { detail: 0 });
+  assert.equal(card.getAttribute('aria-expanded'), 'false');
+  assert.deepEqual(destinations, ['Office.jpg'], 'activating an enlarged preview never navigates');
+  assert.match(help.textContent, /Tap again or outside it to return/);
   view.destroy();
 });
 
@@ -399,4 +444,5 @@ test('zoom locks an open preview and pressed-pointer movement cannot schedule an
   assert.equal(card.getAttribute('aria-expanded'), 'false');
   view.destroy();
 });
+
 

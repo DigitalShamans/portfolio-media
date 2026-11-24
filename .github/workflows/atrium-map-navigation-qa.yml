@@ -1,0 +1,33 @@
+name: Atrium map interaction checks
+
+on:
+  push:
+    branches: [qa/atrium-map-navigation-2026-11-24]
+
+permissions:
+  contents: read
+
+jobs:
+  map-and-viewer:
+    if: github.ref == 'refs/heads/qa/atrium-map-navigation-2026-11-24'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser test driver
+        run: npm install --no-audit --no-fund --prefix "$RUNNER_TEMP/atrium-browser" playwright@1.62.1
+      - name: Record source and browser
+        run: |
+          git rev-parse HEAD
+          /usr/bin/google-chrome --version
+      - name: Run map, mobile, diagnostics and gallery regressions
+        run: node --test .github/tests/gallery-map.test.cjs .github/tests/gallery-mobile-scroll.test.cjs .github/tests/portfolio-diagnostics.test.cjs .github/tests/gallery-arrival.test.cjs
+      - name: Run map navigation and viewer browser checks
+        env:
+          CHROMIUM_PATH: /usr/bin/google-chrome
+        run: |
+          export NODE_PATH="$RUNNER_TEMP/atrium-browser/node_modules"
+          node --test --test-name-pattern='ScrollSmoother|Atrium|first desktop wheel|fullscreen desktop|fullscreen touch swipes|pinch and pan keep|comparison hover' .github/tests/gallery-delivery.browser.test.cjs
