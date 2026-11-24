@@ -139,7 +139,7 @@ dialog {
   color: var(--text);
 }
 .viewer-frame { position: absolute; inset: 0; overflow: hidden; background: #000; }
-.stage { position: absolute; inset: 0; overflow: clip; touch-action: none; cursor: zoom-in; }
+.stage { position: absolute; inset: 0; overflow: clip; touch-action: none; cursor: default; }
 .viewer-canvas { position: absolute; inset: 0; transform-origin: center; }
 .stage img {
   display: block;

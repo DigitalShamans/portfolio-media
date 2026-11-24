@@ -71,7 +71,7 @@ const viewerTouches = new Map();
 const viewerZoom = { scale: 1, x: 0, y: 0 };
 let viewerGesture;
 let viewerWheel;
-let mousePan;
+let mouseGesture;
 let suppressViewerClick = false;
 let lastViewerPointer;
 let pendingClickZoom;
@@ -1182,12 +1182,17 @@ stage.addEventListener('click', event => {
     viewer.close();
     return;
   }
-  if (viewerZoom.scale === 2) return;
   const point = pointFor(event);
   // Give a second click time to exit before changing the zoom.
   pendingClickZoom = setTimeout(() => {
-    if (viewer.open) zoomViewerAt(2, point, point);
+    if (!viewer.open) return;
+    if (viewerZoom.scale > 1) fitImage();
+    else zoomViewerAt(2, point, point);
   }, 300);
+});
+
+stage.addEventListener('auxclick', event => {
+  if (event.button === 1) event.preventDefault();
 });
 
 stage.addEventListener('pointerdown', event => {
@@ -1205,11 +1210,17 @@ stage.addEventListener('pointerdown', event => {
     return;
   }
   suppressViewerClick = false;
-  if (event.pointerType !== 'mouse' || event.button !== 0 || viewerZoom.scale === 1) return;
-  mousePan = { id: event.pointerId, start: pointFor(event), x: viewerZoom.x, y: viewerZoom.y };
-  // Capture panning without changing the target used to count consecutive clicks.
-  event.target.setPointerCapture(event.pointerId);
-  stage.classList.add('dragging');
+  if (event.pointerType !== 'mouse' || (event.button !== 0 && event.button !== 1)) return;
+  const panning = event.button === 1;
+  if (panning) {
+    // Suppress the browser's middle-button autoscroll inside the viewer.
+    event.preventDefault();
+    if (viewerZoom.scale === 1) return;
+    clearTimeout(pendingClickZoom);
+    stage.setPointerCapture(event.pointerId);
+    stage.classList.add('dragging');
+  }
+  mouseGesture = { id: event.pointerId, start: pointFor(event), panning, x: viewerZoom.x, y: viewerZoom.y };
 });
 
 stage.addEventListener('pointermove', event => {
@@ -1217,18 +1228,22 @@ stage.addEventListener('pointermove', event => {
     moveViewerTouch(event);
     return;
   }
-  if (mousePan?.id !== event.pointerId) return;
-  const dx = event.clientX - mousePan.start.x;
-  const dy = event.clientY - mousePan.start.y;
+  if (mouseGesture?.id !== event.pointerId) return;
+  const buttonMask = mouseGesture.panning ? 4 : 1;
+  if (!(event.buttons & buttonMask)) return;
+  const dx = event.clientX - mouseGesture.start.x;
+  const dy = event.clientY - mouseGesture.start.y;
   if (Math.hypot(dx, dy) > 5) suppressViewerClick = true;
-  if (suppressViewerClick) setViewerZoom(viewerZoom.scale, mousePan.x + dx, mousePan.y + dy);
+  if (mouseGesture.panning && suppressViewerClick) {
+    setViewerZoom(viewerZoom.scale, mouseGesture.x + dx, mouseGesture.y + dy);
+  }
 });
 
 for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
   stage.addEventListener(type, event => {
     endViewerTouch(event);
-    if (mousePan?.id !== event.pointerId) return;
-    mousePan = undefined;
+    if (mouseGesture?.id !== event.pointerId) return;
+    mouseGesture = undefined;
     stage.classList.remove('dragging');
   });
 }
@@ -1281,7 +1296,7 @@ document.addEventListener('fullscreenchange', () => {
 
 viewer.addEventListener('close', () => {
   viewerTouches.clear();
-  viewerGesture = viewerWheel = mousePan = undefined;
+  viewerGesture = viewerWheel = mouseGesture = undefined;
   lastViewerPointer = undefined;
   viewerAspect = 0;
   suppressViewerClick = false;

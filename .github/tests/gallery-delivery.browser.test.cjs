@@ -544,7 +544,7 @@ test('fullscreen touch swipes navigate on both axes while pinch and pan stay on 
   assert.deepEqual(errors, []);
 });
 
-test('fullscreen desktop single-click zooms to 200% and double-click exits', async t => {
+test('fullscreen desktop left click toggles zoom, middle drag pans, and double-click exits', async t => {
   const { page, errors } = await openPage(t, { width: 1440 });
   const firstShot = page.locator('.shot').first();
   const viewer = page.locator('#viewer');
@@ -554,24 +554,39 @@ test('fullscreen desktop single-click zooms to 200% and double-click exits', asy
   const image = await page.locator('#original').boundingBox();
   const x = image.x + image.width / 2;
   const y = image.y + image.height / 2;
+  assert.equal(await page.locator('#original').evaluate(image => getComputedStyle(image).cursor), 'default');
 
   await page.mouse.click(x, y);
   await zoomedStage.waitFor();
   assert.equal((await viewerTransform(page)).scale, 2);
   await page.mouse.click(x, y);
-  assert.equal((await viewerTransform(page)).scale, 2);
+  await zoomedStage.waitFor({ state: 'detached' });
+  assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
   assert.equal(await viewer.evaluate(element => element.open), true);
+  await page.mouse.click(x, y);
+  await zoomedStage.waitFor();
 
   const beforePan = await viewerTransform(page);
   await page.mouse.move(x, y);
-  await page.mouse.down();
+  await page.mouse.down({ button: 'middle' });
+  await page.locator('#stage.dragging').waitFor();
+  assert.equal(await page.locator('#original').evaluate(image => getComputedStyle(image).cursor), 'grabbing');
   await page.mouse.move(x + 60, y, { steps: 3 });
-  await page.mouse.up();
+  await page.mouse.up({ button: 'middle' });
   const afterPan = await viewerTransform(page);
   assert.equal(afterPan.scale, 2);
   assert.ok(afterPan.x > beforePan.x);
   assert.equal(await viewer.evaluate(element => element.open), true);
 
+  await page.mouse.down({ button: 'left' });
+  await page.mouse.move(x + 100, y, { steps: 3 });
+  await page.mouse.up({ button: 'left' });
+  // Check after the single-click delay so a drag cannot toggle the zoom.
+  await page.waitForTimeout(350);
+  assert.deepEqual(await viewerTransform(page), afterPan);
+
+  const wheelPoint = await page.locator('#stage').boundingBox();
+  await page.mouse.move(wheelPoint.x + wheelPoint.width / 2, wheelPoint.y + wheelPoint.height / 2);
   await page.mouse.wheel(0, 160);
   await displayed(page, '#original', preview('Second'));
   assert.equal(await page.locator('#counter').textContent(), '2 / 3');
@@ -681,6 +696,7 @@ test('Atrium previews stay at 80 percent without navigating and share fullscreen
   const { page, errors } = await openPage(t, { map: true, width: 1440 });
   await page.locator('#public-map').waitFor({ state: 'visible' });
   assert.equal(await page.locator('#map-error').isVisible(), false);
+  assert.equal(await page.locator('.gallery-map-overview-button').evaluate(button => getComputedStyle(button).cursor), 'pointer');
   const normal = await enlargeMapPreview(page, '#public-map');
   const beforeClick = await page.evaluate(() => scrollY);
   await page.mouse.click(normal.point.x, normal.point.y);
@@ -701,6 +717,20 @@ test('Atrium previews stay at 80 percent without navigating and share fullscreen
   assert.equal(await page.locator('#counter').textContent(), '1 / 3');
   assert.equal(await page.locator('#fullscreen-map').isVisible(), true);
   assert.equal(await page.evaluate(() => scrollY), beforeZoom);
+
+  const mapBeforePan = await viewerTransform(page);
+  await page.mouse.down({ button: 'middle' });
+  await page.mouse.move(fullscreen.point.x + 60, fullscreen.point.y, { steps: 3 });
+  await page.mouse.up({ button: 'middle' });
+  const mapAfterPan = await viewerTransform(page);
+  assert.equal(mapAfterPan.scale, 2);
+  assert.ok(mapAfterPan.x > mapBeforePan.x);
+  assert.equal(await fullscreen.card.getAttribute('aria-expanded'), 'true');
+
+  await page.mouse.click(fullscreen.point.x + 60, fullscreen.point.y);
+  await page.locator('#stage.zoomed').waitFor({ state: 'detached' });
+  assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
+  assert.equal(await page.locator('#fullscreen-map').isVisible(), true);
   await page.mouse.dblclick(fullscreen.point.x, fullscreen.point.y);
   await page.locator('#viewer').waitFor({ state: 'hidden' });
   await page.waitForFunction(() => document.fullscreenElement === null);
@@ -713,6 +743,8 @@ test('Atrium previews stay at 80 percent without navigating and share fullscreen
   assert.equal(await page.locator('#fullscreen-map').isVisible(), false);
   await page.keyboard.press('ArrowLeft');
   await page.locator('#fullscreen-map').waitFor({ state: 'visible' });
+  const wheelPoint = await page.locator('#stage').boundingBox();
+  await page.mouse.move(wheelPoint.x + wheelPoint.width / 2, wheelPoint.y + wheelPoint.height / 2);
   await page.mouse.wheel(0, 160);
   await displayed(page, '#original', preview('Second'));
   assert.equal(await page.locator('#counter').textContent(), '2 / 3');

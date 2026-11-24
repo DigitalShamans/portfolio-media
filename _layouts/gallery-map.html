@@ -9,8 +9,8 @@
   <title>{{ page.title | default: 'Interactive Gallery Map' | escape }} | {% if page.portfolio == 'personal' %}{{ site.data.personal_portfolio.name | escape }}{% else %}Digital Shamans{% endif %}</title>
   {% include site-favicon.html %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=15">
-  <link rel="stylesheet" href="{{ '/galleries/gallery.css' | relative_url }}?v=36">
-  <link rel="stylesheet" href="{{ '/galleries/gallery-map.css' | relative_url }}?v=6">
+  <link rel="stylesheet" href="{{ '/galleries/gallery.css' | relative_url }}?v=37">
+  <link rel="stylesheet" href="{{ '/galleries/gallery-map.css' | relative_url }}?v=7">
   {% include personal-typography.html %}
 </head>
 <body class="gallery-map-experiment" data-gallery-revision="{{ site.github.build_revision | escape }}">
@@ -31,7 +31,7 @@
     "defaultGallery": {{ page.gallery | default: 'hb-atrium' | jsonify }},
     "previewSize": {{ page.map_preview_size | default: 1 | jsonify }},
     "navigateOnClick": {% if page.map_navigate_on_click == false %}false{% else %}true{% endif %},
-    "viewerScript": {{ '/galleries/gallery-viewer.js' | relative_url | append: '?v=54' | jsonify }},
+    "viewerScript": {{ '/galleries/gallery-viewer.js' | relative_url | append: '?v=55' | jsonify }},
     "personal": {% if page.portfolio == 'personal' %}true{% else %}false{% endif %},
     "galleryRoot": {{ '/galleries/' | relative_url | jsonify }},
     "media": {{ site.gallery_4k_media | jsonify }},
