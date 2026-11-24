@@ -67,6 +67,7 @@ function mapBody() {
     defaultGallery: 'hb-egypt', personal: false, galleryRoot: '/galleries/',
     previewSize: Number(/^map_preview_size:\s*([.\d]+)/m.exec(atrium)?.[1] || 1),
     navigateOnClick: !/^map_navigate_on_click:\s*false\s*$/m.test(atrium),
+    navigateExpandedPreview: !/^map_navigate_expanded_preview:\s*false\s*$/m.test(atrium),
     viewerScript: '/galleries/gallery-viewer.js', media: desktopQuery,
     webpRevision: 'q92-m6', delivery: {},
     galleries: { 'hb-egypt': { title: 'Hard Bullet - Egypt', hasMap: true, versions: {} } },
@@ -94,6 +95,7 @@ function pageHtml(path, { embeds, assetVersions = {}, map = false, diagnostics =
         ${galleryViewer}${scripts(galleryLayout)}`;
   return `<!doctype html><html data-gallery4k-media="${desktopQuery}" ${settings}>
     <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">${base}${diagnostics ? diagnosticsBootstrap() : ''}
+    ${map ? '<link rel="stylesheet" href="/assets/site.css">' : ''}
     <link rel="stylesheet" href="/galleries/gallery.css">
     <link rel="stylesheet" href="/galleries/gallery-embeds.css">
     ${map ? '<link rel="stylesheet" href="/galleries/gallery-map.css">' : ''}</head>
@@ -1177,9 +1179,147 @@ async function enlargeMapPreview(page, selector) {
   return { card, point };
 }
 
+async function clickCollapsedMapRegion(page, selector, index = 0) {
+  const card = page.locator(`${selector} .gallery-map-region`).nth(index);
+  assert.equal(await card.getAttribute('aria-expanded'), 'false');
+  await card.evaluate(card => {
+    card.addEventListener('click', event => {
+      window.collapsedMapClick = { expanded: card.getAttribute('aria-expanded'), trusted: event.isTrusted };
+    }, { capture: true, once: true });
+  });
+  // Click directly, before the 400ms hover dwell can enlarge the thumbnail.
+  await card.click();
+  assert.deepEqual(await page.evaluate(() => window.collapsedMapClick), { expanded: 'false', trusted: true });
+}
+
+async function focusedMapScreenshotIsVisible(page, filename, t) {
+  try {
+    await page.waitForFunction(filename => {
+      const target = [...document.querySelectorAll('.gallery-map-shot')].find(figure => figure.dataset.image === filename);
+      const bounds = target?.getBoundingClientRect();
+      const smoother = window.ScrollSmoother?.get();
+      return target && document.activeElement === target && bounds.height > 0 && bounds.top >= -2 &&
+        bounds.bottom <= innerHeight + 2 && (!smoother || Math.abs(smoother.scrollTop() - scrollY) < 1);
+    }, filename);
+  } catch (error) {
+    const diagnostics = await page.evaluate(filename => {
+      const target = [...document.querySelectorAll('.gallery-map-shot')].find(figure => figure.dataset.image === filename);
+      const smoother = window.ScrollSmoother?.get(), content = document.querySelector('#gallery-scroll-content');
+      const rect = element => {
+        if (!element) return null;
+        const { top, bottom, height } = element.getBoundingClientRect();
+        return { top, bottom, height };
+      };
+      const focus = document.activeElement;
+      const snapshot = {
+        filename, focus: { tag: focus.tagName, id: focus.id, class: focus.className, image: focus.closest('.gallery-map-shot')?.dataset.image },
+        targetFocused: focus === target, figure: rect(target), image: rect(target?.querySelector('.shot-primary')),
+        innerHeight, clientHeight: document.documentElement.clientHeight, native: scrollY, rendered: smoother?.scrollTop(),
+        maxScroll: document.scrollingElement.scrollHeight - document.documentElement.clientHeight,
+        triggerEnd: smoother?.scrollTrigger.end, paused: smoother?.paused(),
+        body: { margin: getComputedStyle(document.body).margin, height: document.body.style.height, scrollHeight: document.body.scrollHeight },
+        content: { height: content.style.height, clientHeight: content.clientHeight, scrollHeight: content.scrollHeight },
+        wrapperScrollTop: document.querySelector('#gallery-scroll-wrapper').scrollTop,
+        previews: [...document.querySelectorAll('#public-map .gallery-map-region')].map(card => ({
+          label: card.getAttribute('aria-label'), expanded: card.getAttribute('aria-expanded'),
+          hovered: card.matches(':hover'), focusVisible: card.matches(':focus-visible'), class: card.className,
+        })),
+      };
+      snapshot.smootherOffset = target && smoother ? smoother.offset(target, 'top top') : null;
+      return snapshot;
+    }, filename);
+    t.diagnostic('Map navigation failure: ' + JSON.stringify(diagnostics));
+    throw error;
+  }
+}
+
+test('Atrium collapsed thumbnails select the exact gallery screenshot with GSAP and native scrolling', { timeout: 20_000 }, async t => {
+  for (const reducedMotion of ['no-preference', 'reduce']) {
+    await t.test(reducedMotion === 'reduce' ? 'native reduced motion' : 'GSAP with keyboard navigation', async t => {
+      const { page, errors } = await openPage(t, { map: true, width: 1440, diagnostics: true, reducedMotion });
+      await page.locator('#public-map').waitFor({ state: 'visible' });
+      if (reducedMotion === 'reduce') {
+        await page.waitForFunction(() => window.PortfolioDiagnostics?.report?.().pages.at(-1)
+          .features['gallery-smoother']?.mode === 'Native scrolling');
+        assert.equal(await page.evaluate(() => Boolean(window.ScrollSmoother?.get())), false);
+      } else {
+        await gallerySmootherReady(page);
+      }
+      const before = await page.evaluate(() => scrollY);
+      await clickCollapsedMapRegion(page, '#public-map');
+      await focusedMapScreenshotIsVisible(page, 'Second.jpg', t);
+      await displayed(page, '.gallery-map-shot[data-image="Second.jpg"] .shot-primary', preview('Second'));
+      assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), false);
+      assert.equal(await page.locator('#public-map .is-open').count(), 0);
+      assert.equal(await page.locator('#gallery-scroll-wrapper').evaluate(wrapper => wrapper.scrollTop), 0);
+      const selectedPosition = await page.evaluate(() => scrollY);
+      assert.ok(selectedPosition > before + 100, 'the selected screenshot is reached in the page scroller');
+      await page.mouse.move(300, 300);
+      await page.mouse.wheel(0, 120);
+      await page.waitForFunction(position => {
+        const smoother = window.ScrollSmoother?.get();
+        return (smoother ? smoother.scrollTop() : scrollY) > position + 60;
+      }, selectedPosition);
+
+      if (reducedMotion === 'no-preference') {
+        await page.mouse.move(5, 5);
+        await page.evaluate(() => window.ScrollSmoother.get().scrollTo(0, false));
+        await page.waitForFunction(() => scrollY < 1 && window.ScrollSmoother.get().scrollTop() < 1);
+        await page.locator('#public-map .gallery-map-overview-button').evaluate(button => button.focus({ preventScroll: true }));
+        await page.keyboard.press('Tab');
+        await page.keyboard.press('Tab');
+        const keyboardCard = page.locator('#public-map .gallery-map-region').nth(1);
+        assert.equal(await keyboardCard.evaluate(card => card === document.activeElement), true);
+        assert.equal(await keyboardCard.getAttribute('aria-expanded'), 'false', 'keyboard focus keeps the thumbnail collapsed');
+        await page.keyboard.press('Enter');
+        await focusedMapScreenshotIsVisible(page, 'Third.jpg', t);
+        assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), false);
+        assert.equal(await page.locator('#public-map .is-open').count(), 0);
+      }
+      assert.deepEqual(errors, []);
+    });
+  }
+});
+
+test('Atrium collapsed fullscreen thumbnails select an image at fit and exit to that gallery screenshot', { timeout: 15_000 }, async t => {
+  const { page, errors } = await openPage(t, {
+    map: true, width: 1440, diagnostics: true, reducedMotion: 'no-preference',
+  });
+  await page.locator('#map-fullscreen').waitFor();
+  await gallerySmootherReady(page);
+  const before = await galleryScrollPosition(page);
+  await page.locator('#map-fullscreen').click();
+  await page.locator('#fullscreen-map').waitFor({ state: 'visible' });
+  await gallerySmootherReady(page, true);
+  await clickCollapsedMapRegion(page, '#fullscreen-map');
+  await displayed(page, '#original', preview('Second'));
+  assert.equal(await page.locator('#counter').textContent(), '2 / 3');
+  assert.equal(await page.locator('#fullscreen-map').isVisible(), false);
+  // A hotspot navigation click must not bubble into the stage's delayed zoom toggle.
+  await page.waitForTimeout(350);
+  assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
+  assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), true);
+  assert.equal(await page.evaluate(() => document.fullscreenElement?.id), 'viewer-frame');
+  assert.ok(Math.abs((await galleryScrollPosition(page)).rendered - before.rendered) < 2);
+  await page.locator('#fullscreen').click();
+  await page.locator('#viewer').waitFor({ state: 'hidden' });
+  await page.waitForFunction(() => document.fullscreenElement === null);
+  await gallerySmootherReady(page);
+  await page.waitForFunction(() => {
+    const image = document.querySelector('.gallery-map-shot[data-image="Second.jpg"] .shot');
+    const bounds = image.getBoundingClientRect();
+    return document.activeElement === image && Math.abs(bounds.top + bounds.height / 2 - innerHeight / 2) < 2;
+  });
+  const restored = await galleryScrollPosition(page);
+  assert.ok(restored.rendered > before.rendered + 100);
+  assert.ok(Math.abs(restored.rendered - restored.native) < 2);
+  assert.deepEqual(errors, []);
+});
+
 test('Atrium previews stay at 80 percent without navigating and share fullscreen mouse controls', async t => {
-  const { page, errors } = await openPage(t, { map: true, width: 1440 });
+  const { page, errors } = await openPage(t, { map: true, width: 1440, diagnostics: true, reducedMotion: 'no-preference' });
   await page.locator('#public-map').waitFor({ state: 'visible' });
+  await gallerySmootherReady(page);
   assert.equal(await page.locator('#map-error').isVisible(), false);
   assert.equal(await page.locator('.gallery-map-overview-button').evaluate(button => getComputedStyle(button).cursor), 'pointer');
   const normal = await enlargeMapPreview(page, '#public-map');
@@ -1290,6 +1430,8 @@ test('Atrium touch taps survive capture while pinch and pan suppress their trail
   await card.dispatchEvent('click', { bubbles: true, cancelable: true, detail: 0 });
   assert.equal(await card.getAttribute('aria-expanded'), 'false');
   assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), true);
+  assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+  assert.equal(await page.locator('#fullscreen-map').isVisible(), true);
   assert.deepEqual(errors, []);
 });
 
@@ -1399,6 +1541,7 @@ test('RZ Start stays behind password and bearer-token delivery', async t => {
   assert.ok(!requests.some(url => url.includes('/public-media/') || url.includes('/1440p/')));
   assert.deepEqual(errors, []);
 });
+
 
 
 
