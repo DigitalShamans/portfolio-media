@@ -469,6 +469,77 @@ test('fullscreen desktop double-click toggles 200% zoom and the wheel advances f
   assert.deepEqual(errors, []);
 });
 
+test('comparison hover is limited to the bottom eighth on gallery tiles and fullscreen images', async t => {
+  await t.test('gallery tile', async t => {
+    const { page, errors } = await openPage(t, { width: 1440 });
+    const entry = page.locator('.shot-entry').first();
+    const image = entry.locator('.shot-primary');
+    const buttons = entry.locator('.comparison-indicator button');
+    const chosen = () => entry.locator('button[aria-pressed="true"]').getAttribute('aria-label');
+
+    await displayed(page, '.shot-primary', preview('First'));
+    await buttons.nth(1).click();
+    await buttons.nth(1).and(entry.locator('[aria-pressed="true"]')).waitFor();
+    await buttons.nth(0).click();
+
+    const { x, y, width, height } = await image.boundingBox();
+    const moveToChecker = fraction => page.mouse.move(x + width / 2, y + height * fraction);
+    await moveToChecker(0.87);
+    assert.equal(await chosen(), 'Show variant 1 of 3');
+    await moveToChecker(0.88);
+    assert.equal(await chosen(), 'Show variant 2 of 3');
+    await moveToChecker(0.87);
+    assert.equal(await chosen(), 'Show variant 1 of 3');
+
+    await buttons.nth(2).hover();
+    await buttons.nth(2).and(entry.locator('[aria-pressed="true"]')).waitFor();
+    await moveToChecker(0.87);
+    assert.equal(await chosen(), 'Show variant 1 of 3');
+    await buttons.nth(2).click();
+    await moveToChecker(0.87);
+    assert.equal(await chosen(), 'Show variant 3 of 3');
+    assert.deepEqual(errors, []);
+  });
+
+  await t.test('fullscreen image', async t => {
+    const { page, errors } = await openPage(t, { width: 1440 });
+    const image = page.locator('#original');
+    await page.locator('.shot').first().click();
+    await displayed(page, '#original', preview('First'));
+
+    const { x, y, width, height } = await image.evaluate(element => {
+      const { x, y, width, height } = element.getBoundingClientRect();
+      const ratio = element.naturalWidth / element.naturalHeight;
+      const fittedWidth = Math.min(width, height * ratio);
+      const fittedHeight = fittedWidth / ratio;
+      return {
+        x: x + (width - fittedWidth) / 2,
+        y: y + (height - fittedHeight) / 2,
+        width: fittedWidth,
+        height: fittedHeight
+      };
+    });
+    const moveToChecker = fraction => page.mouse.move(x + width / 2, y + height * fraction);
+    await moveToChecker(0.87);
+    assert.equal(await image.getAttribute('src'), preview('First'));
+    await moveToChecker(0.88);
+    await displayed(page, '#original', preview('First_Checker'));
+    await moveToChecker(0.87);
+    await displayed(page, '#original', preview('First'));
+
+    await segment(page, 2).hover();
+    await displayed(page, '#original', preview('First_Wireframe'));
+    await moveToChecker(0.87);
+    await displayed(page, '#original', preview('First'));
+    await segment(page, 2).click();
+    await displayed(page, '#original', preview('First_Wireframe'));
+    await moveToChecker(0.87);
+    assert.equal(await image.getAttribute('src'), preview('First_Wireframe'));
+    assert.deepEqual(errors, []);
+  });
+});
+
+
 test('RZ Start stays behind password and bearer-token delivery', async t => {
   const protectedRequests = [];
   let primaryAttempts = 0;

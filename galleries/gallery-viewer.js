@@ -651,8 +651,11 @@ function canCompare(event) {
   return (event.pointerType === 'mouse' || event.pointerType === 'pen') && !event.buttons;
 }
 
-function comparisonAt(x, left, width, count) {
-  return Math.min(count - 1, Math.max(0, Math.floor((x - left) * count / width)));
+function comparisonInBottomStrip(event, { left, top, width, height }, count) {
+  const x = event.clientX - left;
+  const y = event.clientY - top;
+  if (x < 0 || x >= width || y < height * 0.875 || y >= height) return null;
+  return Math.min(count - 1, Math.floor(x * count / width));
 }
 
 function setupImageTouch(surface, getInteraction) {
@@ -739,12 +742,12 @@ function isInsideImage(event, { left, top, width, height }) {
 }
 
 function compareAtPointer(event) {
-  if (viewerZoom.scale > 1 || !comparisonsInitialized || !original.naturalWidth || !canCompare(event)) return;
+  if (viewerZoom.scale > 1 || !comparisonsInitialized || !viewerAspect || !canCompare(event)) return;
   if (openingPointer && event.screenX === openingPointer.x && event.screenY === openingPointer.y) return;
   openingPointer = null;
-  const bounds = viewerImageBounds();
-  const hovered = isInsideImage(event, bounds)
-    ? comparisonAt(event.clientX, bounds.left, bounds.width, shots[current].sources.length)
+  const overComparison = stage.contains(event.target) || viewerIndicator?.contains(event.target);
+  const hovered = overComparison
+    ? comparisonInBottomStrip(event, viewerImageBounds(), shots[current].sources.length)
     : null;
   if (viewerHover === hovered) return;
   viewerHover = hovered;
@@ -839,16 +842,15 @@ function setupGalleryComparison(entry, link, sources, shotIndex) {
     preview(index);
   }
 
-  link.addEventListener('pointermove', event => {
+  entry.addEventListener('pointermove', event => {
     if (!canCompare(event)) return;
-    const rect = link.getBoundingClientRect();
-    const index = comparisonAt(event.clientX, rect.left, rect.width, sources.length);
+    const index = comparisonInBottomStrip(event, link.getBoundingClientRect(), sources.length);
     if (index === hovered) return;
     hovered = index;
-    preview(index);
+    preview(index ?? selected, index !== null);
   });
-  link.addEventListener('pointerleave', () => { hovered = null; });
   entry.addEventListener('pointerleave', event => {
+    hovered = null;
     if (canCompare(event)) preview(selected, false);
   });
   link.classList.add('has-comparison');
@@ -1187,10 +1189,7 @@ stage.addEventListener('pointermove', event => {
     moveViewerTouch(event);
     return;
   }
-  if (mousePan?.id !== event.pointerId) {
-    compareAtPointer(event);
-    return;
-  }
+  if (mousePan?.id !== event.pointerId) return;
   const dx = event.clientX - mousePan.start.x;
   const dy = event.clientY - mousePan.start.y;
   if (Math.hypot(dx, dy) > 5) suppressViewerClick = true;
@@ -1206,7 +1205,8 @@ for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
   });
 }
 
-stage.addEventListener('pointerleave', event => {
+frame.addEventListener('pointermove', compareAtPointer);
+frame.addEventListener('pointerleave', event => {
   if (viewerZoom.scale > 1 || !canCompare(event)) return;
   openingPointer = null;
   viewerHover = null;
