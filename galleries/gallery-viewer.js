@@ -1220,15 +1220,22 @@ function animateViewerZoom(time) {
   const remaining = zoom.target - viewerZoom.scale;
   let amount = 1;
   if (Math.abs(remaining) >= 0.001) {
-    if (zoom.filteredWheelScale === undefined) {
+    const wheel = zoom.wheel;
+    if (!wheel) {
       amount = 1 - Math.exp(-elapsed / 40);
     } else {
+      // Blend the rate after wheel input goes quiet, including when a new tick arrives.
+      const targetRate = time - wheel.lastInput >= 200 ? 1.6 : 1;
+      const baseStep = elapsed / 65;
+      const rateChange = (targetRate - wheel.rate) * (1 - Math.exp(-baseStep));
+      const step = baseStep * (wheel.rate + rateChange / 2);
+      wheel.rate += rateChange;
+
       // Smooth both wheel input and the displayed scale, carrying velocity across ticks.
-      const step = elapsed / 100;
       const decay = Math.exp(-step);
-      const inputGap = zoom.target - zoom.filteredWheelScale;
+      const inputGap = zoom.target - wheel.filteredScale;
       amount = 1 - (1 + inputGap / remaining * step) * decay;
-      zoom.filteredWheelScale = zoom.target - inputGap * decay;
+      wheel.filteredScale = zoom.target - inputGap * decay;
     }
   }
   const scale = amount === 1 ? zoom.target : viewerZoom.scale + remaining * amount;
@@ -1243,15 +1250,15 @@ function animateViewerZoom(time) {
   else zoom.frame = requestAnimationFrame(animateViewerZoom);
 }
 
-function easeViewerZoomTo(target, anchor, filteredWheelScale) {
+function easeViewerZoomTo(target, anchor, wheel) {
   if (reducedMotion.matches || target === viewerZoom.scale) {
     cancelViewerZoomAnimation();
     if (target === 1) setViewerZoom(1, 0, 0);
     else zoomViewerAt(target, anchor, anchor);
   } else if (viewerZoomAnimation) {
-    Object.assign(viewerZoomAnimation, { target, anchor, filteredWheelScale });
+    Object.assign(viewerZoomAnimation, { target, anchor, wheel });
   } else {
-    viewerZoomAnimation = { target, anchor, filteredWheelScale, frame: requestAnimationFrame(animateViewerZoom) };
+    viewerZoomAnimation = { target, anchor, wheel, frame: requestAnimationFrame(animateViewerZoom) };
   }
 }
 
@@ -1270,8 +1277,12 @@ function zoomViewerWithWheel(event) {
     : Math.min(viewerZoom.scale, previousTarget);
   const target = clampViewerScale(baseScale * Math.exp(-delta * unit * 0.0018));
   if (target === previousTarget) return;
-  const filteredScale = baseScale === previousTarget ? viewerZoomAnimation?.filteredWheelScale : undefined;
-  easeViewerZoomTo(target, pointFor(event), filteredScale ?? viewerZoom.scale);
+  const previousWheel = baseScale === previousTarget ? viewerZoomAnimation?.wheel : undefined;
+  easeViewerZoomTo(target, pointFor(event), {
+    filteredScale: previousWheel?.filteredScale ?? viewerZoom.scale,
+    lastInput: performance.now(),
+    rate: previousWheel?.rate ?? 1
+  });
 }
 
 function pinchGeometry() {

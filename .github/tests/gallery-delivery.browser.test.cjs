@@ -580,8 +580,8 @@ test('Atrium ScrollSmoother moves shared wheel steps once and smooths independen
     const bounds = image.getBoundingClientRect();
     return bounds.width > 0 && bounds.height > 0 && bounds.bottom > 0 && bounds.top < innerHeight;
   }).every(image => image.complete && image.naturalWidth > 0));
-  // ScrollSmoother 3.15.1 has a .5s initialization phase and a .2s delayed
-  // ResizeObserver refresh. Measure interpolation after the fixture layout settles.
+  // ScrollSmoother 3.15.1 has a .5s initialization phase. Let startup and the
+  // page controller's observed layout changes settle before measuring interpolation.
   await page.waitForTimeout(600);
   await page.waitForFunction(() => window.ScrollSmoother.get().scrollTrigger.end > 0 &&
     !window.ScrollTrigger.isRefreshing && !window.ScrollSmoother.isRefreshing);
@@ -670,6 +670,48 @@ test('Atrium ScrollSmoother moves shared wheel steps once and smooths independen
   for (const name of ['gsap', 'ScrollTrigger', 'ScrollSmoother']) {
     assert.ok(requests.includes(`${portfolio}/assets/vendor/gsap/3.15.1/${name}.min.js`), `${name} is served locally`);
   }
+  await t.test('content-size refresh preserves the view and updates the scroll extent', async () => {
+    const snapshot = () => page.evaluate(() => {
+      const smoother = window.ScrollSmoother.get();
+      return { native: scrollY, rendered: smoother.scrollTop(), end: smoother.scrollTrigger.end,
+        max: document.scrollingElement.scrollHeight - document.documentElement.clientHeight,
+        contentHeight: smoother.content().clientHeight,
+        imageTop: document.querySelector('#map-screenshots .shot-primary').getBoundingClientRect().top };
+    });
+    const before = await snapshot();
+    assert.ok(before.rendered > 100, 'refresh is checked away from the top of the page');
+    try {
+      await page.evaluate(() => {
+        const block = document.createElement('div');
+        block.id = 'gallery-test-late-content';
+        block.style.height = '320px';
+        document.querySelector('#gallery-scroll-content').append(block);
+      });
+      // No explicit refresh: the owned content ResizeObserver must update the extent.
+      await page.waitForFunction(before => {
+        const smoother = window.ScrollSmoother.get();
+        return Math.abs(smoother.scrollTrigger.end - before.end - 320) < 1 &&
+          Math.abs(document.scrollingElement.scrollHeight - document.documentElement.clientHeight - before.max - 320) < 1;
+      }, before);
+      const grown = await snapshot();
+      assert.equal(grown.contentHeight - before.contentHeight, 320);
+      assert.ok(Math.abs(grown.native - before.native) < 2);
+      assert.ok(Math.abs(grown.rendered - before.rendered) < 2);
+      assert.ok(Math.abs(grown.imageTop - before.imageTop) < 2);
+    } finally {
+      await page.evaluate(() => document.querySelector('#gallery-test-late-content')?.remove());
+    }
+    await page.waitForFunction(before => {
+      const smoother = window.ScrollSmoother.get();
+      return Math.abs(smoother.scrollTrigger.end - before.end) < 1 &&
+        Math.abs(document.scrollingElement.scrollHeight - document.documentElement.clientHeight - before.max) < 1;
+    }, before);
+    const restored = await snapshot();
+    assert.equal(restored.contentHeight, before.contentHeight);
+    assert.ok(Math.abs(restored.native - before.native) < 2);
+    assert.ok(Math.abs(restored.rendered - before.rendered) < 2);
+    assert.ok(Math.abs(restored.imageTop - before.imageTop) < 2);
+  });
   assert.deepEqual(errors, []);
 });
 
@@ -752,12 +794,22 @@ test('Atrium ScrollSmoother pauses for fullscreen wheel input and resumes at the
   const overview = page.locator('#public-map .gallery-map-overview-button');
   await overview.waitFor();
   await gallerySmootherReady(page);
-  await page.evaluate(() => { window.atriumSmootherInstance = window.ScrollSmoother.get(); });
+  await page.evaluate(() => {
+    window.atriumSmootherInstance = window.ScrollSmoother.get();
+    window.atriumSmootherInstance.scrollTo(120, false);
+  });
+  await page.waitForFunction(() => Math.abs(window.ScrollSmoother.get().scrollTop() - 120) < 1 && Math.abs(scrollY - 120) < 1);
   await overview.evaluate(button => button.focus({ preventScroll: true }));
   const before = await galleryScrollPosition(page);
   await overview.press('Enter');
   await page.locator('#fullscreen-map').waitFor({ state: 'visible' });
   await gallerySmootherReady(page, true);
+  const pausedBeforeRefresh = await galleryScrollPosition(page);
+  await page.evaluate(() => window.ScrollTrigger.refresh());
+  await gallerySmootherReady(page, true);
+  const pausedAfterRefresh = await galleryScrollPosition(page);
+  assert.ok(Math.abs(pausedAfterRefresh.native - pausedBeforeRefresh.native) < 2);
+  assert.ok(Math.abs(pausedAfterRefresh.rendered - pausedBeforeRefresh.rendered) < 2);
   const stage = await page.locator('#stage').boundingBox();
   await page.mouse.move(stage.x + stage.width / 2, stage.y + stage.height / 2);
   await modifiedWheel(page, 'Control', 0, -120);
