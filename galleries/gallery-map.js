@@ -1,6 +1,16 @@
 'use strict';
 
 const GalleryMap = (() => {
+  let registeredFlip;
+  function getFlip() {
+    const flip = window.gsap && window.Flip;
+    if (flip && registeredFlip !== flip) {
+      window.gsap.registerPlugin(flip);
+      registeredFlip = flip;
+    }
+    return flip;
+  }
+
   function mount(stage, map, resolveImage, { interactive = true, caption, help, onNavigate, navigateOnClick = true, navigateExpandedPreview = true, previewSize = 1, isInteractionLocked = () => false, closeOnEscape = true } = {}) {
     const cleanup = [];
     const listen = (target, type, handler) => { target.addEventListener(type, handler); cleanup.push(() => target.removeEventListener(type, handler)); };
@@ -50,7 +60,9 @@ const GalleryMap = (() => {
     if (!interactive) return { cards, destroy() { stage.replaceChildren(); } };
 
     const hover = matchMedia('(hover: hover) and (pointer: fine)');
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
     const blocked = new Set();
+    let destroyed = false;
     let active = null, mode = null, pointer = null;
     const hoverDelay = 400;
     let pendingCard = null, hoverTimer;
@@ -95,14 +107,33 @@ const GalleryMap = (() => {
         thumb: clientRect(anchorX - thumbWidth / 2, anchorY - thumbHeight / 2, thumbWidth, thumbHeight) };
     }
     const edgeDistance = (point, rect) => Math.min(point.x - rect.left, rect.left + rect.width - point.x, point.y - rect.top, rect.top + rect.height - point.y);
+    function finishAnimations() {
+      getFlip()?.killFlipsOf(cards);
+    }
+    function transition(card, updateState) {
+      const flip = getFlip();
+      if (!flip || destroyed || reducedMotion.matches || !stage.clientWidth || !stage.clientHeight) {
+        flip?.killFlipsOf(card);
+        updateState();
+        return;
+      }
+      // Capture the visible position before ending an interrupted Flip or
+      // adopting a CSS animation that began while the plugin was loading.
+      const state = flip.getState(card);
+      card.classList.add('uses-flip');
+      updateState();
+      flip.from(state, { scale: true, duration: .28, ease: 'power2.out' });
+    }
     function close(block = false) {
       cancelPendingHover();
       if (!active) return;
       const card = active; if (block) blocked.add(card);
       active = null; mode = null;
-      card.classList.remove('is-open'); card.setAttribute('aria-expanded', 'false');
-      for (const property of ['--scale', '--shift-x', '--shift-y']) card.style.removeProperty(property);
-      stage.classList.remove('has-open-region'); if (caption) caption.textContent = 'Whole-level overview';
+      transition(card, () => {
+        card.classList.remove('is-open'); card.setAttribute('aria-expanded', 'false');
+        for (const property of ['--scale', '--shift-x', '--shift-y']) card.style.removeProperty(property);
+        stage.classList.remove('has-open-region'); if (caption) caption.textContent = 'Whole-level overview';
+      });
     }
     function place(card) {
       const layout = geometry(card); card.style.setProperty('--scale', layout.scale);
@@ -110,9 +141,11 @@ const GalleryMap = (() => {
     }
     function open(card, inputMode) {
       if (active === card) return; close(); active = card; mode = inputMode;
-      place(card);
-      card.classList.add('is-open'); card.setAttribute('aria-expanded', 'true'); stage.classList.add('has-open-region');
-      if (caption) caption.textContent = map.regions[cards.indexOf(card)].label;
+      transition(card, () => {
+        place(card);
+        card.classList.add('is-open'); card.setAttribute('aria-expanded', 'true'); stage.classList.add('has-open-region');
+        if (caption) caption.textContent = map.regions[cards.indexOf(card)].label;
+      });
     }
     function scheduleHover(card) {
       if (pendingCard === card) return;
@@ -178,13 +211,20 @@ const GalleryMap = (() => {
       event.preventDefault(); close(true);
     });
     listen(stage, 'focusout', event => { if (mode === 'keyboard' && !stage.contains(event.relatedTarget)) close(); });
-    const resize = new ResizeObserver(() => { if (active) place(active); checkHoverPosition(); }); resize.observe(stage);
+    let width = stage.clientWidth, height = stage.clientHeight;
+    const resize = new ResizeObserver(() => {
+      if (width !== stage.clientWidth || height !== stage.clientHeight) {
+        width = stage.clientWidth; height = stage.clientHeight;
+        finishAnimations();
+        if (active && width && height) place(active);
+      }
+      checkHoverPosition();
+    }); resize.observe(stage);
     listen(document, 'scroll', checkHoverPosition);
     listen(document, 'gallery-scrollupdate', checkHoverPosition);
+    listen(reducedMotion, 'change', finishAnimations);
     listen(hover, 'change', () => { close(); blocked.clear(); updateHelp(); }); updateHelp();
-    return { cards, close, refresh: checkHoverPosition, picture, destroy() { close(); resize.disconnect(); cleanup.forEach(remove => remove()); stage.replaceChildren(); } };
+    return { cards, close, refresh: checkHoverPosition, picture, destroy() { destroyed = true; close(); finishAnimations(); resize.disconnect(); cleanup.forEach(remove => remove()); stage.replaceChildren(); } };
   }
   return { mount };
 })();
-
-
