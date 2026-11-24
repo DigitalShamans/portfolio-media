@@ -1,0 +1,33 @@
+name: Atrium Flip diagnostics checks
+
+on:
+  push:
+    branches: [qa/atrium-flip-diagnostics-2026-11-25]
+
+permissions:
+  contents: read
+
+jobs:
+  map-and-gallery:
+    if: github.ref == 'refs/heads/qa/atrium-flip-diagnostics-2026-11-25'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser test driver
+        run: npm install --no-audit --no-fund --prefix "$RUNNER_TEMP/atrium-browser" playwright@1.62.1
+      - name: Record source and browser
+        run: |
+          git rev-parse HEAD
+          /usr/bin/google-chrome --version
+      - name: Run map, image-step, touch and diagnostics regressions
+        run: node --test .github/tests/gallery-map.test.cjs .github/tests/gallery-page-scroll.test.cjs .github/tests/gallery-mobile-scroll.test.cjs .github/tests/portfolio-diagnostics.test.cjs
+      - name: Run gallery and fullscreen browser regressions
+        env:
+          CHROMIUM_PATH: /usr/bin/google-chrome
+        run: |
+          export NODE_PATH="$RUNNER_TEMP/atrium-browser/node_modules"
+          node --test .github/tests/gallery-delivery.browser.test.cjs

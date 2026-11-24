@@ -157,7 +157,7 @@ async function startFixtureServer(t, serve, errors) {
 
 async function openPage(t, {
   route = gallery, width = 2800, hasTouch = false, intercept, embeds, assetVersions,
-  map = false, diagnostics = false, reducedMotion, cacheImages = false,
+  map = false, diagnostics = false, reducedMotion, cacheImages = false, waitUntil = 'domcontentloaded',
 } = {}) {
   if (map) route = mapRoute;
   const page = await browser.newPage({ hasTouch, viewport: { width, height: 900 } });
@@ -198,7 +198,7 @@ async function openPage(t, {
   } else {
     await page.route('**/*', request => serve(request, new URL(request.request().url())));
   }
-  await page.goto(urls.portfolio + route + (diagnostics ? '?diagnostics=1' : ''), { waitUntil: 'domcontentloaded' });
+  await page.goto(urls.portfolio + route + (diagnostics ? '?diagnostics=1' : ''), { waitUntil });
   return { page, requests, errors, urls };
 }
 
@@ -1004,6 +1004,49 @@ test('opening diagnostics update when GSAP loads without scroll input', async t 
   assert.ok(report.events.some(entry => entry.feature === 'libraries' && entry.details.file === 'gsap.min.js'));
 });
 
+test('Atrium diagnostics report late Flip readiness without inventing thumbnail motion', { timeout: 15_000 }, async t => {
+  const flipReady = signal();
+  t.after(flipReady.release);
+  const { page, errors } = await openPage(t, {
+    map: true, width: 1440, diagnostics: true, reducedMotion: 'no-preference', waitUntil: 'commit',
+    intercept: async (request, url) => {
+      if (!url.pathname.endsWith('/Flip.min.js')) return false;
+      await flipReady.reached;
+      await request.fulfill({ path: resolve(root, url.pathname.slice(1)) });
+      return true;
+    },
+  });
+  // The ordered deferred Flip request blocks DOMContentLoaded; the preceding
+  // map scripts can still mount and report their usable loading state.
+  await page.locator('#public-map .gallery-map-region').first().waitFor({ state: 'visible' });
+  await page.waitForFunction(() => window.PortfolioDiagnostics?.report?.().pages.at(-1)
+    .features['gallery-map-preview']?.mode === 'Loading GSAP Flip');
+  const pending = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1));
+  assert.equal(pending.libraries.Flip, false);
+  assert.ok(pending.loadingLibraries.includes('Flip'));
+  assert.equal(pending.motion['gallery-map-preview'], undefined);
+  assert.equal(pending.tallies['gallery-map-preview'], undefined);
+
+  flipReady.release();
+  await page.waitForFunction(() => window.PortfolioDiagnostics.report().pages.at(-1)
+    .features['gallery-map-preview']?.mode === 'GSAP Flip ready');
+  const ready = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1));
+  assert.equal(ready.libraries.Flip, '3.15.1');
+  assert.ok(!ready.loadingLibraries?.includes('Flip'));
+  assert.equal(ready.motion['gallery-map-preview'], undefined);
+  assert.equal(ready.tallies['gallery-map-preview'], undefined);
+  assert.equal(ready.input.wheel, 0);
+  assert.equal(ready.input.mousePresses, 0);
+  await page.waitForLoadState('domcontentloaded');
+  await page.getByText('Diagnostics', { exact: true }).click();
+  await page.getByText('Map thumbnail animation', { exact: true }).waitFor();
+  const previewRow = await page.getByText('Map thumbnail animation', { exact: true })
+    .evaluate(title => title.nextElementSibling.textContent);
+  assert.match(previewRow, /GSAP Flip ready/);
+  assert.doesNotMatch(previewRow, /motion updates|Flip completed/);
+  assert.deepEqual(errors, []);
+});
+
 test('the first desktop wheel step animates the opening image into place', async t => {
   const { page, errors } = await openPage(t, { width: 1440 });
   await page.locator('.shot-primary').nth(2).waitFor();
@@ -1551,11 +1594,17 @@ async function mapPreviewSettled(page, selector, ratio) {
 
 test('Atrium thumbnail enlargement and shrink use Flip with continuous interrupted reversal', { timeout: 20_000 }, async t => {
   const { page, requests, errors } = await openPage(t, {
-    map: true, width: 1440, reducedMotion: 'no-preference',
+    map: true, width: 1440, diagnostics: true, reducedMotion: 'no-preference',
   });
   await page.waitForFunction(() => Boolean(window.gsap && window.Flip));
   const selector = '#public-map', card = page.locator(`${selector} .gallery-map-region`).first();
   await card.waitFor({ state: 'visible' });
+  await page.waitForFunction(() => window.PortfolioDiagnostics.report().pages.at(-1)
+    .features['gallery-map-preview']?.mode === 'GSAP Flip ready');
+  const ready = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1));
+  assert.equal(ready.libraries.Flip, '3.15.1');
+  assert.equal(ready.motion['gallery-map-preview'], undefined, 'a loaded Flip library is not observed thumbnail motion');
+  assert.equal(ready.tallies['gallery-map-preview'], undefined, 'readiness does not invent animation counts');
   const initial = await card.boundingBox(), native = await page.evaluate(() => scrollY);
   await recordMapPreviewMotion(page, selector);
   await enlargeMapPreview(page, selector);
@@ -1574,6 +1623,27 @@ test('Atrium thumbnail enlargement and shrink use Flip with continuous interrupt
     assert.ok(Math.abs(collapsed[property] - initial[property]) < 1.5, `shrink restores thumbnail ${property}`);
   }
   assert.ok(requests.includes(`${portfolio}/assets/vendor/gsap/3.15.1/Flip.min.js`), 'Flip is served from the portfolio');
+  const completed = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1));
+  const previewFeature = completed.features['gallery-map-preview'];
+  const previewCounts = completed.tallies['gallery-map-preview'];
+  assert.equal(previewFeature.mode, 'GSAP Flip');
+  assert.match(previewFeature.reason, /shrink/i);
+  assert.match(previewFeature.reason, /completed/i);
+  assert.equal(previewCounts['Flip enlargements'], 1);
+  assert.equal(previewCounts['Flip shrinks'], 1);
+  assert.equal(previewCounts['Flip completed'], 2);
+  assert.equal(previewCounts['Flip interrupted'] || 0, 0);
+  assert.ok(completed.motion['gallery-map-preview'].advances > 1, 'diagnostics observed changing thumbnail widths');
+  assert.ok(completed.motion['gallery-map-preview'].max > completed.motion['gallery-map-preview'].min + 100);
+  await page.getByText('Diagnostics', { exact: true }).click();
+  await page.getByText('Map thumbnail animation', { exact: true }).waitFor();
+  const previewRow = await page.getByText('Map thumbnail animation', { exact: true })
+    .evaluate(title => title.nextElementSibling.textContent);
+  assert.match(await page.locator('.portfolio-diagnostics [data-libraries]').textContent(), /Flip 3\.15\.1/);
+  assert.match(previewRow, /GSAP Flip/);
+  assert.match(previewRow, /motion updates/);
+  assert.match(previewRow, /Flip completed 2/);
+  await page.getByText('Diagnostics', { exact: true }).click();
 
   // Capture the same-frame bounds around the actual pointerleave handler. An
   // interrupted opening must reverse from its visible rectangle, without a jump.
@@ -1633,6 +1703,12 @@ test('Atrium thumbnail enlargement and shrink use Flip with continuous interrupt
   await finishMapPreviewMotion(page);
   await enlargeMapPreview(page, selector);
   await mapPreviewSettled(page, selector, .8);
+  const interrupted = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1)
+    .tallies['gallery-map-preview']);
+  assert.equal(interrupted['Flip enlargements'], 3);
+  assert.equal(interrupted['Flip shrinks'], 2);
+  assert.equal(interrupted['Flip interrupted'], 1);
+  assert.equal(interrupted['Flip completed'], 4, 'forced settling of the interrupted opening is not a natural completion');
   assert.equal(await page.evaluate(() => scrollY), native, 'thumbnail transitions never move the gallery');
   assert.deepEqual(errors, []);
 });
@@ -1641,7 +1717,7 @@ test('Atrium thumbnail previews remain usable without Flip and respect reduced m
   for (const mode of ['missing Flip', 'reduced motion']) {
     await t.test(mode, async t => {
       const { page, errors } = await openPage(t, {
-        map: true, width: 1440, reducedMotion: mode === 'reduced motion' ? 'reduce' : 'no-preference',
+        map: true, width: 1440, diagnostics: true, reducedMotion: mode === 'reduced motion' ? 'reduce' : 'no-preference',
         intercept: async (request, url) => {
           if (mode !== 'missing Flip' || !url.pathname.endsWith('/Flip.min.js')) return false;
           await request.abort();
@@ -1664,6 +1740,21 @@ test('Atrium thumbnail previews remain usable without Flip and respect reduced m
       assert.ok(samples.every(sample => !sample.flipping));
       const intermediate = samples.some(sample => sample.ratio > .205 && sample.ratio < .795);
       assert.equal(intermediate, mode === 'missing Flip', 'CSS fallback animates; reduced motion settles immediately');
+      const report = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1));
+      const counts = report.tallies['gallery-map-preview'];
+      assert.equal(report.features['gallery-map-preview'].mode, mode === 'missing Flip' ? 'CSS fallback' : 'Reduced motion');
+      assert.equal(report.libraries.Flip, mode === 'missing Flip' ? false : '3.15.1');
+      assert.equal(report.motion['gallery-map-preview'], undefined, 'non-Flip paths do not claim observed Flip frames');
+      for (const key of ['Flip enlargements', 'Flip shrinks', 'Flip completed', 'Flip interrupted']) {
+        assert.equal(counts[key] || 0, 0, key);
+      }
+      if (mode === 'missing Flip') {
+        assert.equal(counts['CSS enlargements'], 1);
+        assert.equal(counts['CSS shrinks'], 1);
+        assert.ok(!report.loadingLibraries?.includes('Flip'));
+        assert.ok(report.events.some(entry => entry.feature === 'scripts' && entry.activity === 'load failed' &&
+          entry.details.file === 'Flip.min.js'));
+      } else assert.equal(counts['instant changes'], 2);
       assert.deepEqual(errors, []);
     });
   }
