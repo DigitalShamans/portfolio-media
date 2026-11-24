@@ -206,14 +206,6 @@ function trackGalleryPosition() {
 
 function setupClassicGalleryScroll() {
   const gsapGalleryScroll = gallery.hasAttribute('data-gsap-gallery-scroll');
-  if (gallery.hasAttribute('data-native-gallery-scroll')) {
-    galleryDiagnostics?.state('gallery-wheel', 'Native wheel scrolling', 'This gallery uses native scrolling.');
-    return;
-  }
-  galleryDiagnostics?.state('gallery-wheel', desktopScrolling.matches
-    ? getGallerySmoother() ? 'GSAP image stepping' : 'Image stepping available' : 'Native wheel scrolling',
-    gsapGalleryScroll ? 'Shared image stepping uses GSAP when the page smoother is ready.'
-      : 'The wheel controller is independent of GSAP.', { imageResolution });
   const scroller = document.scrollingElement;
   const twoImageScroll = gallery.hasAttribute('data-two-image-scroll');
   const groupedImageScroll = gallery.hasAttribute('data-grouped-image-scroll');
@@ -259,6 +251,47 @@ function setupClassicGalleryScroll() {
     wheelStroke = undefined;
     cancelGalleryStep();
   }
+
+  function mountBackToTop() {
+    const button = document.querySelector('.gallery-back-to-top');
+    if (!button) return;
+
+    const heading = galleryContent.querySelector('h1');
+    heading.tabIndex = -1;
+
+    function positionButton() {
+      const gutter = scroller.clientWidth - galleryContent.getBoundingClientRect().right;
+      button.style.setProperty('--gallery-back-to-top-gutter', gutter + 'px');
+      button.classList.toggle('gallery-back-to-top--gutter', desktopScrolling.matches && gutter >= 80);
+    }
+
+    window.addEventListener('resize', positionButton);
+    desktopScrolling.addEventListener('change', positionButton);
+    new IntersectionObserver(([entry]) => {
+      const pastHeading = !entry.isIntersecting && entry.boundingClientRect.bottom <= 0;
+      if (pastHeading) positionButton();
+      else if (document.activeElement === button) heading.focus({ preventScroll: true });
+      button.hidden = !pastHeading;
+    }).observe(heading);
+
+    button.addEventListener('click', () => {
+      interruptGalleryScroll();
+      const smoother = getGallerySmoother();
+      const smooth = !reducedMotion.matches;
+      if (smoother && !smoother.paused()) smoother.scrollTo(0, smooth);
+      else window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'instant' });
+    });
+  }
+
+  mountBackToTop();
+  if (gallery.hasAttribute('data-native-gallery-scroll')) {
+    galleryDiagnostics?.state('gallery-wheel', 'Native wheel scrolling', 'This gallery uses native scrolling.');
+    return;
+  }
+  galleryDiagnostics?.state('gallery-wheel', desktopScrolling.matches
+    ? getGallerySmoother() ? 'GSAP image stepping' : 'Image stepping available' : 'Native wheel scrolling',
+    gsapGalleryScroll ? 'Shared image stepping uses GSAP when the page smoother is ready.'
+      : 'The wheel controller is independent of GSAP.', { imageResolution });
 
   function recordWheelStroke(direction, time) {
     // Start immediately, then group ticks until the wheel has been quiet for 150ms.

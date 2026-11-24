@@ -31,7 +31,7 @@
   {% endif %}
   {% include site-favicon.html %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=15">
-  <link rel="stylesheet" href="../gallery.css?v=38">
+  <link rel="stylesheet" href="../gallery.css?v=39">
   {% if gallery_page.gallery_captions %}<link rel="stylesheet" href="../gallery-captions.css?v=1">{% endif %}
   <link rel="expect" href="#gallery-edge-ready" blocking="render">
   {% if gallery_page.gallery_embeds %}<link rel="stylesheet" href="../gallery-embeds.css?v=2">{% endif %}
@@ -96,12 +96,13 @@
     <footer class="site-footer"{% if recent_gallery %} id="portfolio-gallery-ready"{% endif %}><a class="back" href="{{ portfolio_url | relative_url }}#recent-work">Back to portfolio</a></footer>
   </main>
 
+  {% include gallery-back-to-top.html %}
   {% include gallery-viewer.html %}
 
   <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=6"></script>
   <script src="../gallery-data.js?v=3"></script>
   {% if gallery_page.gallery_embeds %}<script src="../gallery-embeds.js?v=3"></script>{% endif %}
-  <script src="../gallery-viewer.js?v=69"></script>
+  <script src="../gallery-viewer.js?v=70"></script>
   {% if gallery_page.gallery_captions %}<script src="../gallery-captions.js?v=1"></script>{% endif %}
 </body>
 </html>

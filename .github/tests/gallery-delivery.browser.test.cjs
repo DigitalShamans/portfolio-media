@@ -13,6 +13,7 @@ const read = path => readFileSync(resolve(root, path), 'utf8');
 const galleryLayout = read('_layouts/gallery.html');
 const lockedLayout = read('_layouts/locked-gallery.html');
 const mapLayout = read('_layouts/gallery-map.html');
+const backToTop = read('_includes/gallery-back-to-top.html');
 const viewerInclude = read('_includes/gallery-viewer.html');
 const galleryViewer = viewerInclude
   .replace(/{% if include\.map %}[\s\S]*?{% endif %}/, '');
@@ -70,6 +71,7 @@ function mapBody() {
   const atrium = read('experiments/atrium-overview/index.html');
   const content = mapLayout.slice(mapLayout.indexOf('>', mapLayout.indexOf('<body')) + 1, mapLayout.indexOf('  {% assign map_pages'))
     .replace('{% include site-header.html %}', '')
+    .replace('{% include gallery-back-to-top.html %}', backToTop)
     .replace('{% include gallery-viewer.html map=true %}', mapViewer);
   const options = {
     defaultGallery: 'hb-egypt', personal: false, galleryRoot: '/galleries/',
@@ -91,7 +93,8 @@ function pageHtml(path, { embeds, assetVersions = {}, map = false, diagnostics =
   const base = path.startsWith('/artur/') ? `<base href="${isLocked ? locked : gallery}">` : '';
   const body = map ? mapBody() : isLocked
     ? lockedLayout.slice(lockedLayout.indexOf('  <main id="gallery-access"'), lockedLayout.indexOf('  <script src=', lockedLayout.indexOf('</head>')))
-      .replace('{{ portfolio_url | relative_url }}', '/') + scripts(lockedLayout)
+      .replace('{{ portfolio_url | relative_url }}', '/')
+      .replace('{% include gallery-back-to-top.html %}', backToTop) + scripts(lockedLayout)
       .replace('{{ site.data.gallery_delivery.service_origin | jsonify }}', JSON.stringify(media))
     : `<div class="gallery-content"><header class="intro"><h1>Hard Bullet - Egypt</h1></header>
         <p id="gallery-status" hidden></p>
@@ -101,7 +104,7 @@ function pageHtml(path, { embeds, assetVersions = {}, map = false, diagnostics =
           .replace('{{ site.gallery_4k_media | escape }}', desktopQuery)
           .replace('{{ first_image_url | escape }}', originals('First'))
           .replaceAll('{{ gallery_page.gallery_title | escape }}', 'Hard Bullet - Egypt')}</section></div>
-        ${galleryViewer}${scripts(galleryLayout)}`;
+        ${backToTop}${galleryViewer}${scripts(galleryLayout)}`;
   return `<!doctype html><html data-gallery4k-media="${desktopQuery}" ${settings}>
     <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">${base}${diagnostics ? diagnosticsBootstrap() : ''}
     ${map ? '<link rel="stylesheet" href="/assets/site.css">' : ''}
@@ -540,6 +543,20 @@ async function gallerySmootherReady(page, paused = false) {
   }, paused);
 }
 
+async function gallerySmootherLayoutReady(page) {
+  await page.waitForLoadState('load');
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForFunction(() => [...document.images].filter(image => {
+    const bounds = image.getBoundingClientRect();
+    return bounds.width > 0 && bounds.height > 0 && bounds.bottom > 0 && bounds.top < innerHeight;
+  }).every(image => image.complete && image.naturalWidth > 0));
+  // ScrollSmoother 3.15.1 has a .5s initialization phase. Let startup and the
+  // page controller's observed layout changes settle before measuring interpolation.
+  await page.waitForTimeout(600);
+  await page.waitForFunction(() => window.ScrollSmoother.get().scrollTrigger.end > 0 &&
+    !window.ScrollTrigger.isRefreshing && !window.ScrollSmoother.isRefreshing);
+}
+
 async function galleryScrollPosition(page) {
   return page.evaluate(() => ({
     native: window.scrollY,
@@ -574,17 +591,7 @@ test('Atrium ScrollSmoother moves shared wheel steps once and smooths independen
   });
   await page.locator('#map-screenshots .shot-primary').nth(2).waitFor();
   await gallerySmootherReady(page);
-  await page.waitForLoadState('load');
-  await page.evaluate(() => document.fonts.ready);
-  await page.waitForFunction(() => [...document.images].filter(image => {
-    const bounds = image.getBoundingClientRect();
-    return bounds.width > 0 && bounds.height > 0 && bounds.bottom > 0 && bounds.top < innerHeight;
-  }).every(image => image.complete && image.naturalWidth > 0));
-  // ScrollSmoother 3.15.1 has a .5s initialization phase. Let startup and the
-  // page controller's observed layout changes settle before measuring interpolation.
-  await page.waitForTimeout(600);
-  await page.waitForFunction(() => window.ScrollSmoother.get().scrollTrigger.end > 0 &&
-    !window.ScrollTrigger.isRefreshing && !window.ScrollSmoother.isRefreshing);
+  await gallerySmootherLayoutReady(page);
   const setup = await page.evaluate(() => {
     const smoother = window.ScrollSmoother.get();
     return {
@@ -794,6 +801,7 @@ test('Atrium ScrollSmoother pauses for fullscreen wheel input and resumes at the
   const overview = page.locator('#public-map .gallery-map-overview-button');
   await overview.waitFor();
   await gallerySmootherReady(page);
+  await gallerySmootherLayoutReady(page);
   await page.evaluate(() => {
     window.atriumSmootherInstance = window.ScrollSmoother.get();
     window.atriumSmootherInstance.scrollTo(120, false);
@@ -1412,6 +1420,78 @@ test('fullscreen desktop modifier-wheel zoom eases toward the cursor without zoo
     return event?.ctrlKey && event.isTrusted && !event.defaultPrevented;
   });
   assert.deepEqual(errors, []);
+});
+
+test('back to top follows the gallery scroll and respects the active scroll controller', async t => {
+  await t.test('desktop button stays in the gutter and returns keyboard focus to the heading', async t => {
+    const { page, errors } = await openPage(t, { width: 2300, reducedMotion: 'no-preference' });
+    const button = page.locator('.gallery-back-to-top');
+    await displayed(page, '.shot-primary', preview('First'));
+    assert.equal(await button.isVisible(), false);
+
+    await page.evaluate(() => window.scrollTo({ top: 840, behavior: 'instant' }));
+    await button.waitFor({ state: 'visible' });
+    assert.ok(await button.evaluate(control => {
+      const rect = control.getBoundingClientRect();
+      return rect.left >= document.querySelector('.gallery-content').getBoundingClientRect().right + 12 &&
+        rect.top < innerHeight / 3 && rect.width >= 44 && getComputedStyle(control).position === 'fixed';
+    }), 'the control sits outside the artwork on a wide desktop');
+
+    await page.locator('.shot').nth(1).click();
+    await page.locator('#viewer[open]').waitFor();
+    assert.equal(await button.isVisible(), false);
+    await page.keyboard.press('Escape');
+    await page.locator('#viewer').waitFor({ state: 'hidden' });
+    await page.waitForFunction(() => !document.fullscreenElement &&
+      document.activeElement === document.querySelectorAll('.shot')[1]);
+    await button.waitFor({ state: 'visible' });
+    await page.getByRole('button', { name: 'Back to top' }).press('Enter');
+    await page.waitForFunction(() => scrollY === 0 && document.activeElement === document.querySelector('.intro h1'));
+    await button.waitFor({ state: 'hidden' });
+    assert.deepEqual(errors, []);
+  });
+
+  await t.test('touch button stays within the viewport and honors reduced motion', async t => {
+    const { page, errors } = await openPage(t, {
+      route: '/artur' + gallery, width: 390, hasTouch: true, reducedMotion: 'reduce',
+    });
+    await page.setViewportSize({ width: 390, height: 580 });
+    await displayed(page, '.shot-primary', preview('First'));
+    await page.evaluate(() => {
+      window.scrollTo({ top: document.scrollingElement.scrollHeight, behavior: 'instant' });
+      const scrollTo = window.scrollTo;
+      window.scrollTo = options => {
+        window.topButtonScroll = options;
+        scrollTo.call(window, options);
+      };
+    });
+    const button = page.getByRole('button', { name: 'Back to top' });
+    await button.waitFor();
+    assert.ok(await button.evaluate(control => {
+      const rect = control.getBoundingClientRect();
+      return rect.bottom <= innerHeight - 12 && rect.top > innerHeight / 2 &&
+        rect.right <= innerWidth - 8 && rect.height >= 44;
+    }));
+    await button.tap();
+    await page.waitForFunction(() => scrollY === 0);
+    assert.deepEqual(await page.evaluate(() => window.topButtonScroll), { top: 0, behavior: 'instant' });
+    assert.deepEqual(errors, []);
+  });
+
+  await t.test('Atrium keeps the button outside its transform and scrolls to the top with GSAP', async t => {
+    const { page, errors } = await openPage(t, { map: true, width: 2300, diagnostics: true });
+    await page.locator('#map-screenshots .shot-primary').nth(2).waitFor();
+    await gallerySmootherReady(page);
+    await gallerySmootherLayoutReady(page);
+    await page.evaluate(() => window.ScrollSmoother.get().scrollTo(700, false));
+    const button = page.getByRole('button', { name: 'Back to top' });
+    await button.waitFor();
+    assert.equal(await button.evaluate(control => control.parentElement === document.body), true);
+    await button.click();
+    await page.waitForFunction(() => scrollY < 1 && window.ScrollSmoother.get().scrollTop() < 1);
+    await button.waitFor({ state: 'hidden' });
+    assert.deepEqual(errors, []);
+  });
 });
 
 test('fullscreen wheel zoom starts with the elapsed time at 240 Hz', async t => {
@@ -2130,6 +2210,7 @@ test('RZ Start stays behind password and bearer-token delivery', async t => {
   await page.waitForFunction(() => document.querySelector('#access-message').textContent === 'Incorrect password.');
   assert.deepEqual(protectedRequests, []);
   assert.equal(await page.locator('.shot').count(), 0);
+  assert.equal(await page.locator('.gallery-back-to-top').count(), 0);
   await page.locator('#gallery-password').fill('fixture-password');
   await page.locator('button[type="submit"]').press('Enter');
   await page.locator('.shot').first().press('Enter');
@@ -2138,6 +2219,7 @@ test('RZ Start stays behind password and bearer-token delivery', async t => {
     return image?.complete && image.naturalWidth > 0 && image.currentSrc.startsWith('blob:');
   });
   assert.equal(primaryAttempts, 2);
+  assert.equal(await page.locator('.gallery-back-to-top').count(), 1);
   assert.ok(protectedRequests.length >= 2 && protectedRequests.every(token => token === 'Bearer fixture-token'));
   assert.ok(!requests.some(url => url.includes('/public-media/') || url.includes('/1440p/')));
   assert.deepEqual(errors, []);

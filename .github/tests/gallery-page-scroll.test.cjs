@@ -100,7 +100,7 @@ function wheelPage({ map = false, smootherReady = false, ownsGallery = true,
     return tween;
   } };
   const document = eventTarget({ scrollingElement: scroller, documentElement: scroller,
-    hidden: false, fullscreenElement: null, onscrollend: null });
+    hidden: false, fullscreenElement: null, onscrollend: null, querySelector: () => null });
   const window = eventTarget({
     gsap, ScrollSmoother: { get() { getCalls++; return ready ? smoother : undefined; } },
     scrollTo(options) { native = clamp(options.top); nativeWrites.push({ ...options, relative: false }); },
