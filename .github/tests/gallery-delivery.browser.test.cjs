@@ -1577,6 +1577,7 @@ test('Atrium thumbnail enlargement and shrink use Flip with continuous interrupt
 
   // Capture the same-frame bounds around the actual pointerleave handler. An
   // interrupted opening must reverse from its visible rectangle, without a jump.
+  await recordMapPreviewMotion(page, selector);
   await card.evaluate(card => {
     const stage = card.parentElement;
     const rect = () => { const { x, y, width, height } = card.getBoundingClientRect(); return { x, y, width, height }; };
@@ -1606,18 +1607,30 @@ test('Atrium thumbnail enlargement and shrink use Flip with continuous interrupt
   await page.mouse.move(5, 5);
   await page.waitForFunction(() => Boolean(window.mapFlipReversal));
   const reversal = await page.evaluate(() => window.mapFlipReversal);
-  if (!reversal.activeBefore || !reversal.activeAfter || reversal.expanded !== 'false' ||
+  if (!reversal.activeBefore || reversal.expanded !== 'false' ||
       ['x', 'y', 'width', 'height'].some(property => Math.abs(reversal.after[property] - reversal.before[property]) >= 1.5)) {
     t.diagnostic('Interrupted thumbnail Flip: ' + JSON.stringify(reversal));
   }
   assert.equal(reversal.activeBefore, true);
-  assert.equal(reversal.activeAfter, true);
   assert.equal(reversal.expanded, 'false');
   for (const property of ['x', 'y', 'width', 'height']) {
     assert.ok(Math.abs(reversal.after[property] - reversal.before[property]) < 1.5,
       `interrupted Flip preserves the current ${property}`);
   }
+  // isFlipping delegates to timeline.isActive(); a newly created timeline need
+  // not be initialized inside the same input event. Require actual closing
+  // motion on a rendered frame, recorded independently of test-driver timing.
+  try {
+    await page.waitForFunction(thumbnailWidth => window.mapPreviewMotion.samples.some(sample =>
+      !sample.expanded && sample.flipping && sample.width < window.mapFlipReversal.after.width - .5 &&
+      sample.width > thumbnailWidth + .5), initial.width);
+  } catch (error) {
+    const frames = await page.evaluate(() => window.mapPreviewMotion.samples.filter(sample => !sample.expanded).slice(-12));
+    t.diagnostic('Interrupted thumbnail closing frames: ' + JSON.stringify({ reversal, frames }));
+    throw error;
+  }
   await mapPreviewSettled(page, selector, .2);
+  await finishMapPreviewMotion(page);
   await enlargeMapPreview(page, selector);
   await mapPreviewSettled(page, selector, .8);
   assert.equal(await page.evaluate(() => scrollY), native, 'thumbnail transitions never move the gallery');
