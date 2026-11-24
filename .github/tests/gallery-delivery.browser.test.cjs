@@ -560,7 +560,7 @@ test('Atrium ScrollSmoother animates wheel and small trackpad deltas and reports
   assert.deepEqual(errors, []);
 });
 
-test('Atrium ScrollSmoother pauses for fullscreen wheel input and resumes without moving the page', { timeout: 20_000 }, async t => {
+test('Atrium ScrollSmoother pauses for fullscreen wheel input and resumes at the last image', { timeout: 20_000 }, async t => {
   const { page, errors } = await openPage(t, {
     map: true, width: 1440, diagnostics: true, reducedMotion: 'no-preference',
   });
@@ -568,7 +568,7 @@ test('Atrium ScrollSmoother pauses for fullscreen wheel input and resumes withou
   await gallerySmootherReady(page);
   await page.evaluate(() => {
     window.atriumSmootherInstance = window.ScrollSmoother.get();
-    window.scrollTo({ top: 300, behavior: 'instant' });
+    window.atriumSmootherInstance.scrollTo(300, false);
   });
   await page.waitForFunction(() => Math.abs(window.ScrollSmoother.get().scrollTop() - 300) < .5);
   const before = await galleryScrollPosition(page);
@@ -592,9 +592,14 @@ test('Atrium ScrollSmoother pauses for fullscreen wheel input and resumes withou
   await page.waitForFunction(() => document.fullscreenElement === null);
   await gallerySmootherReady(page);
   assert.equal(await page.evaluate(() => window.ScrollSmoother.get() === window.atriumSmootherInstance), true);
+  await page.waitForFunction(() => {
+    const image = document.querySelectorAll('#map-screenshots .shot')[1];
+    const bounds = image.getBoundingClientRect();
+    return document.activeElement === image && Math.abs(bounds.top + bounds.height / 2 - innerHeight / 2) < 2;
+  });
   const restored = await galleryScrollPosition(page);
-  assert.ok(Math.abs(restored.rendered - before.rendered) < 2, 'closing restores the visible scroll position');
-  assert.ok(Math.abs(restored.top - before.top) < 2, 'opener focus does not move the map');
+  assert.ok(restored.rendered > before.rendered, 'the last fullscreen image is farther down the map');
+  assert.ok(Math.abs(restored.rendered - restored.native) < 2, 'the visual and native scroll positions agree');
   await page.mouse.move(300, 300);
   await page.mouse.wheel(0, 120);
   await page.waitForFunction(position => window.ScrollSmoother.get().scrollTop() > position + 60, restored.rendered);
@@ -821,6 +826,51 @@ test('fullscreen desktop left click toggles zoom, middle and right drag pan, and
   await viewer.waitFor({ state: 'hidden' });
   await page.waitForFunction(() => document.fullscreenElement === null);
   assert.deepEqual(errors, []);
+});
+
+test('fullscreen exit resumes at the last gallery image and reopening starts at fit', async t => {
+  for (const [route, exit] of [[gallery, 'button'], ['/artur' + gallery, 'Escape']]) {
+    await t.test(route, async t => {
+      const { page, errors } = await openPage(t, { route, width: 1440 });
+      const links = page.locator('.gallery .shot');
+      await links.first().click();
+      await displayed(page, '#original', preview('First'));
+      const openingScroll = await page.evaluate(() => scrollY);
+
+      const stage = await page.locator('#stage').boundingBox();
+      await page.mouse.move(stage.x + stage.width / 2, stage.y + stage.height / 2);
+      await page.mouse.wheel(0, 160);
+      await displayed(page, '#original', preview('Second'));
+      await page.keyboard.press('ArrowRight');
+      await displayed(page, '#original', preview('Third'));
+      await modifiedWheel(page, 'Control', 0, -120);
+      await page.locator('#stage.zoomed').waitFor();
+
+      if (exit === 'button') await page.locator('#fullscreen').click();
+      else await page.keyboard.press(exit);
+      await page.locator('#viewer').waitFor({ state: 'hidden' });
+      await page.waitForFunction(() => document.fullscreenElement === null);
+      await page.waitForFunction(() => {
+        const image = document.querySelectorAll('.gallery .shot')[2];
+        const bounds = image.getBoundingClientRect();
+        const middle = bounds.top + bounds.height / 2;
+        return document.activeElement === image && middle > 0 && middle < innerHeight;
+      });
+      assert.ok(await page.evaluate(() => scrollY) > openingScroll + 100);
+      assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
+
+      const returnScroll = await page.evaluate(() => scrollY);
+      await links.nth(2).click();
+      await displayed(page, '#original', preview('Third'));
+      assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
+      await page.locator('#fullscreen').click();
+      await page.locator('#viewer').waitFor({ state: 'hidden' });
+      await page.waitForFunction(() => document.fullscreenElement === null &&
+        document.activeElement === document.querySelectorAll('.gallery .shot')[2]);
+      assert.ok(Math.abs(await page.evaluate(() => scrollY) - returnScroll) < 2);
+      assert.deepEqual(errors, []);
+    });
+  }
 });
 
 test('fullscreen desktop modifier-wheel zoom eases toward the cursor without zooming the page', async t => {
