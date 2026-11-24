@@ -1143,7 +1143,7 @@ function animateViewerZoom(time) {
       amount = 1 - Math.exp(-elapsed / 40);
     } else {
       // Smooth both wheel input and the displayed scale, carrying velocity across ticks.
-      const step = elapsed / 100;
+      const step = elapsed / 65;
       const decay = Math.exp(-step);
       const inputGap = zoom.target - zoom.filteredWheelScale;
       amount = 1 - (1 + inputGap / remaining * step) * decay;
