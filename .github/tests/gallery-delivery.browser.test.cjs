@@ -442,30 +442,49 @@ test('fullscreen touch swipes navigate on both axes while pinch and pan stay on 
   assert.deepEqual(errors, []);
 });
 
-test('fullscreen desktop double-click toggles 200% zoom and the wheel advances from zoom', async t => {
+test('fullscreen desktop single-click zooms to 200% and double-click exits', async t => {
   const { page, errors } = await openPage(t, { width: 1440 });
-  await page.locator('.shot').first().click();
+  const firstShot = page.locator('.shot').first();
+  const viewer = page.locator('#viewer');
+  const zoomedStage = page.locator('#stage.zoomed');
+  await firstShot.click();
   await displayed(page, '#original', preview('First'));
   const image = await page.locator('#original').boundingBox();
   const x = image.x + image.width / 2;
   const y = image.y + image.height / 2;
 
   await page.mouse.click(x, y);
-  assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), true);
-  await page.mouse.dblclick(x, y);
-  await page.locator('#stage.zoomed').waitFor();
+  await zoomedStage.waitFor();
   assert.equal((await viewerTransform(page)).scale, 2);
-  await page.mouse.dblclick(x, y);
-  await page.locator('#stage.zoomed').waitFor({ state: 'detached' });
-  assert.equal((await viewerTransform(page)).scale, 1);
+  await page.mouse.click(x, y);
+  assert.equal((await viewerTransform(page)).scale, 2);
+  assert.equal(await viewer.evaluate(element => element.open), true);
 
-  await page.mouse.dblclick(x, y);
-  await page.locator('#stage.zoomed').waitFor();
+  const beforePan = await viewerTransform(page);
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x + 60, y, { steps: 3 });
+  await page.mouse.up();
+  const afterPan = await viewerTransform(page);
+  assert.equal(afterPan.scale, 2);
+  assert.ok(afterPan.x > beforePan.x);
+  assert.equal(await viewer.evaluate(element => element.open), true);
+
   await page.mouse.wheel(0, 160);
   await displayed(page, '#original', preview('Second'));
   assert.equal(await page.locator('#counter').textContent(), '2 / 3');
   assert.equal((await viewerTransform(page)).scale, 1);
-  assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), true);
+  await page.mouse.dblclick(x, y);
+  await viewer.waitFor({ state: 'hidden' });
+  await page.waitForFunction(() => document.fullscreenElement === null);
+
+  await firstShot.click();
+  await displayed(page, '#original', preview('First'));
+  await page.mouse.click(x, y);
+  await zoomedStage.waitFor();
+  await page.mouse.dblclick(x, y);
+  await viewer.waitFor({ state: 'hidden' });
+  await page.waitForFunction(() => document.fullscreenElement === null);
   assert.deepEqual(errors, []);
 });
 

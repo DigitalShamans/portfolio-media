@@ -72,6 +72,7 @@ let viewerWheel;
 let mousePan;
 let suppressViewerClick = false;
 let lastViewerPointer;
+let pendingClickZoom;
 let viewerAspect = 0;
 let viewerRequest = 0;
 let comparisonsInitialized = false;
@@ -462,6 +463,7 @@ function setupClassicGalleryScroll() {
 setupClassicGalleryScroll();
 
 function fitImage() {
+  clearTimeout(pendingClickZoom);
   setViewerZoom(1, 0, 0);
   positionViewerIndicator();
 }
@@ -1154,19 +1156,29 @@ function viewerHitImage(event) {
 }
 
 stage.addEventListener('click', event => {
-  if (!suppressViewerClick && !viewerHitImage(event)) viewer.close();
-});
-
-stage.addEventListener('dblclick', event => {
-  if (lastViewerPointer === 'touch' || !viewerHitImage(event)) return;
-  event.preventDefault();
+  if (suppressViewerClick) return;
+  if (!viewerHitImage(event)) {
+    viewer.close();
+    return;
+  }
+  if (lastViewerPointer !== 'mouse' || event.button !== 0 || event.detail === 0) return;
+  clearTimeout(pendingClickZoom);
+  if (event.detail > 1) {
+    viewer.close();
+    return;
+  }
+  if (viewerZoom.scale === 2) return;
   const point = pointFor(event);
-  zoomViewerAt(viewerZoom.scale > 1 ? 1 : 2, point, point);
+  // Give a second click time to exit before changing the zoom.
+  pendingClickZoom = setTimeout(() => {
+    if (viewer.open) zoomViewerAt(2, point, point);
+  }, 300);
 });
 
 stage.addEventListener('pointerdown', event => {
   lastViewerPointer = event.pointerType;
   if (event.pointerType === 'touch') {
+    clearTimeout(pendingClickZoom);
     const point = pointFor(event);
     if (!viewerTouches.size) {
       suppressViewerClick = false;
@@ -1180,7 +1192,8 @@ stage.addEventListener('pointerdown', event => {
   suppressViewerClick = false;
   if (event.pointerType !== 'mouse' || event.button !== 0 || viewerZoom.scale === 1) return;
   mousePan = { id: event.pointerId, start: pointFor(event), x: viewerZoom.x, y: viewerZoom.y };
-  stage.setPointerCapture(event.pointerId);
+  // Capture panning without changing the target used to count consecutive clicks.
+  event.target.setPointerCapture(event.pointerId);
   stage.classList.add('dragging');
 });
 
