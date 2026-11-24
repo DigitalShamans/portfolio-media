@@ -25,7 +25,8 @@
 
   function report(mode, reason) {
     diagnostics?.state('gallery-smoother', mode, reason);
-    diagnostics?.state('gallery-wheel', mode, reason);
+    diagnostics?.state('gallery-wheel', mode === 'GSAP ScrollSmoother' ? 'GSAP image stepping' : mode,
+      mode === 'GSAP ScrollSmoother' ? 'The shared wheel controller selects images; GSAP animates each step.' : reason);
   }
 
   function listen(target, type, callback, options = {}) {
@@ -80,6 +81,7 @@
 
   function stop() {
     if (!smoother) return;
+    document.dispatchEvent(new Event('gallery-scrollcontrollerchange'));
     const position = smoother.scrollTop();
     smoother.kill();
     smoother = undefined;
@@ -91,7 +93,10 @@
   function updatePaused() {
     if (!smoother) return;
     const paused = Boolean(opening || closing || viewer.open || document.fullscreenElement);
-    if (smoother.paused() !== paused) smoother.paused(paused);
+    if (smoother.paused() !== paused) {
+      document.dispatchEvent(new Event('gallery-scrollcontrollerchange'));
+      smoother.paused(paused);
+    }
     report(paused ? 'Paused for fullscreen viewer' : 'GSAP ScrollSmoother', paused
       ? 'Page scrolling is held at the visible position while the image viewer is open.'
       : 'GSAP smooths mouse-wheel and trackpad scrolling across the overview and screenshots.');
@@ -116,6 +121,8 @@
       if (disposed || !desktop.matches || reducedMotion.matches || smoother) return;
       if (window.ScrollSmoother.get()) throw new Error('Another component owns page smoothing.');
       restoreScrollStyles = saveScrollStyles();
+      // A step can be using the native fallback while these libraries load.
+      document.dispatchEvent(new Event('gallery-scrollcontrollerchange'));
       smoother = window.ScrollSmoother.create({
         wrapper, content,
         smooth: 0.65,

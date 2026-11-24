@@ -236,7 +236,7 @@ test('both gallery layouts construct the arriving panel before the real header a
   }
   for (const layout of layouts) assert.match(layout, /gallery-viewer\.js\?v=65/);
   const mapLayout = fs.readFileSync(path.join(root, '_layouts/gallery-map.html'), 'utf8');
-  assert.match(mapLayout, /gallery-viewer\.js[^\n]*\?v=65/);
+  assert.match(mapLayout, /gallery-viewer\.js[^\n]*\?v=66/);
 });
 
 function viewerKeyboard({ overviewMap = false } = {}) {

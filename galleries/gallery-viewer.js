@@ -205,14 +205,15 @@ function trackGalleryPosition() {
 }
 
 function setupClassicGalleryScroll() {
-  // This page has its own continuous GSAP controller, including small wheel deltas.
-  if (gallery.hasAttribute('data-gsap-gallery-scroll')) return;
+  const gsapGalleryScroll = gallery.hasAttribute('data-gsap-gallery-scroll');
   if (gallery.hasAttribute('data-native-gallery-scroll')) {
     galleryDiagnostics?.state('gallery-wheel', 'Native wheel scrolling', 'This gallery uses native scrolling.');
     return;
   }
-  galleryDiagnostics?.state('gallery-wheel', desktopScrolling.matches ? 'Image stepping available' : 'Native wheel scrolling',
-    'The wheel controller is independent of GSAP.', { imageResolution });
+  galleryDiagnostics?.state('gallery-wheel', desktopScrolling.matches
+    ? getGallerySmoother() ? 'GSAP image stepping' : 'Image stepping available' : 'Native wheel scrolling',
+    gsapGalleryScroll ? 'Shared image stepping uses GSAP when the page smoother is ready.'
+      : 'The wheel controller is independent of GSAP.', { imageResolution });
   const scroller = document.scrollingElement;
   const twoImageScroll = gallery.hasAttribute('data-two-image-scroll');
   const groupedImageScroll = gallery.hasAttribute('data-grouped-image-scroll');
@@ -221,12 +222,28 @@ function setupClassicGalleryScroll() {
   let activeStep;
   let wheelStroke;
 
+  function getGallerySmoother() {
+    if (!gsapGalleryScroll) return;
+    const smoother = window.ScrollSmoother?.get();
+    return smoother?.content().contains(gallery) ? smoother : undefined;
+  }
+
+  function galleryScrollTop() {
+    return getGallerySmoother()?.scrollTop() ?? scroller.scrollTop;
+  }
+
   function cancelGalleryStep() {
     if (!activeStep) return;
     galleryDiagnostics?.count('gallery-wheel', 'step cancelled');
-    cancelAnimationFrame(activeStep.frame);
+    const step = activeStep;
     activeStep = undefined;
     movingDirection = 0;
+    if (step.tween) {
+      step.tween.kill();
+      if (getGallerySmoother() === step.smoother) {
+        step.smoother.scrollTo(step.smoother.scrollTop(), false);
+      }
+    } else cancelAnimationFrame(step.frame);
   }
 
   function interruptGalleryScroll() {
@@ -270,15 +287,58 @@ function setupClassicGalleryScroll() {
     extension.started = performance.now();
     // Give a late second step time to ease into the additional distance.
     extension.duration = Math.max(activeStep.end - extension.started, 0.6 * scrollDuration(extension.offset));
+    activeStep.moveTo?.(activeStep.target + extension.offset, extension.duration);
   }
 
   function animateGalleryStep(offset, oneImageOffset, extraOffset) {
-    const start = scroller.scrollTop;
+    const smoother = getGallerySmoother();
+    const start = smoother ? smoother.scrollTop() : scroller.scrollTop;
     const started = performance.now();
     const duration = scrollDuration(oneImageOffset);
     const extension = extraOffset === undefined ? undefined : { offset: extraOffset };
     const step = { end: started + duration, extension, frame: undefined };
     activeStep = step;
+
+    if (smoother) {
+      // Tween the rendered position directly. Easing window.scrollTo as well
+      // would apply a second smoothing pass and shift the image destinations.
+      step.smoother = smoother;
+      step.target = start + offset;
+      step.moveTo = (target, milliseconds) => {
+        step.retargeting = true;
+        step.tween?.kill();
+        step.retargeting = false;
+        step.target = Math.max(0, Math.min(scroller.scrollHeight - scroller.clientHeight, target));
+        step.tween = window.gsap.to(smoother, {
+          scrollTop: step.target, duration: milliseconds / 1000, ease: 'power2.out', overwrite: 'auto',
+          onUpdate() {
+            if (activeStep !== step) return;
+            if (viewer.open || !desktopScrolling.matches || smoother.paused() || getGallerySmoother() !== smoother) {
+              cancelGalleryStep();
+              return;
+            }
+            galleryDiagnostics?.sample('gallery-wheel', smoother.scrollTop());
+          },
+          onComplete() {
+            if (activeStep !== step) return;
+            galleryDiagnostics?.count('gallery-wheel', 'step completed');
+            activeStep = undefined;
+            movingDirection = 0;
+          },
+          onInterrupt() {
+            if (activeStep !== step || step.retargeting) return;
+            galleryDiagnostics?.count('gallery-wheel', 'step cancelled');
+            activeStep = undefined;
+            movingDirection = 0;
+          }
+        });
+      };
+      // End any native-input smoothing tail before the new step takes ownership.
+      smoother.scrollTo(start, false);
+      step.moveTo(step.target, duration);
+      return;
+    }
+
     let lastPosition = start;
 
     function advance(now) {
@@ -319,6 +379,12 @@ function setupClassicGalleryScroll() {
     reducedMotion.addEventListener?.('change', interruptGalleryScroll);
   }
 
+  if (gsapGalleryScroll) {
+    document.addEventListener('gallery-scrollcontrollerchange', interruptGalleryScroll);
+    desktopScrolling.addEventListener?.('change', interruptGalleryScroll);
+    window.addEventListener('pagehide', interruptGalleryScroll);
+  }
+
   function imageAtViewportCenter() {
     const hit = document.elementFromPoint(scroller.clientWidth / 2, scroller.clientHeight / 2);
     return hit?.closest('.shot-entry') ?? hit?.closest('.shot');
@@ -328,13 +394,13 @@ function setupClassicGalleryScroll() {
     const rect = entry?.getBoundingClientRect();
     if (!rect || rect.height <= 0 || rect.height > scroller.clientHeight) return null;
     const offset = rect.top + (rect.height - scroller.clientHeight) / 2;
-    const target = scroller.scrollTop + offset;
+    const target = galleryScrollTop() + offset;
     return target >= 0 && target <= scroller.scrollHeight - scroller.clientHeight ? offset : null;
   }
 
   function groupedCenterOffsets(direction) {
     const entries = gallery.children;
-    const top = scroller.scrollTop;
+    const top = galleryScrollTop();
     const height = scroller.clientHeight;
     const maxScroll = Math.max(0, scroller.scrollHeight - height);
     const start = direction > 0 ? 0 : entries.length - 1;
@@ -357,11 +423,14 @@ function setupClassicGalleryScroll() {
       if (!nearCenter) break;
     }
     if (movement !== undefined) return { movement };
+    // The overview is the stop before the experiment's first screenshot.
+    if (gsapGalleryScroll && direction < 0 && top > 0) return { movement: -top };
   }
 
   document.addEventListener('wheel', event => {
     if (!desktopScrolling.matches || viewer.open || event.defaultPrevented ||
-        event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {
+        event.ctrlKey || event.metaKey || event.altKey || event.shiftKey ||
+        (gsapGalleryScroll && (document.fullscreenElement || getGallerySmoother()?.paused()))) {
       galleryDiagnostics?.count('gallery-wheel', 'wheel bypassed by input or viewer');
       interruptGalleryScroll();
       return;
@@ -443,7 +512,9 @@ function setupClassicGalleryScroll() {
     if (stroke) stroke.handled = true;
     movingDirection = reducedMotion.matches ? 0 : direction;
     if (oneImageOffset !== undefined && !reducedMotion.matches) {
-      galleryDiagnostics?.state('gallery-wheel', 'JavaScript image step', 'This wheel animation uses requestAnimationFrame.');
+      galleryDiagnostics?.state('gallery-wheel', getGallerySmoother() ? 'GSAP image step' : 'JavaScript image step',
+        getGallerySmoother() ? 'GSAP moves to the image selected by the shared wheel controller.'
+          : 'This wheel animation uses requestAnimationFrame.');
       galleryDiagnostics?.count('gallery-wheel', 'animated step started');
       animateGalleryStep(movement, oneImageOffset, extraOffset);
     } else {
