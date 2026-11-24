@@ -1376,7 +1376,7 @@ viewer.addEventListener('close', async () => {
   if (viewer.open) return;
   const origin = viewerOrigin;
   viewerOrigin = undefined;
-  const exit = document.fullscreenElement === frame ? setFullscreen(false) : undefined;
+  const fullscreenExit = document.fullscreenElement === frame ? setFullscreen(false) : undefined;
   const request = ++viewerRequest;
   viewerTouches.clear();
   viewerGesture = viewerWheel = mouseGesture = undefined;
@@ -1390,13 +1390,18 @@ viewer.addEventListener('close', async () => {
   original.removeAttribute('src');
   fitImage();
   if (!origin) return;
-  // Let the normal viewport and the underlying scroll controller settle first.
-  await exit;
-  requestAnimationFrame(() => {
-    if (viewer.open || request !== viewerRequest) return;
-    const navigated = current !== origin.index;
-    const target = navigated ? shots[current]?.link : origin.link;
-    if (!target?.isConnected) return;
+  const navigated = current !== origin.index;
+  const target = navigated ? shots[current]?.link : origin.link;
+  await fullscreenExit;
+  const deadline = performance.now() + 600;
+  function restore(time) {
+    if (viewer.open || request !== viewerRequest || !target?.isConnected) return;
+    // The fullscreen promise can settle before the windowed viewport is restored.
+    if (navigated && time < deadline &&
+        (window.innerWidth !== origin.width || window.innerHeight !== origin.height)) {
+      requestAnimationFrame(restore);
+      return;
+    }
     if (navigated) {
       const smoother = window.ScrollSmoother?.get?.();
       if (smoother?.content().contains(target)) smoother.scrollTo(target, false, 'center center');
@@ -1407,13 +1412,17 @@ viewer.addEventListener('close', async () => {
       target.addEventListener('blur', () => target.classList.remove('viewer-return-focus'), { once: true });
     }
     target.focus({ preventScroll: true });
-  });
+  }
+  requestAnimationFrame(restore);
 });
 
 function openViewer(index, variant = 0, source = shots[index].link, event) {
   if (typeof viewer.showModal !== 'function') return false;
   if (!viewer.open) {
-    viewerOrigin = { index, link: source, pointerOpened: event?.detail > 0 };
+    viewerOrigin = {
+      index, link: source, pointerOpened: event?.detail > 0,
+      width: window.innerWidth, height: window.innerHeight
+    };
     openingPointer = event ? { x: event.screenX, y: event.screenY } : null;
   }
   showImage(index, variant);

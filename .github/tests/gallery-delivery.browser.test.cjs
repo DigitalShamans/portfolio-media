@@ -564,15 +564,13 @@ test('Atrium ScrollSmoother pauses for fullscreen wheel input and resumes at the
   const { page, errors } = await openPage(t, {
     map: true, width: 1440, diagnostics: true, reducedMotion: 'no-preference',
   });
-  await page.locator('#map-fullscreen').waitFor();
+  const overview = page.locator('#public-map .gallery-map-overview-button');
+  await overview.waitFor();
   await gallerySmootherReady(page);
-  await page.evaluate(() => {
-    window.atriumSmootherInstance = window.ScrollSmoother.get();
-    window.atriumSmootherInstance.scrollTo(300, false);
-  });
-  await page.waitForFunction(() => Math.abs(window.ScrollSmoother.get().scrollTop() - 300) < .5);
+  await page.evaluate(() => { window.atriumSmootherInstance = window.ScrollSmoother.get(); });
+  await overview.evaluate(button => button.focus({ preventScroll: true }));
   const before = await galleryScrollPosition(page);
-  await page.locator('#map-fullscreen').click();
+  await overview.press('Enter');
   await page.locator('#fullscreen-map').waitFor({ state: 'visible' });
   await gallerySmootherReady(page, true);
   const stage = await page.locator('#stage').boundingBox();
@@ -888,9 +886,10 @@ test('fullscreen desktop left click toggles zoom, middle and right drag pan, and
 });
 
 test('fullscreen exit resumes at the last gallery image and reopening starts at fit', async t => {
-  for (const [route, exit] of [[gallery, 'button'], ['/artur' + gallery, 'Escape']]) {
+  for (const [route, delayedResize] of [[gallery, true], ['/artur' + gallery, false]]) {
     await t.test(route, async t => {
       const { page, errors } = await openPage(t, { route, width: 1440 });
+      const windowedViewport = page.viewportSize();
       const links = page.locator('.gallery .shot');
       await links.first().click();
       await displayed(page, '#original', preview('First'));
@@ -905,15 +904,27 @@ test('fullscreen exit resumes at the last gallery image and reopening starts at 
       await modifiedWheel(page, 'Control', 0, -120);
       await page.locator('#stage.zoomed').waitFor();
 
-      if (exit === 'button') await page.locator('#fullscreen').click();
-      else await page.keyboard.press(exit);
+      if (delayedResize) {
+        // Chrome can complete fullscreen exit before it finishes restoring the window size.
+        await page.setViewportSize({ width: 2048, height: 1152 });
+        await page.locator('#fullscreen').press('Enter');
+      } else {
+        await page.keyboard.press('Escape');
+      }
       await page.locator('#viewer').waitFor({ state: 'hidden' });
       await page.waitForFunction(() => document.fullscreenElement === null);
+      if (delayedResize) {
+        await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+        assert.equal(await links.nth(2).evaluate(link => link === document.activeElement), false,
+          'waits for the windowed viewport before returning to the last image');
+        await page.setViewportSize(windowedViewport);
+      }
       await page.waitForFunction(() => {
         const image = document.querySelectorAll('.gallery .shot')[2];
         const bounds = image.getBoundingClientRect();
         const middle = bounds.top + bounds.height / 2;
-        return document.activeElement === image && middle > 0 && middle < innerHeight;
+        return innerWidth === 1440 && innerHeight === 900
+          && document.activeElement === image && middle > 0 && middle < innerHeight;
       });
       assert.ok(await page.evaluate(() => scrollY) > openingScroll + 100);
       assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
