@@ -1,0 +1,49 @@
+<script>
+  (() => {
+    const flag = new URLSearchParams(location.search).get('diagnostics');
+    const enabledKey = 'portfolio-diagnostics-enabled-v1';
+    const reportKey = 'portfolio-diagnostics-pages-v1';
+    let enabled = flag === '1';
+    try {
+      if (flag === '0') {
+        sessionStorage.removeItem(enabledKey);
+        sessionStorage.removeItem(reportKey);
+        return;
+      }
+      enabled ||= sessionStorage.getItem(enabledKey) === '1';
+      if (flag === '1') sessionStorage.setItem(enabledKey, '1');
+    } catch {}
+    if (!enabled) return;
+    const pending = [];
+    const observer = new AbortController();
+    const diagnostics = window.PortfolioDiagnostics = {
+      pending, observer, enabledKey, reportKey, section: {{ include.section | jsonify }},
+      style: {{ '/assets/portfolio-diagnostics.css?v=1' | relative_url | jsonify }}
+    };
+    for (const method of ['state', 'event', 'count', 'sample']) {
+      diagnostics[method] = (...args) => {
+        if (pending.length < 128) pending.push([method, args]);
+      };
+    }
+    window.addEventListener('error', event => {
+      const source = event.target?.tagName === 'SCRIPT' ? event.target.src : event.filename;
+      if (!source) return;
+      const url = new URL(source, document.baseURI);
+      if (url.origin !== location.origin) return;
+      const file = url.pathname.split('/').pop();
+      if (!/^(gsap|ScrollTrigger|ScrollSmoother|DrawSVGPlugin|MotionPathPlugin)\.min\.js$|^(career-timeline|gallery-viewer|gallery-desktop-panels|gallery-mobile-scroll|portfolio-effects|portfolio-diagnostics)\.js$/.test(file)) return;
+      diagnostics.event('scripts', event.target?.tagName === 'SCRIPT' ? 'load failed' : 'execution failed', {
+        file, line: event.lineno || undefined
+      });
+    }, { capture: true, signal: observer.signal });
+    const script = document.createElement('script');
+    script.src = {{ '/assets/portfolio-diagnostics.js?v=1' | relative_url | jsonify }};
+    script.addEventListener('error', () => {
+      const message = document.createElement('p');
+      message.textContent = 'Website diagnostics could not load. Reload to retry.';
+      if (document.body) document.body.prepend(message);
+      else document.addEventListener('DOMContentLoaded', () => document.body.prepend(message), { once: true });
+    }, { once: true });
+    document.head.append(script);
+  })();
+</script>

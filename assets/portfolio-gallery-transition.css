@@ -1,0 +1,38 @@
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+
+  :root:active-view-transition-type(portfolio-gallery) .site-header {
+    view-transition-name: portfolio-gallery-header;
+  }
+
+  :root:active-view-transition-type(portfolio-gallery)::view-transition-old(root) {
+    animation: none !important;
+    mix-blend-mode: normal;
+  }
+
+  /* Reveal the new document over the old one without blending their artwork. */
+  :root:active-view-transition-type(portfolio-gallery)::view-transition-new(root) {
+    animation: portfolio-gallery-reveal 360ms cubic-bezier(.2, .72, .28, 1) both !important;
+    mix-blend-mode: normal;
+  }
+
+  ::view-transition-group(portfolio-gallery-header) {
+    animation: none;
+    z-index: 1;
+  }
+
+  ::view-transition-old(portfolio-gallery-header) {
+    animation: none;
+    opacity: 0;
+  }
+
+  ::view-transition-new(portfolio-gallery-header) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+}
+
+@keyframes portfolio-gallery-reveal {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0); }
+}

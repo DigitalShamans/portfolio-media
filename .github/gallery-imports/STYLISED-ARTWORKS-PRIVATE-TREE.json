@@ -1,0 +1,88 @@
+{
+  "passed": true,
+  "revision": "d389bde2044cbc19fb94d2862e981cc2a5f273a4",
+  "tree_entries": [
+    {
+      "filename": "the-digital-shaman-artur-perzyna-2014-compose2-blue-denoised.jpg",
+      "blob": "a6e76571255a1792c0371d4533e8f360e02be249",
+      "bytes": 367496
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-2014-compose4-abstract-denoised.jpg",
+      "blob": "9cfd27c5e524253b5de34abcf9ed418d7d51c592",
+      "bytes": 446412
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-battlezone-presentation-a00b-impr2-denoised-m.jpg",
+      "blob": "581729b5dd57386b42fe97446d18d1100678fb15",
+      "bytes": 391415
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-battlezone-presentation-a01-impr-denoised.jpg",
+      "blob": "ee20f56e94e0015580570d432152f901a5fdf836",
+      "bytes": 474163
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-battlezone-presentation-a04-impr-denoised.jpg",
+      "blob": "412eca7465bd0544ad9736687148c1064f88335b",
+      "bytes": 297358
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-battlezone-presentation-a10-impr-denoised-m.jpg",
+      "blob": "5b8efa2210eec693500ec9a95f0abff4f8821c14",
+      "bytes": 461838
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-battlezone-presentation-b04-impr-denoised.jpg",
+      "blob": "e26b39e0b1fb1cc209f71b885992d551647a1a8d",
+      "bytes": 327436
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-mech-daisy1.jpg",
+      "blob": "a9d04f0f949d687941cbda109bcac3f7f4e25abd",
+      "bytes": 230349
+    },
+    {
+      "filename": "the-digital-shaman-artur-perzyna-mech-daisy2.jpg",
+      "blob": "32937fa5b0977e1ab2829e103e81549dad6d2cc0",
+      "bytes": 221090
+    },
+    {
+      "filename": "the-digital-shaman-battlezone.jpg",
+      "blob": "38a46528cf3156ece64e3ade24aa732f5c90247e",
+      "bytes": 680263
+    },
+    {
+      "filename": "the-digital-shaman-digitalshamans-powder-props-01.jpg",
+      "blob": "e3fa642ef61352dd0e24398ef7715056a22dc0f0",
+      "bytes": 381579
+    },
+    {
+      "filename": "the-digital-shaman-ds2.jpg",
+      "blob": "50efbb1b2050faeb62ebba1a93205fb29ecb88cc",
+      "bytes": 102447
+    },
+    {
+      "filename": "the-digital-shaman-presentation-3-4-wireframe-01.jpg",
+      "blob": "708b69fb94bfcadee0d719780568b39f2b1ce810",
+      "bytes": 196423
+    },
+    {
+      "filename": "the-digital-shaman-presentation-3-4-wireframe-02.jpg",
+      "blob": "ddb9c2db69a69c1e3c261b894c6fac400b2d9b6d",
+      "bytes": 218303
+    },
+    {
+      "filename": "the-digital-shaman-presentation-front-ue5-bottom.jpg",
+      "blob": "e821b8662adf3b62d55d8ed9c37f437169aa8d97",
+      "bytes": 137100
+    },
+    {
+      "filename": "the-digital-shaman-presentation-front-ue5-top.jpg",
+      "blob": "36c3a3cce4383fc829f358c329be073629d3ce08",
+      "bytes": 114165
+    }
+  ],
+  "new_approved_images": 16,
+  "unchanged_approval_groups": 22
+}

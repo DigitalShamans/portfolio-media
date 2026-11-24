@@ -5,8 +5,28 @@ body:has(dialog[open]) { overflow: hidden; }
 .back { color: var(--muted); text-underline-offset: .25em; }
 .back:hover { color: var(--text); }
 .gallery-content {
+  position: relative;
   width: var(--shot-width, min(100%, 90vw, calc(90dvh * 16 / 9)));
   margin-inline: auto;
+}
+/* Do not let the asynchronous gallery status change the first image's position.
+   Keep it readable in an overlay at its normal static position after the intro. */
+.gallery-content > #gallery-status:not([hidden]) {
+  position: absolute;
+  z-index: 2;
+  margin: 0;
+  padding: .25rem .5rem;
+  border-radius: .2rem;
+  background: rgba(21, 20, 23, .94);
+  color: var(--muted);
+  pointer-events: none;
+}
+@media (pointer: coarse) and (orientation: portrait) {
+  .gallery-content { width: min(100%, 86vw); }
+}
+@media (pointer: coarse) and (orientation: landscape) {
+  /* Keep image size stable while the browser toolbar expands and retracts. */
+  .gallery-content { width: min(100%, calc(100lvh * 16 / 9)); }
 }
 .intro { padding-block: clamp(16px, 2vw, 32px) clamp(28px, 4vw, 54px); }
 .gallery-content > .intro {
@@ -30,6 +50,14 @@ h1 { margin: 0; text-align: center; font-size: clamp(1rem, 2.6vw, 2.4rem); line-
   margin: 0;
   color: var(--muted);
 }
+@media (pointer: coarse) {
+  .gallery-content > .intro { padding-block-end: .5rem; }
+  .gallery-content > .intro h1 {
+    font-size: calc(clamp(1.125rem, 2.1vw, 1.5rem) - 2px);
+  }
+  .description { font-size: .75rem; }
+}
+
 .gallery {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -54,7 +82,7 @@ h1 { margin: 0; text-align: center; font-size: clamp(1rem, 2.6vw, 2.4rem); line-
   pointer-events: none;
 }
 .shot .shot-comparison.is-visible { opacity: 1; }
-.shot.has-comparison, .stage.has-comparison:not(.native) { touch-action: pan-y pinch-zoom; }
+.shot.has-comparison { touch-action: pan-y pinch-zoom; }
 .comparison-indicator {
   --indicator-height: clamp(6px, .62vw, 13px);
   --target-height: 24px;
@@ -111,7 +139,7 @@ dialog {
   color: var(--text);
 }
 .viewer-frame { position: absolute; inset: 0; overflow: hidden; background: #000; }
-.stage { position: absolute; inset: 0; overflow: auto; cursor: default; }
+.stage { position: absolute; inset: 0; overflow: hidden; touch-action: none; cursor: zoom-in; }
 .stage img {
   display: block;
   width: 100%;
@@ -119,13 +147,8 @@ dialog {
   object-fit: contain;
   user-select: none;
 }
-.stage.native { cursor: grab; }
-.stage.native.dragging { cursor: grabbing; }
-.stage.native img {
-  width: var(--native-width);
-  height: var(--native-height);
-  margin-inline: auto;
-}
+.stage.zoomed { cursor: grab; }
+.stage.zoomed.dragging { cursor: grabbing; }
 .viewer-bar {
   position: absolute;
   top: max(.55rem, env(safe-area-inset-top));
@@ -151,7 +174,7 @@ dialog {
   padding-inline: clamp(.5rem, 1.2vw, 1.5rem);
   pointer-events: none;
 }
-.stage.native + .viewer-arrows { width: 100%; }
+.stage.zoomed + .viewer-arrows { width: 100%; }
 .viewer-arrows button { pointer-events: auto; }
 .viewer-bar button, .viewer-arrows button, .counter {
   margin: 0;
@@ -169,6 +192,15 @@ dialog {
 .viewer-bar button:disabled, .viewer-arrows button:disabled { opacity: .45; cursor: default; }
 .viewer-arrows button { width: 48px; height: 48px; padding: 0; font-size: 1.4rem; }
 .counter { display: inline-flex; align-items: center; font-variant-numeric: tabular-nums; }
+@media (pointer: coarse) {
+  .viewer-arrows button,
+  .viewer-arrows button:hover:not(:disabled),
+  .viewer-bar .counter {
+    border-color: transparent;
+    background: transparent;
+    color: #fff;
+  }
+}
 .status {
   position: absolute;
   bottom: 1rem;
@@ -184,3 +216,149 @@ dialog {
   .viewer-group { gap: .2rem; }
   .viewer-bar button, .counter { padding-inline: .45rem; }
 }
+
+/* Chrome captures the fully covered outgoing document and the matching
+   incoming cover. Suppress the browser's default cross-fade: the existing
+   420ms GSAP edge slide remains the only animation in this handoff. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none !important; }
+}
+
+#gallery-edge-arrival { display: contents; }
+
+/* Shared destinations for gallery gestures and edge navigation. */
+.gallery-navigation { display: none !important; }
+
+/* Keep the desktop guides behind gallery content in document coordinates. */
+.gallery-edge-cues { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  body:where(:has(> .gallery-edge-cues:not([hidden]))) {
+    position: relative;
+    isolation: isolate;
+  }
+  .gallery-edge-cues:not([hidden]) {
+    position: absolute;
+    inset: var(--gallery-edge-header-height) 0 0;
+    z-index: -1;
+    display: block;
+    pointer-events: none;
+    --gallery-edge-arrow-area: max(0px, calc(100dvh - var(--gallery-edge-header-height)));
+    --gallery-edge-arrow-inset: calc(var(--gallery-edge-arrow-area) / 4);
+  }
+}
+@media (min-height: 900px) {
+  .gallery-edge-cues:not([hidden]) { --gallery-edge-arrow-inset: calc(var(--gallery-edge-arrow-area) / 6); }
+}
+body:has(dialog[open]) .gallery-edge-cues { display: none; }
+.gallery-edge-cues::before,
+.gallery-edge-cues::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  opacity: .2;
+  --gallery-edge-arrow: url("gallery-edge-arrow.svg?v=3");
+  --gallery-edge-arrow-size: min(88%, 112px) 100dvh;
+  /* Keep the first pair in its original positions, then repeat down the page. */
+  --gallery-edge-arrow-first: calc(var(--gallery-edge-arrow-inset) - 50dvh);
+  --gallery-edge-arrow-last: calc(var(--gallery-edge-arrow-area) - var(--gallery-edge-arrow-inset) - 50dvh);
+  background:
+    var(--gallery-edge-arrow) center var(--gallery-edge-arrow-first) / var(--gallery-edge-arrow-size) repeat-y content-box,
+    var(--gallery-edge-arrow) center var(--gallery-edge-arrow-last) / var(--gallery-edge-arrow-size) repeat-y content-box,
+    url("gallery-edge-gradient.svg?v=2") left top / 100% 256px repeat-y border-box;
+}
+.gallery-edge-cues::before {
+  left: 0;
+  width: var(--gallery-edge-cue-width);
+  transform: scaleX(-1);
+}
+.gallery-edge-cues::after {
+  right: 0;
+  width: calc(var(--gallery-edge-cue-width) + var(--gallery-edge-scrollbar-inset));
+  padding-right: var(--gallery-edge-scrollbar-inset);
+}
+
+/* Preserve the actual site header, including its accent stripe, while the
+   new gallery panel slides beneath it. position:sticky preserves layout height:
+   there is no replacement header, duplicate logo or DOM rearrangement. */
+body.gallery-edge-header-visible > .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 31;
+  pointer-events: none;
+}
+
+/* Edge hover animates an entire panel; it has no clickable surface. */
+.gallery-desktop-edge-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+  padding: clamp(24px, 5vw, 84px);
+  background: rgb(21, 20, 23);
+  color: var(--text);
+  text-align: center;
+  pointer-events: none;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+.gallery-desktop-edge-panel[hidden],
+body:has(dialog[open]) .gallery-desktop-edge-panel { display: none !important; }
+.gallery-desktop-edge-panel__content { max-width: min(90vw, 60rem); }
+.gallery-desktop-edge-panel__content p {
+  margin: 0 0 .8rem;
+  color: var(--accent);
+  font-size: .9rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.gallery-desktop-edge-panel__content h2 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 5rem);
+  line-height: 1.1;
+}
+
+/* Keep native vertical scrolling and zoom, while the gallery owns horizontal
+   background swipes instead of browser overscroll/history navigation. */
+@media (any-pointer: coarse) {
+  html:has(.gallery-navigation) { overscroll-behavior-x: contain; }
+  body:has(.gallery-navigation) > .site-header,
+  body:has(.gallery-navigation) > .shell:not(.gallery-access) {
+    touch-action: pan-y pinch-zoom;
+  }
+}
+.gallery-swipe-feedback {
+  position: fixed;
+  z-index: 20;
+  top: 50%;
+  left: 12px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #1b1e25;
+  font-size: 0;
+  opacity: 0;
+  transform: translateY(-50%) scale(.85);
+  transition: opacity 80ms ease, transform 80ms ease;
+  pointer-events: none;
+}
+.gallery-swipe-feedback[hidden] { display: none; }
+.gallery-swipe-feedback[data-direction="next"] { left: auto; right: 12px; }
+.gallery-swipe-feedback > span {
+  width: 24px;
+  height: 24px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f1f3f4' d='M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.gallery-swipe-feedback[data-direction="next"] > span { transform: rotate(180deg); }
+.gallery-swipe-feedback.is-visible { opacity: 1; transform: translateY(-50%) scale(1); }
+@media (prefers-reduced-motion: reduce) {
+  .gallery-swipe-feedback { transition: none; }
+}
+

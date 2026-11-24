@@ -9,6 +9,7 @@
 <html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}">
 <head>
   <meta charset="utf-8">
+  {% include portfolio-diagnostics.html section='gallery' %}
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
   <meta name="robots" content="noindex">
@@ -16,11 +17,11 @@
   <title>Hard Bullet - RZ Start | {{ portfolio_name | escape }}</title>
   {% if page.portfolio == 'personal' %}
     <base href="{{ '/galleries/hb-rzstart/' | relative_url }}">
-  {% else %}
-    {% include site-favicon.html %}
   {% endif %}
-  <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
-  <link rel="stylesheet" href="../gallery.css?v=10">
+  {% include site-favicon.html %}
+  <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=15">
+  <link rel="stylesheet" href="../gallery.css?v=35">
+  <link rel="expect" href="#gallery-edge-ready" blocking="render">
   <style>
     .gallery-access { max-width: 34rem; padding-block: 2rem; }
     .gallery-access h1 { font-size: clamp(.9rem, 2.5vw, 1.5rem); }
@@ -37,10 +38,27 @@
     .gallery-access button { background: var(--accent); color: #191919; font-weight: 700; cursor: pointer; }
     .gallery-access button:disabled { opacity: .5; cursor: default; }
     .gallery-access p { min-height: 1.55em; margin: 0; color: var(--muted); }
+    .gallery-access__escape {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: .6rem 1.5rem;
+      margin-block: 1.35rem;
+      font-size: .875rem;
+    }
+    .gallery-access__escape a { color: var(--muted); text-underline-offset: .25em; }
+    .gallery-access__escape a:hover, .gallery-access__escape a:focus-visible { color: var(--text); }
   </style>
+  <link rel="stylesheet" href="{{ '/assets/portfolio-gallery-transition.css' | relative_url }}?v=6">
+  <script src="{{ '/assets/portfolio-gallery-transition.js' | relative_url }}?v=6"></script>
+  <link rel="expect" href="{{ page.url | relative_url }}#access-message" blocking="render" media="(prefers-reduced-motion: no-preference)">
+  {% include personal-typography.html %}
 </head>
 <body data-gallery-revision="{{ site.github.build_revision | escape }}">
+  <div id="gallery-edge-arrival"><script src="../gallery-arrival.js?v=4"></script></div>
   {% include site-header.html %}
+  <div id="gallery-edge-ready" hidden></div>
+  {% include gallery-navigation.html current='hb-rzstart' portfolio_url=portfolio_url %}
 
   <main id="gallery-access" class="shell gallery-access">
     <header class="intro">
@@ -48,10 +66,12 @@
     </header>
     <form id="gallery-access-form" method="post">
       <label for="gallery-password">Gallery password</label>
-      <input id="gallery-password" type="password" autocomplete="current-password" aria-describedby="access-message" required>
+      <input id="gallery-password" type="text" autocomplete="current-password" autocapitalize="none"
+        autocorrect="off" spellcheck="false" aria-describedby="access-message" required>
       <button type="submit" disabled>Unlock gallery</button>
       <p id="access-message" role="status"></p>
     </form>
+    {% include rz-gallery-exit.html portfolio_url=portfolio_url %}
     <noscript><p>Enable JavaScript to unlock the gallery.</p></noscript>
   </main>
 
@@ -63,9 +83,12 @@
           <p class="description">Environment art by Digital Shamans for Hard Bullet.</p>
         </header>
         <p id="gallery-status" role="status">Loading gallery…</p>
-        <section class="gallery" data-comparison-gesture="swipe" data-grouped-image-scroll aria-label="RZ Start screenshots"></section>
+        <section class="gallery" data-grouped-image-scroll aria-label="RZ Start screenshots"></section>
       </div>
-      <footer class="site-footer"><a class="back" href="{{ portfolio_url | relative_url }}#recent-work">Back to portfolio</a></footer>
+      <footer class="site-footer">
+        <a class="back" href="{{ portfolio_url | relative_url }}#recent-work">Back to portfolio</a>
+        {% include rz-gallery-exit.html portfolio_url=portfolio_url %}
+      </footer>
     </main>
 
     <dialog id="viewer" aria-label="Fullscreen image viewer">
@@ -79,14 +102,10 @@
         </div>
         <div class="viewer-bar">
           <div class="viewer-group">
-            <button id="previous" type="button" aria-label="Previous image">←</button>
             <output id="counter" class="counter" aria-live="polite"></output>
-            <button id="next" type="button" aria-label="Next image">→</button>
           </div>
           <div class="viewer-group">
-            <button id="zoom" type="button" disabled>100%</button>
-            <button id="fullscreen" type="button" hidden>Fullscreen</button>
-            <button id="close" type="button" autofocus>Close</button>
+            <button id="fullscreen" type="button" autofocus>Back to gallery</button>
           </div>
         </div>
         <p id="status" class="status" role="status" hidden></p>
@@ -94,9 +113,9 @@
     </dialog>
   </template>
 
-  <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=1"></script>
+  <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=3"></script>
   <script type="module">
-    const gateway = {{ site.rz_start_gateway_url | jsonify }};
+    const gateway = {{ site.data.gallery_delivery.service_origin | jsonify }};
     const form = document.querySelector('#gallery-access-form');
     const password = document.querySelector('#gallery-password');
     const submit = form.querySelector('button');
@@ -239,7 +258,7 @@
       document.querySelector('#gallery-access').replaceWith(template.content);
       try {
         await loadScript('../gallery-data.js?v=3');
-        await loadScript('../gallery-viewer.js?v=32');
+        await loadScript('../gallery-viewer.js?v=52');
       } catch {
         document.querySelector('#gallery-status').textContent =
           'The gallery could not be loaded. Please reload to try again.';
@@ -254,3 +273,4 @@
   </script>
 </body>
 </html>
+

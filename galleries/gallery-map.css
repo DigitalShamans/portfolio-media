@@ -1,0 +1,56 @@
+.gallery-map-stage { position: relative; isolation: isolate; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid #383838; border-radius: 4px; background: #090b0c; }
+.gallery-map-stage .gallery-map-base { display: block; width: 100%; height: 100%; transition: filter 240ms ease; }
+.gallery-map-stage .gallery-map-base img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; }
+.gallery-map-stage.has-open-region .gallery-map-base { filter: brightness(.6); }
+.gallery-map-stage .gallery-map-region { position: absolute; z-index: 1; left: clamp(10%, var(--x), 90%); top: clamp(10%, var(--y), 90%); width: 20%; aspect-ratio: 16 / 9; margin: 0; padding: 0; overflow: hidden; border: 1px solid #b6b6b6; border-radius: 2px; background: #111; color: #fff; cursor: zoom-in; transform: translate(-50%, -50%) translate(var(--shift-x, 0px), var(--shift-y, 0px)) scale(var(--scale, 1)); transform-origin: center; transition: transform 280ms cubic-bezier(.2, .75, .25, 1), opacity 180ms ease, border-color 180ms ease, box-shadow 280ms ease; box-shadow: 0 3px 16px #000a; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.gallery-map-region picture, .gallery-map-region img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; pointer-events: none; }
+.gallery-map-stage.has-open-region .gallery-map-region:not(.is-open) { opacity: .35; }
+.gallery-map-stage .gallery-map-region.is-open { z-index: 5; opacity: 1; border-color: var(--accent, #eb9a56); box-shadow: 0 6px 24px #000b; cursor: default; }
+.gallery-map-region:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.gallery-map-placeholder { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 24px; color: #bbb; text-align: center; }
+/* Match the image frame used by gallery.css and gallery-viewer.js. */
+.gallery-map-page {
+  width: var(--shot-width, min(calc(100% - clamp(32px, 4vw, 144px)), 90vw, calc(90dvh * 16 / 9)));
+  margin: 0 auto;
+  padding: 24px 0 32px;
+}
+.gallery-map-page .gallery-map-stage { border: 0; }
+@media (pointer: coarse) and (orientation: portrait) {
+  .gallery-map-page { width: min(calc(100% - clamp(32px, 4vw, 144px)), 86vw); }
+}
+@media (pointer: coarse) and (orientation: landscape) {
+  /* Keep the overview stable while the mobile browser toolbar changes. */
+  .gallery-map-page { width: min(calc(100% - clamp(32px, 4vw, 144px)), calc(100lvh * 16 / 9)); }
+}
+.gallery-map-intro, .gallery-map-caption { display: flex; justify-content: space-between; gap: 12px 32px; align-items: baseline; }
+.gallery-map-intro { margin-bottom: 18px; }
+.gallery-map-intro h1 { margin: 0; font-size: clamp(20px, 2.1vw, 28px); line-height: 1.15; }
+.gallery-map-help { max-width: 31rem; margin: 0; color: var(--muted, #bbb); font-size: 14px; }
+.gallery-map-caption { padding-top: 12px; color: var(--muted, #bbb); font-size: 14px; }
+.gallery-map-caption p { margin: 0; }
+@media (max-width: 620px) { .gallery-map-intro { flex-direction: column; align-items: flex-start; gap: 8px; } }
+@media (prefers-reduced-motion: reduce) { .gallery-map-region, .gallery-map-base { transition: none !important; } }
+
+/* Full-size click targets below the overview use the same image frame. */
+.gallery-map-stage.has-gallery-links .gallery-map-region { cursor: pointer; }
+.gallery-map-screenshots { display: grid; gap: clamp(12px, 2vw, 28px); margin-top: clamp(28px, 4vw, 54px); }
+.gallery-map-screenshots[hidden] { display: none; }
+.gallery-map-shot { margin: 0; scroll-margin-top: 1rem; }
+.gallery-map-shot picture, .gallery-map-shot img { display: block; width: 100%; }
+.gallery-map-shot img { height: auto; }
+.gallery-map-shot figcaption { padding-top: .35rem; color: var(--muted, #bbb); font-size: .875rem; }
+.gallery-map-shot:focus-visible { outline: 2px solid var(--accent, #eb9a56); outline-offset: 4px; }
+
+/* Reuse the normal gallery viewer while retaining the map page's presentation. */
+body.gallery-map-experiment { --background: #191919; }
+.gallery-map-intro h1 { text-align: start; letter-spacing: normal; }
+.gallery-map-actions { display: flex; align-items: center; gap: 1rem; }
+.gallery-map-overview-button { display: block; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; background: transparent; color: inherit; cursor: zoom-in; }
+.gallery-map-overview-button:focus-visible { outline: 2px solid #fff; outline-offset: -3px; }
+.gallery-map-fullscreen-button { padding: .25rem .6rem; border: 1px solid var(--border, #383838); border-radius: .25rem; background: #181818; color: inherit; font: inherit; cursor: pointer; }
+.gallery-map-fullscreen-button:disabled { opacity: .5; cursor: default; }
+.gallery-map-fullscreen { position: absolute; inset: auto; left: 50%; top: 50%; z-index: 1; width: min(100%, calc(100dvh * 16 / 9)); height: auto; border: 0; border-radius: 0; transform: translate(-50%, -50%); }
+.gallery-map-fullscreen[hidden] { display: none; }
+#viewer.has-overview-map #stage { visibility: hidden; }
+.gallery-map-experiment #viewer .viewer-arrows, .gallery-map-experiment #viewer .viewer-bar, .gallery-map-experiment #viewer .status, .gallery-map-experiment #viewer .comparison-indicator { z-index: 2; }
+

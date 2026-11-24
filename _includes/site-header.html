@@ -2,22 +2,36 @@
   <div class="site-shell site-header__inner">
     {% if page.portfolio == 'personal' %}
       {% assign personal_header = site.data.personal_portfolio %}
-      <a class="site-brand site-brand--personal" href="{{ personal_header.home | relative_url }}">{{ personal_header.name | escape }}</a>
+      {% assign personal_home = page.font_preview.home | default: personal_header.home %}
+      {% assign personal_resume = page.font_preview.resume | default: personal_header.resume %}
+      <a class="site-brand site-brand--personal" href="{{ personal_home | relative_url }}">{{ personal_header.name | escape }}</a>
       <nav class="site-nav" aria-label="Main navigation">
-        <a href="{{ personal_header.home | relative_url }}" aria-current="true">Portfolio</a>
-        <a href="{{ personal_header.about | escape }}">About / CV</a>
-        <a href="{{ personal_header.contact | escape }}">Contact</a>
+        <a href="{{ personal_home | relative_url }}"{% unless page.url == personal_resume %} aria-current="true"{% endunless %}>Portfolio</a>
+        <a href="{{ personal_resume | relative_url }}"{% if page.url == personal_resume %} aria-current="page"{% endif %}>Resume</a>
       </nav>
     {% else %}
       <a class="site-brand site-brand--studio" href="{{ '/' | relative_url }}">
         <img src="{{ '/assets/DS_Logo_White_Transparent_With_Tagline_1200.png' | relative_url }}?v={{ site.github.build_revision | escape }}" width="1200" height="320" alt="Digital Shamans">
       </a>
       <nav class="site-nav" aria-label="Main navigation">
+        {% if page.layout == 'portfolio' %}
+        <a href="#portfolio" data-home-link="portfolio" aria-current="location">Portfolio</a>
+        <a href="#about-us" data-home-link="about">About Us</a>
+        {% else %}
         <a href="{{ '/' | relative_url }}"{% unless page.url == '/resume/' %} aria-current="true"{% endunless %}>Portfolio</a>
         <a href="{{ '/resume/' | relative_url }}"{% if page.url == '/resume/' %} aria-current="page"{% endif %}>About Us</a>
+        {% endif %}
         <a href="https://tally.so/r/3Ey0V4">Contact</a>
-        <a href="https://www.digitalshamans.co.uk/blog">Jobs</a>
+        <a href="https://digital_shamans.artstation.com/blog">Jobs</a>
       </nav>
     {% endif %}
   </div>
 </header>
+
+{% if page.portfolio == 'personal' and page.font_preview %}
+  <aside class="font-preview-note" aria-label="Font preview">
+    <strong>{{ page.font_preview.name | escape }}</strong>
+    <a href="{{ '/artur/experiments/font-previews/' | relative_url }}">Compare all three</a>
+    <a href="{{ site.data.personal_portfolio.home | relative_url }}">Exit preview</a>
+  </aside>
+{% endif %}

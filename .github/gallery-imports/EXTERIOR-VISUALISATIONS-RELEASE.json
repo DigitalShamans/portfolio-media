@@ -1,0 +1,57 @@
+{
+  "source_id": "PeZm1",
+  "slug": "exterior-visualisations",
+  "title": "Exterior Visualisations",
+  "branch": "codex/exterior-visualisations-20261120",
+  "public_base": "eaa951a3950ffad3b8c2bcde8fd98f0a1522d956",
+  "carried_prior_evidence": "f85a0e187a71d1cb7578b4627dc9b618bae60560",
+  "images": 19,
+  "captions": 0,
+  "null_captions": 19,
+  "embeds": 0,
+  "empty_source_positions": [
+    2
+  ],
+  "private": {
+    "status": "verified",
+    "unchanged_approval_groups": 21,
+    "source_commit": "e40273094a8ebf630b2129d58fdc7755e549d273",
+    "pr": 17,
+    "revision": "37741ff5622207d7cb6326e3d28a33d04ec212c7",
+    "tree_verified": 19
+  },
+  "service": {
+    "status": "succeeded",
+    "prior_catalogs": 16,
+    "project_id": "appgprj_6afbf3a4aa2c81919821379c8fde09df",
+    "source": "168d194602e2d2ab4128c4ec5c8c093e311f8ef5",
+    "version": 20,
+    "saved_version": "appgprj_6afbf3a4aa2c81919821379c8fde09df~appgver_cd176948b1ac81918d0a1f60e29ca673",
+    "deployment_id": "appgdep_6afff9e4ac78819187bb6a070dfd03f1",
+    "environment": 25,
+    "succeeded_at": "2026-11-20T09:42:41.318929+02:00",
+    "get_status": "passed",
+    "get_requests": 26,
+    "http_seconds": 17.76
+  },
+  "website": {
+    "status": "verified",
+    "initial_pr": 92,
+    "initial_revision": "29e4d2f30a32d94ec27367b6e43a71015fc553ce",
+    "source_commit": "8296109586b594b17c3267a9379753435c773a71",
+    "pr": 93,
+    "revision": "7a50e1004e3b57b8a8d45281dc38814b58bca6ba",
+    "pages_run": 44702739863,
+    "pages_status": "success",
+    "succeeded_at": "2026-11-20T08:29:15Z",
+    "public_gets": 32,
+    "http_seconds": 7.179
+  },
+  "native": "passed",
+  "browser": "passed",
+  "capture": "released",
+  "protected_user_files_verified": 14,
+  "private_untracked_preserved": 238,
+  "final_evidence_target": "main via the same gallery branch before its removal",
+  "branch_consolidation_user_requested": true
+}

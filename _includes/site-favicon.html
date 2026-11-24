@@ -1,1 +1,5 @@
+{% if page.portfolio == 'personal' %}
+<link rel="icon" type="image/png" sizes="64x64" href="{{ '/assets/artur-favicon.png' | relative_url }}?v=3e0e3744f4e6">
+{% else %}
 <link rel="icon" type="image/png" sizes="180x180" href="{{ '/assets/favicon.png' | relative_url }}">
+{% endif %}

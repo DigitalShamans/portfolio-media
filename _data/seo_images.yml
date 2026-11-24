@@ -1,48 +1,48 @@
 hb-airplanes:
-  path: /galleries/hb-airplanes/SandboxLab_Airplanes_4k_A_01.jpg
+  path: /galleries/hb-airplanes/1440p/SandboxLab_Airplanes_4k_A_01.webp
   alt: "Passenger aircraft cabin with blue seating in the Hard Bullet Airplanes environment"
-  width: 3840
-  height: 2160
-  type: image/jpeg
+  width: 2560
+  height: 1440
+  type: image/webp
 
 hb-atrium:
-  path: /galleries/hb-atrium/Hall_Atrium_Ground_01_4k_Logos.jpg
+  path: /galleries/hb-atrium/1440p/Hall_Atrium_Ground_01_4k_Logos.webp
   alt: "Curved reception desk and cyan lighting in the Hard Bullet Atrium"
-  width: 3840
-  height: 2160
-  type: image/jpeg
+  width: 2560
+  height: 1440
+  type: image/webp
 
 hb-barchurch:
-  path: /galleries/hb-barchurch/Bar_Church_MainHall_26_4k_Logos.jpg
+  path: /galleries/hb-barchurch/1440p/Bar_Church_MainHall_26_4k_Logos.webp
   alt: "Chandelier-lit bar beneath stone arches in the Hard Bullet Bar & Church arena"
-  width: 3840
-  height: 2160
-  type: image/jpeg
+  width: 2560
+  height: 1440
+  type: image/webp
 
 hb-egypt:
-  path: /galleries/hb-egypt/HB_Start_03.jpg
+  path: /galleries/hb-egypt/1440p/HB_Start_03.webp
   alt: "Sandstone columns framing a pyramid in the Hard Bullet Egypt environment"
-  width: 3840
-  height: 2160
-  type: image/jpeg
+  width: 2560
+  height: 1440
+  type: image/webp
 
 hb-harbor:
-  path: /galleries/hb-harbor/Harbor_Scene_002_4k_Logos.jpg
+  path: /galleries/hb-harbor/1440p/Harbor_Scene_002_4k_Logos.webp
   alt: "Cargo cranes and shipping containers at sunset in the Hard Bullet Harbor arena"
-  width: 3840
-  height: 2160
-  type: image/jpeg
+  width: 2560
+  height: 1440
+  type: image/webp
 
 hb-helipad:
-  path: /galleries/hb-helipad/HelipadArena_01_4k.jpg
+  path: /galleries/hb-helipad/1440p/HelipadArena_01_4k.webp
   alt: "Marble-lined corridor with strip lighting in the Hard Bullet Helipad arena"
-  width: 3840
-  height: 2160
-  type: image/jpeg
+  width: 2560
+  height: 1440
+  type: image/webp
 
 hb-spybase:
-  path: /galleries/hb-spybase/SpyBase_01.jpg
+  path: /galleries/hb-spybase/1440p/SpyBase_01.webp
   alt: "Red-lit wind tunnel and industrial fan in the Hard Bullet Spy Base"
-  width: 3840
-  height: 2160
-  type: image/jpeg
+  width: 2560
+  height: 1440
+  type: image/webp

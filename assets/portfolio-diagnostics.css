@@ -1,0 +1,46 @@
+.portfolio-diagnostics {
+  position: fixed;
+  z-index: 90;
+  inset-block-end: max(.75rem, env(safe-area-inset-bottom));
+  inset-inline: 0;
+  width: min(35rem, calc(100% - 1.5rem));
+  margin-inline: auto;
+  color-scheme: dark;
+  color: #f4f4f4;
+  background: #181818;
+  border: 1px solid #656565;
+  border-radius: .45rem;
+  font: 14px/1.4 system-ui, sans-serif;
+  box-shadow: 0 4px 20px #0008;
+}
+.portfolio-diagnostics:not([open]) { width: fit-content; }
+.portfolio-diagnostics > summary { padding: .55rem .8rem; cursor: pointer; }
+.portfolio-diagnostics__body {
+  max-height: min(62dvh, 30rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border-top: 1px solid #414141;
+  padding: .65rem .8rem;
+}
+.portfolio-diagnostics p { margin: 0 0 .55rem; }
+.portfolio-diagnostics dl { margin: 0 0 .7rem; }
+.portfolio-diagnostics dt { font-weight: 700; }
+.portfolio-diagnostics dd { margin: .08rem 0 .5rem; color: #d2d2d2; }
+.portfolio-diagnostics__actions { display: flex; flex-wrap: wrap; gap: .45rem; }
+.portfolio-diagnostics button {
+  min-height: 2.45rem;
+  padding: .35rem .6rem;
+  border: 1px solid #686868;
+  border-radius: .3rem;
+  font: inherit;
+  color: inherit;
+  background: #292929;
+  cursor: pointer;
+}
+.portfolio-diagnostics button:hover { background: #373737; }
+.portfolio-diagnostics button:focus-visible, .portfolio-diagnostics summary:focus-visible {
+  outline: 2px solid #e18842;
+  outline-offset: 2px;
+}
+.portfolio-diagnostics__status { margin-block-start: .45rem; color: #f4ceac; }
+.portfolio-diagnostics textarea { width: 100%; margin-block-start: .5rem; font: 12px/1.35 monospace; }

@@ -1,0 +1,70 @@
+{% comment %}
+Each portfolio has two independent loops. Recent Work follows the same
+Hard Bullet list; Full Portfolio follows the respective site's own card
+order, never crossing into the other site or the Hard Bullet gallery set.
+{% endcomment %}
+{% assign current_gallery_route = include.portfolio_url | append: 'galleries/' | append: include.current | append: '/' %}
+{% assign navigation_items = site.data.portfolio.recent %}
+{% assign navigation_loop = 'hard-bullet' %}
+{% if page.portfolio == 'personal' %}
+  {% for personal_project in site.data.personal_portfolio.full %}
+    {% if personal_project.url == current_gallery_route %}
+      {% assign navigation_items = site.data.personal_portfolio.full %}
+      {% assign navigation_loop = 'full' %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% else %}
+  {% for studio_project in site.data.portfolio.full %}
+    {% if studio_project.url == current_gallery_route %}
+      {% assign navigation_items = site.data.portfolio.full %}
+      {% assign navigation_loop = 'full' %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+{% assign navigation_count = navigation_items | size %}
+{% if navigation_count > 1 %}
+  {% for navigation_item in navigation_items %}
+    {% if navigation_loop == 'full' %}
+      {% assign item_url = navigation_item.url %}
+    {% else %}
+      {% assign item_url = include.portfolio_url | append: 'galleries/' | append: navigation_item.folder | append: '/' %}
+    {% endif %}
+    {% if item_url == current_gallery_route %}
+      {% assign navigation_previous_index = forloop.index0 | minus: 1 %}
+      {% assign navigation_next_index = forloop.index0 | plus: 1 %}
+      {% if navigation_previous_index < 0 %}
+        {% assign navigation_previous_index = navigation_count | minus: 1 %}
+      {% endif %}
+      {% if navigation_next_index >= navigation_count %}
+        {% assign navigation_next_index = 0 %}
+      {% endif %}
+      {% assign navigation_previous = navigation_items[navigation_previous_index] %}
+      {% assign navigation_next = navigation_items[navigation_next_index] %}
+      {% if navigation_loop == 'full' %}
+        {% assign navigation_previous_url = navigation_previous.url %}
+        {% assign navigation_next_url = navigation_next.url %}
+      {% else %}
+        {% assign navigation_previous_url = include.portfolio_url | append: 'galleries/' | append: navigation_previous.folder | append: '/' %}
+        {% assign navigation_next_url = include.portfolio_url | append: 'galleries/' | append: navigation_next.folder | append: '/' %}
+      {% endif %}
+      {% comment %}Shared destination metadata for gallery gestures and desktop edge cues.{% endcomment %}
+      <nav class="gallery-navigation" data-gallery-loop="{{ navigation_loop }}"
+        aria-label="{% if navigation_loop == 'full' %}Full Portfolio{% else %}Hard Bullet{% endif %} galleries" hidden>
+        <a class="gallery-navigation__link gallery-navigation__link--previous"
+           href="{{ navigation_previous_url | relative_url }}"
+           data-gallery-name="{{ navigation_previous.title | escape }}{% if navigation_previous.locked %} (password required){% endif %}"
+           aria-label="Previous gallery: {{ navigation_previous.title | escape }}{% if navigation_previous.locked %} (password required){% endif %}"></a>
+        <a class="gallery-navigation__link gallery-navigation__link--next"
+           href="{{ navigation_next_url | relative_url }}"
+           data-gallery-name="{{ navigation_next.title | escape }}{% if navigation_next.locked %} (password required){% endif %}"
+           aria-label="Next gallery: {{ navigation_next.title | escape }}{% if navigation_next.locked %} (password required){% endif %}"></a>
+      </nav>
+      <script src="{{ '/galleries/gallery-navigation.js' | relative_url }}?v=5" defer></script>
+      <script src="{{ '/galleries/gallery-desktop-panels.js' | relative_url }}?v=12" defer></script>
+      <script src="{{ '/galleries/gallery-document-prefetch.js' | relative_url }}?v=3" defer></script>
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endif %}

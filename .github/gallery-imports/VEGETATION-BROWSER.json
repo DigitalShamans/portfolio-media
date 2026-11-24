@@ -1,0 +1,194 @@
+{
+  "passed": true,
+  "browser": "ChatGPT in-app browser",
+  "tab": "22",
+  "checks": [
+    {
+      "build": "7dc1b7c0003fc6c2ae1406c5c85d13c31ad9bd9f",
+      "captions": 16,
+      "first": {
+        "complete": true,
+        "natural": 2560,
+        "src": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-seaweed-4k.webp?v=1e7b1cc86e883d8b44e7b9c8b54c221e9df36d23&webp=q92-m6"
+      },
+      "height": 844,
+      "horizontalOverflow": false,
+      "path": "/galleries/vegetation/",
+      "shots": 16,
+      "width": 390,
+      "captionPairsVerified": 16,
+      "sourceOrderVerified": true,
+      "viewer": {
+        "height": 844,
+        "image": {
+          "complete": true,
+          "natural": 2560,
+          "src": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-wheat01-4k.webp?v=f307bd6001eacfd0dde37a4de09d8af0ac53806d&webp=q92-m6"
+        },
+        "width": 390
+      },
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "escapeClosed": true
+    },
+    {
+      "build": "7dc1b7c0003fc6c2ae1406c5c85d13c31ad9bd9f",
+      "captions": 16,
+      "first": {
+        "complete": true,
+        "natural": 3840,
+        "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/3a64865730657b150111a6173598a24da0d85275/vegetation/digital-shamans-ds-vegetation-survisland-seaweed-4k.jpg"
+      },
+      "height": 1600,
+      "horizontalOverflow": false,
+      "path": "/galleries/vegetation/",
+      "shots": 16,
+      "width": 2800,
+      "captionPairsVerified": 16,
+      "sourceOrderVerified": true,
+      "viewer": {
+        "height": 1600,
+        "image": {
+          "complete": true,
+          "natural": 3840,
+          "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/3a64865730657b150111a6173598a24da0d85275/vegetation/digital-shamans-ds-vegetation-survisland-wheat01-4k.jpg"
+        },
+        "width": 2800
+      },
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "escapeClosed": true
+    },
+    {
+      "build": "7dc1b7c0003fc6c2ae1406c5c85d13c31ad9bd9f",
+      "captions": 16,
+      "first": {
+        "complete": true,
+        "natural": 3840,
+        "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/3a64865730657b150111a6173598a24da0d85275/vegetation/digital-shamans-ds-vegetation-survisland-seaweed-4k.jpg"
+      },
+      "height": 1600,
+      "horizontalOverflow": false,
+      "path": "/artur/galleries/vegetation/",
+      "shots": 16,
+      "width": 2800,
+      "captionPairsVerified": 16,
+      "sourceOrderVerified": true,
+      "viewer": {
+        "height": 1600,
+        "image": {
+          "complete": true,
+          "natural": 3840,
+          "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/3a64865730657b150111a6173598a24da0d85275/vegetation/digital-shamans-ds-vegetation-survisland-wheat01-4k.jpg"
+        },
+        "width": 2800
+      },
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "escapeClosed": true
+    },
+    {
+      "build": "7dc1b7c0003fc6c2ae1406c5c85d13c31ad9bd9f",
+      "captions": 16,
+      "first": {
+        "complete": true,
+        "natural": 2560,
+        "src": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-seaweed-4k.webp?v=1e7b1cc86e883d8b44e7b9c8b54c221e9df36d23&webp=q92-m6"
+      },
+      "height": 844,
+      "horizontalOverflow": false,
+      "path": "/artur/galleries/vegetation/",
+      "shots": 16,
+      "width": 390,
+      "captionPairsVerified": 16,
+      "sourceOrderVerified": true,
+      "viewer": {
+        "height": 844,
+        "image": {
+          "complete": true,
+          "natural": 2560,
+          "src": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-wheat01-4k.webp?v=f307bd6001eacfd0dde37a4de09d8af0ac53806d&webp=q92-m6"
+        },
+        "width": 390
+      },
+      "sequence": [
+        1,
+        2,
+        1
+      ],
+      "escapeClosed": true
+    }
+  ],
+  "normalDesktop": {
+    "build": "7dc1b7c0003fc6c2ae1406c5c85d13c31ad9bd9f",
+    "captions": 16,
+    "first": {
+      "complete": true,
+      "natural": 2560,
+      "src": "https://digitalshamans.co.uk/galleries/vegetation/1440p/digital-shamans-ds-vegetation-survisland-seaweed-4k.webp?v=1e7b1cc86e883d8b44e7b9c8b54c221e9df36d23&webp=q92-m6"
+    },
+    "height": 1000,
+    "horizontalOverflow": false,
+    "path": "/galleries/vegetation/",
+    "shots": 16,
+    "width": 1280,
+    "captionPairsVerified": 16,
+    "sourceOrderVerified": true
+  },
+  "logs": [
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T20:42:33.095Z",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43"
+    },
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T20:42:55.459Z",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43"
+    },
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T20:43:11.306Z",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43"
+    },
+    {
+      "level": "warn",
+      "message": "Fullscreen request failed TypeError: not granted",
+      "timestamp": "2026-11-19T20:43:29.520Z",
+      "url": "https://digitalshamans.co.uk/galleries/gallery-viewer.js?v=43"
+    }
+  ],
+  "opening": {
+    "status": "interactive-verified",
+    "attempts": [
+      {
+        "backend": "fresh-in-app-tab",
+        "passed": true,
+        "elapsedMs": 4119
+      }
+    ],
+    "chromeUsed": false
+  },
+  "limitations": [
+    "Physical touch/iOS/Safari not tested.",
+    "Native Fullscreen API grant is not claimed where IAB denied it; full-viewport overlays/navigation/escape were verified."
+  ],
+  "proof": {
+    "mobile": "outputs/vegetation-mobile.jpg",
+    "desktop": "outputs/vegetation-desktop.jpg",
+    "visuallyInspected": true
+  },
+  "completedAtUtc": "2026-11-19T20:44:11.812Z"
+}

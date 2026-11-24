@@ -1,0 +1,93 @@
+{
+  "passed": true,
+  "editor": "DS Gallery Editor v0.11",
+  "ownedWindow": 3022418,
+  "existingUserWindowPreserved": 198164,
+  "nativePreviews": [
+    {
+      "image": "the-digital-shaman-presentation-front-ue5-top.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "the-digital-shaman-presentation-front-ue5-bottom.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "the-digital-shaman-presentation-3-4-wireframe-02.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "the-digital-shaman-presentation-3-4-wireframe-01.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "the-digital-shaman-battlezone.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "the-digital-shaman-artur-perzyna-battlezone-presentation-a04-impr-denoised.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "the-digital-shaman-artur-perzyna-battlezone-presentation-a01-impr-denoised.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "the-digital-shaman-artur-perzyna-battlezone-presentation-a10-impr-denoised-m.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "the-digital-shaman-artur-perzyna-battlezone-presentation-b04-impr-denoised.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "the-digital-shaman-artur-perzyna-battlezone-presentation-a00b-impr2-denoised-m.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "the-digital-shaman-artur-perzyna-2014-compose4-abstract-denoised.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "the-digital-shaman-artur-perzyna-2014-compose2-blue-denoised.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "the-digital-shaman-ds2.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "the-digital-shaman-digitalshamans-powder-props-01.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "the-digital-shaman-artur-perzyna-mech-daisy1.jpg",
+      "nativePreviewRendered": true
+    },
+    {
+      "image": "the-digital-shaman-artur-perzyna-mech-daisy2.jpg",
+      "nativePreviewRendered": true
+    }
+  ],
+  "roundtrip": {
+    "adjacentReorderExplicitlySaved": true,
+    "reopenPersistedReorder": true,
+    "canonicalOrderRestoredAndSaved": true
+  },
+  "recovery": [
+    "Raised the new editor window before coordinate input; used the folder dialog own screenshot coordinates.",
+    "Refreshed accessibility state after Qt updates before evaluating save state."
+  ],
+  "completedAtUtc": "2026-11-20T08:52:53.475Z",
+  "integrity": {
+    "stageFilesChecked": 42,
+    "stageUntouched": true,
+    "originalsUnchanged": 16,
+    "sourceOrderAndImageOnlySchema": true,
+    "scratchCanonicalBytesRestored": true,
+    "companions": 0,
+    "captionMappings": 0
+  },
+  "ownedEditorWindowClosed": true,
+  "capture": "Root final gate after live IAB"
+}

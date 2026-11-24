@@ -1,0 +1,184 @@
+{
+  "passed": true,
+  "source": "https://www.artstation.com/artwork/PeZm1",
+  "slug": "exterior-visualisations",
+  "browser": "ChatGPT in-app browser",
+  "checks": [
+    {
+      "build": "7a50e1004e3b57b8a8d45281dc38814b58bca6ba",
+      "captions": 0,
+      "first": {
+        "complete": true,
+        "natural": 1920,
+        "src": "https://digitalshamans.co.uk/galleries/exterior-visualisations/1440p/artur-perzyna-018.webp?v=d54aae8e5a0dc7ba4092d8456a67d5d16d50417f&webp=q92-m6"
+      },
+      "height": 844,
+      "horizontalOverflow": false,
+      "path": "/galleries/exterior-visualisations/",
+      "shots": 19,
+      "width": 390,
+      "captionPairsVerified": 0,
+      "sourceOrderVerified": true,
+      "attempts": [
+        {
+          "backend": "in-app",
+          "passed": true,
+          "elapsedMs": 25
+        }
+      ],
+      "navigation": {
+        "viewer": {
+          "height": 844,
+          "image": {
+            "complete": true,
+            "natural": 1920,
+            "src": "https://digitalshamans.co.uk/galleries/exterior-visualisations/1440p/artur-perzyna-011.webp?v=4d95bca03538ac8d284913351c83038022752a53&webp=q92-m6"
+          },
+          "width": 390
+        },
+        "sequence": [
+          1,
+          2,
+          1
+        ],
+        "escapeClosed": true
+      }
+    },
+    {
+      "build": "7a50e1004e3b57b8a8d45281dc38814b58bca6ba",
+      "captions": 0,
+      "first": {
+        "complete": true,
+        "natural": 2000,
+        "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/37741ff5622207d7cb6326e3d28a33d04ec212c7/exterior-visualisations/artur-perzyna-018.jpg"
+      },
+      "height": 1600,
+      "horizontalOverflow": false,
+      "path": "/galleries/exterior-visualisations/",
+      "shots": 19,
+      "width": 2800,
+      "captionPairsVerified": 0,
+      "sourceOrderVerified": true,
+      "attempts": [
+        {
+          "backend": "in-app",
+          "passed": true,
+          "elapsedMs": 21
+        }
+      ],
+      "navigation": {
+        "viewer": {
+          "height": 1600,
+          "image": {
+            "complete": true,
+            "natural": 2000,
+            "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/37741ff5622207d7cb6326e3d28a33d04ec212c7/exterior-visualisations/artur-perzyna-011.jpg"
+          },
+          "width": 2800
+        },
+        "sequence": [
+          1,
+          2,
+          1
+        ],
+        "escapeClosed": true
+      }
+    },
+    {
+      "build": "7a50e1004e3b57b8a8d45281dc38814b58bca6ba",
+      "captions": 0,
+      "first": {
+        "complete": true,
+        "natural": 1920,
+        "src": "https://digitalshamans.co.uk/galleries/exterior-visualisations/1440p/artur-perzyna-018.webp?v=d54aae8e5a0dc7ba4092d8456a67d5d16d50417f&webp=q92-m6"
+      },
+      "height": 844,
+      "horizontalOverflow": false,
+      "path": "/artur/galleries/exterior-visualisations/",
+      "shots": 19,
+      "width": 390,
+      "captionPairsVerified": 0,
+      "sourceOrderVerified": true,
+      "navigation": {
+        "viewer": {
+          "height": 844,
+          "image": {
+            "complete": true,
+            "natural": 1920,
+            "src": "https://digitalshamans.co.uk/galleries/exterior-visualisations/1440p/artur-perzyna-011.webp?v=4d95bca03538ac8d284913351c83038022752a53&webp=q92-m6"
+          },
+          "width": 390
+        },
+        "sequence": [
+          1,
+          2,
+          1
+        ],
+        "escapeClosed": true
+      }
+    },
+    {
+      "build": "7a50e1004e3b57b8a8d45281dc38814b58bca6ba",
+      "captions": 0,
+      "first": {
+        "complete": true,
+        "natural": 2000,
+        "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/37741ff5622207d7cb6326e3d28a33d04ec212c7/exterior-visualisations/artur-perzyna-018.jpg"
+      },
+      "height": 1600,
+      "horizontalOverflow": false,
+      "path": "/artur/galleries/exterior-visualisations/",
+      "shots": 19,
+      "width": 2800,
+      "captionPairsVerified": 0,
+      "sourceOrderVerified": true,
+      "navigation": {
+        "viewer": {
+          "height": 1600,
+          "image": {
+            "complete": true,
+            "natural": 2000,
+            "src": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site/public-media/37741ff5622207d7cb6326e3d28a33d04ec212c7/exterior-visualisations/artur-perzyna-011.jpg"
+          },
+          "width": 2800
+        },
+        "sequence": [
+          1,
+          2,
+          1
+        ],
+        "escapeClosed": true
+      }
+    }
+  ],
+  "normalDesktop": {
+    "build": "7a50e1004e3b57b8a8d45281dc38814b58bca6ba",
+    "captions": 0,
+    "first": {
+      "complete": true,
+      "natural": 1920,
+      "src": "https://digitalshamans.co.uk/galleries/exterior-visualisations/1440p/artur-perzyna-018.webp?v=d54aae8e5a0dc7ba4092d8456a67d5d16d50417f&webp=q92-m6"
+    },
+    "height": 720,
+    "horizontalOverflow": false,
+    "path": "/artur/galleries/exterior-visualisations/",
+    "shots": 19,
+    "width": 1280,
+    "captionPairsVerified": 0,
+    "sourceOrderVerified": true
+  },
+  "completedAtUtc": "2026-11-20T08:35:04.983Z",
+  "temporaryTabsClosed": true,
+  "viewportReset": true,
+  "proofs": [
+    "outputs/exterior-visualisations-desktop.jpg",
+    "outputs/exterior-visualisations-mobile.jpg"
+  ],
+  "recoveries": [
+    "Two guarded personal-route attempts returned delivery-only when the expected viewport did not match; neither was counted as interactive success.",
+    "Used observed tab dimensions rather than assumed targeting. Reloaded the matching personal tab at 2800x1600 before original-image acceptance."
+  ],
+  "limitations": [
+    "Physical touch, Safari/iOS and native OS fullscreen grant were not tested. Full-viewport viewer navigation passed."
+  ]
+}

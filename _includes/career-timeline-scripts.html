@@ -1,0 +1,19 @@
+  {% include portfolio-diagnostics.html section='resume' %}
+  <script>
+    (() => {
+      const root = document.documentElement;
+      root.classList.add('career-initializing');
+      const fallback = window.setTimeout(() => root.classList.remove('career-initializing'), 6000);
+      document.addEventListener('career-layout-ready', () => {
+        window.clearTimeout(fallback);
+        root.classList.remove('career-initializing');
+      }, { once: true });
+    })();
+  </script>
+  <script src="{{ '/assets/career-timeline.js' | relative_url }}?v=53" defer></script>
+  <script src="{{ '/assets/vendor/gsap/3.15.1/gsap.min.js' | relative_url }}" defer></script>
+  <script src="{{ '/assets/vendor/gsap/3.15.1/ScrollTrigger.min.js' | relative_url }}" defer></script>
+  <script src="{{ '/assets/vendor/gsap/3.15.1/ScrollSmoother.min.js' | relative_url }}" defer></script>
+  <script src="{{ '/assets/vendor/gsap/3.15.1/DrawSVGPlugin.min.js' | relative_url }}" defer></script>
+  <script src="{{ '/assets/vendor/gsap/3.15.1/MotionPathPlugin.min.js' | relative_url }}" defer></script>
+

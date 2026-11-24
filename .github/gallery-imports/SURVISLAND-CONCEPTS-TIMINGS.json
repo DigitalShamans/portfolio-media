@@ -1,0 +1,18 @@
+{
+  "processing_start_utc": "2026-11-19T18:19:01Z",
+  "source_complete_utc": "2026-11-19T18:21:05.776557+00:00",
+  "download_seconds": 12.69,
+  "prepare_seconds": 14.093,
+  "publication_complete_utc": "2026-11-19T18:37:08+00:00",
+  "browser_file_visual_acceptance_complete_utc": "2026-11-19T18:40:52+00:00",
+  "capture_cleanup_complete_utc": "2026-11-19T18:41:51.462263+00:00",
+  "final_evidence_prepared_utc": "2026-11-19T18:43:38.421076+00:00",
+  "publication_elapsed_seconds": 1087.0,
+  "acceptance_elapsed_seconds": 1311.0,
+  "capture_cleanup_elapsed_seconds": 1370.462263,
+  "evidence_elapsed_seconds": 1477.421076,
+  "baseline_seconds": 3863,
+  "half_target_seconds": 1931.5,
+  "half_target_met": true,
+  "evidence_reduction_percent": 61.75
+}

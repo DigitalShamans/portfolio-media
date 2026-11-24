@@ -35,31 +35,11 @@ jobs:
         if: steps.source.outputs.workflow_source == 'true'
         with:
           persist-credentials: false
-      - name: Validate public gallery manifests
-        if: steps.source.outputs.workflow_source == 'true'
-        run: |
-          node --test .github/tests/public-gallery-routes.test.cjs
-          node .github/scripts/validate-public-galleries.cjs
       - uses: actions/configure-pages@v5
         if: steps.source.outputs.workflow_source == 'true'
-      - name: Generate gallery asset versions
+      - name: Validate portfolio
         if: steps.source.outputs.workflow_source == 'true'
-        run: python3 .github/scripts/generate-gallery-asset-versions.py
-      - name: Generate 1440p gallery images
-        if: steps.source.outputs.workflow_source == 'true'
-        run: |
-          python3 -m venv "$RUNNER_TEMP/gallery-image-tools"
-          "$RUNNER_TEMP/gallery-image-tools/bin/python" -m pip install 'Pillow==13.0.0'
-          "$RUNNER_TEMP/gallery-image-tools/bin/python" .github/scripts/generate-gallery-1440p.py ./galleries/*/gallery.json
-      - name: Build with Jekyll
-        if: steps.source.outputs.workflow_source == 'true'
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./
-          destination: ./_site
-      - name: Validate homepage gallery links
-        if: steps.source.outputs.workflow_source == 'true'
-        run: python3 .github/scripts/validate-homepage-gallery-links.py ./_site
+        uses: ./.github/actions/validate-portfolio
       - uses: actions/upload-pages-artifact@v4
         if: steps.source.outputs.workflow_source == 'true'
 

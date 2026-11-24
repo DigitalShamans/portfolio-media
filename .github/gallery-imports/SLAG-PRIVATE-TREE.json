@@ -1,0 +1,63 @@
+{
+  "passed": true,
+  "revision": "ddbb5d1a9b9aad396debb1c5b11f66db8b08a8a4",
+  "matched": 11,
+  "approval_matches": true,
+  "files": [
+    {
+      "path": "public/slag/artur-perzyna-2014-compose10.jpg",
+      "git_blob_sha": "f4dc68893f06fe91e9e5a5a790a627332e3a960d",
+      "bytes": 717325
+    },
+    {
+      "path": "public/slag/artur-perzyna-2014-compose4-canyon.jpg",
+      "git_blob_sha": "92661d7e3d086b0541ed1cc431f68e4cc4c71b72",
+      "bytes": 307773
+    },
+    {
+      "path": "public/slag/artur-perzyna-2014-compose6.jpg",
+      "git_blob_sha": "dc07474e6ef687dbcddd15d7cfe9c33875a72a4d",
+      "bytes": 346374
+    },
+    {
+      "path": "public/slag/artur-perzyna-2014-compose7.jpg",
+      "git_blob_sha": "8939359e89698e72c221381614041d21897d02bb",
+      "bytes": 325845
+    },
+    {
+      "path": "public/slag/artur-perzyna-2014-compose9-day.jpg",
+      "git_blob_sha": "600a0bdab812c00f5ded1c4c435dd5a4403a6143",
+      "bytes": 477396
+    },
+    {
+      "path": "public/slag/artur-perzyna-artur-perzyna-2014-compose1-denoised.jpg",
+      "git_blob_sha": "587886a2b72790f39006065ad78fd3affcb6b6dd",
+      "bytes": 1052457
+    },
+    {
+      "path": "public/slag/artur-perzyna-artur-perzyna-2014-compose2-blue-denoised.jpg",
+      "git_blob_sha": "c938f0cc8f4a4bbfc0acb7eafdeb82329540dc5e",
+      "bytes": 371528
+    },
+    {
+      "path": "public/slag/artur-perzyna-artur-perzyna-2014-compose3-denoised.jpg",
+      "git_blob_sha": "ee899d4a84dd5926c138902c1c746d80605fdaa5",
+      "bytes": 270931
+    },
+    {
+      "path": "public/slag/artur-perzyna-artur-perzyna-2014-compose4-abstract-denoised.jpg",
+      "git_blob_sha": "b26f9f164634adbf9288bb6219b6f0094d3da024",
+      "bytes": 451603
+    },
+    {
+      "path": "public/slag/artur-perzyna-artur-perzyna-2014-compose5-bw-new-denoised.jpg",
+      "git_blob_sha": "48024e8ce1c6294b41aff1a0ecbe231966c556d9",
+      "bytes": 186358
+    },
+    {
+      "path": "public/slag/artur-perzyna-artur-perzyna-2014-compose8-night-denoised.jpg",
+      "git_blob_sha": "f9da307dc5987b9878fc817ae05afbbb2a331cdb",
+      "bytes": 313352
+    }
+  ]
+}

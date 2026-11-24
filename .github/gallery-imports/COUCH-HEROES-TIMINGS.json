@@ -1,0 +1,10 @@
+{
+  "processing_start_utc": "2026-11-20T09:22:00Z",
+  "start_basis": "Conservative first inspection minute; local-folder gallery with no acquisition step.",
+  "source_prepared_utc": "2026-11-20T09:26:59.347420+00:00",
+  "checkpoint_prepared_utc": "2026-11-20T09:53:10.312199+00:00",
+  "browser_completed_utc": "2026-11-20T09:47:48.275Z",
+  "capture_released_utc": "2026-11-20T09:48:49.2105599Z",
+  "elapsed_through_checkpoint_seconds": 1870.312,
+  "final_evidence_merge_and_response_excluded": true
+}

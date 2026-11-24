@@ -1,0 +1,30 @@
+@font-face {
+  font-family: "Conifers Breeze";
+  src: url("fonts/conifers-breeze.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  /* The supplied font uses the same symbol for all ten digits. */
+  unicode-range: U+0000-002F, U+003A-10FFFF;
+}
+
+:root {
+  font-family: "Conifers Breeze", system-ui, sans-serif;
+  letter-spacing: 1px;
+}
+
+h1,
+.site-brand--personal,
+.portfolio-heading,
+.career-intro h1,
+.career-copy h2,
+.gallery-content > .intro h1,
+.gallery-map-intro h1,
+.gallery-desktop-edge-panel__content p,
+button, input, select, textarea {
+  letter-spacing: inherit;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+}

@@ -1,0 +1,121 @@
+{
+  "user_requested_branch_consolidation": true,
+  "source_before": "0e888298a22df6f7e8ac77b653f25c2b5231461f",
+  "history_merge": "a45fbe15e8d6bb5a36b6c094534e882d03bc93d9",
+  "tree_unchanged": true,
+  "reason": "Each unmerged checkpoint commit has an equivalent patch already integrated. History-only merge preserves all branch ancestry and newest content.",
+  "public_gallery_branches": [
+    {
+      "branch": "codex/ancient-weapons-20261119",
+      "head": "e1232753a6159eb99fa64454b5627862ee51ed5e",
+      "patch_equivalent_commits": [
+        "- e1232753a6159eb99fa64454b5627862ee51ed5e"
+      ]
+    },
+    {
+      "branch": "codex/vegetation-20261119",
+      "head": "f1f4af9363fe84b6fd11bcf949356183481cfd6a",
+      "patch_equivalent_commits": [
+        "- f1f4af9363fe84b6fd11bcf949356183481cfd6a"
+      ]
+    },
+    {
+      "branch": "codex/slag-20261120",
+      "head": "e6b342f3729204f4e46d1a2440dd774fb8f711fb",
+      "patch_equivalent_commits": [
+        "- e6b342f3729204f4e46d1a2440dd774fb8f711fb"
+      ]
+    },
+    {
+      "branch": "codex/vegetation-merge-20261120",
+      "head": "ec9787db7a2626926537464f47e421fb6e183d7b",
+      "patch_equivalent_commits": [
+        "- ec9787db7a2626926537464f47e421fb6e183d7b"
+      ]
+    },
+    {
+      "branch": "codex/high-poly-models-20261120",
+      "head": "7bcc98d000edff8fbb5f4658db1ff56fe1c66045",
+      "patch_equivalent_commits": [
+        "- 7bcc98d000edff8fbb5f4658db1ff56fe1c66045"
+      ]
+    }
+  ],
+  "public_cleanup": {
+    "main_before": "154bcdc1cf51be2dad7bc5f52507db5351b054e8",
+    "main_after": "7a50e1004e3b57b8a8d45281dc38814b58bca6ba",
+    "fast_forward_only": true,
+    "deleted_merged_branches": [
+      {
+        "branch": "codex/ancient-weapons-20261119",
+        "head": "e1232753a6159eb99fa64454b5627862ee51ed5e",
+        "remote_present": true
+      },
+      {
+        "branch": "codex/vegetation-20261119",
+        "head": "f1f4af9363fe84b6fd11bcf949356183481cfd6a",
+        "remote_present": true
+      },
+      {
+        "branch": "codex/slag-20261120",
+        "head": "e6b342f3729204f4e46d1a2440dd774fb8f711fb",
+        "remote_present": true
+      },
+      {
+        "branch": "codex/vegetation-merge-20261120",
+        "head": "ec9787db7a2626926537464f47e421fb6e183d7b",
+        "remote_present": true
+      },
+      {
+        "branch": "codex/high-poly-models-20261120",
+        "head": "7bcc98d000edff8fbb5f4658db1ff56fe1c66045",
+        "remote_present": true
+      }
+    ],
+    "active_branch": "codex/exterior-visualisations-20261120"
+  },
+  "private_cleanup": {
+    "main_before": "3ea1ff2006349804fde73818e2c16d7e21af0586",
+    "main_after": "37741ff5622207d7cb6326e3d28a33d04ec212c7",
+    "fast_forward_only": true,
+    "deleted_merged_branches": [
+      {
+        "branch": "codex/ancient-weapons-20261119",
+        "head": "f6110845a5fe2dd091330584f792bda5a9378e1e",
+        "remote_present": true
+      },
+      {
+        "branch": "codex/vegetation-20261119",
+        "head": "0461ae728598511eca63621806eaa9b2577a8ad0",
+        "remote_present": true
+      },
+      {
+        "branch": "codex/slag-20261120",
+        "head": "59249b2b750459715e0d98a4aeae5a40c3d498b7",
+        "remote_present": true
+      },
+      {
+        "branch": "codex/vegetation-merge-20261120",
+        "head": "0edb206a09703042ef75ed27f129580023263f0b",
+        "remote_present": true
+      },
+      {
+        "branch": "codex/high-poly-models-20261120",
+        "head": "306d9c93fb5760cbf0049dbf5b5a53cc468954b4",
+        "remote_present": true
+      },
+      {
+        "branch": "codex/exterior-visualisations-20261120",
+        "head": "e40273094a8ebf630b2129d58fdc7755e549d273",
+        "remote_present": true
+      }
+    ],
+    "active_branch": "main"
+  },
+  "protected_files": {
+    "public_files_sha256_unchanged": 14,
+    "private_untracked_paths_and_sizes_unchanged": 238
+  },
+  "completed_prior_branch_cleanup_utc": "2026-11-20T08:29:19.444532+00:00",
+  "remaining_current_public_branch": "Final live evidence will be merged through this same branch, then it will be removed and main selected."
+}

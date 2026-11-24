@@ -1,0 +1,143 @@
+{
+  "passed": true,
+  "revision": "0d8a70c4ed2f818e6ecf1c863b1e4c3477eae9f8",
+  "matched": 27,
+  "approval_matches": true,
+  "files": [
+    {
+      "path": "public/high-poly-models/the-digital-shaman-009-64719152.jpg",
+      "git_blob_sha": "c92cf7580e5d14a7920b6f803f5611493802a32c",
+      "bytes": 299146
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-009.jpg",
+      "git_blob_sha": "ff76ce611c138b6ab7d848b7c597b070270a751a",
+      "bytes": 238753
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-22-set-noui.jpg",
+      "git_blob_sha": "0853d0c5b9485797617d789bbab887603c722e92",
+      "bytes": 256628
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-amxx-009-001.jpg",
+      "git_blob_sha": "f40b75957907f972f019a2894aa13ab4d5ed7c15",
+      "bytes": 183251
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-amxx-009-003.jpg",
+      "git_blob_sha": "2fb0282125b8997e199e271a3f8fcd6f7fdb03a2",
+      "bytes": 250281
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-amxx-018-01.jpg",
+      "git_blob_sha": "e8a6c333d7f1be0b8aa9f7e0fed29e0994e14116",
+      "bytes": 285514
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-amxx-018-02.jpg",
+      "git_blob_sha": "a5456da3dde3af26d100176703c524752940f210",
+      "bytes": 555410
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-amxx-020-00.jpg",
+      "git_blob_sha": "c1162e2e5d40aec6045dc2800bb59829e7cdc9b2",
+      "bytes": 356751
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-amxx-020-01.jpg",
+      "git_blob_sha": "d8ff1acc4db504d25bd94c9f96d6295c4cfb3912",
+      "bytes": 185769
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-amxx-020-05.jpg",
+      "git_blob_sha": "d5c3eac0eaea3bb524fc877c68c37bc0fe750321",
+      "bytes": 320415
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-archivis-furnitures-presentation-ue4-27-001.jpg",
+      "git_blob_sha": "0ad4ca1bfa07b0cd516d2c75e9f4f0290bfc2cdc",
+      "bytes": 1607844
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-archivis-furnitures-presentation-ue4-27-002.jpg",
+      "git_blob_sha": "9c7bf28e1793fbe38a2f35cab8dea1937c06b6ad",
+      "bytes": 1299981
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-archivis-furnitures-presentation-ue4-27-004.jpg",
+      "git_blob_sha": "96bf2c79806f07cb0c392b17c3e8754b0523a2c7",
+      "bytes": 858226
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-archivis-furnitures-presentation-ue4-27-007.jpg",
+      "git_blob_sha": "85570d35405ede03e22a7deeff44e46c38d255a9",
+      "bytes": 1247863
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-artur-perzyna-chandeliers.jpg",
+      "git_blob_sha": "136422b9cff0336bea1a7c8fccb53b2119856388",
+      "bytes": 254450
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-artur-perzyna-mech-daisy1.jpg",
+      "git_blob_sha": "a9d04f0f949d687941cbda109bcac3f7f4e25abd",
+      "bytes": 230349
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-artur-perzyna-mech-daisy2.jpg",
+      "git_blob_sha": "32937fa5b0977e1ab2829e103e81549dad6d2cc0",
+      "bytes": 221090
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-artur-perzyna-mech-daisy3.jpg",
+      "git_blob_sha": "883b3a97101c4ac9a3ebec7e96329a5b36ae5e08",
+      "bytes": 295607
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-artur-perzyna-two-armchairs-and-table.jpg",
+      "git_blob_sha": "126f4c344bbf21c7e03b939a231c61955a2e592f",
+      "bytes": 249217
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-numinatic-castle-gear-1-2ab34797-f0hs.jpg",
+      "git_blob_sha": "daf6c9c38dd76e17172fc96d79fb9b425d54720d",
+      "bytes": 144668
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-numinatic-castle-gear-1-e435cc2b-61ym.jpg",
+      "git_blob_sha": "9952680080215ddf8d801daffb23e7781af1683a",
+      "bytes": 156136
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-numinatic-lego-car-wire-1-9aa175e3-57p1.jpg",
+      "git_blob_sha": "103361cf06d42e02846f067fd9582b36466baa1e",
+      "bytes": 286555
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-numinatic-porsche-carrera-gt-e-1-fa087813-myxn.jpg",
+      "git_blob_sha": "60dab1786f8802ceec662372ac13145707628ff8",
+      "bytes": 250906
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-reka.jpg",
+      "git_blob_sha": "fdaa1674c2eb9a4c7c1ae1a1e7e29c5ea00104c9",
+      "bytes": 128022
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-set-011.jpg",
+      "git_blob_sha": "a4328c5553a0da3fdeee756dec2353a6b4b21a9f",
+      "bytes": 169327
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-set-021.jpg",
+      "git_blob_sha": "8e032b94fc3241210c253074cdbde186325828d3",
+      "bytes": 230286
+    },
+    {
+      "path": "public/high-poly-models/the-digital-shaman-set-022.jpg",
+      "git_blob_sha": "eee1172b05997723ff6a28e9dc0559ee1730d5a6",
+      "bytes": 217299
+    }
+  ]
+}

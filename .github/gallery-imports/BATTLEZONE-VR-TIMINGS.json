@@ -1,0 +1,25 @@
+{
+  "request_start_utc": "2026-11-19T15:28:00.896Z",
+  "source_complete_utc": "2026-11-19T15:32:28.259986Z",
+  "preparation_complete_utc": "2026-11-19T15:37:29.830826Z",
+  "download_seconds": 3.883,
+  "prepare_seconds": 2.258,
+  "service_deployed_utc": "2026-11-19T15:44:31.235910Z",
+  "pages_deployed_utc": "2026-11-19T15:49:21Z",
+  "browser_and_visual_acceptance_complete_utc": "2026-11-19T16:02:30Z",
+  "final_evidence_prepared_utc": "2026-11-19T16:03:16Z",
+  "publication_elapsed_seconds": 1280.104,
+  "acceptance_elapsed_seconds": 2069.104,
+  "evidence_elapsed_seconds": 2115.104,
+  "baseline_seconds": 3863,
+  "half_target_seconds": 1931.5,
+  "half_target_met": false,
+  "acceptance_reduction_percent": 46.44,
+  "evidence_reduction_percent": 45.25,
+  "notes": [
+    "One gallery, one media-service release and one Pages release.",
+    "No native Chrome. Browser checks used bounded in-app observations and confirmed actual selected-tab viewport widths.",
+    "Acceptance includes native editor round trip, all originals/derivatives and both-route image/video UI checks.",
+    "The full acceptance exceeded the half-time target; publication timing is not presented as acceptance timing."
+  ]
+}

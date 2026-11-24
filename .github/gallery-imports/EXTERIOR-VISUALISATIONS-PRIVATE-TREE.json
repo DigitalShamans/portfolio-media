@@ -1,0 +1,103 @@
+{
+  "passed": true,
+  "revision": "37741ff5622207d7cb6326e3d28a33d04ec212c7",
+  "matched": 19,
+  "approval_matches": true,
+  "files": [
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-001.jpg",
+      "git_blob_sha": "c0a4321b0b76e58e9d3d1513b720ea0a38fdd504",
+      "bytes": 825754
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-002.jpg",
+      "git_blob_sha": "1d7912175c63f6e0834a7c137ef9c3b1471e7bc2",
+      "bytes": 793004
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-003.jpg",
+      "git_blob_sha": "3ede156c8e21c891b91614b5978dcee1318a4fec",
+      "bytes": 960105
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-004.jpg",
+      "git_blob_sha": "ab01f0f40fc0242e01833bb9abf22a986a69681e",
+      "bytes": 830045
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-005.jpg",
+      "git_blob_sha": "26f9b9fb7496d75fd593cdb4906fcbcc8d3cec8f",
+      "bytes": 826955
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-006.jpg",
+      "git_blob_sha": "0d35aaa5b670fc999898b6179c47d7afc8047553",
+      "bytes": 977546
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-007.jpg",
+      "git_blob_sha": "15fc8ae65d2faf00877960c8d1caf13577263d7f",
+      "bytes": 689571
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-008.jpg",
+      "git_blob_sha": "1e6eb66847b4a31af212b6526781c6f6c913ab49",
+      "bytes": 995916
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-009.jpg",
+      "git_blob_sha": "229c2ec086f3a422ac8515b8f5c932a8995046a2",
+      "bytes": 755466
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-010.jpg",
+      "git_blob_sha": "b45268e7977d4ec15fe29e029c294598a89b7e4e",
+      "bytes": 1044045
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-011.jpg",
+      "git_blob_sha": "edb0665cf3c015d2824256f503abd55a83c817b1",
+      "bytes": 1096030
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-012.jpg",
+      "git_blob_sha": "88bae22c740ac96025747e7e91fdf2a4182f24d9",
+      "bytes": 1021069
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-013.jpg",
+      "git_blob_sha": "c522dbde809c7e6fcfd6ae4215b997dff0d76c51",
+      "bytes": 1000888
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-017.jpg",
+      "git_blob_sha": "13e93fa9b2a5bdec543edf351e00c4470a7ca47a",
+      "bytes": 890091
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-018.jpg",
+      "git_blob_sha": "71dd0d831290dfbf8167a1e323912a80e9d3ce90",
+      "bytes": 984236
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-025.jpg",
+      "git_blob_sha": "8d7c108bfb60b347d9d8bfe19216fb733828e3a1",
+      "bytes": 726453
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-027.jpg",
+      "git_blob_sha": "a0d6e8be143c217c1be18966f13867e4ef4e3842",
+      "bytes": 933082
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-028.jpg",
+      "git_blob_sha": "5ffa93ab26b467f42f2dbce5e74c75948a99cc3e",
+      "bytes": 702309
+    },
+    {
+      "path": "public/exterior-visualisations/artur-perzyna-030.jpg",
+      "git_blob_sha": "eebb562eb42f89b3d83090ba38646c1eb5295b3b",
+      "bytes": 765290
+    }
+  ]
+}

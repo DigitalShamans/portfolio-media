@@ -1,0 +1,54 @@
+{
+  "slug": "vegetation",
+  "title": "Vegetation",
+  "sources": [
+    "kDEvad",
+    "lV0z8a"
+  ],
+  "branch": "codex/vegetation-merge-20261120",
+  "images": 29,
+  "preserved": 16,
+  "added": 13,
+  "duplicates": 12,
+  "captions": 28,
+  "private": {
+    "source_commit": "0edb206a09703042ef75ed27f129580023263f0b",
+    "pr": 15,
+    "revision": "0f32e45b4ec85c19aa0527ce5725256787dafbbf",
+    "unchanged_other_galleries": 19,
+    "tree_verified": 29
+  },
+  "service": {
+    "project_id": "appgprj_6afbf3a4aa2c81919821379c8fde09df",
+    "source": "3a42e44e62902307490253aee3f7e71605401879",
+    "version": 18,
+    "saved_version": "appgprj_6afbf3a4aa2c81919821379c8fde09df~appgver_f53440fbae8081919106188f94b160ca",
+    "deployment_id": "appgdep_6aff80ffb48881919a5dbd5400a9cbcd",
+    "status": "succeeded",
+    "environment": 23,
+    "succeeded_at": "2026-11-19T23:06:51.918292+00:00",
+    "prior_catalogs": 14,
+    "packaging_recovery": "Default-sandbox DNS failed; same preserved source packaged/pushed successfully with authorized network execution.",
+    "get_requests": 36,
+    "get_status": "passed",
+    "http_seconds": 20.909
+  },
+  "website": {
+    "source_checkpoint": "8d75ceac26d8ab62d2699c460f8acfb911338a86",
+    "pr": 87,
+    "revision": "41fd9d764958e759ea70ada0d518722e7b18d0ac",
+    "status": "verified",
+    "pages_run": 44635100948,
+    "pages_status": "success",
+    "succeeded_at": "2026-11-19T23:10:13Z",
+    "public_gets": 44,
+    "public_http_seconds": 8.094
+  },
+  "native_editor": "passed",
+  "browser": "passed",
+  "capture_cleanup": "passed",
+  "protected_user_files": 14,
+  "private_untracked_files_preserved": 238,
+  "final_checkpoint_pending_push": true,
+  "final_evidence_on_working_branch": true
+}

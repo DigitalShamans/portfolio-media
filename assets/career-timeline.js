@@ -1,0 +1,1069 @@
+(() => {
+  'use strict';
+
+  const track = document.querySelector('[data-career-timeline]');
+  if (!track) return;
+  const diagnostics = window.PortfolioDiagnostics;
+
+  // ScrollTrigger + DrawSVG + MotionPath, following the supplied snorklTV
+  // tutorial. This second layout follows the user's broad S-curve sketch.
+  const svg = track.querySelector('svg');
+  const rail = track.querySelector('.career-rail');
+  const stage = track.querySelector('.career-stage');
+  const canvas = track.querySelector('.career-canvas');
+  const mobileScroller = document.querySelector('.career-native-scroll');
+  const openingItems = document.querySelectorAll('#career-scroll-content > .site-header, #career-scroll-content > .font-preview-note, .career-intro');
+  const path = track.querySelector('[data-career-path]');
+  const background = track.querySelector('[data-career-background]');
+  const pointer = track.querySelector('[data-career-pointer]');
+  const stops = track.querySelector('[data-career-stops]');
+  const entries = [...track.querySelectorAll('.career-milestone')];
+  const revealedOnTouch = new Set();
+  const texts = entries.flatMap(entry => [...entry.querySelectorAll('.career-year, .career-copy')]);
+  const previews = entries.map(entry => [...entry.querySelectorAll('.career-preview img')]);
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const touchDevice = window.matchMedia('(any-pointer: coarse)');
+  const touchLayout = window.matchMedia('(hover: none) and (pointer: coarse)');
+  const portrait = window.matchMedia('(orientation: portrait)');
+  const viewportMeasure = document.querySelector('.career-viewport');
+  const contact = document.querySelector('.career-contact');
+  const outro = document.querySelector('.career-outro');
+  const footer = document.querySelector('.portfolio-footer');
+  const backdrops = document.querySelector('.career-backdrops');
+  const cellular = backdrops?.querySelector('.career-cellular');
+  const network = backdrops?.querySelector('.career-network');
+  const ending = document.createElement('div');
+  ending.className = 'career-ending';
+  const endingHomes = [contact, outro, footer].filter(Boolean).map(node => {
+    const marker = document.createComment('career-ending-home');
+    node.before(marker);
+    return { node, marker, role: node.getAttribute('role') };
+  });
+  const dialog = document.querySelector('#career-details');
+  const dialogBody = dialog.querySelector('[data-career-details-body]');
+  const imageDialog = document.querySelector('#career-image');
+  const fullImage = imageDialog.querySelector('[data-career-image-full]');
+  const ns = 'http://www.w3.org/2000/svg';
+  const desktopCurveAspect = 1.25;
+  const minimumDesktopCardScale = .64;
+  const curveExtent = 1.22;
+  const mobileCardInset = 16;
+  let canAnimate = false;
+  let animation;
+  let scrollTween;
+  let milestoneReveals = [];
+  let scrollCamera;
+  let smoother;
+  let scroller = window;
+  let signature = '';
+  let resizeTimer;
+  let initialized = false;
+  let prioritizedMilestone = -1;
+
+  function setMobileEnding(enabled) {
+    if (enabled) {
+      stage.append(ending);
+      endingHomes.forEach(({ node }) => ending.append(node));
+      footer?.setAttribute('role', 'contentinfo');
+    } else {
+      endingHomes.forEach(({ node, marker, role }) => {
+        marker.after(node);
+        if (role === null) node.removeAttribute('role');
+        else node.setAttribute('role', role);
+      });
+      ending.remove();
+      ending.removeAttribute('style');
+    }
+  }
+
+  function scrollTop() {
+    if (smoother) return smoother.scrollTop();
+    return scroller === window ? window.scrollY : scroller.scrollTop;
+  }
+
+  function scrollLimit() {
+    const height = scroller === window ? document.documentElement.scrollHeight : scroller.scrollHeight;
+    const visibleHeight = scroller === window ? window.innerHeight : scroller.clientHeight;
+    return Math.max(0, height - visibleHeight);
+  }
+
+  function prioritizePreviews(index) {
+    if (index === prioritizedMilestone) return;
+    prioritizedMilestone = index;
+    previews.forEach((images, i) => images.forEach(image => {
+      image.loading = 'eager';
+      image.fetchPriority = i >= index - 1 && i <= index + 2 ? 'high' : 'low';
+    }));
+  }
+
+  function enableAnimation() {
+    if (!window.gsap || !window.ScrollTrigger || !window.DrawSVGPlugin || !window.MotionPathPlugin) return;
+    gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin, MotionPathPlugin);
+    if (window.ScrollSmoother) gsap.registerPlugin(ScrollSmoother);
+    // Collapsing mobile browser controls must not refresh the scroll journey.
+    ScrollTrigger.config({ ignoreMobileResize: true });
+    canAnimate = true;
+    rebuild();
+  }
+
+  function element(name, attributes) {
+    const node = document.createElementNS(ns, name);
+    for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, String(value));
+    return node;
+  }
+
+  function showDetails(entry) {
+    const copy = entry.querySelector('.career-copy').cloneNode(true);
+    const heading = copy.querySelector('h2');
+    const year = entry.querySelector('.career-year').cloneNode(true);
+    copy.removeAttribute('style');
+    year.removeAttribute('style');
+    heading.querySelectorAll('.career-touch-only').forEach(item => item.remove());
+    const title = heading.textContent.trim();
+    const companyUrl = entry.dataset.companyUrl;
+    if (companyUrl) {
+      const link = document.createElement('a');
+      link.className = 'career-company-link';
+      link.href = companyUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = title;
+      heading.replaceChildren(link);
+    } else {
+      heading.textContent = title;
+    }
+    heading.id = 'career-details-title';
+    dialogBody.replaceChildren(year, copy);
+    dialog.showModal();
+    syncDialogScrolling();
+  }
+
+  function syncDialogScrolling() {
+    if (smoother) smoother.paused(dialog.open || imageDialog.open);
+  }
+
+  function showImage(link) {
+    if (imageDialog.open) return;
+    const thumbnail = link.querySelector('img');
+    fullImage.src = link.href;
+    fullImage.alt = thumbnail.alt;
+    imageDialog.setAttribute('aria-label', thumbnail.alt);
+    imageDialog.showModal();
+    syncDialogScrolling();
+  }
+
+  document.addEventListener('click', event => {
+    const link = event.target.closest?.('a[data-career-image]');
+    if (!link || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    showImage(link);
+  });
+
+  entries.forEach(entry => entry.querySelector('button.career-checkpoint')?.addEventListener('click', () => showDetails(entry)));
+  entries.forEach(entry => {
+    entry.addEventListener('focusin', updateMilestoneReveals);
+    entry.addEventListener('focusout', () => window.requestAnimationFrame(updateMilestoneReveals));
+  });
+  [dialog, imageDialog].forEach(modal => {
+    modal.addEventListener('click', event => {
+      if (event.target !== modal) return;
+      const box = modal.getBoundingClientRect();
+      if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) modal.close();
+    });
+    modal.addEventListener('close', syncDialogScrolling);
+  });
+
+  function updateDesktopSmoothing(narrow) {
+    const enabled = canAnimate && window.ScrollSmoother && !narrow && !reducedMotion.matches;
+    if (enabled && !smoother) {
+      smoother = ScrollSmoother.create({
+        wrapper: '#career-scroll-wrapper',
+        content: '#career-scroll-content',
+        smooth: .8,
+        smoothTouch: 0,
+        effects: false,
+        normalizeScroll: false,
+        onUpdate: diagnostics ? instance => {
+          updateScrollCamera();
+          diagnostics.sample('resume-smoother', instance?.scrollTop?.(), window.scrollY);
+        } : updateScrollCamera,
+        onFocusIn: () => dialog.open || imageDialog.open ? false : undefined
+      });
+    } else if (!enabled && smoother) {
+      smoother.kill();
+      smoother = null;
+    }
+    track.dataset.desktopSmoothing = smoother ? '.8' : '0';
+    if (diagnostics) {
+      const duration = smoother?.smooth?.();
+      diagnostics.state('resume-smoother', smoother ? (duration > 0 ? 'GSAP ScrollSmoother' : 'Native motion') : 'Native scrolling',
+        smoother ? 'Effective smoothing: ' + duration + ' s'
+          : reducedMotion.matches ? 'Reduced motion is enabled.'
+            : narrow ? 'Narrow timeline uses native scrolling.'
+              : !canAnimate ? 'Timeline plugins did not initialize.' : 'ScrollSmoother is unavailable.');
+    }
+  }
+
+  function reset() {
+    scrollCamera = null;
+    document.documentElement.classList.remove('career-portrait-opening');
+    document.documentElement.style.removeProperty('--career-opening-inset');
+    backdrops?.style.removeProperty('--career-backdrop-footer-space');
+    if (scrollTween) {
+      scrollTween.scrollTrigger.kill();
+      scrollTween.kill();
+      scrollTween = null;
+    }
+    if (animation) {
+      animation.kill();
+      animation = null;
+    }
+    milestoneReveals.forEach(reveal => {
+      reveal.animation.kill();
+      reveal.projects.forEach(({ row }) => row.classList.remove('career-project--awaiting-reveal'));
+    });
+    milestoneReveals = [];
+    stage.style.removeProperty('transform');
+    canvas.style.removeProperty('transform');
+    canvas.style.removeProperty('transform-origin');
+    cellular?.style.removeProperty('transform');
+    cellular?.style.removeProperty('opacity');
+    network?.style.removeProperty('transform');
+    network?.style.removeProperty('opacity');
+    entries.forEach(entry => entry.classList.remove('career-milestone--awaiting-reveal'));
+    track.classList.remove('career-track--slow', 'career-track--complete');
+    if (canAnimate) {
+      gsap.set(entries, { clearProps: 'opacity,visibility,transform' });
+      gsap.set([...texts, pointer, path, ...stops.children], { clearProps: 'all' });
+    }
+    track.dataset.timelineState = 'static';
+  }
+
+  // Integrate a 1x -> 2x scroll-distance weight, blending around the midpoint.
+  function journeyDistance(progress, openingWeight = 0) {
+    let distance = progress;
+    if (progress >= .55) {
+      distance = 2 * progress - .5;
+    } else if (progress > .45) {
+      const t = (progress - .45) / .1;
+      distance += .1 * (t * t * t - .5 * t * t * t * t);
+    }
+    if (!openingWeight) return distance;
+    // Shorten the first swipe and blend back to the usual pace at its end.
+    const opening = Math.min(1, distance / openingWeight);
+    return distance - .8 * openingWeight * (opening - opening ** 4 / 4);
+  }
+
+  function journeyProgress(distance, openingWeight = 0) {
+    if (distance <= 0) return 0;
+    if (distance >= 1) return 1;
+    const target = distance * 1.5;
+    let low = 0, high = 1;
+    for (let i = 0; i < 24; i++) {
+      const middle = (low + high) / 2;
+      if (journeyDistance(middle, openingWeight) < target) low = middle;
+      else high = middle;
+    }
+    return (low + high) / 2;
+  }
+
+  // Round the corner where a moving position reaches a stationary edge.
+  function easeMobileEdge(distance, radius) {
+    if (distance <= -radius) return 0;
+    if (distance >= radius) return distance;
+    const fraction = (distance + radius) / (2 * radius);
+    return radius * fraction * fraction;
+  }
+
+  function updateScrollCamera() {
+    if (!scrollCamera || !animation) return;
+    const c = scrollCamera;
+    const scroll = scrollTop();
+    const progress = animation.progress();
+    // Cache the reading position in either layout before resize/refresh can
+    // clamp the old scroll offset or change the animation's geometry.
+    const measuredViewport = c.narrow && viewportMeasure ? Math.round(viewportMeasure.getBoundingClientRect().height) : window.innerHeight;
+    if (track.clientWidth === c.width && measuredViewport === c.viewport) {
+      c.readingPosition = captureReadingPosition(false);
+    }
+    // Keep the cellular art at its starting height and the network art at
+    // its final height as the scene scrolls under the timeline camera.
+    if (cellular) cellular.style.transform = 'translateY(' + scroll.toFixed(3) + 'px)';
+    if (network) network.style.transform = 'translateY(' + (scroll - scrollLimit()).toFixed(3) + 'px)';
+    // Mobile finishes at the final milestone, including its ending controls.
+    const point = c.anchor ? path.getPointAtLength(Math.min(progress, c.lastStopAt) * c.length) : null;
+    const virtualScroll = scroll < c.start ? scroll : c.start + progress * c.normalDistance + Math.max(0, scroll - c.end);
+    const pinnedOffset = Math.max(0, Math.min(c.outerHeight - c.viewport, scroll - c.documentTop));
+    // Desktop needs this transform inside ScrollSmoother. Mobile is pinned by
+    // CSS sticky, so native touch scrolling cannot run ahead of a JS pin.
+    if (!c.anchor) {
+      stage.style.transform = 'translate3d(0,' + pinnedOffset.toFixed(3) + 'px,0)';
+      const y = scroll - virtualScroll - pinnedOffset;
+      canvas.style.transform = 'translate3d(0,' + y.toFixed(3) + 'px,0)';
+      return;
+    }
+    const nextIndex = c.mobileStops.findIndex(stop => stop.progress > progress);
+    const endStopIndex = nextIndex < 0 ? c.mobileStops.length - 1 : Math.max(1, nextIndex);
+    const from = c.mobileStops[endStopIndex - 1];
+    const to = c.mobileStops[endStopIndex];
+    const fraction = Math.max(0, Math.min(1, (progress - from.progress) / (to.progress - from.progress)));
+    const blend = fraction * fraction * (3 - 2 * fraction);
+    // Follow the actual curve between nodes. Ease only the screen position
+    // needed to frame the cards so the marker doesn't drift and correct itself.
+    const markerX = from.markerX + (to.markerX - from.markerX) * blend;
+    // Keep the outgoing card in view if the curve bows right between nodes.
+    let x = Math.max(Math.min(from.offset, to.offset), markerX - point.x);
+    if (c.keepRevealed && endStopIndex <= 2) {
+      // The first bend fits in the opening view. Resume tracking before CI Games.
+      const openingX = c.mobileStops[0].offset;
+      x = endStopIndex === 1 ? openingX : openingX + (x - openingX) * blend;
+    }
+    // Center the wider frame horizontally so more of the bends fit on screen.
+    const cameraX = x * c.sceneScale + c.width * (1 - c.sceneScale) / 2;
+    pointer.setAttribute('cx', point.x);
+    pointer.setAttribute('cy', point.y);
+    const markerY = point.y * c.sceneScale;
+    const followOffset = easeMobileEdge(markerY - c.followY, 32);
+    let mobileY = Math.max(c.minimumY, -followOffset);
+    if (c.portraitRelease) {
+      // Hold the whole opening frame until the next card is revealed.
+      const { start, distance } = c.portraitRelease;
+      const fraction = Math.max(0, Math.min(1, (markerY - start) / distance));
+      const release = fraction * fraction * (3 - 2 * fraction);
+      const inset = c.documentTop * (1 - release);
+      document.documentElement.style.setProperty('--career-opening-inset', inset.toFixed(3) + 'px');
+      mobileY *= release;
+    } else {
+      // Blend into the native sticky position.
+      const distanceToPin = c.documentTop - scroll;
+      mobileY += easeMobileEdge(distanceToPin, 24) - Math.max(0, distanceToPin);
+    }
+    // Keep the curve, text and thumbnails together as the view moves.
+    canvas.style.transform = 'translate3d(' + cameraX.toFixed(3) + 'px,' + mobileY.toFixed(3) + 'px,0) scale(' + c.sceneScale + ')';
+    if (!c.keepRevealed) {
+      // Fade departing cards before the viewport cuts through their text.
+      entries.forEach(entry => {
+        const left = parseFloat(entry.style.left) + x;
+        const opacity = Math.max(0, Math.min(1, left / mobileCardInset));
+        entry.style.opacity = opacity.toFixed(3);
+        // Fully faded previews must not leave invisible links over the map.
+        // Inherit visibility so the initial loading guard remains effective.
+        entry.style.visibility = opacity > 0 ? 'inherit' : 'hidden';
+      });
+    }
+    ending.style.transform = 'translateY(' + mobileY.toFixed(3) + 'px)';
+  }
+
+  function updateMilestoneReveals() {
+    if (!animation) return;
+    const progress = animation.progress();
+    const keepRevealed = scrollCamera?.keepRevealed;
+    const lastIndex = milestoneReveals.length - 1;
+    const wasComplete = track.classList.contains('career-track--complete');
+    let current = 0;
+    milestoneReveals.forEach((reveal, i) => {
+      const threshold = i === lastIndex && wasComplete ? reveal.hideAt : reveal.at;
+      const reached = progress + .0001 >= threshold || reveal.entry.contains(document.activeElement);
+      if (reached) {
+        current = i;
+        if (keepRevealed) revealedOnTouch.add(reveal.entry);
+      }
+      const shown = reached || (keepRevealed && revealedOnTouch.has(reveal.entry));
+      if (shown !== reveal.shown) {
+        reveal.shown = shown;
+        reveal.entry.classList.toggle('career-milestone--awaiting-reveal', !shown);
+        diagnostics?.event('resume-reveals', shown ? 'reveal started' : 'reversed', { card: reveal.entry.id });
+        if (shown) reveal.animation.play();
+        else reveal.animation.reverse();
+      }
+      reveal.projects.forEach(({ row, at }) => {
+        const projectReached = progress + .0001 >= at ||
+          (at === reveal.at && shown) || row.contains(document.activeElement);
+        if (keepRevealed && projectReached) revealedOnTouch.add(row);
+        row.classList.toggle('career-project--awaiting-reveal', !projectReached && !(keepRevealed && revealedOnTouch.has(row)));
+      });
+    });
+    track.classList.toggle('career-track--complete', Boolean(scrollCamera?.anchor && current === lastIndex));
+    // On touch, keep the ending visible until it scrolls out of the frame.
+    ending.classList.toggle('career-ending--revealed', Boolean(keepRevealed && revealedOnTouch.has(entries[lastIndex])));
+    prioritizePreviews(current);
+  }
+
+  function drawCurve(width, height, narrow, scale, desktopAspect, mobileTopInset) {
+    const desktopSpan = (height - 80 * scale) / (desktopAspect * curveExtent);
+    const span = narrow ? width * 2 : Math.min(width, desktopSpan);
+    const offset = narrow ? 8 : (width - span) / 2;
+    const x = value => offset + value * span;
+    const startY = narrow ? mobileTopInset : 56 * scale;
+    const verticalSpan = narrow ? height - startY - 24 : height - 80 * scale;
+    const y = value => startY + value * verticalSpan / curveExtent;
+    // Leave room to the left of the first date for its thumbnail.
+    const startX = narrow ? x(.36) : Math.max(x(.10), 180 * scale);
+    const d = 'M ' + startX + ' ' + y(0) +
+      ' C ' + x(.51) + ' ' + y(.015) + ', ' + x(.40) + ' ' + y(.12) + ', ' + x(.29) + ' ' + y(.23) +
+      ' C ' + x(.12) + ' ' + y(.40) + ', ' + x(.12) + ' ' + y(.47) + ', ' + x(.26) + ' ' + y(.58) +
+      ' C ' + x(.40) + ' ' + y(.69) + ', ' + x(.65) + ' ' + y(.81) + ', ' + x(.74) + ' ' + y(.91) +
+      ' C ' + x(.83) + ' ' + y(1.01) + ', ' + x(.70) + ' ' + y(1.16) + ', ' + x(.50) + ' ' + y(curveExtent);
+    svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+    path.setAttribute('d', d);
+    background.setAttribute('d', d);
+    track.style.setProperty('--career-curve-height', height + 'px');
+
+    const length = path.getTotalLength();
+    const samples = Array.from({ length: 257 }, (_, i) => {
+      const point = path.getPointAtLength(length * i / 256);
+      return { x: point.x, y: point.y, progress: i / 256 };
+    });
+    function atY(target) {
+      if (target <= samples[0].y) return samples[0];
+      if (target >= samples[256].y) return samples[256];
+      let low = 0, high = 256;
+      while (high - low > 1) {
+        const middle = (low + high) >> 1;
+        if (samples[middle].y < target) low = middle;
+        else high = middle;
+      }
+      const a = samples[low], b = samples[high];
+      const mix = (target - a.y) / (b.y - a.y);
+      return {
+        x: a.x + (b.x - a.x) * mix,
+        y: target,
+        progress: a.progress + (b.progress - a.progress) * mix
+      };
+    }
+    return { length, atY, y: value => y(value * curveExtent) };
+  }
+
+  function minimumVisibleFraction(metrics, height, available) {
+    let minimum = 1;
+    const lastStart = Math.max(0, height - available);
+    for (let i = 0; i <= 40; i++) {
+      const top = lastStart * i / 40;
+      minimum = Math.min(minimum, metrics.atY(top + available).progress - metrics.atY(top).progress);
+    }
+    return minimum;
+  }
+
+  function measureMobileLabels(width, frameRight) {
+    const anchor = Math.max(32, Math.min(56, width * .12));
+    const cardLeft = anchor + 18;
+    const cardWidth = width - cardLeft;
+    track.style.setProperty('--career-description-width', frameRight - cardLeft + 'px');
+    entries.forEach(entry => { entry.style.width = cardWidth + 'px'; });
+    const heights = entries.map(entry => entry.offsetHeight);
+    const contentParts = touchLayout.matches
+      ? '.career-year, .career-description h2, .career-summary, .career-preview'
+      : '.career-year, .career-description, .career-preview';
+    const contentWidths = entries.map(entry => {
+      const parts = entry.querySelectorAll(contentParts);
+      const right = Math.max(...Array.from(parts, part => part.getBoundingClientRect().right));
+      return right - entry.getBoundingClientRect().left;
+    });
+    const headingBounds = entries.map(entry => {
+      if (!touchLayout.matches || !entry.hasAttribute('data-mobile-clear-heading')) return null;
+      const heading = entry.querySelector('.career-description')?.getBoundingClientRect();
+      if (!heading) return null;
+      const top = entry.getBoundingClientRect().top;
+      return { top: heading.top - top, bottom: heading.bottom - top };
+    });
+    const minimumGaps = entries.slice(1).map((entry, i) => (heights[i] + 24) * Number(entry.dataset.mobileGapScale ?? 1));
+    const minimumSpan = minimumGaps.reduce((sum, gap) => sum + gap, 0);
+    return { width, frameRight, anchor, cardLeft, contentWidths, headingBounds, heights, minimumGaps, minimumSpan };
+  }
+
+  function placeMobileLabels(metrics, layout) {
+    const lastAt = Number(entries[entries.length - 1].dataset.curveAt);
+    const extraSpan = Math.max(0, metrics.y(lastAt) - metrics.y(0) - layout.minimumSpan);
+    const points = [];
+    const labels = [];
+    let rowY = metrics.y(0);
+    entries.forEach((entry, i) => {
+      if (i) {
+        const gap = Number(entry.dataset.curveAt) - Number(entries[i - 1].dataset.curveAt);
+        rowY += layout.minimumGaps[i - 1] + extraSpan * gap / lastAt;
+      }
+      const at = metrics.atY(rowY).progress;
+      const point = path.getPointAtLength(at * metrics.length);
+      const top = i ? point.y - 8 : point.y - layout.heights[0] - 12;
+      let left = point.x + 18;
+      const heading = layout.headingBounds[i];
+      if (heading) {
+        // Allow for the marker just above and below the heading as it passes.
+        const fromY = top + heading.top - 8;
+        const toY = top + heading.bottom + 8;
+        for (let sample = 0; sample <= 4; sample++) {
+          const y = fromY + (toY - fromY) * sample / 4;
+          left = Math.max(left, metrics.atY(y).x + mobileCardInset);
+        }
+      }
+      entry.style.left = left + 'px';
+      entry.style.top = top + 'px';
+      points.push({ x: point.x, y: point.y, progress: at });
+      labels.push({ left, right: left + layout.contentWidths[i], top, bottom: top + layout.heights[i] });
+    });
+    return { points, labels };
+  }
+
+  function frameMobileStops(points, labels, { width, frameRight, anchor }) {
+    return points.map((point, i) => {
+      const card = labels[i];
+      // Use the spare space beside the zoomed opening to frame the next card.
+      const openingPadding = i === 0 ? frameRight - width : 0;
+      const neighbor = labels[openingPadding > 0 ? 1 : Math.max(0, i - 1)];
+      const leftInset = mobileCardInset - openingPadding;
+      const preferredOffset = anchor - point.x;
+      const bothLeft = leftInset - Math.min(card.left, neighbor.left);
+      const bothRight = frameRight - Math.max(card.right, neighbor.right);
+      const sharedOffset = Math.max(bothLeft, Math.min(preferredOffset, bothRight));
+      // If both cards cannot fit, give the newly revealed card priority.
+      const offset = Math.min(frameRight - card.right, Math.max(leftInset - card.left, sharedOffset));
+      const markerX = Math.max(10 - openingPadding, Math.min(frameRight - 10, point.x + offset));
+      return { progress: point.progress, markerX, offset: markerX - point.x };
+    });
+  }
+
+  function placeDesktopLabel(entry, point, { viewportWidth, preferredScale }, trackLeft, placed) {
+    if (!entry.dataset.desktopLayout) return null;
+    const { desktopLayout, desktopWidth, desktopInset, desktopTop, desktopYearClearance, desktopTailGap } = entry.dataset;
+    const leftSide = desktopLayout === 'year-right';
+    const inset = Number(desktopInset) * preferredScale;
+    const edge = leftSide ? point.x - inset : point.x + inset;
+    const availableWidth = leftSide ? trackLeft + edge - 24 : viewportWidth - trackLeft - edge - 24;
+    const cardScale = Math.min(preferredScale, availableWidth / Number(desktopWidth));
+    if (cardScale < minimumDesktopCardScale) return null;
+
+    const width = Number(desktopWidth) * cardScale;
+    const left = leftSide ? edge - width : edge;
+    const preferredTop = point.y + Number(desktopTop) * preferredScale;
+
+    entry.classList.add('career-milestone--desktop-aligned');
+    entry.style.width = width + 'px';
+    entry.style.left = left + 'px';
+    entry.style.top = preferredTop + 'px';
+    entry.style.setProperty('--career-desktop-card-scale', String(cardScale));
+    if (leftSide) {
+      entry.style.setProperty('--career-desktop-year-right', Number(desktopYearClearance) * preferredScale - inset + 'px');
+    }
+
+    const parts = [...entry.querySelectorAll('.career-year, .career-description, .career-preview')]
+      .filter(part => part.getClientRects().length)
+      .map(part => part.getBoundingClientRect());
+    const entryRect = entry.getBoundingClientRect();
+    const boxes = parts.map(rect => ({
+      left: left + rect.left - entryRect.left,
+      right: left + rect.right - entryRect.left,
+      top: rect.top - entryRect.top,
+      bottom: rect.bottom - entryRect.top
+    }));
+    // The date may sit outside the card. Use the individual boxes so dates
+    // and neighboring cards can sit on opposite sides of a narrow bend.
+    let top = preferredTop;
+    const otherBoxes = placed.flatMap(card => card.boxes ?? [card]);
+    if (desktopTailGap) {
+      const tailLeft = left - Number(desktopTailGap) * preferredScale;
+      otherBoxes.push(...placed.slice(-1).flatMap(card => card.boxes ?? [card])
+        .filter(box => box.right > tailLeft)
+        .map(box => ({ ...box, left: tailLeft })));
+    }
+    for (const other of otherBoxes.sort((a, b) => a.top - b.top)) {
+      for (const box of boxes) {
+        if (box.left < other.right && box.right > other.left &&
+          top + box.top < other.bottom && top + box.bottom > other.top) {
+          top = other.bottom - box.top + 4;
+        }
+      }
+    }
+    entry.style.top = top + 'px';
+    return {
+      left: Math.min(...boxes.map(box => box.left)),
+      right: Math.max(...boxes.map(box => box.right)),
+      top,
+      bottom: top + entry.offsetHeight,
+      boxes: boxes.map(box => ({ ...box, top: top + box.top, bottom: top + box.bottom }))
+    };
+  }
+
+  function placeLabels(points, metrics, width, scale, desktopLayout, trackLeft) {
+    const placed = [];
+    entries.forEach((entry, i) => {
+      const point = points[i];
+      const aligned = desktopLayout ? placeDesktopLabel(entry, point, desktopLayout, trackLeft, placed) : null;
+      if (aligned) {
+        placed.push(aligned);
+        return;
+      }
+      const above = entry.dataset.curveSide === 'above';
+      const side = entry.dataset.curveSide;
+      const yearGutter = entry.dataset.yearLayout === 'inline' ? 56 * scale : 0;
+      const preferredWidth = Math.min(420 * scale, width * .36) + 40 * scale + yearGutter;
+      entry.style.width = preferredWidth + 'px';
+      const headingOffset = above ? entry.querySelector('.career-year').offsetLeft : 32 * scale;
+      let top = above ? Math.max(0, point.y - entry.offsetHeight - 12 * scale) : point.y - 16 * scale;
+      let left = 0, labelWidth = preferredWidth, labelHeight = entry.offsetHeight;
+
+      // Keep whole text blocks clear of the curve, not only their first line.
+      // Nearby labels may shift slightly; their checkpoints stay on the sketch.
+      for (let pass = 0; pass < 5; pass++) {
+        labelHeight = entry.offsetHeight;
+        let minX = point.x, maxX = point.x;
+        for (let j = 0; j <= 8; j++) {
+          const sample = metrics.atY(top + labelHeight * j / 8);
+          minX = Math.min(minX, sample.x);
+          maxX = Math.max(maxX, sample.x);
+        }
+        if (side === 'above') {
+          left = Math.max(0, Math.min(width - preferredWidth, point.x - headingOffset));
+        } else if (side === 'right') {
+          left = maxX + 18 * scale;
+          labelWidth = Math.max(60, Math.min(preferredWidth, width - left));
+        } else {
+          labelWidth = Math.max(60, Math.min(preferredWidth, minX - 18 * scale));
+          left = Math.max(0, minX - 18 * scale - labelWidth);
+        }
+        entry.style.width = labelWidth + 'px';
+        labelHeight = entry.offsetHeight;
+        let nextTop = top;
+        for (const other of placed) {
+          const horizontalOverlap = left < other.right + 8 * scale && left + labelWidth > other.left - 8 * scale;
+          if (horizontalOverlap && nextTop < other.bottom + 12 * scale && nextTop + labelHeight > other.top - 12 * scale) {
+            nextTop = other.bottom + 12 * scale;
+          }
+        }
+        if (Math.abs(nextTop - top) < .5 && pass > 0) break;
+        top = nextTop;
+      }
+      entry.style.left = left + 'px';
+      entry.style.top = top + 'px';
+      placed.push({ left, right: left + labelWidth, top, bottom: top + entry.offsetHeight, side });
+    });
+    if (desktopLayout) centerChuhaiCard(placed, trackLeft);
+    return placed;
+  }
+
+  function centerChuhaiCard(labels, trackLeft) {
+    const index = entries.findIndex(entry => entry.id === 'career-2020-chuhai');
+    const card = labels[index];
+    const above = labels.find((_, i) => entries[i].id === 'career-2020-super-trumpers');
+    const below = labels.find((_, i) => entries[i].id === 'career-2022');
+    if (!card?.boxes || !above || !below) return;
+
+    const verticalShift = (above.bottom + below.top - card.top - card.bottom) / 2;
+    if (card.top + verticalShift < above.bottom || Math.abs(verticalShift) < .5) return;
+
+    // If the centered card meets a card on the other side of the curve,
+    // move it left by the smallest distance that clears the occupied boxes.
+    const otherBoxes = labels.flatMap(label => label === card ? [] : label.boxes ?? [label]);
+    const blocked = otherBoxes.flatMap(other => card.boxes
+      .filter(box => box.top + verticalShift < other.bottom && box.bottom + verticalShift > other.top)
+      .map(box => ({ left: other.left - box.right - 4, right: other.right - box.left + 4 })));
+    let horizontalShift = 0;
+    for (const interval of blocked.sort((a, b) => b.right - a.right)) {
+      if (horizontalShift > interval.left && horizontalShift < interval.right) horizontalShift = interval.left;
+    }
+    if (trackLeft + card.left + horizontalShift < 24) return;
+
+    const entry = entries[index];
+    entry.style.top = card.top + verticalShift + 'px';
+    entry.style.left = parseFloat(entry.style.left) + horizontalShift + 'px';
+    card.top += verticalShift;
+    card.bottom += verticalShift;
+    card.left += horizontalShift;
+    card.right += horizontalShift;
+    card.boxes.forEach(box => {
+      box.top += verticalShift;
+      box.bottom += verticalShift;
+      box.left += horizontalShift;
+      box.right += horizontalShift;
+    });
+  }
+
+  function captureReadingPosition(useCached = true) {
+    if (!animation || !milestoneReveals.length) return null;
+    if (useCached && scrollCamera?.readingPosition) return scrollCamera.readingPosition;
+    const progress = animation.progress();
+    let index = 0;
+    milestoneReveals.forEach((reveal, i) => {
+      if (progress + .0001 >= reveal.at) index = i;
+    });
+    const start = milestoneReveals[index].at;
+    const end = milestoneReveals[index + 1]?.at ?? 1;
+    const fraction = Math.max(0, Math.min(1, (progress - start) / (end - start || 1)));
+    const scroll = scrollTop();
+    const atTop = scroll <= 1;
+    const atBottom = scroll >= scrollLimit() - 2;
+    return { index, fraction, atTop, atBottom };
+  }
+
+  function rebuild() {
+    const width = track.clientWidth;
+    const narrow = width < 720;
+    const desktop = !touchLayout.matches;
+    const previousReadingPosition = captureReadingPosition();
+    // The small viewport stays constant when a phone's address bar folds away.
+    // Actual viewport/orientation changes still recalculate the geometry.
+    const viewport = narrow && viewportMeasure ? Math.round(viewportMeasure.getBoundingClientRect().height) : window.innerHeight;
+    const largeViewport = narrow && viewportMeasure ? Math.max(viewport, Math.round(parseFloat(getComputedStyle(viewportMeasure, '::after').height) || window.innerHeight)) : viewport;
+    if (!width || !viewport) return;
+    const scale = parseFloat(getComputedStyle(track).getPropertyValue('--career-layout-scale')) || 1;
+    const viewportWidth = document.documentElement.clientWidth;
+    // A native scroll area keeps touch gestures off the document viewport,
+    // where Chrome moves its address bar and the entire pinned timeline.
+    const useLocalScroll = Boolean(mobileScroller && narrow && canAnimate && touchDevice.matches && !reducedMotion.matches);
+    const portraitOpening = useLocalScroll && touchLayout.matches && portrait.matches;
+    const nextSignature = [width, viewport, largeViewport, scale, reducedMotion.matches, touchDevice.matches, desktop ? viewportWidth : 0, canAnimate, portraitOpening].join(':');
+    if (nextSignature === signature) return;
+    signature = nextSignature;
+    reset();
+    setMobileEnding(false);
+    // Fit more of the timeline in the touch viewport at the same scroll speed.
+    const sceneScale = useLocalScroll ? .8 : 1;
+    scroller = useLocalScroll ? mobileScroller : window;
+    document.documentElement.classList.toggle('career-local-scroll', useLocalScroll);
+    updateDesktopSmoothing(narrow);
+    track.classList.add('career-track--positioned');
+    track.classList.toggle('career-track--narrow', narrow);
+    track.classList.toggle('career-track--tight', narrow && width < 300);
+    track.classList.toggle('career-track--desktop', desktop);
+    const desktopLayout = desktop ? { viewportWidth, preferredScale: Math.min(scale, viewportWidth / 1850) } : null;
+    if (desktopLayout) {
+      track.style.setProperty('--career-desktop-thumbnail-scale', String(Math.max(minimumDesktopCardScale, desktopLayout.preferredScale)));
+      if (!narrow) track.style.setProperty('--career-desktop-stage-inset', (viewportWidth - width) / 2 + 'px');
+    }
+    entries.forEach(entry => entry.classList.remove('career-milestone--desktop-aligned'));
+    // Use the extra space at the edge of the scaled touch scene for longer titles.
+    const mobileFrameRight = useLocalScroll ? (width + width / sceneScale) / 2 - 1 : width;
+    const mobileLayout = narrow ? measureMobileLabels(width, mobileFrameRight) : null;
+    // Leave a stable inset for the final card even when browser controls
+    // reappear and native scrolling exposes the shorter ending viewport.
+    const mobileTopInset = narrow ? Math.max(56, mobileLayout.heights[0] + 16, largeViewport - viewport + 24) : 0;
+    const minimumHeight = narrow ? Math.ceil(mobileLayout.minimumSpan / .95 + mobileTopInset + 24) : 0;
+
+    // Calibrate using actual SVG arc length, rather than only its height.
+    // Desktop fits >=40% even with the header and title present. On phones,
+    // preserve enough vertical space for the measured cards to stay separate.
+    const viewportTop = useLocalScroll ? mobileScroller.getBoundingClientRect().top : 0;
+    const documentTop = track.getBoundingClientRect().top - viewportTop + scrollTop();
+    const available = Math.max(120, viewport - documentTop - 16);
+    // On wide screens the reference gives the curve more room horizontally.
+    const desktopAspect = desktopCurveAspect / (1 + (scale - 1) * 2 / 3);
+    let height = Math.round(available * 2 * curveExtent);
+    if (narrow) height = Math.max(height, minimumHeight);
+    if (!narrow) height = Math.min(height, Math.round(width * desktopAspect * curveExtent + 80 * scale));
+    let metrics, visibleFraction;
+    for (let i = 0; i < 9; i++) {
+      metrics = drawCurve(width, height, narrow, scale, desktopAspect, mobileTopInset);
+      visibleFraction = minimumVisibleFraction(metrics, height, available);
+      if (visibleFraction >= .42 || height === minimumHeight) break;
+      height = Math.max(minimumHeight, Math.round(height * .9));
+    }
+    track.dataset.visibleCurveFraction = visibleFraction.toFixed(3);
+    track.dataset.curveHeight = String(height);
+
+    const mobilePlacement = narrow ? placeMobileLabels(metrics, mobileLayout) : null;
+    const points = mobilePlacement ? mobilePlacement.points : entries.map(entry => {
+      const targetY = metrics.y(Number(desktop ? entry.dataset.desktopAt ?? entry.dataset.curveAt : entry.dataset.curveAt));
+      const at = metrics.atY(targetY).progress;
+      const exact = path.getPointAtLength(at * metrics.length);
+      return { x: exact.x, y: exact.y, progress: at };
+    });
+    const slowMobile = narrow && canAnimate && !reducedMotion.matches;
+    track.style.setProperty('--career-first-stop-y', points[0].y * sceneScale + 'px');
+    // Double desktop travel and keep the existing gesture distance on mobile.
+    const touchScrollFactor = touchDevice.matches ? .5 : 1;
+    const scrollMultiplier = (slowMobile ? 6 : 2) * touchScrollFactor * (narrow ? 1 : 2);
+    const trackLeft = track.getBoundingClientRect().left;
+    const cameraAnchor = slowMobile ? trackLeft + mobileLayout.anchor : 0;
+    const labels = mobilePlacement ? mobilePlacement.labels : placeLabels(points, metrics, width, scale, desktopLayout, trackLeft);
+    if (narrow && !slowMobile) {
+      entries.forEach((entry, i) => {
+        entry.style.left = mobileLayout.cardLeft + 'px';
+        labels[i].left = mobileLayout.cardLeft;
+        labels[i].right = width;
+      });
+    }
+    stops.replaceChildren(...points.map((point, i) => {
+      const circle = element('circle', { cx: point.x, cy: point.y, r: narrow ? 6 : 8 * scale, class: 'career-stop' });
+      circle.addEventListener('click', () => entries[i].querySelector('.career-checkpoint').click());
+      return circle;
+    }));
+    pointer.setAttribute('r', String(narrow ? 7 : 7 * scale));
+    pointer.setAttribute('cx', '0');
+    pointer.setAttribute('cy', '0');
+    const contentHeight = Math.ceil(Math.max(height, ...labels.map(box => box.bottom)) + 24);
+    canvas.style.height = contentHeight + 'px';
+    track.style.height = contentHeight + 'px';
+    track.dataset.scrollMultiplier = String(scrollMultiplier);
+    track.dataset.lateScrollMultiplier = String(scrollMultiplier * 2);
+    track.dataset.touchScrollFactor = String(touchScrollFactor);
+    delete track.dataset.cameraAnchor;
+
+    if (!canAnimate || reducedMotion.matches) {
+      const reason = reducedMotion.matches ? 'Reduced motion is enabled.' : initialized
+        ? 'A required GSAP plugin was unavailable during initialization.' : 'Waiting for the timeline scripts and fonts.';
+      diagnostics?.state('resume-timeline', 'Static layout', reason);
+      diagnostics?.state('resume-reveals', 'Cards shown together', reason);
+      return;
+    }
+    const revealLine = Math.round(viewport * (narrow ? .65 : .5));
+    const normalStart = Math.max(0, documentTop - revealLine);
+    const tailHeight = (narrow ? (contact?.offsetHeight || 0) + 16 : 0) +
+      (document.querySelector('.career-outro')?.offsetHeight || 0) +
+      (document.querySelector('.portfolio-footer')?.offsetHeight || 0);
+    const maximumEnd = documentTop + contentHeight + tailHeight - viewport - 1;
+    if (maximumEnd <= normalStart) {
+      diagnostics?.state('resume-timeline', 'Static layout', 'The timeline had no scroll range.');
+      diagnostics?.state('resume-reveals', 'Cards shown together', 'The timeline had no scroll range.');
+      gsap.set(path, { drawSVG: '100%' });
+      gsap.set(texts, { autoAlpha: 1 });
+      return;
+    }
+    const normalEnd = Math.min(maximumEnd, Math.max(documentTop + height - revealLine, documentTop + contentHeight - viewport));
+    const normalDistance = Math.max(1, normalEnd - normalStart);
+    const lastStopAt = points[points.length - 1].progress;
+    const endAt = slowMobile ? lastStopAt : 1;
+    const openingWeight = portraitOpening ? journeyDistance(points[1].progress) : 0;
+    const endWeight = journeyDistance(endAt, openingWeight);
+    const scrollDistance = normalDistance * scrollMultiplier * endWeight;
+    const end = normalStart + scrollDistance;
+    let stageHeight = viewport;
+    let mobileStops;
+    let followY = 0;
+    let minimumY = 0;
+    let portraitRelease;
+    if (slowMobile) {
+      setMobileEnding(true);
+      canvas.style.transformOrigin = 'top left';
+      const lastPoint = points[points.length - 1];
+      const endingTop = Math.max(labels[labels.length - 1].bottom, metrics.y(1)) * sceneScale + 28;
+      ending.style.width = width + 'px';
+      ending.style.top = endingTop + 'px';
+      const endingBottom = endingTop + ending.offsetHeight;
+      const lastMarkerY = lastPoint.y * sceneScale;
+      stageHeight = Math.max(largeViewport, points[0].y * sceneScale + endingBottom - lastMarkerY);
+      minimumY = Math.min(0, stageHeight - endingBottom);
+      // On mobile the footer moves into the scene, so clip the artwork above it.
+      if (backdrops && footer) {
+        const footerSpace = Math.ceil(footer.getBoundingClientRect().height + Math.max(0, stageHeight - endingBottom));
+        backdrops.style.setProperty('--career-backdrop-footer-space', footerSpace + 'px');
+      }
+      followY = Math.min(viewport * .55, lastMarkerY + minimumY);
+      mobileStops = frameMobileStops(points, labels, mobileLayout);
+      if (portraitOpening) {
+        const scrollOrigin = scrollTop() - viewportTop;
+        for (const item of openingItems) {
+          const top = item.getBoundingClientRect().top + scrollOrigin;
+          item.style.setProperty('--career-opening-offset', (documentTop - top) + 'px');
+        }
+        document.documentElement.style.setProperty('--career-opening-inset', documentTop + 'px');
+        document.documentElement.classList.add('career-portrait-opening');
+        const start = Math.max(points[1].y * sceneScale, followY - documentTop);
+        portraitRelease = { start, distance: Math.max(64, followY - start) };
+      }
+    }
+    // Mobile unpins exactly at the final node. Any remaining native scroll
+    // is the actual ending viewport, including space under browser controls.
+    const outerHeight = slowMobile ? end - documentTop + stageHeight : contentHeight + scrollDistance - normalDistance;
+    track.dataset.normalScrollDistance = normalDistance.toFixed(3);
+    track.dataset.scrollDistance = scrollDistance.toFixed(3);
+    track.dataset.scrollStart = normalStart.toFixed(3);
+    track.dataset.scrollEnd = end.toFixed(3);
+    track.classList.add('career-track--slow');
+    track.style.setProperty('--career-stage-height', stageHeight + 'px');
+    track.style.height = outerHeight + 'px';
+    if (slowMobile) track.dataset.cameraAnchor = cameraAnchor.toFixed(3);
+    scrollCamera = {
+      documentTop, viewport, width, narrow, start: normalStart, end, outerHeight, normalDistance,
+      anchor: cameraAnchor, length: metrics.length, lastStopAt, mobileStops, followY, minimumY, sceneScale,
+      keepRevealed: useLocalScroll, portraitRelease
+    };
+    animation = gsap.timeline({
+      paused: true,
+      defaults: { ease: 'none' },
+      onUpdate: () => {
+        updateScrollCamera();
+        updateMilestoneReveals();
+        diagnostics?.sample('resume-timeline', animation?.progress());
+      }
+    });
+    animation.fromTo(path, { drawSVG: 0 }, { drawSVG: '100%', duration: 1 }, 0);
+    animation.fromTo(pointer, { autoAlpha: 0 }, { autoAlpha: 1, duration: .004 }, 0);
+    let networkFadeStart = lastStopAt * .8;
+    if (!narrow) {
+      // The journey changes speed, so extend the desktop fade in scroll distance.
+      const finishDistance = journeyDistance(lastStopAt);
+      const fadeDistance = finishDistance - journeyDistance(networkFadeStart);
+      networkFadeStart = journeyProgress((finishDistance - fadeDistance * 2.5) / journeyDistance(1));
+    }
+    if (cellular) {
+      // Double the cellular scroll span and let it overlap the network fade.
+      const cellularFadeEnd = narrow
+        ? networkFadeStart
+        : journeyProgress(2 * journeyDistance(networkFadeStart) / journeyDistance(1));
+      animation.fromTo(cellular, { opacity: 1 }, {
+        opacity: 0, duration: cellularFadeEnd, ease: 'sine.inOut'
+      }, 0);
+    }
+    if (network) {
+      animation.fromTo(network, { opacity: 0 }, {
+        opacity: 1, duration: lastStopAt - networkFadeStart, ease: 'sine.inOut'
+      }, networkFadeStart);
+    }
+    if (!narrow) {
+      animation.to(pointer, {
+        duration: 1,
+        motionPath: { path, align: path, alignOrigin: [.5, .5] }
+      }, 0);
+    }
+    const canvasTop = canvas.getBoundingClientRect().top;
+    points.forEach((point, i) => {
+      const entry = entries[i];
+      const at = point.progress;
+      const nextAt = points[i + 1]?.progress ?? 1;
+      const projects = [...entry.querySelectorAll('.career-projects--sequenced > .career-project')].map((row, j, rows) => {
+        const staggeredAt = at + (nextAt - at) * j / rows.length;
+        if (narrow) return { row, at: staggeredAt };
+        // Give the image time to enter the frame on short, wide screens.
+        const imageBottom = row.querySelector('.career-preview').getBoundingClientRect().bottom - canvasTop;
+        const inViewAt = (documentTop + imageBottom - normalStart - viewport) / normalDistance;
+        return { row, at: Math.min(1, Math.max(staggeredAt, inViewAt)) };
+      });
+      const stop = stops.children[i];
+      const reveal = gsap.timeline({ paused: true });
+      if (narrow) {
+        // Keep the cards and nodes fixed to the curve while they fade in.
+        const fade = { opacity: 1, duration: .3, ease: 'power2.out' };
+        reveal.fromTo([entry.querySelector('.career-year'), stop], { opacity: .35 }, fade, 0);
+        reveal.fromTo(entry.querySelector('.career-copy'), { opacity: 0 }, fade, 0);
+      } else {
+        // Desktop grid milestones can use display: contents for their copy.
+        reveal.fromTo(entry, { opacity: 0, x: -24, y: 8 },
+          { opacity: 1, x: 0, y: 0, duration: .6, ease: 'power3.out' }, .06);
+        reveal.fromTo(stop, { attr: { r: 3 * scale }, autoAlpha: .4 },
+          { attr: { r: 8 * scale }, autoAlpha: 1, duration: .5, ease: 'back.out(2)' }, 0);
+      }
+      const shown = at === 0 || (useLocalScroll && revealedOnTouch.has(entry));
+      if (shown) reveal.progress(1);
+      if (diagnostics) reveal.eventCallback('onComplete', () => {
+        diagnostics.event('resume-reveals', 'reveal completed', { card: entry.id });
+      });
+      entry.classList.toggle('career-milestone--awaiting-reveal', !shown);
+      // A small reverse gesture or toolbar expansion at the bottom should
+      // not blink the final card and ending controls on and off.
+      const lastMobile = slowMobile && i === points.length - 1;
+      const distance = journeyDistance(at, openingWeight);
+      const reverseMargin = lastMobile ? Math.min((distance - journeyDistance(points[i - 1].progress, openingWeight)) * normalDistance * scrollMultiplier / 3, Math.max(48, largeViewport - viewport + 24)) : 0;
+      const hideAt = lastMobile ? journeyProgress(Math.max(0, distance - reverseMargin / (normalDistance * scrollMultiplier)) / 1.5, openingWeight) : at;
+      milestoneReveals.push({ entry, at, hideAt, animation: reveal, shown, projects });
+    });
+    const playhead = { progress: 0 };
+    scrollTween = gsap.to(playhead, {
+      progress: endAt,
+      duration: 1,
+      ease: slowMobile ? distance => distance >= 1 ? 1 : journeyProgress(distance * endWeight / 1.5, openingWeight) / endAt : journeyProgress,
+      onUpdate: () => animation.progress(playhead.progress),
+      scrollTrigger: {
+        id: 'artur-career-timeline',
+        // ScrollSmoother's wrapper reports the rendered desktop position.
+        scroller: smoother ? smoother.wrapper() : scroller,
+        trigger: track,
+        start: normalStart,
+        end,
+        // Native touch/momentum scrolling already provides smooth motion.
+        // Keep the camera current when a gesture reverses or reaches the top.
+        scrub: narrow ? true : smoother ? true : .8,
+        onUpdate: updateScrollCamera
+      }
+    });
+    track.dataset.timelineState = 'animated';
+    if (smoother) ScrollTrigger.refresh();
+    else scrollTween.scrollTrigger.refresh();
+    if (previousReadingPosition) {
+      const { index, fraction, atTop, atBottom } = previousReadingPosition;
+      const start = points[index].progress;
+      const end = points[index + 1]?.progress ?? 1;
+      const restoredDistance = journeyDistance(Math.min(endAt, start + (end - start) * fraction), openingWeight) / endWeight;
+      const maximumScroll = scrollLimit();
+      const target = atTop ? 0 : atBottom ? maximumScroll : Math.min(maximumScroll, normalStart + restoredDistance * scrollDistance);
+      // Update ScrollSmoother's visual position as well as native scrolling.
+      // Otherwise entering the wide layout visibly eases from the old offset.
+      if (smoother) smoother.scrollTop(target);
+      else scroller.scrollTo(0, target);
+      ScrollTrigger.update();
+    }
+    scrollTween.progress(scrollTween.scrollTrigger.progress);
+    updateScrollCamera();
+    updateMilestoneReveals();
+    diagnostics?.state('resume-timeline', 'GSAP ScrollTrigger',
+      (narrow ? 'Narrow' : 'Wide') + ' timeline · ' + (useLocalScroll ? 'local' : 'window') + ' scroller',
+      { scrollDistance, touchScrollFactor, triggerCreated: Boolean(scrollTween.scrollTrigger) });
+    diagnostics?.state('resume-reveals', 'GSAP reveals armed', 'Image loading is tracked separately.');
+  }
+
+  function scheduleRebuild() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => window.requestAnimationFrame(rebuild), 120);
+  }
+
+  function setupScrollCue() {
+    const cue = track.querySelector('.career-scroll-cue');
+    if (!cue) return;
+    if (scrollTop() > 0) {
+      cue.hidden = true;
+      return;
+    }
+    function dismissOnScroll() {
+      if (scrollTop() <= 0) return;
+      cue.classList.add('career-scroll-cue--dismissed');
+      window.removeEventListener('scroll', dismissOnScroll);
+      mobileScroller?.removeEventListener('scroll', dismissOnScroll);
+    }
+    window.addEventListener('scroll', dismissOnScroll, { passive: true });
+    mobileScroller?.addEventListener('scroll', dismissOnScroll, { passive: true });
+  }
+
+  // This script runs first. Draw the curve before the deferred GSAP files
+  // finish, then add the motion once those files have executed.
+  function initializeTimeline() {
+    function start() {
+      if (initialized) return;
+      initialized = true;
+      try {
+        enableAnimation();
+      } catch (error) {
+        diagnostics?.state('resume-timeline', 'Initialization failed', 'GSAP setup threw an exception.');
+        diagnostics?.event('resume-timeline', 'setup exception', { type: error?.name });
+        throw error;
+      }
+      if (!canAnimate) {
+        signature = '';
+        rebuild();
+      }
+      document.dispatchEvent(new Event('career-layout-ready'));
+    }
+    // Measure the actual font before revealing the scene, with a bounded
+    // wait so a slow font cannot keep the timeline hidden indefinitely.
+    const deadline = window.setTimeout(start, 1800);
+    (document.fonts?.ready || Promise.resolve()).then(() => {
+      window.clearTimeout(deadline);
+      start();
+    }, start);
+  }
+  if (document.readyState === 'complete') initializeTimeline();
+  else document.addEventListener('DOMContentLoaded', initializeTimeline, { once: true });
+  setupScrollCue();
+  prioritizePreviews(0);
+  rebuild();
+  window.addEventListener('resize', scheduleRebuild, { passive: true });
+  window.addEventListener('scroll', updateScrollCamera, { passive: true });
+  mobileScroller?.addEventListener('scroll', updateScrollCamera, { passive: true });
+  reducedMotion.addEventListener('change', scheduleRebuild);
+  touchDevice.addEventListener('change', scheduleRebuild);
+  touchLayout.addEventListener('change', scheduleRebuild);
+  portrait.addEventListener('change', scheduleRebuild);
+  if (window.ResizeObserver) new ResizeObserver(scheduleRebuild).observe(track);
+  document.fonts?.addEventListener('loadingdone', () => {
+    if (!initialized) return;
+    signature = '';
+    scheduleRebuild();
+  });
+})();

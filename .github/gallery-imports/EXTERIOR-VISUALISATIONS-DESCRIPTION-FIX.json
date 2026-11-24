@@ -1,0 +1,6 @@
+{
+  "reason": "HTTP acceptance found the exact source description in metadata but absent from the visible introductory paragraph.",
+  "fix": "Added gallery_intro with the exact full source description on the canonical studio page; personal route inherits it.",
+  "shared_layout_changed": false,
+  "media_stage_changed": false
+}

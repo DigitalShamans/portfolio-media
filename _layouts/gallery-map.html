@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}" data-gallery-webp-revision="{{ site.gallery_webp_revision | escape }}"{% if site.data.gallery_delivery.revision %} data-gallery-originals-origin="{{ site.data.gallery_delivery.service_origin | escape }}" data-gallery-originals-revision="{{ site.data.gallery_delivery.revision | escape }}" data-gallery-originals-gallery-revisions="{{ site.data.gallery_delivery.gallery_revisions | jsonify | escape }}"{% endif %}>
+<head>
+  <meta charset="utf-8">
+  {% include portfolio-diagnostics.html section='gallery' %}
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{{ page.title | default: 'Interactive Gallery Map' | escape }} | {% if page.portfolio == 'personal' %}{{ site.data.personal_portfolio.name | escape }}{% else %}Digital Shamans{% endif %}</title>
+  {% include site-favicon.html %}
+  <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=15">
+  <link rel="stylesheet" href="{{ '/galleries/gallery.css' | relative_url }}?v=35">
+  <link rel="stylesheet" href="{{ '/galleries/gallery-map.css' | relative_url }}?v=5">
+  {% include personal-typography.html %}
+</head>
+<body class="gallery-map-experiment" data-gallery-revision="{{ site.github.build_revision | escape }}">
+  {% include site-header.html %}
+  <main class="gallery-map-page">
+    <header class="gallery-map-intro"><h1 id="map-title">Interactive gallery map</h1><p id="map-help" class="gallery-map-help"></p></header>
+    <p id="map-error" role="alert" hidden></p>
+    <section id="public-map" class="gallery-map-stage" aria-label="Interactive level overview" aria-describedby="map-help" hidden></section>
+    <div class="gallery-map-caption"><p id="map-caption" role="status" aria-live="polite">Loading map…</p><span class="gallery-map-actions"><button id="map-fullscreen" class="gallery-map-fullscreen-button" type="button" aria-label="Open interactive overview in fullscreen" disabled>Fullscreen overview</button><a id="map-gallery-link" hidden>View gallery</a></span></div>
+    <p id="gallery-status" role="status" hidden></p>
+    <section id="map-screenshots" class="gallery gallery-map-screenshots" data-native-gallery-scroll aria-label="Gallery screenshots" hidden></section>
+    <noscript><p>Enable JavaScript to explore this interactive map.</p></noscript>
+  </main>
+  {% include gallery-viewer.html map=true %}
+  {% assign map_pages = site.pages | where: 'layout', 'gallery' | where_exp: 'entry', "entry.portfolio != 'personal'" %}
+  <script id="gallery-map-options" type="application/json">
+  {
+    "defaultGallery": {{ page.gallery | default: 'hb-atrium' | jsonify }},
+    "previewSize": {{ page.map_preview_size | default: 1 | jsonify }},
+    "navigateOnClick": {% if page.map_navigate_on_click == false %}false{% else %}true{% endif %},
+    "viewerScript": {{ '/galleries/gallery-viewer.js' | relative_url | append: '?v=52' | jsonify }},
+    "personal": {% if page.portfolio == 'personal' %}true{% else %}false{% endif %},
+    "galleryRoot": {{ '/galleries/' | relative_url | jsonify }},
+    "media": {{ site.gallery_4k_media | jsonify }},
+    "webpRevision": {{ site.gallery_webp_revision | jsonify }},
+    "delivery": {{ site.data.gallery_delivery | jsonify }},
+    "galleries": {
+      {% for entry in map_pages %}
+        {% assign folder = entry.url | remove_first: '/galleries/' | split: '/' | first %}
+        {% assign map_path = '/galleries/' | append: folder | append: '/gallery-map.json' %}
+        {% assign map_file = site.static_files | where: 'path', map_path | first %}
+        {{ folder | jsonify }}: { "title": {{ entry.gallery_title | jsonify }}, "hasMap": {% if map_file %}true{% else %}false{% endif %}, "versions": {{ site.data.gallery_asset_versions[folder] | jsonify }} }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    }
+  }
+  </script>
+  <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=6" defer></script>
+  <script src="{{ '/galleries/gallery-data.js' | relative_url }}?v=3" defer></script>
+  <script src="{{ '/galleries/gallery-map-data.js' | relative_url }}?v=1" defer></script>
+  <script src="{{ '/galleries/gallery-map.js' | relative_url }}?v=6" defer></script>
+  <script src="{{ '/galleries/gallery-map-page.js' | relative_url }}?v=7" defer></script>
+</body>
+</html>

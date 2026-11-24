@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "modelId": "364b9214850549f29d2400b733f95693",
+  "source": "https://sketchfab.com/models/364b9214850549f29d2400b733f95693/embed",
+  "playActivated": true,
+  "renderVisuallyConfirmed": true,
+  "orbitInput": {
+    "from": [
+      620,
+      350
+    ],
+    "to": [
+      850,
+      350
+    ]
+  },
+  "orientationChangeVisuallyConfirmed": "front to rear view",
+  "note": "DOM snapshot includes loading/heavy-device strings despite successful visible rendering; actual screenshots and orbit were checked.",
+  "completedAtUtc": "2026-11-19T22:20:50.559Z"
+}
