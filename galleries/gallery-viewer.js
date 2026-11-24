@@ -11,6 +11,8 @@ const galleryAssetVersions = JSON.parse(document.body.dataset.galleryAssetVersio
 const title = document.querySelector('.intro h1, #map-title').textContent;
 
 const finePointer = window.matchMedia('(pointer: fine)');
+const desktopScrolling = window.matchMedia('(any-hover: hover) and (any-pointer: fine)');
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 let displaySize = `${screen.width}x${screen.height}`;
 let baselinePixelRatio = window.devicePixelRatio;
 
@@ -76,6 +78,7 @@ const viewerTouches = new Map();
 const viewerZoom = { scale: 1, x: 0, y: 0 };
 let viewerGesture;
 let viewerWheel;
+let viewerWheelZoom;
 let mouseGesture;
 let suppressViewerClick = false;
 let lastViewerPointer;
@@ -209,10 +212,8 @@ function setupClassicGalleryScroll() {
     galleryDiagnostics?.state('gallery-wheel', 'Native wheel scrolling', 'This gallery uses native scrolling.');
     return;
   }
-  const desktopScrolling = window.matchMedia('(any-hover: hover) and (any-pointer: fine)');
   galleryDiagnostics?.state('gallery-wheel', desktopScrolling.matches ? 'Image stepping available' : 'Native wheel scrolling',
     'The wheel controller is independent of GSAP.', { imageResolution });
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const scroller = document.scrollingElement;
   const twoImageScroll = gallery.hasAttribute('data-two-image-scroll');
   const groupedImageScroll = gallery.hasAttribute('data-grouped-image-scroll');
@@ -474,6 +475,7 @@ setupClassicGalleryScroll();
 
 function fitImage() {
   clearTimeout(pendingClickZoom);
+  cancelViewerWheelZoom();
   setViewerZoom(1, 0, 0);
   positionViewerControls();
 }
@@ -1115,6 +1117,61 @@ function pointFor(event) {
   return { x: event.clientX, y: event.clientY };
 }
 
+function clampViewerScale(scale) {
+  // Round back to fit when inverse wheel ticks leave a tiny remainder.
+  return scale < 1.000001 ? 1 : Math.min(scale, 4);
+}
+
+function cancelViewerWheelZoom() {
+  if (!viewerWheelZoom) return;
+  cancelAnimationFrame(viewerWheelZoom.frame);
+  viewerWheelZoom = undefined;
+}
+
+function animateViewerWheelZoom(time) {
+  const zoom = viewerWheelZoom;
+  if (!viewer.open || !zoom) {
+    viewerWheelZoom = undefined;
+    return;
+  }
+  const elapsed = zoom.lastFrame === undefined ? 1000 / 60 : time - zoom.lastFrame;
+  zoom.lastFrame = time;
+  // Ease toward the target based on elapsed time at any display refresh rate.
+  const remaining = zoom.target - viewerZoom.scale;
+  const scale = Math.abs(remaining) < 0.001 ? zoom.target
+    : viewerZoom.scale + remaining * (1 - Math.exp(-elapsed / 40));
+  zoomViewerAt(scale, zoom.anchor, zoom.anchor);
+  if (scale === zoom.target) viewerWheelZoom = undefined;
+  else zoom.frame = requestAnimationFrame(animateViewerWheelZoom);
+}
+
+function zoomViewerWithWheel(event) {
+  if (!viewerAspect || viewerTouches.size || mouseGesture?.panning) return;
+  const mode = event.deltaMode;
+  // Shift-wheel can arrive on the horizontal axis.
+  const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+  if (!delta) return;
+  clearTimeout(pendingClickZoom);
+  const unit = mode === WheelEvent.DOM_DELTA_LINE ? 16
+    : mode === WheelEvent.DOM_DELTA_PAGE ? stage.clientHeight : 1;
+  const previousTarget = viewerWheelZoom?.target ?? viewerZoom.scale;
+  // Keep accumulating ticks in the same direction. A reversal starts where the image is now.
+  const baseScale = delta < 0 ? Math.max(viewerZoom.scale, previousTarget)
+    : Math.min(viewerZoom.scale, previousTarget);
+  const target = clampViewerScale(baseScale * Math.exp(-delta * unit * 0.0018));
+  if (target === previousTarget) return;
+  const anchor = pointFor(event);
+  if (reducedMotion.matches) {
+    cancelViewerWheelZoom();
+    zoomViewerAt(target, anchor, anchor);
+  } else if (viewerWheelZoom) {
+    viewerWheelZoom.target = target;
+    viewerWheelZoom.anchor = anchor;
+  } else {
+    viewerWheelZoom = { target, anchor, frame: requestAnimationFrame(animateViewerWheelZoom) };
+  }
+}
+
 function pinchGeometry() {
   const [first, second] = viewerTouches.values();
   return {
@@ -1136,7 +1193,7 @@ function moveViewerTouch(event) {
   if (viewerGesture.mode === 'pinch') {
     if (!viewerAspect) return;
     const next = pinchGeometry();
-    const scale = Math.max(1, Math.min(4, viewerGesture.zoom.scale * next.distance / viewerGesture.distance));
+    const scale = clampViewerScale(viewerGesture.zoom.scale * next.distance / viewerGesture.distance);
     zoomViewerAt(scale, viewerGesture.point, next.point, viewerGesture.zoom);
     return;
   }
@@ -1210,6 +1267,7 @@ stage.addEventListener('contextmenu', event => {
 
 stage.addEventListener('pointerdown', event => {
   lastViewerPointer = event.pointerType;
+  cancelViewerWheelZoom();
   if (event.pointerType === 'touch') {
     clearTimeout(pendingClickZoom);
     const point = pointFor(event);
@@ -1273,8 +1331,14 @@ frame.addEventListener('pointerleave', event => {
 });
 
 frame.addEventListener('wheel', event => {
-  if (!viewer.open || event.ctrlKey || event.metaKey || event.altKey ||
-      !event.deltaY || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+  if (!viewer.open || event.metaKey) return;
+  if (event.ctrlKey || event.shiftKey || event.altKey) {
+    if (!desktopScrolling.matches) return;
+    if (event.cancelable) event.preventDefault();
+    zoomViewerWithWheel(event);
+    return;
+  }
+  if (!event.deltaY || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
   event.preventDefault();
   const direction = Math.sign(event.deltaY);
   const now = event.timeStamp;
