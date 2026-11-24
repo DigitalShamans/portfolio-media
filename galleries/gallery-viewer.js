@@ -44,9 +44,14 @@ galleryDiagnostics?.state('gallery-touch', 'Native touch scrolling', primaryTouc
   ? 'Waiting for the mobile scroll controller.' : 'GSAP touch normalization needs a coarse primary pointer and touch support.');
 if (primaryTouch) {
   const mobileScrollScript = document.createElement('script');
-  mobileScrollScript.src = new URL('./gallery-mobile-scroll.js?v=2', document.currentScript.src).href;
+  mobileScrollScript.src = new URL('./gallery-mobile-scroll.js?v=3', document.currentScript.src).href;
   mobileScrollScript.addEventListener('load', () => {
-    window.GalleryMobileScroll?.start({ gallery, viewer });
+    const mapScroll = gallery.hasAttribute('data-gsap-gallery-scroll');
+    window.GalleryMobileScroll?.start({
+      gallery, viewer,
+      gestureRoot: mapScroll ? galleryContent : gallery,
+      swipeControls: mapScroll ? '.gallery-map-overview-button, .gallery-map-region' : ''
+    });
   }, { once: true });
   mobileScrollScript.addEventListener('error', () => {
     galleryDiagnostics?.state('gallery-touch', 'Native touch scrolling', 'The mobile scroll controller could not load.');
@@ -198,6 +203,8 @@ function trackGalleryPosition() {
 }
 
 function setupClassicGalleryScroll() {
+  // This page has its own continuous GSAP controller, including small wheel deltas.
+  if (gallery.hasAttribute('data-gsap-gallery-scroll')) return;
   if (gallery.hasAttribute('data-native-gallery-scroll')) {
     galleryDiagnostics?.state('gallery-wheel', 'Native wheel scrolling', 'This gallery uses native scrolling.');
     return;

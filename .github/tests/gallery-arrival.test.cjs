@@ -234,9 +234,9 @@ test('both gallery layouts construct the arriving panel before the real header a
     assert.match(layout, /<div id="gallery-edge-arrival"><script src="\.\.\/gallery-arrival\.js\?v=4"><\/script><\/div>/);
     assert.match(layout, /gallery-edge-arrival[\s\S]*include site-header\.html[\s\S]*gallery-edge-ready/);
   }
-  for (const layout of layouts) assert.match(layout, /gallery-viewer\.js\?v=56/);
+  for (const layout of layouts) assert.match(layout, /gallery-viewer\.js\?v=57/);
   const mapLayout = fs.readFileSync(path.join(root, '_layouts/gallery-map.html'), 'utf8');
-  assert.match(mapLayout, /gallery-viewer\.js[^\n]*\?v=56/);
+  assert.match(mapLayout, /gallery-viewer\.js[^\n]*\?v=57/);
 });
 
 function viewerKeyboard({ overviewMap = false } = {}) {
@@ -471,3 +471,4 @@ test('the real home and recent gallery pages register the reveal before first pa
     assert.ok(layout.includes('id="' + readyId + '"'));
   }
 });
+

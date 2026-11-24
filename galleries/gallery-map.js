@@ -173,6 +173,7 @@ const GalleryMap = (() => {
     listen(stage, 'focusout', event => { if (mode === 'keyboard' && !stage.contains(event.relatedTarget)) close(); });
     const resize = new ResizeObserver(() => { if (active) place(active); checkHoverPosition(); }); resize.observe(stage);
     listen(document, 'scroll', checkHoverPosition);
+    listen(document, 'gallery-scrollupdate', checkHoverPosition);
     listen(hover, 'change', () => { close(); blocked.clear(); updateHelp(); }); updateHelp();
     return { cards, close, refresh: checkHoverPosition, picture, destroy() { close(); resize.disconnect(); cleanup.forEach(remove => remove()); stage.replaceChildren(); } };
   }
