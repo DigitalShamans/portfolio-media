@@ -1235,18 +1235,19 @@ stage.addEventListener('click', event => {
 
 stage.addEventListener('click', event => {
   if (event.target.closest('.viewer-arrows, .comparison-indicator') || event.detail === 0) return;
+  const mouseClick = lastViewerPointer === 'mouse' && event.button === 0;
+  if (mouseClick && event.detail > 1) {
+    fitImage();
+    return;
+  }
   if (!viewerHitImage(event)) {
     viewer.close();
     return;
   }
-  if (lastViewerPointer !== 'mouse' || event.button !== 0 || event.detail === 0) return;
+  if (!mouseClick) return;
   clearTimeout(pendingClickZoom);
-  if (event.detail > 1) {
-    viewer.close();
-    return;
-  }
   const point = pointFor(event);
-  // Give a second click time to exit before changing the zoom.
+  // Give a second click time to reset before applying the single-click toggle.
   pendingClickZoom = setTimeout(() => {
     if (!viewer.open) return;
     if (viewerZoom.scale > 1) fitImage();

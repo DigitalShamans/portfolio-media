@@ -808,7 +808,7 @@ test('fullscreen touch swipes navigate on both axes while pinch and pan stay on 
   assert.deepEqual(errors, []);
 });
 
-test('fullscreen desktop left click toggles zoom, middle and right drag pan, and double-click exits', async t => {
+test('fullscreen desktop left click toggles zoom, middle and right drag pan, and double-click fits', async t => {
   const { page, errors } = await openPage(t, { width: 1440 });
   const firstShot = page.locator('.shot').first();
   const viewer = page.locator('#viewer');
@@ -872,14 +872,19 @@ test('fullscreen desktop left click toggles zoom, middle and right drag pan, and
   assert.equal(await page.locator('#counter').textContent(), '2 / 3');
   assert.equal((await viewerTransform(page)).scale, 1);
   await page.mouse.dblclick(x, y);
-  await viewer.waitFor({ state: 'hidden' });
-  await page.waitForFunction(() => document.fullscreenElement === null);
+  // The first click of the pair must not zoom in after the single-click delay.
+  await page.waitForTimeout(350);
+  assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
+  assert.equal(await viewer.evaluate(element => element.open), true);
 
-  await firstShot.click();
-  await displayed(page, '#original', preview('First'));
   await page.mouse.click(x, y);
   await zoomedStage.waitFor();
   await page.mouse.dblclick(x, y);
+  await zoomedStage.waitFor({ state: 'detached' });
+  assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
+  assert.equal(await page.locator('#counter').textContent(), '2 / 3');
+  assert.equal(await page.evaluate(() => document.fullscreenElement?.id), 'viewer-frame');
+  await page.locator('#fullscreen').press('Enter');
   await viewer.waitFor({ state: 'hidden' });
   await page.waitForFunction(() => document.fullscreenElement === null);
   assert.deepEqual(errors, []);
@@ -1139,11 +1144,12 @@ test('Atrium previews stay at 80 percent without navigating and share fullscreen
     assert.equal(await fullscreen.card.getAttribute('aria-expanded'), 'true');
   }
 
-  await page.mouse.click(fullscreen.point.x + 120, fullscreen.point.y);
+  await page.mouse.dblclick(fullscreen.point.x + 120, fullscreen.point.y);
   await page.locator('#stage.zoomed').waitFor({ state: 'detached' });
   assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
   assert.equal(await page.locator('#fullscreen-map').isVisible(), true);
-  await page.mouse.dblclick(fullscreen.point.x, fullscreen.point.y);
+  assert.equal(await page.evaluate(() => document.fullscreenElement?.id), 'viewer-frame');
+  await page.locator('#fullscreen').press('Enter');
   await page.locator('#viewer').waitFor({ state: 'hidden' });
   await page.waitForFunction(() => document.fullscreenElement === null);
 
