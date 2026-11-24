@@ -79,8 +79,10 @@
   }
 
   function page() {
+    const loading = diagnostics.loadingLibraries();
     return {
       id: pageId, path: location.pathname, section, environment: environment(), libraries: libraries(),
+      loadingLibraries: loading.length ? loading : undefined,
       features, tallies, motion, input, resume: section === 'resume' ? resumeCards() : undefined, test: lastTest, events
     };
   }
@@ -239,13 +241,19 @@
     if (!panel.open) return;
     const current = page();
     const env = current.environment;
+    const loading = current.loadingLibraries || [];
     const allLibraries = Object.entries(current.libraries).filter(([, version]) => version)
       .map(([name, version]) => name + (typeof version === 'string' ? ' ' + version : ''));
     panel.querySelector('[data-environment]').textContent =
       env.viewport.width + ' × ' + env.viewport.height + ' CSS px · ' + env.primaryPointer + ' pointer' +
       (env.primaryHover ? ' with hover' : ' without hover') + ' · ' + env.touchPoints + ' touch points' +
       ' · Reduced motion ' + (env.reducedMotion ? 'on' : 'off');
-    panel.querySelector('[data-libraries]').textContent = 'Loaded libraries — ' + (allLibraries.join(', ') || 'none');
+    const libraryStatus = [];
+    if (allLibraries.length || !loading.length) {
+      libraryStatus.push('Loaded libraries — ' + (allLibraries.join(', ') || 'none'));
+    }
+    if (loading.length) libraryStatus.push('Loading libraries — ' + loading.join(', '));
+    panel.querySelector('[data-libraries]').textContent = libraryStatus.join(' · ');
     results.replaceChildren();
     function row(label, text) {
       const title = document.createElement('dt');

@@ -432,6 +432,41 @@ async function viewerTransform(page) {
   });
 }
 
+test('opening diagnostics update when GSAP loads without scroll input', async t => {
+  const page = await browser.newPage();
+  t.after(() => page.close());
+  const bootstrap = read('_includes/portfolio-diagnostics.html')
+    .replace('{{ include.section | jsonify }}', '"gallery"')
+    .replace(/{{ '([^']+)' \| relative_url \| jsonify }}/g, (_, asset) => JSON.stringify(asset));
+  const library = '/assets/vendor/gsap/3.15.1/gsap.min.js';
+  const gsapReady = signal();
+  t.after(gsapReady.release);
+  await page.route('**/*', async request => {
+    const { pathname } = new URL(request.request().url());
+    if (pathname === gallery) {
+      return request.fulfill({ contentType: 'text/html',
+        body: `<!doctype html><html><head><meta charset="utf-8">${bootstrap}<script src="${library}" async></script></head><body></body></html>` });
+    }
+    if (pathname === library) {
+      await gsapReady.reached;
+      return request.fulfill({ path: resolve(root, pathname.slice(1)) });
+    }
+    if (/^\/assets\/portfolio-diagnostics\.(js|css)$/.test(pathname)) {
+      return request.fulfill({ path: resolve(root, pathname.slice(1)) });
+    }
+    return request.fulfill({ status: 404 });
+  });
+  await page.goto(portfolio + gallery + '?diagnostics=1', { waitUntil: 'domcontentloaded' });
+  await page.getByText('Diagnostics', { exact: true }).click({ timeout: 4000 });
+  await page.getByText('Loading libraries — gsap', { exact: true }).waitFor({ timeout: 4000 });
+  gsapReady.release();
+  await page.getByText('Loaded libraries — gsap 3.15.1', { exact: true }).waitFor({ timeout: 4000 });
+  const [report] = await page.evaluate(() => window.PortfolioDiagnostics.report().pages);
+  assert.equal(report.input.wheel, 0);
+  assert.equal(report.input.scrollEvents, 0);
+  assert.ok(report.events.some(entry => entry.feature === 'libraries' && entry.details.file === 'gsap.min.js'));
+});
+
 test('the first desktop wheel step animates the opening image into place', async t => {
   const { page, errors } = await openPage(t, { width: 1440 });
   await page.locator('.shot-primary').nth(2).waitFor();

@@ -23,7 +23,8 @@ function visit(url, timeOrigin, stored = new Map()) {
     addEventListener: (name, callback) => { listeners[name] = callback; }
   };
   const document = {
-    readyState: 'loading', baseURI: location.href, addEventListener() {},
+    scripts: [],
+    readyState: 'loading', baseURI: location.href, addEventListener: (name, callback) => { listeners[name] = callback; },
     head: { append: element => loaded.push(element.src) },
     createElement: tagName => ({ tagName: tagName.toUpperCase(), addEventListener() {} })
   };
@@ -38,7 +39,7 @@ function visit(url, timeOrigin, stored = new Map()) {
     }
   });
   vm.runInContext(bootstrap, context);
-  return { window, loaded, listeners, stored, load: () => vm.runInContext(core, context) };
+  return { window, scripts: document.scripts, loaded, listeners, stored, load: () => vm.runInContext(core, context) };
 }
 
 test('ordinary visits do not request diagnostics or install observers', () => {
@@ -70,6 +71,27 @@ test('diagnostics carry early failures and the actual transition engine across g
   const closed = visit('https://example.test/?diagnostics=0', 3, first.stored);
   assert.equal(closed.window.PortfolioDiagnostics, undefined);
   assert.equal(first.stored.size, 0);
+});
+
+test('diagnostics distinguish a pending library from a loaded or failed request', () => {
+  const current = visit('https://example.test/galleries/hb-egypt/?diagnostics=1', 1);
+  const gsap = { tagName: 'SCRIPT', src: 'https://example.test/assets/gsap.min.js' };
+  const scrollTrigger = { tagName: 'SCRIPT', src: 'https://example.test/assets/ScrollTrigger.min.js' };
+  current.scripts.push(gsap, scrollTrigger);
+  current.load();
+  const diagnostic = current.window.PortfolioDiagnostics;
+  assert.deepEqual([...diagnostic.report().pages[0].loadingLibraries], ['gsap', 'ScrollTrigger']);
+
+  current.window.gsap = { version: '3.15.1' };
+  current.listeners.load({ target: gsap });
+  current.listeners.error({ target: scrollTrigger });
+  const page = diagnostic.report().pages[0];
+  assert.equal(page.loadingLibraries, undefined);
+  assert.equal(page.libraries.gsap, '3.15.1');
+  assert.equal(page.events[0].details.file, 'gsap.min.js');
+  assert.equal(page.events[0].activity, 'loaded');
+  assert.equal(page.events[1].activity, 'load failed');
+  assert.equal(page.input.wheel, 0);
 });
 
 test('callbacks at the same position are separate from motion and trace storage is bounded', () => {
