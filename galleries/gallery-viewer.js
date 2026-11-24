@@ -73,7 +73,7 @@ const fullscreen = document.querySelector('#fullscreen');
 const fullscreenSupported = document.fullscreenEnabled && typeof frame.requestFullscreen === 'function';
 const status = document.querySelector('#status');
 let current = 0;
-let opener;
+let viewerOrigin;
 const viewerTouches = new Map();
 const viewerZoom = { scale: 1, x: 0, y: 0 };
 let viewerGesture;
@@ -92,7 +92,6 @@ let selectedComparison = 0;
 let displayedComparison = 0;
 let viewerIndicator;
 let openingPointer;
-let pointerOpened = false;
 let fullscreenActive = false;
 const imageRetryDelay = 1000;
 const foregroundLoads = new Set();
@@ -1373,35 +1372,48 @@ document.addEventListener('fullscreenchange', () => {
   if (isFullscreen && !viewer.open) void setFullscreen(false);
 });
 
-viewer.addEventListener('close', () => {
+viewer.addEventListener('close', async () => {
+  if (viewer.open) return;
+  const origin = viewerOrigin;
+  viewerOrigin = undefined;
+  const exit = document.fullscreenElement === frame ? setFullscreen(false) : undefined;
+  const request = ++viewerRequest;
   viewerTouches.clear();
   viewerGesture = viewerWheel = mouseGesture = undefined;
   lastViewerPointer = undefined;
   viewerAspect = 0;
   suppressViewerClick = false;
   stage.classList.remove('dragging');
-  if (document.fullscreenElement === frame) void setFullscreen(false);
-  viewerRequest++;
   comparisonsInitialized = false;
   viewerIndicator?.remove();
   viewerIndicator = null;
   original.removeAttribute('src');
   fitImage();
-  if (opener) {
-    const shot = opener;
-    if (pointerOpened) {
-      shot.classList.add('viewer-return-focus');
-      shot.addEventListener('blur', () => shot.classList.remove('viewer-return-focus'), { once: true });
+  if (!origin) return;
+  // Let the normal viewport and the underlying scroll controller settle first.
+  await exit;
+  requestAnimationFrame(() => {
+    if (viewer.open || request !== viewerRequest) return;
+    const navigated = current !== origin.index;
+    const target = navigated ? shots[current]?.link : origin.link;
+    if (!target?.isConnected) return;
+    if (navigated) {
+      const smoother = window.ScrollSmoother?.get?.();
+      if (smoother?.content().contains(target)) smoother.scrollTo(target, false, 'center center');
+      else target.scrollIntoView({ behavior: 'instant', block: 'center', inline: 'nearest' });
     }
-    shot.focus({ preventScroll: true });
-  }
+    if (origin.pointerOpened) {
+      target.classList.add('viewer-return-focus');
+      target.addEventListener('blur', () => target.classList.remove('viewer-return-focus'), { once: true });
+    }
+    target.focus({ preventScroll: true });
+  });
 });
 
 function openViewer(index, variant = 0, source = shots[index].link, event) {
   if (typeof viewer.showModal !== 'function') return false;
   if (!viewer.open) {
-    opener = source;
-    pointerOpened = event?.detail > 0;
+    viewerOrigin = { index, link: source, pointerOpened: event?.detail > 0 };
     openingPointer = event ? { x: event.screenX, y: event.screenY } : null;
   }
   showImage(index, variant);

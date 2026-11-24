@@ -35,7 +35,7 @@
     "defaultGallery": {{ page.gallery | default: 'hb-atrium' | jsonify }},
     "previewSize": {{ page.map_preview_size | default: 1 | jsonify }},
     "navigateOnClick": {% if page.map_navigate_on_click == false %}false{% else %}true{% endif %},
-    "viewerScript": {{ '/galleries/gallery-viewer.js' | relative_url | append: '?v=58' | jsonify }},
+    "viewerScript": {{ '/galleries/gallery-viewer.js' | relative_url | append: '?v=59' | jsonify }},
     "personal": {% if page.portfolio == 'personal' %}true{% else %}false{% endif %},
     "galleryRoot": {{ '/galleries/' | relative_url | jsonify }},
     "media": {{ site.gallery_4k_media | jsonify }},
