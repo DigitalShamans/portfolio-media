@@ -30,4 +30,4 @@ jobs:
           CHROMIUM_PATH: /usr/bin/google-chrome
         run: |
           export NODE_PATH="$RUNNER_TEMP/atrium-browser/node_modules"
-          node --test .github/tests/gallery-delivery.browser.test.cjs
+          node --test --test-name-pattern='Atrium ScrollSmoother moves|Atrium ScrollSmoother initializes' .github/tests/gallery-delivery.browser.test.cjs

@@ -1,7 +1,9 @@
 'use strict';
 
 const assert = require('node:assert/strict');
+const { once } = require('node:events');
 const { readFileSync } = require('node:fs');
+const { createServer } = require('node:http');
 const { resolve } = require('node:path');
 const { after, before, test } = require('node:test');
 const { chromium } = require('playwright');
@@ -15,8 +17,6 @@ const viewerInclude = read('_includes/gallery-viewer.html');
 const galleryViewer = viewerInclude
   .replace(/{% if include\.map %}[\s\S]*?{% endif %}/, '');
 const mapViewer = viewerInclude.replace(/{% (?:if include\.map|endif) %}/g, '');
-const portfolio = 'http://localhost:3000';
-const media = 'https://media.example.test';
 const revision = 'a'.repeat(40);
 const gallery = '/galleries/hb-egypt/';
 const locked = '/galleries/hb-rzstart/';
@@ -36,8 +36,16 @@ const mapManifest = {
 };
 const jpeg = Buffer.from('/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAJABADASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFAEBAAAAAAAAAAAAAAAAAAAABP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AKgAJT//2Q==', 'base64');
 const webp = Buffer.from('UklGRjAAAABXRUJQVlA4ICQAAABQAQCdASoQAAkAAUAmJQBOgCgAAP7nMP6+8odiZDdJ+p/KAAA=', 'base64');
-const originals = name => `${media}/public-media/${revision}/hb-egypt/${name}.jpg`;
-const preview = name => `${portfolio}${gallery}1440p/${name}.webp?v=test&webp=q92-m6`;
+function fixtureUrls(portfolio, media) {
+  return {
+    portfolio, media,
+    originals: name => `${media}/public-media/${revision}/hb-egypt/${name}.jpg`,
+    preview: name => `${portfolio}${gallery}1440p/${name}.webp?v=test&webp=q92-m6`,
+  };
+}
+
+const routedUrls = fixtureUrls('http://localhost:3000', 'https://media.example.test');
+const { portfolio, originals, preview } = routedUrls;
 
 let browser;
 before(async () => {
@@ -75,7 +83,8 @@ function mapBody() {
   return content + `<script id="gallery-map-options" type="application/json">${JSON.stringify(options)}</script>` + scripts(mapLayout);
 }
 
-function pageHtml(path, { embeds, assetVersions = {}, map = false, diagnostics = false } = {}) {
+function pageHtml(path, { embeds, assetVersions = {}, map = false, diagnostics = false, urls = routedUrls } = {}) {
+  const { media, originals, preview } = urls;
   const isLocked = path.endsWith(locked);
   const settings = isLocked ? '' : `data-gallery-webp-revision="q92-m6"
     data-gallery-originals-origin="${media}" data-gallery-originals-revision="${revision}"`;
@@ -108,7 +117,48 @@ function signal() {
   return { reached, release };
 }
 
-async function openPage(t, { route = gallery, width = 2800, hasTouch = false, intercept, embeds, assetVersions, map = false, diagnostics = false, reducedMotion } = {}) {
+async function startFixtureServer(t, serve, errors) {
+  const server = createServer(async (incoming, response) => {
+    const request = {
+      fulfill({ status = 200, headers, contentType = 'text/plain', body, json, path }) {
+        if (path) {
+          body = readFileSync(path);
+          contentType = path.endsWith('.css') ? 'text/css' : 'text/javascript';
+        } else if (json !== undefined) {
+          body = JSON.stringify(json);
+          contentType = 'application/json';
+        }
+        response.writeHead(status, {
+          'Content-Type': contentType, 'Cache-Control': 'no-store', 'Connection': 'close', ...headers,
+        });
+        response.end(body);
+      },
+      abort() { response.destroy(); },
+    };
+    try {
+      await serve(request, new URL(incoming.url, 'http://127.0.0.1:' + server.address().port));
+    } catch (error) {
+      errors.push(error.message);
+      response.destroy();
+    }
+  });
+  t.after(() => {
+    if (!server.listening) return;
+    return new Promise(resolve => {
+      server.close(resolve);
+      server.closeAllConnections();
+    });
+  });
+  const listening = once(server, 'listening');
+  server.listen(0, '127.0.0.1');
+  await listening;
+  return 'http://127.0.0.1:' + server.address().port;
+}
+
+async function openPage(t, {
+  route = gallery, width = 2800, hasTouch = false, intercept, embeds, assetVersions,
+  map = false, diagnostics = false, reducedMotion, cacheImages = false,
+} = {}) {
   if (map) route = mapRoute;
   const page = await browser.newPage({ hasTouch, viewport: { width, height: 900 } });
   t.after(() => page.close());
@@ -116,28 +166,40 @@ async function openPage(t, { route = gallery, width = 2800, hasTouch = false, in
   if (reducedMotion) await page.emulateMedia({ reducedMotion });
   const requests = [];
   const errors = [];
+  const imageHeaders = cacheImages ? { 'Cache-Control': 'public, max-age=600' } : {};
+  let urls = routedUrls;
   page.on('pageerror', error => errors.push(error.message));
-  await page.route('**/*', async request => {
-    const url = new URL(request.request().url());
+  async function serve(request, url) {
     requests.push(url.href);
-    if (intercept && await intercept(request, url)) return;
-    if (url.pathname === route) return request.fulfill({ contentType: 'text/html', body: pageHtml(route, { embeds, assetVersions, map, diagnostics }) });
+    if (intercept && await intercept(request, url, urls)) return;
+    if (url.pathname === route) {
+      return request.fulfill({ contentType: 'text/html', body: pageHtml(route, { embeds, assetVersions, map, diagnostics, urls }) });
+    }
     if (map && url.pathname === `${gallery}gallery-map.json`) return request.fulfill({ json: mapManifest });
     if (url.pathname === `${gallery}gallery.json` || url.pathname === '/media/gallery.json') {
       return request.fulfill({ json: manifest });
     }
     if (embeds && url.pathname === `${gallery}gallery-embeds.json`) return request.fulfill({ json: embeds });
-    if (url.pathname.endsWith('.webp')) return request.fulfill({ contentType: 'image/webp', body: webp });
+    if (url.pathname.endsWith('.webp')) return request.fulfill({ headers: imageHeaders, contentType: 'image/webp', body: webp });
     if (url.pathname.endsWith('.jpg')) {
-      return request.fulfill({ headers: { 'Access-Control-Allow-Origin': '*' }, contentType: 'image/jpeg', body: jpeg });
+      return request.fulfill({ headers: { ...imageHeaders, 'Access-Control-Allow-Origin': '*' }, contentType: 'image/jpeg', body: jpeg });
     }
-    if (url.origin === portfolio && /\.(?:js|css)$/.test(url.pathname)) {
+    if (url.origin === urls.portfolio && /^\/(?:assets|galleries)\/[\w./-]+\.(?:js|css)$/.test(url.pathname)) {
       return request.fulfill({ path: resolve(root, url.pathname.slice(1)) });
     }
     return request.fulfill({ status: 404 });
-  });
-  await page.goto(portfolio + route + (diagnostics ? '?diagnostics=1' : ''), { waitUntil: 'domcontentloaded' });
-  return { page, requests, errors };
+  }
+  if (cacheImages) {
+    // Playwright routing disables HTTP caching. Count requests reaching the two local origins.
+    const [siteOrigin, mediaOrigin] = await Promise.all([
+      startFixtureServer(t, serve, errors), startFixtureServer(t, serve, errors),
+    ]);
+    urls = fixtureUrls(siteOrigin, mediaOrigin);
+  } else {
+    await page.route('**/*', request => serve(request, new URL(request.request().url())));
+  }
+  await page.goto(urls.portfolio + route + (diagnostics ? '?diagnostics=1' : ''), { waitUntil: 'domcontentloaded' });
+  return { page, requests, errors, urls };
 }
 
 async function displayed(page, selector, source) {
@@ -160,7 +222,7 @@ function onceEach(requests, ...urls) {
   for (const url of urls) assert.equal(requests.filter(request => request === url).length, 1, url);
 }
 
-function expectFallback(requests, name) {
+function expectFallback(requests, name, { originals, preview }) {
   const original = originals(name);
   const webp = preview(name);
   assert.deepEqual(requests.filter(url => url === original || url === webp), [original, original, webp]);
@@ -223,7 +285,8 @@ test('invalid local video metadata keeps the loaded image gallery usable', async
 test('healthy 4K stays in 4K, and 1440p viewports go directly to WebP', async t => {
   for (const width of [2800, 1000]) {
     await t.test(`viewport ${width}px`, async t => {
-      const { page, requests, errors } = await openPage(t, { width });
+      const { page, requests, errors, urls } = await openPage(t, { width, cacheImages: true });
+      const { originals, preview } = urls;
       const source = width === 2800 ? originals : preview;
       const unused = width === 2800 ? preview : originals;
       await page.locator('.shot').first().press('Enter');
@@ -241,8 +304,9 @@ test('healthy 4K stays in 4K, and 1440p viewports go directly to WebP', async t 
 test('a temporary 4K failure retries the same JPG after a second and keeps 4K on success', async t => {
   let failedAt;
   let retryAt;
-  const { page, requests, errors } = await openPage(t, {
-    intercept: async (request, url) => {
+  const { page, requests, errors, urls } = await openPage(t, {
+    cacheImages: true,
+    intercept: async (request, url, { originals }) => {
       if (url.href !== originals('First')) return false;
       if (failedAt === undefined) {
         failedAt = performance.now();
@@ -253,6 +317,7 @@ test('a temporary 4K failure retries the same JPG after a second and keeps 4K on
       return false;
     },
   });
+  const { originals, preview } = urls;
   await page.locator('.shot').first().press('Enter');
   await page.waitForFunction(() => {
     const image = document.querySelector('#original');
@@ -270,9 +335,10 @@ test('both routes recover when the 4K service is unreachable before the viewer s
   for (const route of [gallery, '/artur' + gallery]) {
     await t.test(route, async t => {
       const firstFailed = signal();
-      const { page, requests, errors } = await openPage(t, {
+      const { page, requests, errors, urls } = await openPage(t, {
+        cacheImages: true,
         route,
-        intercept: async (request, url) => {
+        intercept: async (request, url, { originals, media }) => {
           if (url.origin === media) {
             await request.abort('connectionrefused');
             if (url.href === originals('First')) firstFailed.release();
@@ -284,13 +350,14 @@ test('both routes recover when the 4K service is unreachable before the viewer s
           return false;
         },
       });
+      const { originals, preview } = urls;
       await displayed(page, '.shot-primary', preview('First'));
       assert.equal(await page.locator('.shot').first().getAttribute('href'), originals('First'));
       await page.locator('.shot').first().press('Enter');
       await displayed(page, '#original', preview('First'));
       await activeSegment(page, 0);
       assert.equal(await page.locator('#status').isHidden(), true);
-      expectFallback(requests, 'First');
+      expectFallback(requests, 'First', urls);
       assert.deepEqual(errors, []);
     });
   }
@@ -301,8 +368,9 @@ test('navigation holds the visible image and ignores late fallback from a previo
   const releasePreview = signal();
   const previewStarted = signal();
   t.after(() => { failOriginal.release(); releasePreview.release(); });
-  const { page, requests, errors } = await openPage(t, {
-    intercept: async (request, url) => {
+  const { page, requests, errors, urls } = await openPage(t, {
+    cacheImages: true,
+    intercept: async (request, url, { originals, preview }) => {
       if (url.href === originals('Second')) {
         await failOriginal.reached;
         await request.fulfill({ status: 503 });
@@ -315,6 +383,7 @@ test('navigation holds the visible image and ignores late fallback from a previo
       return false;
     },
   });
+  const { originals, preview } = urls;
   await page.locator('.shot').first().press('Enter');
   await displayed(page, '#original', originals('First'));
   await page.locator('#next-side').press('Enter');
@@ -331,7 +400,7 @@ test('navigation holds the visible image and ignores late fallback from a previo
   await page.locator('#previous-side').press('Enter');
   await displayed(page, '#original', preview('Second'));
   assert.equal(await page.locator('#status').isHidden(), true);
-  expectFallback(requests, 'Second');
+  expectFallback(requests, 'Second', urls);
   onceEach(requests, originals('Third'));
   assert.deepEqual(errors, []);
 });
@@ -340,8 +409,9 @@ test('a late Checker fallback cannot replace the selected Wireframe', { timeout:
   const releaseChecker = signal();
   const checkerStarted = signal();
   t.after(releaseChecker.release);
-  const { page, requests, errors } = await openPage(t, {
-    intercept: async (request, url) => {
+  const { page, requests, errors, urls } = await openPage(t, {
+    cacheImages: true,
+    intercept: async (request, url, { originals, preview }) => {
       if (url.href === originals('First_Checker')) {
         await request.fulfill({ status: 503 });
         return true;
@@ -361,6 +431,7 @@ test('a late Checker fallback cannot replace the selected Wireframe', { timeout:
       return false;
     },
   });
+  const { originals, preview } = urls;
   const tileButton = page.locator('.shot-entry .comparison-indicator button').nth(2);
   await tileButton.press('Enter');
   await displayed(page, '.shot-comparison.is-visible', preview('First_Wireframe'));
@@ -386,20 +457,22 @@ test('a late Checker fallback cannot replace the selected Wireframe', { timeout:
   await segment(page, 2).press('Enter');
   await displayed(page, '#original', preview('First_Wireframe'));
   await activeSegment(page, 2);
-  expectFallback(requests, 'First_Checker');
-  expectFallback(requests, 'First_Wireframe');
+  expectFallback(requests, 'First_Checker', urls);
+  expectFallback(requests, 'First_Wireframe', urls);
   assert.deepEqual(errors, []);
 });
 
 test('two 4K failures and one WebP failure show an error without restarting the requests', async t => {
-  const { page, requests, errors } = await openPage(t, {
-    intercept: async (request, url) => {
+  const { page, requests, errors, urls } = await openPage(t, {
+    cacheImages: true,
+    intercept: async (request, url, { originals, preview }) => {
       if (![originals('Second'), preview('Second'), originals('First_Checker'),
         preview('First_Checker')].includes(url.href)) return false;
       await request.fulfill({ status: 503 });
       return true;
     },
   });
+  const { originals, preview } = urls;
   await page.locator('.shot').first().press('Enter');
   await displayed(page, '#original', originals('First'));
   await segment(page, 1).press('Enter');
@@ -413,8 +486,8 @@ test('two 4K failures and one WebP failure show an error without restarting the 
   await page.locator('#next-side').press('Enter');
   // Leave enough time to detect an extra retry after the terminal failure.
   await page.waitForTimeout(1100);
-  expectFallback(requests, 'Second');
-  expectFallback(requests, 'First_Checker');
+  expectFallback(requests, 'Second', urls);
+  expectFallback(requests, 'First_Checker', urls);
   assert.deepEqual(errors, []);
 });
 
@@ -808,8 +881,28 @@ test('Atrium ScrollSmoother initializes after a slow dependency while native scr
     return smoother.scrollTrigger.end > 0 && Math.abs(smoother.scrollTop() - position) < 2;
   }, handoff.native);
   await page.waitForTimeout(600); // Let startup and any uncancelled old step expose a late movement.
-  assert.ok(Math.abs(await page.evaluate(() => scrollY) - handoff.native) < 2);
-  assert.ok(Math.abs(await page.evaluate(() => window.ScrollSmoother.get().scrollTop()) - handoff.native) < 2);
+  const settled = await page.evaluate(() => {
+    const smoother = window.ScrollSmoother.get(), content = smoother.content();
+    const { top, bottom, height } = content.getBoundingClientRect();
+    const focus = document.activeElement;
+    return {
+      time: performance.now(), native: scrollY, rendered: smoother.scrollTop(), paused: smoother.paused(),
+      viewport: innerHeight, clientHeight: document.documentElement.clientHeight,
+      maxScroll: document.scrollingElement.scrollHeight - document.documentElement.clientHeight,
+      body: { margin: getComputedStyle(document.body).margin, height: document.body.style.height, scrollHeight: document.body.scrollHeight },
+      content: { top, bottom, height, clientHeight: content.clientHeight, scrollHeight: content.scrollHeight },
+      triggerEnd: smoother.scrollTrigger.end, triggerProgress: smoother.scrollTrigger.progress,
+      scrubProgress: smoother.scrollTrigger.getTween()?.progress(),
+      refreshing: Boolean(window.ScrollTrigger.isRefreshing || window.ScrollSmoother.isRefreshing),
+      focus: { tag: focus.tagName, id: focus.id, class: focus.className },
+      wheel: window.PortfolioDiagnostics.report().pages.at(-1).tallies['gallery-wheel'],
+    };
+  });
+  if (Math.abs(settled.native - handoff.native) >= 2 || Math.abs(settled.rendered - handoff.native) >= 2) {
+    t.diagnostic('Gallery engine handoff failure: ' + JSON.stringify({ beforeRelease, handoff, settled }));
+  }
+  assert.ok(Math.abs(settled.native - handoff.native) < 2);
+  assert.ok(Math.abs(settled.rendered - handoff.native) < 2);
   assert.equal(requests.filter(url => url.endsWith('/ScrollSmoother.min.js')).length, 1,
     'the pending request is allowed to complete without a duplicate download');
   await page.mouse.wheel(0, 120);
