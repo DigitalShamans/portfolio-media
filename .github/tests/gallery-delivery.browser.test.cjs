@@ -1578,14 +1578,24 @@ test('Atrium thumbnail enlargement and shrink use Flip with continuous interrupt
   // Capture the same-frame bounds around the actual pointerleave handler. An
   // interrupted opening must reverse from its visible rectangle, without a jump.
   await card.evaluate(card => {
+    const stage = card.parentElement;
     const rect = () => { const { x, y, width, height } = card.getBoundingClientRect(); return { x, y, width, height }; };
-    card.parentElement.addEventListener('pointerleave', () => {
-      const before = rect(), activeBefore = window.Flip.isFlipping(card);
-      queueMicrotask(() => {
-        window.mapFlipReversal = { before, after: rect(), activeBefore,
-          activeAfter: window.Flip.isFlipping(card), expanded: card.getAttribute('aria-expanded') };
-      });
-    }, { capture: true, once: true });
+    let before, activeBefore;
+    function beforeLeave(event) {
+      if (event.target !== stage) return;
+      stage.removeEventListener('pointerleave', beforeLeave, true);
+      before = rect(); activeBefore = window.Flip.isFlipping(card);
+    }
+    function afterLeave(event) {
+      if (event.target !== stage) return;
+      stage.removeEventListener('pointerleave', afterLeave);
+      window.mapFlipReversal = { before, after: rect(), activeBefore,
+        activeAfter: window.Flip.isFlipping(card), expanded: card.getAttribute('aria-expanded'),
+        target: event.target.id, trusted: event.isTrusted };
+    }
+    stage.addEventListener('pointerleave', beforeLeave, { capture: true });
+    // This target listener follows the already-registered production listener.
+    stage.addEventListener('pointerleave', afterLeave);
   });
   await page.mouse.move(initial.x + initial.width / 2, initial.y + initial.height / 2);
   await page.waitForFunction(selector => {
@@ -1596,6 +1606,10 @@ test('Atrium thumbnail enlargement and shrink use Flip with continuous interrupt
   await page.mouse.move(5, 5);
   await page.waitForFunction(() => Boolean(window.mapFlipReversal));
   const reversal = await page.evaluate(() => window.mapFlipReversal);
+  if (!reversal.activeBefore || !reversal.activeAfter || reversal.expanded !== 'false' ||
+      ['x', 'y', 'width', 'height'].some(property => Math.abs(reversal.after[property] - reversal.before[property]) >= 1.5)) {
+    t.diagnostic('Interrupted thumbnail Flip: ' + JSON.stringify(reversal));
+  }
   assert.equal(reversal.activeBefore, true);
   assert.equal(reversal.activeAfter, true);
   assert.equal(reversal.expanded, 'false');
