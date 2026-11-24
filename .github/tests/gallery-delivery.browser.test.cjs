@@ -1257,6 +1257,8 @@ test('Atrium collapsed thumbnails select the exact gallery screenshot with GSAP 
         assert.equal(await page.evaluate(() => Boolean(window.ScrollSmoother?.get())), false);
       } else {
         await gallerySmootherReady(page);
+        // ScrollTrigger suppresses scrubbing for its first half-second.
+        await page.evaluate(() => new Promise(resolve => window.gsap.delayedCall(.6, resolve)));
       }
       const before = await page.evaluate(() => scrollY);
       await clickCollapsedMapRegion(page, '#public-map');
@@ -1284,6 +1286,12 @@ test('Atrium collapsed thumbnails select the exact gallery screenshot with GSAP 
         const keyboardCard = page.locator('#public-map .gallery-map-region').nth(1);
         assert.equal(await keyboardCard.evaluate(card => card === document.activeElement), true);
         assert.equal(await keyboardCard.getAttribute('aria-expanded'), 'false', 'keyboard focus keeps the thumbnail collapsed');
+        await keyboardCard.evaluate(card => {
+          // Exercise an instant reset and navigation in the same event turn.
+          card.addEventListener('click', () => window.ScrollSmoother.get().scrollTo(0, false), {
+            capture: true, once: true,
+          });
+        });
         await page.keyboard.press('Enter');
         await focusedMapScreenshotIsVisible(page, 'Third.jpg', t);
         assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), false);
