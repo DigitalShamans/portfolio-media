@@ -65,8 +65,13 @@ const fullscreenSupported = document.fullscreenEnabled && typeof frame.requestFu
 const status = document.querySelector('#status');
 let current = 0;
 let opener;
-let drag;
-let didDrag = false;
+const viewerTouches = new Map();
+const viewerZoom = { scale: 1, x: 0, y: 0 };
+let viewerGesture;
+let viewerWheel;
+let mousePan;
+let suppressViewerClick = false;
+let lastViewerPointer;
 let viewerRequest = 0;
 let comparisonsInitialized = false;
 let viewerHover = null;
@@ -456,8 +461,7 @@ function setupClassicGalleryScroll() {
 setupClassicGalleryScroll();
 
 function fitImage() {
-  stage.classList.remove('native');
-  stage.scrollTo(0, 0);
+  setViewerZoom(1, 0, 0);
   positionViewerIndicator();
 }
 
@@ -607,6 +611,7 @@ function imageLoaded() {
     return image?.naturalWidth && imageUrl(image) === source;
   });
   if (displayed < 0) return;
+  if (viewerZoom.scale > 1) setViewerZoom(viewerZoom.scale, viewerZoom.x, viewerZoom.y);
   viewer.dispatchEvent(new CustomEvent('gallery-imagechange', {
     detail: { filename: shot.filenames[displayed], index: current, variant: displayed }
   }));
@@ -674,15 +679,13 @@ function setupImageTouch(surface, getInteraction) {
       if (Math.hypot(dx, dy) < 12) return;
       suppressClick = true;
       gesture.axis = Math.abs(dx) > Math.abs(dy) ? 'horizontal' : 'vertical';
-      if (gesture.axis === 'vertical' && !gesture.navigate) {
+      if (gesture.axis === 'vertical') {
         gesture = undefined;
         return;
       }
     }
     if (event.type !== 'pointerup') return;
-    if (gesture.axis === 'vertical') {
-      if (Math.abs(dy) >= 32 && Math.abs(dy) > Math.abs(dx)) gesture.navigate(dy < 0 ? 1 : -1);
-    } else if (gesture.count > 1 && Math.abs(dx) >= 32 && Math.abs(dx) > Math.abs(dy)) {
+    if (gesture.count > 1 && Math.abs(dx) >= 32 && Math.abs(dx) > Math.abs(dy)) {
       const { count, index, select } = gesture;
       const step = dx > 0 ? 1 : -1;
       select((index + step + count) % count);
@@ -706,8 +709,7 @@ function setupImageTouch(surface, getInteraction) {
   }, { capture: true });
 }
 
-function viewerImageBounds() {
-  const rect = original.getBoundingClientRect();
+function viewerImageBounds(rect = original.getBoundingClientRect()) {
   const ratio = original.naturalWidth / original.naturalHeight;
   const width = Math.min(rect.width, rect.height * ratio);
   const height = width / ratio;
@@ -716,15 +718,17 @@ function viewerImageBounds() {
 
 function positionViewerIndicator() {
   if (!viewerIndicator || viewerIndicator.hidden || !original.naturalWidth) return;
-  const { left, top, width, height } = viewerImageBounds();
+  const { left, top, width, height } = viewerImageBounds(stage.getBoundingClientRect());
   const frameRect = frame.getBoundingClientRect();
   viewerIndicator.style.left = (left - frameRect.left) + 'px';
   viewerIndicator.style.width = width + 'px';
   viewerIndicator.style.setProperty('--comparison-bottom', (top + height - frameRect.top) + 'px');
 }
 
-new ResizeObserver(positionViewerIndicator).observe(stage);
-stage.addEventListener('scroll', positionViewerIndicator, { passive: true });
+new ResizeObserver(() => {
+  if (viewerZoom.scale > 1) setViewerZoom(viewerZoom.scale, viewerZoom.x, viewerZoom.y);
+  positionViewerIndicator();
+}).observe(stage);
 
 function isInsideImage(event, { left, top, width, height }) {
   return event.clientX >= left && event.clientX < left + width &&
@@ -732,7 +736,7 @@ function isInsideImage(event, { left, top, width, height }) {
 }
 
 function compareAtPointer(event) {
-  if (!comparisonsInitialized || !original.naturalWidth || !canCompare(event)) return;
+  if (viewerZoom.scale > 1 || !comparisonsInitialized || !original.naturalWidth || !canCompare(event)) return;
   if (openingPointer && event.screenX === openingPointer.x && event.screenY === openingPointer.y) return;
   openingPointer = null;
   const bounds = viewerImageBounds();
@@ -1055,65 +1059,175 @@ previousSide.addEventListener('click', () => step(-1));
 nextSide.addEventListener('click', () => step(1));
 
 viewer.addEventListener('keydown', event => {
-  if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
-  if (stage.classList.contains('native') && event.target === stage) return;
+  if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey ||
+      viewer.classList.contains('has-overview-map')) return;
   if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
     event.preventDefault();
     step(event.key === 'ArrowLeft' ? -1 : 1);
   }
 });
 
-stage.addEventListener('click', () => {
-  if (!didDrag) viewer.close();
-  didDrag = false;
+function setViewerZoom(scale, x, y) {
+  const viewport = stage.getBoundingClientRect();
+  const bounds = viewerImageBounds(viewport);
+  const maxX = scale > 1 && original.naturalWidth ? Math.max(0, (bounds.width * scale - viewport.width) / 2) : 0;
+  const maxY = scale > 1 && original.naturalWidth ? Math.max(0, (bounds.height * scale - viewport.height) / 2) : 0;
+  viewerZoom.scale = scale;
+  viewerZoom.x = Math.max(-maxX, Math.min(maxX, x));
+  viewerZoom.y = Math.max(-maxY, Math.min(maxY, y));
+  stage.classList.toggle('zoomed', scale > 1);
+  original.style.transform = scale === 1 ? '' : `translate(${viewerZoom.x}px, ${viewerZoom.y}px) scale(${scale})`;
+}
+
+function zoomViewerAt(scale, anchor, point, from = viewerZoom) {
+  const viewport = stage.getBoundingClientRect();
+  const anchorX = viewport.left + viewport.width / 2;
+  const anchorY = viewport.top + viewport.height / 2;
+  const ratio = scale / from.scale;
+  setViewerZoom(scale,
+    point.x - anchorX - (anchor.x - anchorX - from.x) * ratio,
+    point.y - anchorY - (anchor.y - anchorY - from.y) * ratio);
+}
+
+function pointFor(event) {
+  return { x: event.clientX, y: event.clientY };
+}
+
+function pinchGeometry() {
+  const [first, second] = viewerTouches.values();
+  return {
+    point: { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 },
+    distance: Math.max(1, Math.hypot(first.x - second.x, first.y - second.y))
+  };
+}
+
+function startViewerPinch() {
+  viewerGesture = { mode: 'pinch', ...pinchGeometry(), zoom: { ...viewerZoom } };
+  suppressViewerClick = true;
+}
+
+function moveViewerTouch(event) {
+  const previous = viewerTouches.get(event.pointerId);
+  if (!previous) return;
+  const point = pointFor(event);
+  viewerTouches.set(event.pointerId, point);
+  if (viewerGesture.mode === 'pinch') {
+    if (!original.naturalWidth) return;
+    const next = pinchGeometry();
+    const scale = Math.max(1, Math.min(4, viewerGesture.zoom.scale * next.distance / viewerGesture.distance));
+    zoomViewerAt(scale, viewerGesture.point, next.point, viewerGesture.zoom);
+    return;
+  }
+  const { start, mode } = viewerGesture;
+  if (Math.hypot(point.x - start.x, point.y - start.y) >= 10) suppressViewerClick = true;
+  if (mode === 'pan' && suppressViewerClick) {
+    setViewerZoom(viewerZoom.scale, viewerZoom.x + point.x - previous.x, viewerZoom.y + point.y - previous.y);
+  }
+}
+
+function endViewerTouch(event) {
+  if (!viewerTouches.has(event.pointerId)) return;
+  if (event.type === 'pointerup') moveViewerTouch(event);
+  const { mode, start } = viewerGesture;
+  viewerTouches.delete(event.pointerId);
+  if (viewerTouches.size >= 2) {
+    startViewerPinch();
+  } else if (viewerTouches.size === 1) {
+    viewerGesture = { mode: viewerZoom.scale > 1 ? 'pan' : 'hold', start: viewerTouches.values().next().value };
+  } else {
+    viewerGesture = undefined;
+    if (mode !== 'swipe' || event.type !== 'pointerup') return;
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    const displacement = Math.abs(dx) > Math.abs(dy) ? dx : dy;
+    if (Math.abs(displacement) >= 32) step(displacement < 0 ? 1 : -1);
+  }
+}
+
+function viewerHitImage(event) {
+  return original.naturalWidth && isInsideImage(event, viewerImageBounds());
+}
+
+stage.addEventListener('click', event => {
+  if (!suppressViewerClick && !viewerHitImage(event)) viewer.close();
+});
+
+stage.addEventListener('dblclick', event => {
+  if (lastViewerPointer === 'touch' || !viewerHitImage(event)) return;
+  event.preventDefault();
+  const point = pointFor(event);
+  zoomViewerAt(viewerZoom.scale > 1 ? 1 : 2, point, point);
 });
 
 stage.addEventListener('pointerdown', event => {
-  didDrag = false;
-  if (event.pointerType !== 'mouse' || event.button !== 0 || !stage.classList.contains('native')) return;
-  event.preventDefault();
-  stage.focus();
-  drag = { x: event.clientX, y: event.clientY, left: stage.scrollLeft, top: stage.scrollTop };
+  lastViewerPointer = event.pointerType;
+  if (event.pointerType === 'touch') {
+    const point = pointFor(event);
+    if (!viewerTouches.size) {
+      suppressViewerClick = false;
+      viewerGesture = { mode: viewerZoom.scale > 1 ? 'pan' : 'swipe', start: point };
+    }
+    viewerTouches.set(event.pointerId, point);
+    if (viewerTouches.size === 2) startViewerPinch();
+    stage.setPointerCapture(event.pointerId);
+    return;
+  }
+  suppressViewerClick = false;
+  if (event.pointerType !== 'mouse' || event.button !== 0 || viewerZoom.scale === 1) return;
+  mousePan = { id: event.pointerId, start: pointFor(event), x: viewerZoom.x, y: viewerZoom.y };
   stage.setPointerCapture(event.pointerId);
   stage.classList.add('dragging');
 });
 
 stage.addEventListener('pointermove', event => {
-  if (!drag) {
+  if (event.pointerType === 'touch') {
+    moveViewerTouch(event);
+    return;
+  }
+  if (mousePan?.id !== event.pointerId) {
     compareAtPointer(event);
     return;
   }
-  const dx = drag.x - event.clientX;
-  const dy = drag.y - event.clientY;
-  if (Math.hypot(dx, dy) > 5) didDrag = true;
-  if (didDrag) stage.scrollTo(drag.left + dx, drag.top + dy);
+  const dx = event.clientX - mousePan.start.x;
+  const dy = event.clientY - mousePan.start.y;
+  if (Math.hypot(dx, dy) > 5) suppressViewerClick = true;
+  if (suppressViewerClick) setViewerZoom(viewerZoom.scale, mousePan.x + dx, mousePan.y + dy);
 });
 
-stage.addEventListener('lostpointercapture', () => {
-  drag = null;
-  stage.classList.remove('dragging');
-});
+for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+  stage.addEventListener(type, event => {
+    endViewerTouch(event);
+    if (mousePan?.id !== event.pointerId) return;
+    mousePan = undefined;
+    stage.classList.remove('dragging');
+  });
+}
 
 stage.addEventListener('pointerleave', event => {
-  if (!canCompare(event)) return;
+  if (viewerZoom.scale > 1 || !canCompare(event)) return;
   openingPointer = null;
   viewerHover = null;
   comparisonIndex = selectedComparison;
   updateComparison();
 });
 
-setupImageTouch(stage, event => {
-  if (!viewer.open || stage.classList.contains('native')) return;
-  if (!comparisonsInitialized || !original.naturalWidth) return { navigate: step };
-  const bounds = viewerImageBounds();
-  if (!isInsideImage(event, bounds)) return { navigate: step };
-  return {
-    count: shots[current].sources.length,
-    index: displayedComparison,
-    select: selectViewerComparison,
-    navigate: step
-  };
-});
+frame.addEventListener('wheel', event => {
+  if (!viewer.open || viewer.classList.contains('has-overview-map') || event.ctrlKey || event.metaKey || event.altKey ||
+      !event.deltaY || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+  event.preventDefault();
+  const direction = Math.sign(event.deltaY);
+  const now = event.timeStamp;
+  if (!viewerWheel || viewerWheel.direction !== direction || now - viewerWheel.lastEvent >= 150) {
+    viewerWheel = { direction, accumulated: 0, lastStep: -Infinity };
+  }
+  viewerWheel.lastEvent = now;
+  if (now - viewerWheel.lastStep < 120) return;
+  viewerWheel.accumulated += event.deltaMode ? 24 : Math.abs(event.deltaY);
+  if (viewerWheel.accumulated < 24) return;
+  viewerWheel.accumulated = 0;
+  viewerWheel.lastStep = now;
+  step(direction);
+}, { passive: false });
 
 async function setFullscreen(enabled) {
   if (!fullscreenSupported) return;
@@ -1135,6 +1249,11 @@ document.addEventListener('fullscreenchange', () => {
 });
 
 viewer.addEventListener('close', () => {
+  viewerTouches.clear();
+  viewerGesture = viewerWheel = mousePan = undefined;
+  lastViewerPointer = undefined;
+  suppressViewerClick = false;
+  stage.classList.remove('dragging');
   if (document.fullscreenElement === frame) void setFullscreen(false);
   viewerRequest++;
   comparisonsInitialized = false;

@@ -70,8 +70,8 @@ function signal() {
   return { reached, release };
 }
 
-async function openPage(t, { route = gallery, width = 2800, intercept, embeds, assetVersions } = {}) {
-  const page = await browser.newPage({ viewport: { width, height: 900 } });
+async function openPage(t, { route = gallery, width = 2800, hasTouch = false, intercept, embeds, assetVersions } = {}) {
+  const page = await browser.newPage({ hasTouch, viewport: { width, height: 900 } });
   t.after(() => page.close());
   page.setDefaultTimeout(5000);
   const requests = [];
@@ -374,6 +374,98 @@ test('two 4K failures and one WebP failure show an error without restarting the 
   await page.waitForTimeout(1100);
   expectFallback(requests, 'Second');
   expectFallback(requests, 'First_Checker');
+  assert.deepEqual(errors, []);
+});
+
+async function swipeInViewer(session, start, end) {
+  const point = (x, y) => [{ x: Math.round(x), y: Math.round(y), id: 1 }];
+  await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: point(...start) });
+  await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: point(...end) });
+  await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+}
+
+async function pinchInViewer(session, x, y, startingRadius, endingRadius) {
+  const point = (radius, side, id) => ({ x: Math.round(x + side * radius), y: Math.round(y), id });
+  const points = radius => [point(radius, -1, 1), point(radius, 1, 2)];
+  await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: points(startingRadius) });
+  await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: points(endingRadius) });
+  await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+}
+
+async function viewerTransform(page) {
+  return page.locator('#original').evaluate(image => {
+    const transform = getComputedStyle(image).transform;
+    const matrix = new DOMMatrixReadOnly(transform === 'none' ? undefined : transform);
+    return { scale: matrix.a, x: matrix.e, y: matrix.f };
+  });
+}
+
+test('fullscreen touch swipes navigate on both axes while pinch and pan stay on the image', async t => {
+  const { page, errors } = await openPage(t, { width: 412, hasTouch: true });
+  const session = await page.context().newCDPSession(page);
+  await page.locator('.shot').first().tap();
+  await displayed(page, '#original', preview('First'));
+
+  await segment(page, 1).tap();
+  await displayed(page, '#original', preview('First_Checker'));
+  await activeSegment(page, 1);
+
+  const stage = await page.locator('#stage').boundingBox();
+  const x = stage.x + stage.width / 2;
+  const y = stage.y + stage.height / 2;
+  for (const [start, end, image] of [
+    [[x, y + 50], [x, y - 55], 'Second'],
+    [[x - 70, y], [x + 70, y], 'First'],
+    [[x + 70, y], [x - 70, y], 'Second'],
+    [[x, y - 55], [x, y + 50], 'First'],
+  ]) {
+    await swipeInViewer(session, start, end);
+    await displayed(page, '#original', preview(image));
+  }
+
+  await pinchInViewer(session, x, y, 30, 90);
+  await page.locator('#stage.zoomed').waitFor();
+  const beforePan = await viewerTransform(page);
+  assert.ok(beforePan.scale > 1);
+  assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+
+  await swipeInViewer(session, [x - 45, y], [x + 45, y]);
+  const afterPan = await viewerTransform(page);
+  assert.equal(afterPan.scale, beforePan.scale);
+  assert.notEqual(afterPan.x, beforePan.x);
+  assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+
+  await pinchInViewer(session, x, y, 95, 25);
+  await page.locator('#stage.zoomed').waitFor({ state: 'detached' });
+  assert.equal((await viewerTransform(page)).scale, 1);
+  assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+  assert.deepEqual(errors, []);
+});
+
+test('fullscreen desktop double-click toggles 200% zoom and the wheel advances from zoom', async t => {
+  const { page, errors } = await openPage(t, { width: 1440 });
+  await page.locator('.shot').first().click();
+  await displayed(page, '#original', preview('First'));
+  const image = await page.locator('#original').boundingBox();
+  const x = image.x + image.width / 2;
+  const y = image.y + image.height / 2;
+
+  await page.mouse.click(x, y);
+  assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), true);
+  await page.mouse.dblclick(x, y);
+  await page.locator('#stage.zoomed').waitFor();
+  assert.equal((await viewerTransform(page)).scale, 2);
+  await page.mouse.dblclick(x, y);
+  await page.locator('#stage.zoomed').waitFor({ state: 'detached' });
+  assert.equal((await viewerTransform(page)).scale, 1);
+
+  await page.mouse.dblclick(x, y);
+  await page.locator('#stage.zoomed').waitFor();
+  await page.mouse.wheel(0, 160);
+  await displayed(page, '#original', preview('Second'));
+  assert.equal(await page.locator('#counter').textContent(), '2 / 3');
+  assert.equal((await viewerTransform(page)).scale, 1);
+  assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), true);
   assert.deepEqual(errors, []);
 });
 

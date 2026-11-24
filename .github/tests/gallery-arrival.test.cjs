@@ -229,30 +229,31 @@ test('bounded failure escape removes the arrival cover and original header state
 
 test('both gallery layouts construct the arriving panel before the real header and wait for header parsing', () => {
   for (const layout of layouts) {
-    assert.match(layout, /gallery\.css\?v=34/);
+    assert.match(layout, /gallery\.css\?v=35/);
     assert.match(layout, /<link rel="expect" href="#gallery-edge-ready" blocking="render">/);
     assert.match(layout, /<div id="gallery-edge-arrival"><script src="\.\.\/gallery-arrival\.js\?v=4"><\/script><\/div>/);
     assert.match(layout, /gallery-edge-arrival[\s\S]*include site-header\.html[\s\S]*gallery-edge-ready/);
   }
-  for (const layout of layouts) assert.match(layout, /gallery-viewer\.js\?v=47/);
+  for (const layout of layouts) assert.match(layout, /gallery-viewer\.js\?v=48/);
   const mapLayout = fs.readFileSync(path.join(root, '_layouts/gallery-map.html'), 'utf8');
-  assert.match(mapLayout, /gallery-viewer\.js[^\n]*\?v=47/);
+  assert.match(mapLayout, /gallery-viewer\.js[^\n]*\?v=48/);
 });
 
-function viewerKeyboard({ native = false } = {}) {
+function viewerKeyboard({ overviewMap = false } = {}) {
   let keydown;
   const steps = [];
-  const stage = { classList: { contains: name => native && name === 'native' } };
   const start = viewer.indexOf("viewer.addEventListener('keydown'");
   const end = viewer.indexOf("stage.addEventListener('click'", start);
   assert.ok(start >= 0 && end > start, 'the viewer keyboard listener must be present');
   vm.runInNewContext(viewer.slice(start, end), {
-    viewer: { addEventListener(type, listener) { assert.equal(type, 'keydown'); keydown = listener; } },
-    stage,
+    viewer: {
+      classList: { contains: name => overviewMap && name === 'has-overview-map' },
+      addEventListener(type, listener) { assert.equal(type, 'keydown'); keydown = listener; }
+    },
     step: amount => steps.push(amount),
   });
   return {
-    stage, steps,
+    steps,
     key(key, options = {}) {
       const event = { key, target: {}, defaultPrevented: false, prevented: 0,
         preventDefault() { this.defaultPrevented = true; this.prevented++; }, ...options };
@@ -283,13 +284,11 @@ test('fullscreen viewer plain arrows still navigate screenshots and leave other 
   assert.deepEqual(b.steps, [-1, 1]);
 });
 
-test('fullscreen viewer preserves native image-stage keyboard behavior', () => {
-  const b = viewerKeyboard({ native: true });
-  assert.equal(b.key('ArrowLeft', { target: b.stage }).prevented, 0);
-  assert.equal(b.key('ArrowRight', { target: b.stage }).prevented, 0);
+test('fullscreen viewer leaves arrow keys available to the interactive overview', () => {
+  const b = viewerKeyboard({ overviewMap: true });
+  assert.equal(b.key('ArrowLeft').prevented, 0);
+  assert.equal(b.key('ArrowRight').prevented, 0);
   assert.deepEqual(b.steps, []);
-  assert.equal(b.key('ArrowRight').prevented, 1);
-  assert.deepEqual(b.steps, [1]);
 });
 
 test('Chrome swaps identical covered snapshots with no browser crossfade or moved title', () => {

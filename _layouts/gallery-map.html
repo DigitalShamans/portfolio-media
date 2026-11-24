@@ -9,7 +9,7 @@
   <title>{{ page.title | default: 'Interactive Gallery Map' | escape }} | {% if page.portfolio == 'personal' %}{{ site.data.personal_portfolio.name | escape }}{% else %}Digital Shamans{% endif %}</title>
   {% include site-favicon.html %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=15">
-  <link rel="stylesheet" href="{{ '/galleries/gallery.css' | relative_url }}?v=22">
+  <link rel="stylesheet" href="{{ '/galleries/gallery.css' | relative_url }}?v=35">
   <link rel="stylesheet" href="{{ '/galleries/gallery-map.css' | relative_url }}?v=5">
   {% include personal-typography.html %}
 </head>
@@ -29,7 +29,7 @@
   <script id="gallery-map-options" type="application/json">
   {
     "defaultGallery": {{ page.gallery | default: 'hb-atrium' | jsonify }},
-    "viewerScript": {{ '/galleries/gallery-viewer.js' | relative_url | append: '?v=47' | jsonify }},
+    "viewerScript": {{ '/galleries/gallery-viewer.js' | relative_url | append: '?v=48' | jsonify }},
     "personal": {% if page.portfolio == 'personal' %}true{% else %}false{% endif %},
     "galleryRoot": {{ '/galleries/' | relative_url | jsonify }},
     "media": {{ site.gallery_4k_media | jsonify }},

@@ -83,7 +83,6 @@ h1 { margin: 0; text-align: center; font-size: clamp(1rem, 2.6vw, 2.4rem); line-
 }
 .shot .shot-comparison.is-visible { opacity: 1; }
 .shot.has-comparison { touch-action: pan-y pinch-zoom; }
-.stage:not(.native) { touch-action: pinch-zoom; }
 .comparison-indicator {
   --indicator-height: clamp(6px, .62vw, 13px);
   --target-height: 24px;
@@ -140,7 +139,7 @@ dialog {
   color: var(--text);
 }
 .viewer-frame { position: absolute; inset: 0; overflow: hidden; background: #000; }
-.stage { position: absolute; inset: 0; overflow: auto; cursor: default; }
+.stage { position: absolute; inset: 0; overflow: hidden; touch-action: none; cursor: zoom-in; }
 .stage img {
   display: block;
   width: 100%;
@@ -148,13 +147,8 @@ dialog {
   object-fit: contain;
   user-select: none;
 }
-.stage.native { cursor: grab; }
-.stage.native.dragging { cursor: grabbing; }
-.stage.native img {
-  width: var(--native-width);
-  height: var(--native-height);
-  margin-inline: auto;
-}
+.stage.zoomed { cursor: grab; }
+.stage.zoomed.dragging { cursor: grabbing; }
 .viewer-bar {
   position: absolute;
   top: max(.55rem, env(safe-area-inset-top));
@@ -180,7 +174,7 @@ dialog {
   padding-inline: clamp(.5rem, 1.2vw, 1.5rem);
   pointer-events: none;
 }
-.stage.native + .viewer-arrows { width: 100%; }
+.stage.zoomed + .viewer-arrows { width: 100%; }
 .viewer-arrows button { pointer-events: auto; }
 .viewer-bar button, .viewer-arrows button, .counter {
   margin: 0;
