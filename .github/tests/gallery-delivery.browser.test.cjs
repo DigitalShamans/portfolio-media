@@ -463,6 +463,17 @@ test('Atrium ScrollSmoother animates wheel and small trackpad deltas and reports
   });
   await page.locator('#map-screenshots .shot-primary').nth(2).waitFor();
   await gallerySmootherReady(page);
+  await page.waitForLoadState('load');
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForFunction(() => [...document.images].filter(image => {
+    const bounds = image.getBoundingClientRect();
+    return bounds.width > 0 && bounds.height > 0 && bounds.bottom > 0 && bounds.top < innerHeight;
+  }).every(image => image.complete && image.naturalWidth > 0));
+  // ScrollSmoother 3.15.1 has a .5s initialization phase and a .2s delayed
+  // ResizeObserver refresh. Measure interpolation after the fixture layout settles.
+  await page.waitForTimeout(600);
+  await page.waitForFunction(() => window.ScrollSmoother.get().scrollTrigger.end > 0 &&
+    !window.ScrollTrigger.isRefreshing && !window.ScrollSmoother.isRefreshing);
   const setup = await page.evaluate(() => {
     const smoother = window.ScrollSmoother.get();
     return {
@@ -486,7 +497,10 @@ test('Atrium ScrollSmoother animates wheel and small trackpad deltas and reports
       const trace = window.atriumScrollTrace = { active: true, samples: [] };
       function sample() {
         const smoother = window.ScrollSmoother.get();
-        trace.samples.push({ rendered: smoother.scrollTop(), top: smoother.content().getBoundingClientRect().top });
+        trace.samples.push({
+          time: performance.now(), native: scrollY, rendered: smoother.scrollTop(),
+          top: smoother.content().getBoundingClientRect().top, refreshing: Boolean(window.ScrollTrigger.isRefreshing),
+        });
         if (trace.active) requestAnimationFrame(sample);
       }
       sample();
@@ -504,7 +518,21 @@ test('Atrium ScrollSmoother animates wheel and small trackpad deltas and reports
     assert.ok(after.rendered - before.rendered > delta / 2, `${delta}px input moves the rendered page`);
     assert.ok(Math.abs(after.top - before.top + after.rendered - before.rendered) < 2,
       'the visible map follows the smoother position');
-    assert.ok(samples.some(sample => sample.rendered > before.rendered + .5 && sample.rendered < after.rendered - .5),
+    const intermediate = samples.some(sample => sample.rendered > before.rendered + .5 && sample.rendered < after.rendered - .5);
+    t.diagnostic(JSON.stringify({
+      delta, frames: samples.length, from: before.rendered, to: after.rendered,
+      intermediateFrames: samples.filter(sample => sample.rendered > before.rendered + .5 && sample.rendered < after.rendered - .5).length,
+      maxNativeDifference: Math.max(...samples.map(sample => Math.abs(sample.native - sample.rendered))),
+    }));
+    if (!intermediate) {
+      t.diagnostic(JSON.stringify({ delta, before, after, samples, environment: await page.evaluate(() => ({
+        documentState: document.readyState, gsapTime: window.gsap.globalTimeline.time(),
+        pendingImages: [...document.images].filter(image => !image.complete).length,
+        smootherTween: window.ScrollSmoother.get().scrollTrigger.getTween()?.progress(),
+        report: window.PortfolioDiagnostics.report().pages.at(-1).motion,
+      })) }));
+    }
+    assert.ok(intermediate,
       `${delta}px input renders intermediate positions`);
     assert.ok(samples.some(sample => sample.rendered > samples[0].rendered + .5 &&
       Math.abs(sample.top - samples[0].top + sample.rendered - samples[0].rendered) < 2),
