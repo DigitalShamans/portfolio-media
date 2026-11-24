@@ -138,7 +138,7 @@ test('pre-publish CLI accepts the valid fixture and blocks invalid or protected 
   } finally { rmSync(temp, { recursive: true, force: true }); }
 });
 
-function mapRenderer(hoverEnabled = true, position = { x: 25, y: 29 }) {
+function mapRenderer(hoverEnabled = true, position = { x: 25, y: 29 }, { runtime = {}, reduce = false } = {}) {
   class Element {
     constructor(tag = 'div') {
       this.tag = tag; this.children = []; this.dataset = {}; this.attributes = new Map(); this.listeners = new Map();
@@ -161,7 +161,8 @@ function mapRenderer(hoverEnabled = true, position = { x: 25, y: 29 }) {
     matches() { return false; }
     contains(element) { return this === element || this.children.some(child => child.contains(element)); }
   }
-  const document = new Element(), hover = new Element(); hover.matches = hoverEnabled;
+  const document = new Element(), hover = new Element(), reduced = new Element();
+  hover.matches = hoverEnabled; reduced.matches = reduce;
   document.createElement = tag => new Element(tag);
   let now = 0, nextTimer = 0;
   const timers = new Map();
@@ -174,16 +175,130 @@ function mapRenderer(hoverEnabled = true, position = { x: 25, y: 29 }) {
     }
     now = end;
   }
-  let onResize;
+  let onResize, resizeDisconnected = false;
   const renderer = runInNewContext(readFileSync(join(root, 'galleries/gallery-map.js'), 'utf8') + '\nGalleryMap', {
-    document, matchMedia: () => hover, ResizeObserver: class { constructor(callback) { onResize = callback; } observe() {} disconnect() {} },
+    document, window: runtime, matchMedia: query => query.includes('prefers-reduced-motion') ? reduced : hover,
+    ResizeObserver: class { constructor(callback) { onResize = callback; } observe() {} disconnect() { resizeDisconnected = true; } },
     setTimeout(run, delay) { const id = ++nextTimer; timers.set(id, { run, at: now + delay }); return id; },
     clearTimeout(id) { timers.delete(id); }
   });
   const stage = new Element();
   const map = { overview: { image: 'Overview.jpg', alt: 'Overview' }, regions: [{ image: 'Office.jpg', label: 'Offices', ...position }] };
-  return { mount: options => renderer.mount(stage, map, name => ({ src: name }), options), stage, advance, document, resize: () => onResize() };
+  return { mount: options => renderer.mount(stage, map, name => ({ src: name }), options), stage, advance, document,
+    hover, reduced, resize: () => onResize(), resizeDisconnected: () => resizeDisconnected };
 }
+
+function flipEngine() {
+  const animations = [], active = new Map(), registrations = [];
+  function finish(targets) {
+    for (const card of Array.isArray(targets) ? targets : [targets]) {
+      active.delete(card);
+      card.style.removeProperty('transform');
+    }
+  }
+  const Flip = {
+    getState(card) {
+      const state = { card, expanded: card.getAttribute('aria-expanded'), usesFlip: card.classList.contains('uses-flip') };
+      // The public getState contract records the visible state and completes an
+      // earlier Flip for that target. Real geometry is tested in the browser.
+      finish(card);
+      return state;
+    },
+    from(state, options) {
+      const animation = { state, options, expanded: state.card.getAttribute('aria-expanded') };
+      animations.push(animation); active.set(state.card, animation);
+      state.card.style.setProperty('transform', 'owned-by-flip');
+      return { kill() { finish(state.card); } };
+    },
+    killFlipsOf: finish,
+  };
+  return { runtime: { Flip, gsap: { registerPlugin(plugin) { registrations.push(plugin); } } }, animations, active, registrations };
+}
+
+test('late Flip adoption captures the current CSS state and registers the plugin once', () => {
+  const runtime = {}, engine = flipEngine();
+  const { mount } = mapRenderer(false, undefined, { runtime });
+  const view = mount({ previewSize: .8 }), card = view.cards[0];
+  card.fire('click', { detail: 1 });
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  assert.equal(card.classList.contains('uses-flip'), false, 'a missing dependency retains the CSS fallback');
+  Object.assign(runtime, engine.runtime);
+  card.fire('click', { detail: 1 });
+  assert.equal(engine.animations.length, 1);
+  assert.equal(engine.animations[0].state.expanded, 'true', 'the old state is captured before collapsing');
+  assert.equal(engine.animations[0].state.usesFlip, false, 'CSS motion is captured before disabling its transform transition');
+  assert.equal(engine.animations[0].expanded, 'false');
+  assert.equal(card.classList.contains('uses-flip'), true);
+  card.fire('click', { detail: 1 });
+  assert.equal(engine.animations.length, 2);
+  assert.equal(engine.animations[1].state.expanded, 'false');
+  assert.equal(engine.animations[1].expanded, 'true');
+  assert.equal(engine.registrations.length, 1);
+  view.destroy();
+});
+
+test('reduced motion settles an active Flip and keeps later thumbnail changes immediate', () => {
+  const engine = flipEngine();
+  const { mount, reduced } = mapRenderer(false, undefined, { runtime: engine.runtime, reduce: true });
+  const view = mount({ previewSize: .8 }), card = view.cards[0];
+  card.fire('click', { detail: 1 });
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  assert.equal(card.style.getPropertyValue('--scale'), 4);
+  assert.equal(engine.animations.length, 0);
+  card.fire('click', { detail: 1 });
+  reduced.matches = false; reduced.fire('change');
+  card.fire('click', { detail: 1 });
+  assert.equal(engine.active.size, 1);
+  reduced.matches = true; reduced.fire('change');
+  assert.equal(engine.active.size, 0);
+  assert.equal(card.style.getPropertyValue('transform'), undefined);
+  assert.equal(card.getAttribute('aria-expanded'), 'true', 'changing preference preserves the selected preview state');
+  card.fire('click', { detail: 1 });
+  assert.equal(card.getAttribute('aria-expanded'), 'false');
+  assert.equal(engine.animations.length, 1);
+  view.destroy();
+});
+
+test('initial resize notifications preserve Flip while a real resize settles it before repositioning', () => {
+  const engine = flipEngine();
+  const { mount, stage, resize } = mapRenderer(false, undefined, { runtime: engine.runtime });
+  const view = mount({ previewSize: .8 }), card = view.cards[0];
+  card.fire('click', { detail: 1 });
+  resize();
+  assert.equal(engine.active.size, 1, 'the unchanged initial observer notification does not cut the animation short');
+  stage.clientWidth = 1200; stage.clientHeight = 675;
+  resize();
+  assert.equal(engine.active.size, 0);
+  assert.equal(card.style.getPropertyValue('transform'), undefined);
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  assert.equal(card.style.getPropertyValue('--shift-x'), '300px');
+  assert.equal(card.style.getPropertyValue('--scale'), 4);
+  assert.equal(engine.animations.length, 1, 'resize does not start a conflicting thumbnail animation');
+  view.destroy();
+});
+
+test('hiding and destroying an animated map leave no owned Flip or pending listener', () => {
+  const engine = flipEngine();
+  const { mount, stage, document, hover, reduced, resizeDisconnected } = mapRenderer(false, undefined, { runtime: engine.runtime });
+  const view = mount({}), card = view.cards[0];
+  card.fire('click', { detail: 1 });
+  stage.clientWidth = 0; stage.clientHeight = 0;
+  view.close();
+  assert.equal(engine.active.size, 0);
+  assert.equal(engine.animations.length, 1, 'closing a hidden map never starts a zero-size Flip');
+  assert.equal(card.getAttribute('aria-expanded'), 'false');
+  stage.clientWidth = 1000; stage.clientHeight = 562.5;
+  card.fire('click', { detail: 1 });
+  assert.equal(engine.active.size, 1);
+  view.destroy();
+  assert.equal(engine.active.size, 0);
+  assert.equal(engine.animations.length, 2, 'destroy settles the existing animation without starting shrink work');
+  assert.equal(stage.children.length, 0);
+  assert.equal(resizeDisconnected(), true);
+  for (const target of [stage, card, document, hover, reduced]) {
+    assert.ok([...target.listeners.values()].every(handlers => handlers.size === 0));
+  }
+});
 
 test('hover requires a continuous 400ms stay without restarting on small cursor movements', () => {
   const { mount, stage, advance } = mapRenderer();
@@ -444,5 +559,3 @@ test('zoom locks an open preview and pressed-pointer movement cannot schedule an
   assert.equal(card.getAttribute('aria-expanded'), 'false');
   view.destroy();
 });
-
-
