@@ -50,6 +50,13 @@ const GalleryMap = (() => {
     if (!interactive) return { cards, destroy() { stage.replaceChildren(); } };
 
     const hover = matchMedia('(hover: hover) and (pointer: fine)');
+    const diagnostics = window.PortfolioDiagnostics;
+    const previewFeature = 'gallery-map-preview';
+    const reducedMotion = diagnostics ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const pendingReports = diagnostics ? new Map() : null;
+    const runningReports = diagnostics ? new Map() : null;
+    const diagnosticsEnabled = () => diagnostics && window.PortfolioDiagnostics === diagnostics;
+    let reportFrame, destroyed = false;
     const blocked = new Set();
     let active = null, mode = null, pointer = null;
     const hoverDelay = 400;
@@ -95,6 +102,64 @@ const GalleryMap = (() => {
         thumb: clientRect(anchorX - thumbWidth / 2, anchorY - thumbHeight / 2, thumbWidth, thumbHeight) };
     }
     const edgeDistance = (point, rect) => Math.min(point.x - rect.left, rect.left + rect.width - point.x, point.y - rect.top, rect.top + rect.height - point.y);
+    function reportReady() {
+      if (!diagnosticsEnabled() || destroyed) return;
+      diagnostics.state(previewFeature, reducedMotion.matches ? 'Reduced motion' : 'CSS transitions',
+        reducedMotion.matches ? 'Thumbnail sizes change immediately.' : 'Hover or tap a thumbnail to verify enlargement and shrink animations.');
+    }
+    function reportChange(card, action) {
+      if (!diagnosticsEnabled() || destroyed) return;
+      if (reducedMotion.matches || !stage.clientWidth || !stage.clientHeight) {
+        pendingReports.delete(card);
+        diagnostics.event(previewFeature, 'instant changes', { action, map: stage.id });
+        reportReady();
+      } else pendingReports.set(card, action);
+    }
+    function sampleTransitions() {
+      reportFrame = undefined;
+      if (!diagnosticsEnabled() || destroyed) { runningReports.clear(); return; }
+      for (const card of runningReports.keys()) diagnostics.sample(previewFeature, card.getBoundingClientRect().width);
+      if (runningReports.size) reportFrame = requestAnimationFrame(sampleTransitions);
+    }
+    function finishReport(card, completed) {
+      const action = runningReports?.get(card);
+      if (!action) return;
+      runningReports.delete(card);
+      if (!runningReports.size && reportFrame !== undefined) {
+        cancelAnimationFrame(reportFrame);
+        reportFrame = undefined;
+      }
+      if (!diagnosticsEnabled()) return;
+      if (completed) diagnostics.sample(previewFeature, card.getBoundingClientRect().width);
+      diagnostics.event(previewFeature, completed ? 'CSS completed' : 'CSS interrupted', { action, map: stage.id });
+      diagnostics.state(previewFeature, reducedMotion.matches ? 'Reduced motion' : 'CSS transitions',
+        reducedMotion.matches ? 'Thumbnail sizes change immediately.' :
+          'Last ' + (completed ? 'completed' : 'interrupted') + ': thumbnail ' + action + '.');
+    }
+    if (diagnostics) {
+      // Observe browser-owned CSS transitions; diagnostics never creates or
+      // drives an animation. Sampling stops when the panel is exited.
+      listen(stage, 'transitionrun', event => {
+        const card = event.target;
+        if (!diagnosticsEnabled() || destroyed || event.propertyName !== 'transform' || !cards.includes(card)) return;
+        finishReport(card, false);
+        const action = pendingReports.get(card) || 'reposition';
+        pendingReports.delete(card);
+        runningReports.set(card, action);
+        diagnostics.event(previewFeature, action === 'enlarge' ? 'CSS enlargements' : action === 'shrink' ? 'CSS shrinks' : 'CSS moves', { map: stage.id });
+        diagnostics.state(previewFeature, 'CSS transitions',
+          action === 'enlarge' ? 'Enlarging a thumbnail.' : action === 'shrink' ? 'Shrinking a thumbnail.' : 'Repositioning a thumbnail.');
+        diagnostics.sample(previewFeature, card.getBoundingClientRect().width);
+        if (reportFrame === undefined) reportFrame = requestAnimationFrame(sampleTransitions);
+      });
+      for (const type of ['transitionend', 'transitioncancel']) {
+        listen(stage, type, event => {
+          if (event.propertyName === 'transform') finishReport(event.target, type === 'transitionend');
+        });
+      }
+      listen(reducedMotion, 'change', reportReady);
+      reportReady();
+    }
     function close(block = false) {
       cancelPendingHover();
       if (!active) return;
@@ -103,6 +168,7 @@ const GalleryMap = (() => {
       card.classList.remove('is-open'); card.setAttribute('aria-expanded', 'false');
       for (const property of ['--scale', '--shift-x', '--shift-y']) card.style.removeProperty(property);
       stage.classList.remove('has-open-region'); if (caption) caption.textContent = 'Whole-level overview';
+      reportChange(card, 'shrink');
     }
     function place(card) {
       const layout = geometry(card); card.style.setProperty('--scale', layout.scale);
@@ -113,6 +179,7 @@ const GalleryMap = (() => {
       place(card);
       card.classList.add('is-open'); card.setAttribute('aria-expanded', 'true'); stage.classList.add('has-open-region');
       if (caption) caption.textContent = map.regions[cards.indexOf(card)].label;
+      reportChange(card, 'enlarge');
     }
     function scheduleHover(card) {
       if (pendingCard === card) return;
@@ -182,7 +249,12 @@ const GalleryMap = (() => {
     listen(document, 'scroll', checkHoverPosition);
     listen(document, 'gallery-scrollupdate', checkHoverPosition);
     listen(hover, 'change', () => { close(); blocked.clear(); updateHelp(); }); updateHelp();
-    return { cards, close, refresh: checkHoverPosition, picture, destroy() { close(); resize.disconnect(); cleanup.forEach(remove => remove()); stage.replaceChildren(); } };
+    return { cards, close, refresh: checkHoverPosition, picture, destroy() {
+      destroyed = true;
+      runningReports?.forEach((action, card) => finishReport(card, false));
+      pendingReports?.clear();
+      close(); resize.disconnect(); cleanup.forEach(remove => remove()); stage.replaceChildren();
+    } };
   }
   return { mount };
 })();

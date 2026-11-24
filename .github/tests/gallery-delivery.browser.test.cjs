@@ -1639,16 +1639,23 @@ async function finishMapPreviewMotion(page) {
 async function mapPreviewSettled(page, selector, ratio) {
   await page.waitForFunction(({ selector, ratio }) => {
     const stage = document.querySelector(selector), card = stage.querySelector('.gallery-map-region');
-    return Math.abs(card.getBoundingClientRect().width / stage.getBoundingClientRect().width - ratio) < .002;
+    return Math.abs(card.getBoundingClientRect().width / stage.getBoundingClientRect().width - ratio) < .002 &&
+      !card.getAnimations().some(animation => animation.playState === 'running' || animation.pending);
   }, { selector, ratio });
 }
 
 test('Atrium thumbnail previews use CSS transitions and respect reduced motion', { timeout: 20_000 }, async t => {
   for (const reducedMotion of ['no-preference', 'reduce']) {
     await t.test(reducedMotion, async t => {
-      const { page, requests, errors } = await openPage(t, { map: true, width: 1440, reducedMotion });
+      const { page, requests, errors } = await openPage(t, { map: true, width: 1440, diagnostics: true, reducedMotion });
       await page.waitForLoadState('load');
       await page.locator('#public-map .gallery-map-region').first().waitFor({ state: 'visible' });
+      const mode = reducedMotion === 'reduce' ? 'Reduced motion' : 'CSS transitions';
+      await page.waitForFunction(mode => window.PortfolioDiagnostics?.report?.().pages.at(-1)
+        .features['gallery-map-preview']?.mode === mode, mode);
+      const ready = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1));
+      assert.equal(ready.motion['gallery-map-preview'], undefined, 'readiness does not invent observed motion');
+      assert.equal(ready.tallies['gallery-map-preview'], undefined, 'readiness does not invent animation counts');
       await recordMapPreviewMotion(page, '#public-map');
       const preview = await enlargeMapPreview(page, '#public-map');
       await mapPreviewSettled(page, '#public-map', .8);
@@ -1666,6 +1673,30 @@ test('Atrium thumbnail previews use CSS transitions and respect reduced motion',
       }
       assert.equal(await page.evaluate(() => Boolean(window.Flip)), false);
       assert.ok(!requests.some(url => new URL(url).pathname.endsWith('/Flip.min.js')), 'thumbnail previews never request Flip');
+      const report = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1));
+      const counts = report.tallies['gallery-map-preview'];
+      assert.equal(report.libraries.Flip, false);
+      assert.equal(report.features['gallery-map-preview'].mode, mode);
+      if (reducedMotion === 'reduce') {
+        assert.equal(counts['instant changes'], 2);
+        assert.equal(report.motion['gallery-map-preview'], undefined, 'reduced motion does not claim CSS animation frames');
+        for (const key of ['CSS enlargements', 'CSS shrinks', 'CSS completed']) assert.equal(counts[key] || 0, 0, key);
+      } else {
+        assert.equal(counts['CSS enlargements'], 1);
+        assert.equal(counts['CSS shrinks'], 1);
+        assert.equal(counts['CSS completed'], 2);
+        assert.ok(report.motion['gallery-map-preview'].advances > 1, 'diagnostics observed changing thumbnail widths');
+        assert.ok(report.motion['gallery-map-preview'].max > report.motion['gallery-map-preview'].min + 100);
+      }
+      await page.getByText('Diagnostics', { exact: true }).click();
+      await page.getByText('Map thumbnail animation', { exact: true }).waitFor();
+      const previewRow = await page.getByText('Map thumbnail animation', { exact: true })
+        .evaluate(title => title.nextElementSibling.textContent);
+      assert.ok(previewRow.includes(mode));
+      if (reducedMotion === 'no-preference') {
+        assert.match(previewRow, /motion updates/);
+        assert.match(previewRow, /CSS completed 2/);
+      } else assert.doesNotMatch(previewRow, /motion updates|CSS completed/);
       assert.deepEqual(errors, []);
     });
   }

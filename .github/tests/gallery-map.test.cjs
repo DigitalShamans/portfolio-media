@@ -176,7 +176,7 @@ function mapRenderer(hoverEnabled = true, position = { x: 25, y: 29 }) {
   }
   let onResize;
   const renderer = runInNewContext(readFileSync(join(root, 'galleries/gallery-map.js'), 'utf8') + '\nGalleryMap', {
-    document, matchMedia: () => hover, ResizeObserver: class { constructor(callback) { onResize = callback; } observe() {} disconnect() {} },
+    document, window: {}, matchMedia: () => hover, ResizeObserver: class { constructor(callback) { onResize = callback; } observe() {} disconnect() {} },
     setTimeout(run, delay) { const id = ++nextTimer; timers.set(id, { run, at: now + delay }); return id; },
     clearTimeout(id) { timers.delete(id); }
   });
