@@ -877,6 +877,20 @@ test('fullscreen desktop left click toggles zoom, middle and right drag pan, and
   assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
   assert.equal(await viewer.evaluate(element => element.open), true);
 
+  // Chromium can carry the click count into an independent click after a double-click.
+  const session = await page.context().newCDPSession(page);
+  async function clickWithCount(clickCount) {
+    const point = { x, y, button: 'left', clickCount };
+    await session.send('Input.dispatchMouseEvent', { ...point, type: 'mousePressed', buttons: 1 });
+    await session.send('Input.dispatchMouseEvent', { ...point, type: 'mouseReleased' });
+  }
+  await clickWithCount(3);
+  await zoomedStage.waitFor();
+  assert.equal((await viewerTransform(page)).scale, 2);
+  await clickWithCount(4);
+  await zoomedStage.waitFor({ state: 'detached' });
+  assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
+
   await page.mouse.click(x, y);
   await zoomedStage.waitFor();
   await page.mouse.dblclick(x, y);

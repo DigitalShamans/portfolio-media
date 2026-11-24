@@ -472,8 +472,13 @@ function setupClassicGalleryScroll() {
 
 setupClassicGalleryScroll();
 
-function fitImage() {
+function cancelViewerClickZoom() {
   clearTimeout(pendingClickZoom);
+  pendingClickZoom = undefined;
+}
+
+function fitImage() {
+  cancelViewerClickZoom();
   cancelViewerWheelZoom();
   setViewerZoom(1, 0, 0);
   positionViewerControls();
@@ -1150,7 +1155,7 @@ function zoomViewerWithWheel(event) {
   // Shift-wheel can arrive on the horizontal axis.
   const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
   if (!delta) return;
-  clearTimeout(pendingClickZoom);
+  cancelViewerClickZoom();
   const unit = mode === WheelEvent.DOM_DELTA_LINE ? 16
     : mode === WheelEvent.DOM_DELTA_PAGE ? stage.clientHeight : 1;
   const previousTarget = viewerWheelZoom?.target ?? viewerZoom.scale;
@@ -1236,7 +1241,8 @@ stage.addEventListener('click', event => {
 stage.addEventListener('click', event => {
   if (event.target.closest('.viewer-arrows, .comparison-indicator') || event.detail === 0) return;
   const mouseClick = lastViewerPointer === 'mouse' && event.button === 0;
-  if (mouseClick && event.detail > 1) {
+  // A continuing browser click count forms a double-click only with a pending first click.
+  if (mouseClick && pendingClickZoom !== undefined && event.detail > 1) {
     fitImage();
     return;
   }
@@ -1245,10 +1251,11 @@ stage.addEventListener('click', event => {
     return;
   }
   if (!mouseClick) return;
-  clearTimeout(pendingClickZoom);
+  cancelViewerClickZoom();
   const point = pointFor(event);
   // Give a second click time to reset before applying the single-click toggle.
   pendingClickZoom = setTimeout(() => {
+    pendingClickZoom = undefined;
     if (!viewer.open) return;
     if (viewerZoom.scale > 1) fitImage();
     else zoomViewerAt(2, point, point);
@@ -1269,7 +1276,7 @@ stage.addEventListener('pointerdown', event => {
   lastViewerPointer = event.pointerType;
   cancelViewerWheelZoom();
   if (event.pointerType === 'touch') {
-    clearTimeout(pendingClickZoom);
+    cancelViewerClickZoom();
     const point = pointFor(event);
     if (!viewerTouches.size) {
       suppressViewerClick = false;
@@ -1287,7 +1294,7 @@ stage.addEventListener('pointerdown', event => {
   if (event.button === 1 || (panning && viewerZoom.scale > 1)) event.preventDefault();
   if (panning) {
     if (viewerZoom.scale === 1) return;
-    clearTimeout(pendingClickZoom);
+    cancelViewerClickZoom();
     stage.setPointerCapture(event.pointerId);
     stage.classList.add('dragging');
   }
