@@ -14,6 +14,8 @@
   {% include personal-typography.html %}
 </head>
 <body class="gallery-map-experiment" data-gallery-revision="{{ site.github.build_revision | escape }}">
+  <div id="gallery-scroll-wrapper">
+  <div id="gallery-scroll-content">
   {% include site-header.html %}
   <main class="gallery-map-page">
     <header class="gallery-map-intro"><h1 id="map-title">Interactive gallery map</h1><p id="map-help" class="gallery-map-help"></p></header>
@@ -21,9 +23,11 @@
     <section id="public-map" class="gallery-map-stage" aria-label="Interactive level overview" aria-describedby="map-help" hidden></section>
     <div class="gallery-map-caption"><p id="map-caption" role="status" aria-live="polite">Loading map…</p><span class="gallery-map-actions"><button id="map-fullscreen" class="gallery-map-fullscreen-button" type="button" aria-label="Open interactive overview in fullscreen" disabled>Fullscreen overview</button><a id="map-gallery-link" hidden>View gallery</a></span></div>
     <p id="gallery-status" role="status" hidden></p>
-    <section id="map-screenshots" class="gallery gallery-map-screenshots" data-native-gallery-scroll aria-label="Gallery screenshots" hidden></section>
+    <section id="map-screenshots" class="gallery gallery-map-screenshots" data-gsap-gallery-scroll aria-label="Gallery screenshots" hidden></section>
     <noscript><p>Enable JavaScript to explore this interactive map.</p></noscript>
   </main>
+  </div>
+  </div>
   {% include gallery-viewer.html map=true %}
   {% assign map_pages = site.pages | where: 'layout', 'gallery' | where_exp: 'entry', "entry.portfolio != 'personal'" %}
   <script id="gallery-map-options" type="application/json">
@@ -31,7 +35,7 @@
     "defaultGallery": {{ page.gallery | default: 'hb-atrium' | jsonify }},
     "previewSize": {{ page.map_preview_size | default: 1 | jsonify }},
     "navigateOnClick": {% if page.map_navigate_on_click == false %}false{% else %}true{% endif %},
-    "viewerScript": {{ '/galleries/gallery-viewer.js' | relative_url | append: '?v=55' | jsonify }},
+    "viewerScript": {{ '/galleries/gallery-viewer.js' | relative_url | append: '?v=56' | jsonify }},
     "personal": {% if page.portfolio == 'personal' %}true{% else %}false{% endif %},
     "galleryRoot": {{ '/galleries/' | relative_url | jsonify }},
     "media": {{ site.gallery_4k_media | jsonify }},
@@ -50,7 +54,8 @@
   <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=6" defer></script>
   <script src="{{ '/galleries/gallery-data.js' | relative_url }}?v=3" defer></script>
   <script src="{{ '/galleries/gallery-map-data.js' | relative_url }}?v=1" defer></script>
-  <script src="{{ '/galleries/gallery-map.js' | relative_url }}?v=7" defer></script>
+  <script src="{{ '/galleries/gallery-map.js' | relative_url }}?v=8" defer></script>
+  <script src="{{ '/galleries/gallery-page-scroll.js' | relative_url }}?v=1" defer></script>
   <script src="{{ '/galleries/gallery-map-page.js' | relative_url }}?v=8" defer></script>
 </body>
 </html>

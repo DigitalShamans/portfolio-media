@@ -11,6 +11,7 @@
     'resume-reveals': 'Résumé card reveals',
     'gallery-edge': 'Gallery edge transition',
     'gallery-wheel': 'Gallery wheel scrolling',
+    'gallery-smoother': 'Gallery scroll smoothing',
     'gallery-touch': 'Gallery touch scrolling',
     'gallery-swipe': 'Gallery touch navigation',
     'portfolio-reveals': 'Portfolio card reveals'
@@ -262,11 +263,15 @@
       details.textContent = text;
       results.append(title, details);
     }
-    for (const feature of expected[section] || []) {
+    const visibleFeatures = [...(expected[section] || [])];
+    if (section === 'gallery' && document.querySelector('[data-gsap-gallery-scroll]')) {
+      visibleFeatures.splice(visibleFeatures.indexOf('gallery-wheel') + 1, 0, 'gallery-smoother');
+    }
+    for (const feature of visibleFeatures) {
       const mode = features[feature];
       const activity = Object.entries(tallies[feature] || {}).map(([name, total]) => name + ' ' + total);
       if (motion[feature]?.advances) activity.unshift(motion[feature].advances + ' motion updates');
-      if (feature === 'resume-smoother' && motion[feature]?.maxNativeDifferencePx) {
+      if (feature.endsWith('-smoother') && motion[feature]?.maxNativeDifferencePx) {
         activity.push('max smoothing offset ' + motion[feature].maxNativeDifferencePx + ' px');
       }
       row(labels[feature], [

@@ -28,7 +28,7 @@
     return dependencies;
   }
 
-  function start({ gallery, viewer }) {
+  function start({ gallery, viewer, gestureRoot = gallery, swipeControls = '' }) {
     const diagnostics = window.PortfolioDiagnostics;
     if (controllers.has(gallery)) return controllers.get(gallery);
     const viewport = window.visualViewport;
@@ -221,7 +221,11 @@
       const touch = event.touches[0];
       gesture = {
         x: touch.clientX, y: touch.clientY, scroll: window.scrollY,
-        native: !normalizer && gallery.contains(event.target) && !event.target.closest(controls)
+        // The map's image buttons are also valid swipe surfaces. Arming still
+        // requires a completed vertical gesture AND real native page movement.
+        native: !normalizer && gestureRoot.contains(event.target)
+          && !event.target.closest(editables)
+          && (!event.target.closest(controls) || Boolean(swipeControls && event.target.closest(swipeControls)))
       };
     }
 

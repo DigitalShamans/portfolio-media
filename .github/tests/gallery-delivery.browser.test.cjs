@@ -50,6 +50,12 @@ function scripts(layout) {
     .replace(/{{ '(\/[^']+)' \| relative_url }}/g, '$1');
 }
 
+function diagnosticsBootstrap() {
+  return read('_includes/portfolio-diagnostics.html')
+    .replace('{{ include.section | jsonify }}', '"gallery"')
+    .replace(/{{ '([^']+)' \| relative_url \| jsonify }}/g, (_, asset) => JSON.stringify(asset));
+}
+
 function mapBody() {
   // Keep the production map markup, shared viewer include and map controller.
   // Only Jekyll data and remote image delivery are replaced by bounded fixtures.
@@ -68,7 +74,7 @@ function mapBody() {
   return content + `<script id="gallery-map-options" type="application/json">${JSON.stringify(options)}</script>` + scripts(mapLayout);
 }
 
-function pageHtml(path, { embeds, assetVersions = {}, map = false } = {}) {
+function pageHtml(path, { embeds, assetVersions = {}, map = false, diagnostics = false } = {}) {
   const isLocked = path.endsWith(locked);
   const settings = isLocked ? '' : `data-gallery-webp-revision="q92-m6"
     data-gallery-originals-origin="${media}" data-gallery-originals-revision="${revision}"`;
@@ -87,7 +93,7 @@ function pageHtml(path, { embeds, assetVersions = {}, map = false } = {}) {
           .replaceAll('{{ gallery_page.gallery_title | escape }}', 'Hard Bullet - Egypt')}</section></div>
         ${galleryViewer}${scripts(galleryLayout)}`;
   return `<!doctype html><html data-gallery4k-media="${desktopQuery}" ${settings}>
-    <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">${base}
+    <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">${base}${diagnostics ? diagnosticsBootstrap() : ''}
     <link rel="stylesheet" href="/galleries/gallery.css">
     <link rel="stylesheet" href="/galleries/gallery-embeds.css">
     ${map ? '<link rel="stylesheet" href="/galleries/gallery-map.css">' : ''}</head>
@@ -100,11 +106,12 @@ function signal() {
   return { reached, release };
 }
 
-async function openPage(t, { route = gallery, width = 2800, hasTouch = false, intercept, embeds, assetVersions, map = false } = {}) {
+async function openPage(t, { route = gallery, width = 2800, hasTouch = false, intercept, embeds, assetVersions, map = false, diagnostics = false, reducedMotion } = {}) {
   if (map) route = mapRoute;
   const page = await browser.newPage({ hasTouch, viewport: { width, height: 900 } });
   t.after(() => page.close());
   page.setDefaultTimeout(5000);
+  if (reducedMotion) await page.emulateMedia({ reducedMotion });
   const requests = [];
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
@@ -112,7 +119,7 @@ async function openPage(t, { route = gallery, width = 2800, hasTouch = false, in
     const url = new URL(request.request().url());
     requests.push(url.href);
     if (intercept && await intercept(request, url)) return;
-    if (url.pathname === route) return request.fulfill({ contentType: 'text/html', body: pageHtml(route, { embeds, assetVersions, map }) });
+    if (url.pathname === route) return request.fulfill({ contentType: 'text/html', body: pageHtml(route, { embeds, assetVersions, map, diagnostics }) });
     if (map && url.pathname === `${gallery}gallery-map.json`) return request.fulfill({ json: mapManifest });
     if (url.pathname === `${gallery}gallery.json` || url.pathname === '/media/gallery.json') {
       return request.fulfill({ json: manifest });
@@ -127,7 +134,7 @@ async function openPage(t, { route = gallery, width = 2800, hasTouch = false, in
     }
     return request.fulfill({ status: 404 });
   });
-  await page.goto(portfolio + route, { waitUntil: 'domcontentloaded' });
+  await page.goto(portfolio + route + (diagnostics ? '?diagnostics=1' : ''), { waitUntil: 'domcontentloaded' });
   return { page, requests, errors };
 }
 
@@ -432,12 +439,163 @@ async function viewerTransform(page) {
   });
 }
 
+async function gallerySmootherReady(page, paused = false) {
+  await page.waitForFunction(paused => {
+    const smoother = window.ScrollSmoother?.get();
+    const features = window.PortfolioDiagnostics?.report?.().pages.at(-1).features;
+    const mode = paused ? 'Paused for fullscreen viewer' : 'GSAP ScrollSmoother';
+    return smoother && smoother.paused() === paused &&
+      features?.['gallery-smoother']?.mode === mode && features?.['gallery-wheel']?.mode === mode;
+  }, paused);
+}
+
+async function galleryScrollPosition(page) {
+  return page.evaluate(() => ({
+    native: window.scrollY,
+    rendered: window.ScrollSmoother.get().scrollTop(),
+    top: document.querySelector('.gallery-map-page').getBoundingClientRect().top,
+  }));
+}
+
+test('Atrium ScrollSmoother animates wheel and small trackpad deltas and reports actual motion', { timeout: 20_000 }, async t => {
+  const { page, requests, errors } = await openPage(t, {
+    map: true, width: 1440, diagnostics: true, reducedMotion: 'no-preference',
+  });
+  await page.locator('#map-screenshots .shot-primary').nth(2).waitFor();
+  await gallerySmootherReady(page);
+  const setup = await page.evaluate(() => {
+    const smoother = window.ScrollSmoother.get();
+    return {
+      versions: [window.gsap.version, window.ScrollTrigger.version, window.ScrollSmoother.version],
+      wrapper: smoother.wrapper().id, content: smoother.content().id, smooth: smoother.smooth(),
+      effects: smoother.vars.effects, normalizeScroll: smoother.vars.normalizeScroll, smoothTouch: smoother.vars.smoothTouch,
+      viewerOutside: !smoother.content().contains(document.querySelector('#viewer')),
+      diagnosticsOutside: !smoother.content().contains(document.querySelector('.portfolio-diagnostics')),
+      optIn: document.querySelector('#map-screenshots').hasAttribute('data-gsap-gallery-scroll'),
+    };
+  });
+  assert.deepEqual(setup, {
+    versions: ['3.15.1', '3.15.1', '3.15.1'], wrapper: 'gallery-scroll-wrapper', content: 'gallery-scroll-content',
+    smooth: .65, effects: false, normalizeScroll: false, smoothTouch: false,
+    viewerOutside: true, diagnosticsOutside: true, optIn: true,
+  });
+  await page.mouse.move(300, 300);
+  for (const delta of [160, 12]) {
+    const before = await galleryScrollPosition(page);
+    await page.evaluate(() => {
+      const trace = window.atriumScrollTrace = { active: true, samples: [] };
+      function sample() {
+        const smoother = window.ScrollSmoother.get();
+        trace.samples.push({ rendered: smoother.scrollTop(), top: smoother.content().getBoundingClientRect().top });
+        if (trace.active) requestAnimationFrame(sample);
+      }
+      sample();
+    });
+    await page.mouse.wheel(0, delta);
+    await page.waitForFunction(({ before, delta }) => {
+      const rendered = window.ScrollSmoother.get().scrollTop();
+      return scrollY > before.native + delta / 2 && Math.abs(scrollY - rendered) < .5;
+    }, { before, delta });
+    const after = await galleryScrollPosition(page);
+    const samples = await page.evaluate(() => {
+      window.atriumScrollTrace.active = false;
+      return window.atriumScrollTrace.samples;
+    });
+    assert.ok(after.rendered - before.rendered > delta / 2, `${delta}px input moves the rendered page`);
+    assert.ok(Math.abs(after.top - before.top + after.rendered - before.rendered) < 2,
+      'the visible map follows the smoother position');
+    assert.ok(samples.some(sample => sample.rendered > before.rendered + .5 && sample.rendered < after.rendered - .5),
+      `${delta}px input renders intermediate positions`);
+    assert.ok(samples.some(sample => sample.rendered > samples[0].rendered + .5 &&
+      Math.abs(sample.top - samples[0].top + sample.rendered - samples[0].rendered) < 2),
+      'GSAP applies the scroll transform to the content');
+  }
+  const report = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1));
+  for (const feature of ['gallery-smoother', 'gallery-wheel']) {
+    assert.equal(report.features[feature].mode, 'GSAP ScrollSmoother');
+    assert.ok(report.motion[feature].advances > 1, `${feature} records changing positions`);
+  }
+  assert.ok(report.input.wheel >= 2);
+  assert.ok(report.input.smallPixelWheel >= 1);
+  for (const name of ['gsap', 'ScrollTrigger', 'ScrollSmoother']) {
+    assert.ok(requests.includes(`${portfolio}/assets/vendor/gsap/3.15.1/${name}.min.js`), `${name} is served locally`);
+  }
+  assert.deepEqual(errors, []);
+});
+
+test('Atrium ScrollSmoother pauses for fullscreen wheel input and resumes without moving the page', { timeout: 20_000 }, async t => {
+  const { page, errors } = await openPage(t, {
+    map: true, width: 1440, diagnostics: true, reducedMotion: 'no-preference',
+  });
+  await page.locator('#map-fullscreen').waitFor();
+  await gallerySmootherReady(page);
+  await page.evaluate(() => {
+    window.atriumSmootherInstance = window.ScrollSmoother.get();
+    window.scrollTo({ top: 300, behavior: 'instant' });
+  });
+  await page.waitForFunction(() => Math.abs(window.ScrollSmoother.get().scrollTop() - 300) < .5);
+  const before = await galleryScrollPosition(page);
+  await page.locator('#map-fullscreen').click();
+  await page.locator('#fullscreen-map').waitFor({ state: 'visible' });
+  await gallerySmootherReady(page, true);
+  const stage = await page.locator('#stage').boundingBox();
+  await page.mouse.move(stage.x + stage.width / 2, stage.y + stage.height / 2);
+  await page.mouse.wheel(0, 160);
+  await displayed(page, '#original', preview('Second'));
+  assert.equal(await page.locator('#counter').textContent(), '2 / 3');
+  const paused = await galleryScrollPosition(page);
+  assert.ok(Math.abs(paused.rendered - before.rendered) < 2, 'fullscreen wheel navigation holds the page position');
+  await page.locator('#fullscreen').click();
+  await page.locator('#viewer').waitFor({ state: 'hidden' });
+  await page.waitForFunction(() => document.fullscreenElement === null);
+  await gallerySmootherReady(page);
+  assert.equal(await page.evaluate(() => window.ScrollSmoother.get() === window.atriumSmootherInstance), true);
+  const restored = await galleryScrollPosition(page);
+  assert.ok(Math.abs(restored.rendered - before.rendered) < 2, 'closing restores the visible scroll position');
+  assert.ok(Math.abs(restored.top - before.top) < 2, 'opener focus does not move the map');
+  await page.mouse.move(300, 300);
+  await page.mouse.wheel(0, 120);
+  await page.waitForFunction(position => window.ScrollSmoother.get().scrollTop() > position + 60, restored.rendered);
+  assert.deepEqual(errors, []);
+});
+
+test('Atrium ScrollSmoother leaves native scrolling usable for reduced motion or a missing dependency', { timeout: 20_000 }, async t => {
+  for (const fallback of ['reduced motion', 'missing dependency']) {
+    await t.test(fallback, async t => {
+      const { page, requests, errors } = await openPage(t, {
+        map: true, width: 1440, diagnostics: true,
+        reducedMotion: fallback === 'reduced motion' ? 'reduce' : 'no-preference',
+        intercept: async (request, url) => {
+          if (fallback !== 'missing dependency' || !url.pathname.endsWith('/ScrollSmoother.min.js')) return false;
+          await request.fulfill({ status: 503 });
+          return true;
+        },
+      });
+      await page.locator('#map-screenshots .shot-primary').nth(2).waitFor();
+      await page.waitForFunction(() => window.PortfolioDiagnostics?.report?.().pages.at(-1)
+        .features['gallery-smoother']?.mode === 'Native scrolling');
+      assert.equal(await page.evaluate(() => Boolean(window.ScrollSmoother?.get())), false);
+      assert.equal(await page.locator('#gallery-scroll-content').evaluate(content => getComputedStyle(content).transform), 'none');
+      const before = await page.evaluate(() => scrollY);
+      await page.mouse.move(300, 300);
+      await page.mouse.wheel(0, 120);
+      await page.waitForFunction(before => scrollY > before + 60, before);
+      await page.locator('#map-fullscreen').click();
+      await page.locator('#fullscreen-map').waitFor({ state: 'visible' });
+      await page.locator('#fullscreen').click();
+      await page.locator('#viewer').waitFor({ state: 'hidden' });
+      if (fallback === 'missing dependency') {
+        assert.ok(requests.some(url => url.endsWith('/ScrollSmoother.min.js')));
+      }
+      assert.deepEqual(errors, []);
+    });
+  }
+});
+
 test('opening diagnostics update when GSAP loads without scroll input', async t => {
   const page = await browser.newPage();
   t.after(() => page.close());
-  const bootstrap = read('_includes/portfolio-diagnostics.html')
-    .replace('{{ include.section | jsonify }}', '"gallery"')
-    .replace(/{{ '([^']+)' \| relative_url \| jsonify }}/g, (_, asset) => JSON.stringify(asset));
+  const bootstrap = diagnosticsBootstrap();
   const library = '/assets/vendor/gsap/3.15.1/gsap.min.js';
   const gsapReady = signal();
   t.after(gsapReady.release);
@@ -471,6 +629,8 @@ test('the first desktop wheel step animates the opening image into place', async
   const { page, errors } = await openPage(t, { width: 1440 });
   await page.locator('.shot-primary').nth(2).waitFor();
   await displayed(page, '.shot-primary', preview('First'));
+  assert.equal(await page.evaluate(() => Boolean(window.ScrollSmoother?.get())), false,
+    'ordinary galleries retain their existing scrolling controller');
   // Recreate the space reserved by the site header on a real gallery.
   await page.addStyleTag({ content: '.gallery-content { padding-top: 120px; }' });
   const firstCenter = await page.locator('.shot-entry').first().evaluate(entry => {
@@ -898,4 +1058,5 @@ test('RZ Start stays behind password and bearer-token delivery', async t => {
   assert.ok(!requests.some(url => url.includes('/public-media/') || url.includes('/1440p/')));
   assert.deepEqual(errors, []);
 });
+
 

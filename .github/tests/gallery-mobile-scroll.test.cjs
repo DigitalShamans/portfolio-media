@@ -6,7 +6,7 @@ const vm = require('node:vm');
 
 const source = fs.readFileSync(path.join(__dirname, '../../galleries/gallery-mobile-scroll.js'), 'utf8');
 
-function browser({ dependencies = true, supportsUnits = true, initializationFails = false } = {}) {
+function browser({ dependencies = true, supportsUnits = true, initializationFails = false, mapPage = false } = {}) {
   const timers = new Map();
   const mutations = [];
   const scripts = [];
@@ -38,6 +38,7 @@ function browser({ dependencies = true, supportsUnits = true, initializationFail
     constructor(tagName = 'DIV') {
       super();
       this.tagName = tagName;
+      this.className = '';
       const properties = new Map();
       this.style = {
         getPropertyValue: key => properties.get(key)?.value || '',
@@ -50,7 +51,17 @@ function browser({ dependencies = true, supportsUnits = true, initializationFail
     append(child) { this.children.push(child); child.parent = this; }
     contains(child) { return child === this || this.children.some(item => item.contains(child)); }
     closest(selector) {
-      return selector.split(',').some(part => part.trim() === this.tagName.toLowerCase()) ? this : null;
+      for (let element = this; element; element = element.parent) {
+        const classes = element.className.split(/\s+/);
+        if (selector.split(',').some(part => {
+          const value = part.trim();
+          if (value.startsWith('.')) return classes.includes(value.slice(1));
+          const excludedClass = /^(\w+):not\(\.([\w-]+)\)$/.exec(value);
+          if (excludedClass) return element.tagName.toLowerCase() === excludedClass[1] && !classes.includes(excludedClass[2]);
+          return value === element.tagName.toLowerCase();
+        })) return element;
+      }
+      return null;
     }
     setAttribute() {}
     remove() { this.parent.children = this.parent.children.filter(child => child !== this); }
@@ -78,8 +89,21 @@ function browser({ dependencies = true, supportsUnits = true, initializationFail
   document.activeElement = document.body;
   const gallery = new Element();
   const shot = new Element('A');
+  shot.className = 'shot';
   const viewer = Object.assign(new Element('DIALOG'), { open: false });
   gallery.append(shot);
+  const gestureRoot = mapPage ? new Element('MAIN') : gallery;
+  if (mapPage) gestureRoot.append(gallery);
+  const overviewButton = new Element('BUTTON');
+  overviewButton.className = 'gallery-map-overview-button';
+  const overviewImage = new Element('IMG');
+  overviewButton.append(overviewImage);
+  const regionButton = new Element('BUTTON');
+  regionButton.className = 'gallery-map-region';
+  const otherButton = new Element('BUTTON');
+  const editable = new Element('INPUT');
+  const outside = new Element();
+  for (const element of [overviewButton, regionButton, otherButton, editable]) gestureRoot.append(element);
 
   const gsap = {
     registerPlugin() {},
@@ -128,7 +152,8 @@ function browser({ dependencies = true, supportsUnits = true, initializationFail
     },
   });
 
-  const controller = window.GalleryMobileScroll.start({ gallery, viewer });
+  const controller = window.GalleryMobileScroll.start({ gallery, viewer,
+    ...(mapPage ? { gestureRoot, swipeControls: '.gallery-map-overview-button, .gallery-map-region' } : {}) });
 
   async function advance(milliseconds) {
     const until = time + milliseconds;
@@ -145,27 +170,28 @@ function browser({ dependencies = true, supportsUnits = true, initializationFail
     time = until;
   }
 
-  function touchStart(count = 1) {
-    window.emit('touchstart', { target: shot, touches: Array.from({ length: count }, () => ({ clientX: 20, clientY: 200 })) });
+  function touchStart(count = 1, target = shot) {
+    window.emit('touchstart', { target, touches: Array.from({ length: count }, () => ({ clientX: 20, clientY: 200 })) });
   }
 
-  function touchEnd() {
-    window.emit('touchend', { target: shot, touches: [], changedTouches: [{ clientX: 20, clientY: 100 }] });
+  function touchEnd({ target = shot, dx = 0, dy = -100 } = {}) {
+    window.emit('touchend', { target, touches: [], changedTouches: [{ clientX: 20 + dx, clientY: 200 + dy }] });
   }
 
   function setHeight(height) { viewport.height = height; viewport.emit('resize'); }
 
-  function nativeScroll({ hidden = true } = {}) {
-    touchStart();
-    window.scrollY += 100;
+  function nativeScroll({ hidden = true, target = shot, dx = 0, dy = -100, distance = 100 } = {}) {
+    touchStart(1, target);
+    window.scrollY += distance;
     if (hidden) setHeight(large);
     window.emit('scroll');
-    touchEnd();
+    touchEnd({ target, dx, dy });
   }
 
   return {
     window, document, viewport, controller, viewer, created, operations, scripts, gsap, ScrollTrigger,
     registered, unrelatedObserver,
+    targets: { gallery, gestureRoot, overviewButton, overviewImage, regionButton, otherButton, editable, outside },
     advance, touchStart, touchEnd, setHeight, nativeScroll,
     get active() { return current; },
     openViewer(open) { viewer.open = open; mutations.forEach(observer => observer.callback()); },
@@ -275,6 +301,43 @@ test('comparison button tap focus keeps scrolling enabled and ordinary controls 
   assert.equal(owner.options.dragMinimum, 12, 'taps retain the existing drag threshold');
 });
 
+test('map overview and hotspot swipes arm touch scrolling from outside the screenshot list', async () => {
+  for (const target of ['gestureRoot', 'overviewButton', 'overviewImage', 'regionButton']) {
+    const b = browser({ mapPage: true });
+    b.nativeScroll({ target: b.targets[target] });
+    await b.advance(500);
+    assert.ok(b.active, target + ' must arm after a real vertical page scroll');
+    assert.equal(b.created.length, 1);
+  }
+});
+
+test('map taps, horizontal drags and gestures without page movement do not arm normalization', async () => {
+  for (const movement of [
+    { dx: 0, dy: 0, distance: 0 },
+    { dx: 100, dy: 20, distance: 30 },
+    { dx: 0, dy: -100, distance: 0 },
+  ]) {
+    const b = browser({ mapPage: true });
+    b.nativeScroll({ target: b.targets.overviewButton, ...movement });
+    await b.advance(1000);
+    assert.equal(b.active, undefined, JSON.stringify(movement));
+    assert.equal(b.created.length, 0);
+  }
+});
+
+test('map swipe opt-in excludes unrelated controls, editables, and touches outside the map page', async () => {
+  for (const target of ['otherButton', 'editable', 'outside']) {
+    const b = browser({ mapPage: true });
+    b.nativeScroll({ target: b.targets[target] });
+    await b.advance(1000);
+    assert.equal(b.active, undefined, target);
+  }
+  const ordinary = browser();
+  ordinary.nativeScroll({ target: ordinary.targets.overviewButton });
+  await ordinary.advance(1000);
+  assert.equal(ordinary.active, undefined, 'ordinary galleries do not opt buttons into gesture activation');
+});
+
 test('rotation measures the new viewport and requires a new collapsed native gesture', async () => {
   const b = browser();
   b.nativeScroll();
@@ -364,3 +427,4 @@ test('destroy during dependency loading prevents late activation and removes pro
   assert.equal(b.active, undefined);
   assert.equal(b.document.body.children.length, 0);
 });
+
