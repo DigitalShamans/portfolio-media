@@ -439,6 +439,13 @@ async function viewerTransform(page) {
   });
 }
 
+async function waitForViewerScale(page, scale) {
+  await page.waitForFunction(target => {
+    const transform = document.querySelector('#viewer-canvas').style.transform;
+    return new DOMMatrixReadOnly(transform || undefined).a === target;
+  }, scale);
+}
+
 async function modifiedWheel(page, modifier, deltaX, deltaY) {
   await page.keyboard.down(modifier);
   try {
@@ -821,6 +828,10 @@ test('fullscreen desktop left click toggles zoom, middle and right drag pan, and
   assert.equal(await page.locator('#original').evaluate(image => getComputedStyle(image).cursor), 'default');
   await page.evaluate(() => {
     window.galleryContextMenus = [];
+    window.galleryClickScales = [];
+    document.querySelector('#viewer').addEventListener('gallery-zoomchange', event => {
+      window.galleryClickScales.push(event.detail.scale);
+    });
     document.addEventListener('contextmenu', event => {
       window.galleryContextMenus.push(event.defaultPrevented);
       event.preventDefault();
@@ -830,15 +841,21 @@ test('fullscreen desktop left click toggles zoom, middle and right drag pan, and
   assert.deepEqual(await page.evaluate(() => window.galleryContextMenus), [false]);
   assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
 
+  async function assertAnimatedZoom(target) {
+    await waitForViewerScale(page, target);
+    const scales = await page.evaluate(() => window.galleryClickScales.splice(0));
+    assert.equal(scales.at(-1), target);
+    assert.ok(scales.filter(scale => scale > 1 && scale < 2).length > 1);
+  }
+
   await page.mouse.click(x, y);
-  await zoomedStage.waitFor();
-  assert.equal((await viewerTransform(page)).scale, 2);
+  await assertAnimatedZoom(2);
   await page.mouse.click(x, y);
-  await zoomedStage.waitFor({ state: 'detached' });
+  await assertAnimatedZoom(1);
   assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
   assert.equal(await viewer.evaluate(element => element.open), true);
   await page.mouse.click(x, y);
-  await zoomedStage.waitFor();
+  await waitForViewerScale(page, 2);
 
   await page.mouse.click(x, y, { button: 'right' });
   assert.deepEqual(await page.evaluate(() => window.galleryContextMenus), [false, true]);
@@ -885,16 +902,23 @@ test('fullscreen desktop left click toggles zoom, middle and right drag pan, and
     await session.send('Input.dispatchMouseEvent', { ...point, type: 'mouseReleased' });
   }
   await clickWithCount(3);
-  await zoomedStage.waitFor();
-  assert.equal((await viewerTransform(page)).scale, 2);
+  await waitForViewerScale(page, 2);
   await clickWithCount(4);
   await zoomedStage.waitFor({ state: 'detached' });
   assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
 
   await page.mouse.click(x, y);
-  await zoomedStage.waitFor();
+  await waitForViewerScale(page, 2);
   await page.mouse.dblclick(x, y);
-  await zoomedStage.waitFor({ state: 'detached' });
+  await page.waitForFunction(() => {
+    const scale = new DOMMatrixReadOnly(document.querySelector('#viewer-canvas').style.transform || undefined).a;
+    return scale > 1 && scale < 2;
+  });
+  await clickWithCount(3);
+  await waitForViewerScale(page, 2);
+  await page.evaluate(() => window.galleryClickScales.splice(0));
+  await page.mouse.dblclick(x, y);
+  await assertAnimatedZoom(1);
   assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
   assert.equal(await page.locator('#counter').textContent(), '2 / 3');
   assert.equal(await page.evaluate(() => document.fullscreenElement?.id), 'viewer-frame');
@@ -1140,8 +1164,7 @@ test('Atrium previews stay at 80 percent without navigating and share fullscreen
   const fullscreen = await enlargeMapPreview(page, '#fullscreen-map');
   const beforeZoom = await page.evaluate(() => scrollY);
   await page.mouse.click(fullscreen.point.x, fullscreen.point.y);
-  await page.locator('#stage.zoomed').waitFor();
-  assert.equal((await viewerTransform(page)).scale, 2);
+  await waitForViewerScale(page, 2);
   assert.equal(await fullscreen.card.getAttribute('aria-expanded'), 'true');
   assert.equal(await page.locator('#counter').textContent(), '1 / 3');
   assert.equal(await page.locator('#fullscreen-map').isVisible(), true);
