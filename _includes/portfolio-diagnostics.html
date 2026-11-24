@@ -16,7 +16,7 @@
     if (!enabled) return;
     const pending = [];
     const observer = new AbortController();
-    const libraryFile = /^(gsap|ScrollTrigger|ScrollSmoother|DrawSVGPlugin|MotionPathPlugin)\.min\.js$/;
+    const libraryFile = /^(gsap|Flip|ScrollTrigger|ScrollSmoother|DrawSVGPlugin|MotionPathPlugin)\.min\.js$/;
     const settledLibraries = new WeakSet();
 
     function localFile(source) {
@@ -56,7 +56,7 @@
       const file = localFile(script?.src || event.filename);
       if (libraryFile.test(file)) {
         if (script) settledLibraries.add(script);
-      } else if (!/^(career-timeline|gallery-viewer|gallery-desktop-panels|gallery-mobile-scroll|gallery-page-scroll|portfolio-effects|portfolio-diagnostics)\.js$/.test(file)) {
+      } else if (!/^(career-timeline|gallery-viewer|gallery-desktop-panels|gallery-mobile-scroll|gallery-page-scroll|gallery-map|portfolio-effects|portfolio-diagnostics)\.js$/.test(file)) {
         return;
       }
       diagnostics.event('scripts', script ? 'load failed' : 'execution failed', {
@@ -64,7 +64,7 @@
       });
     }, { capture: true, signal: observer.signal });
     const script = document.createElement('script');
-    script.src = {{ '/assets/portfolio-diagnostics.js?v=3' | relative_url | jsonify }};
+    script.src = {{ '/assets/portfolio-diagnostics.js?v=4' | relative_url | jsonify }};
     script.addEventListener('error', () => {
       const message = document.createElement('p');
       message.textContent = 'Website diagnostics could not load. Reload to retry.';
