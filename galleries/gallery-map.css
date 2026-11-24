@@ -51,6 +51,8 @@ body.gallery-map-experiment { --background: #191919; }
 .gallery-map-fullscreen-button:disabled { opacity: .5; cursor: default; }
 .gallery-map-fullscreen { position: absolute; inset: auto; left: 50%; top: 50%; z-index: 1; width: min(100%, calc(100dvh * 16 / 9)); height: auto; border: 0; border-radius: 0; transform: translate(-50%, -50%); }
 .gallery-map-fullscreen[hidden] { display: none; }
-#viewer.has-overview-map #stage { visibility: hidden; }
+#viewer.has-overview-map #original { visibility: hidden; }
+.gallery-map-experiment .stage.zoomed .gallery-map-region { cursor: grab; }
+.gallery-map-experiment .stage.zoomed.dragging .gallery-map-region { cursor: grabbing; }
 .gallery-map-experiment #viewer .viewer-arrows, .gallery-map-experiment #viewer .viewer-bar, .gallery-map-experiment #viewer .status, .gallery-map-experiment #viewer .comparison-indicator { z-index: 2; }
 

@@ -143,7 +143,7 @@ function mapRenderer(hoverEnabled = true, position = { x: 25, y: 29 }) {
     constructor(tag = 'div') {
       this.tag = tag; this.children = []; this.dataset = {}; this.attributes = new Map(); this.listeners = new Map();
       this.clientWidth = 1000; this.clientHeight = 562.5; this.clientLeft = 0; this.clientTop = 0;
-      this.left = 0; this.top = 0;
+      this.left = 0; this.top = 0; this.renderScale = 1;
       const values = new Map(), classes = new Set();
       this.style = { setProperty: (name, value) => values.set(name, value), getPropertyValue: name => values.get(name), removeProperty: name => values.delete(name) };
       this.classList = { add: name => classes.add(name), remove: name => classes.delete(name), contains: name => classes.has(name), toggle: (name, on) => on ? classes.add(name) : classes.delete(name) };
@@ -155,7 +155,9 @@ function mapRenderer(hoverEnabled = true, position = { x: 25, y: 29 }) {
     replaceChildren(...children) { this.children = children; }
     setAttribute(name, value) { this.attributes.set(name, value); }
     getAttribute(name) { return this.attributes.get(name); }
-    getBoundingClientRect() { return { left: this.left, top: this.top, width: this.clientWidth, height: this.clientHeight }; }
+    get offsetWidth() { return this.clientWidth + this.clientLeft * 2; }
+    get offsetHeight() { return this.clientHeight + this.clientTop * 2; }
+    getBoundingClientRect() { return { left: this.left, top: this.top, width: this.offsetWidth * this.renderScale, height: this.offsetHeight * this.renderScale }; }
     matches() { return false; }
     contains(element) { return this === element || this.children.some(child => child.contains(element)); }
   }
@@ -327,6 +329,73 @@ test('hover rectangle follows resizing and screen position changes', () => {
   assert.equal(card.getAttribute('aria-expanded'), 'true');
   stage.left = 900;
   document.fire('scroll');
+  assert.equal(card.getAttribute('aria-expanded'), 'false');
+  view.destroy();
+});
+
+test('80-percent previews never navigate when page navigation is disabled', () => {
+  for (const hover of [true, false]) {
+    const { mount, stage, advance } = mapRenderer(hover);
+    const destinations = [];
+    const view = mount({ previewSize: .8, navigateOnClick: false, onNavigate: region => destinations.push(region.image) });
+    const card = view.cards[0];
+    if (hover) {
+      card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 163 });
+      advance(400);
+    } else card.fire('click', { detail: 1 });
+    assert.equal(card.getAttribute('aria-expanded'), 'true');
+    assert.equal(Number(card.style.getPropertyValue('--scale')) * .2, .8);
+    card.fire('click', { detail: 1 });
+    assert.equal(card.getAttribute('aria-expanded'), hover ? 'true' : 'false');
+    card.fire('click', { detail: 0 });
+    assert.deepEqual(destinations, []);
+    assert.equal(stage.classList.contains('has-gallery-links'), false);
+    assert.equal(card.getAttribute('aria-label'), 'Enlarge Offices screenshot');
+    view.destroy();
+  }
+});
+
+test('hover entry and keep-open edges follow a scaled, translated map including its border', () => {
+  const { mount, stage, advance } = mapRenderer(true, { x: 37, y: 70 });
+  stage.left = 110; stage.top = 35; stage.clientLeft = 1; stage.clientTop = 1; stage.renderScale = 2;
+  const view = mount({ previewSize: .8 }), card = view.cards[0];
+  const point = (x, y) => ({
+    pointerType: 'mouse',
+    clientX: stage.left + (stage.clientLeft + x) * stage.renderScale,
+    clientY: stage.top + (stage.clientTop + y) * stage.renderScale
+  });
+  const x = stage.clientWidth * .37, y = stage.clientHeight * .70;
+  card.fire('pointerenter', point(x, y));
+  advance(400);
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  stage.fire('pointermove', point(x + stage.clientWidth * .225 - 1, y));
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  stage.fire('pointermove', point(x + stage.clientWidth * .225 + 1, y));
+  assert.equal(card.getAttribute('aria-expanded'), 'false');
+  view.destroy();
+});
+
+test('zoom locks an open preview and pressed-pointer movement cannot schedule another', () => {
+  const { mount, stage, advance, document } = mapRenderer();
+  let locked = false;
+  const view = mount({ isInteractionLocked: () => locked, closeOnEscape: false }), card = view.cards[0];
+  card.fire('pointerenter', { pointerType: 'mouse', clientX: 250, clientY: 163 });
+  advance(400);
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  locked = true;
+  stage.fire('pointermove', { pointerType: 'mouse', clientX: 900, clientY: 500 });
+  stage.fire('pointerleave');
+  view.refresh();
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  let prevented = false;
+  document.fire('keydown', { key: 'Escape', preventDefault() { prevented = true; } });
+  assert.equal(prevented, false, 'fullscreen Escape remains available to the dialog');
+  assert.equal(card.getAttribute('aria-expanded'), 'true');
+  locked = false;
+  stage.fire('pointermove', { pointerType: 'mouse', clientX: 900, clientY: 500 });
+  assert.equal(card.getAttribute('aria-expanded'), 'false');
+  stage.fire('pointermove', { pointerType: 'mouse', buttons: 1, clientX: 250, clientY: 163 });
+  advance(400);
   assert.equal(card.getAttribute('aria-expanded'), 'false');
   view.destroy();
 });

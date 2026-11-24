@@ -10,19 +10,30 @@ const root = resolve(__dirname, '../..');
 const read = path => readFileSync(resolve(root, path), 'utf8');
 const galleryLayout = read('_layouts/gallery.html');
 const lockedLayout = read('_layouts/locked-gallery.html');
-const galleryViewer = read('_includes/gallery-viewer.html')
+const mapLayout = read('_layouts/gallery-map.html');
+const viewerInclude = read('_includes/gallery-viewer.html');
+const galleryViewer = viewerInclude
   .replace(/{% if include\.map %}[\s\S]*?{% endif %}/, '');
+const mapViewer = viewerInclude.replace(/{% (?:if include\.map|endif) %}/g, '');
 const portfolio = 'http://localhost:3000';
 const media = 'https://media.example.test';
 const revision = 'a'.repeat(40);
 const gallery = '/galleries/hb-egypt/';
 const locked = '/galleries/hb-rzstart/';
+const mapRoute = '/experiments/atrium-overview/';
 const desktopQuery = '(min-width: 2560px) and (hover: hover) and (pointer: fine)';
 const manifest = [
   { image: 'First.jpg', compare: 'First_Checker.jpg', additionalImages: ['First_Wireframe.jpg'] },
   { image: 'Second.jpg' },
   { image: 'Third.jpg' },
 ];
+const mapManifest = {
+  version: 1, overview: { image: 'First.jpg', alt: 'Overview' },
+  regions: [
+    { image: 'Second.jpg', label: 'Reception', x: 37, y: 70 },
+    { image: 'Third.jpg', label: 'Office', x: 77, y: 68 },
+  ],
+};
 const jpeg = Buffer.from('/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAJABADASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFAEBAAAAAAAAAAAAAAAAAAAABP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AKgAJT//2Q==', 'base64');
 const webp = Buffer.from('UklGRjAAAABXRUJQVlA4ICQAAABQAQCdASoQAAkAAUAmJQBOgCgAAP7nMP6+8odiZDdJ+p/KAAA=', 'base64');
 const originals = name => `${media}/public-media/${revision}/hb-egypt/${name}.jpg`;
@@ -35,17 +46,35 @@ before(async () => {
 after(() => browser?.close());
 
 function scripts(layout) {
-  return layout.slice(layout.indexOf('  <script src='), layout.indexOf('</body>'))
-    .replace("{{ '/assets/gallery-resolution.js' | relative_url }}", '/assets/gallery-resolution.js');
+  return layout.slice(layout.indexOf('  <script src=', layout.indexOf('</head>')), layout.indexOf('</body>'))
+    .replace(/{{ '(\/[^']+)' \| relative_url }}/g, '$1');
 }
 
-function pageHtml(path, { embeds, assetVersions = {} } = {}) {
+function mapBody() {
+  // Keep the production map markup, shared viewer include and map controller.
+  // Only Jekyll data and remote image delivery are replaced by bounded fixtures.
+  const atrium = read('experiments/atrium-overview/index.html');
+  const content = mapLayout.slice(mapLayout.indexOf('>', mapLayout.indexOf('<body')) + 1, mapLayout.indexOf('  {% assign map_pages'))
+    .replace('{% include site-header.html %}', '')
+    .replace('{% include gallery-viewer.html map=true %}', mapViewer);
+  const options = {
+    defaultGallery: 'hb-egypt', personal: false, galleryRoot: '/galleries/',
+    previewSize: Number(/^map_preview_size:\s*([.\d]+)/m.exec(atrium)?.[1] || 1),
+    navigateOnClick: !/^map_navigate_on_click:\s*false\s*$/m.test(atrium),
+    viewerScript: '/galleries/gallery-viewer.js', media: desktopQuery,
+    webpRevision: 'q92-m6', delivery: {},
+    galleries: { 'hb-egypt': { title: 'Hard Bullet - Egypt', hasMap: true, versions: {} } },
+  };
+  return content + `<script id="gallery-map-options" type="application/json">${JSON.stringify(options)}</script>` + scripts(mapLayout);
+}
+
+function pageHtml(path, { embeds, assetVersions = {}, map = false } = {}) {
   const isLocked = path.endsWith(locked);
   const settings = isLocked ? '' : `data-gallery-webp-revision="q92-m6"
     data-gallery-originals-origin="${media}" data-gallery-originals-revision="${revision}"`;
   const base = path.startsWith('/artur/') ? `<base href="${isLocked ? locked : gallery}">` : '';
-  const body = isLocked
-    ? lockedLayout.slice(lockedLayout.indexOf('  <main id="gallery-access"'), lockedLayout.indexOf('  <script src='))
+  const body = map ? mapBody() : isLocked
+    ? lockedLayout.slice(lockedLayout.indexOf('  <main id="gallery-access"'), lockedLayout.indexOf('  <script src=', lockedLayout.indexOf('</head>')))
       .replace('{{ portfolio_url | relative_url }}', '/') + scripts(lockedLayout)
       .replace('{{ site.data.gallery_delivery.service_origin | jsonify }}', JSON.stringify(media))
     : `<div class="gallery-content"><header class="intro"><h1>Hard Bullet - Egypt</h1></header>
@@ -60,8 +89,9 @@ function pageHtml(path, { embeds, assetVersions = {} } = {}) {
   return `<!doctype html><html data-gallery4k-media="${desktopQuery}" ${settings}>
     <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">${base}
     <link rel="stylesheet" href="/galleries/gallery.css">
-    <link rel="stylesheet" href="/galleries/gallery-embeds.css"></head>
-    <body data-gallery-revision="test" data-gallery-asset-versions="${JSON.stringify(assetVersions).replaceAll('"', '&quot;')}">${body}</body></html>`;
+    <link rel="stylesheet" href="/galleries/gallery-embeds.css">
+    ${map ? '<link rel="stylesheet" href="/galleries/gallery-map.css">' : ''}</head>
+    <body${map ? ' class="gallery-map-experiment"' : ''} data-gallery-revision="test" data-gallery-asset-versions="${JSON.stringify(assetVersions).replaceAll('"', '&quot;')}">${body}</body></html>`;
 }
 
 function signal() {
@@ -70,7 +100,8 @@ function signal() {
   return { reached, release };
 }
 
-async function openPage(t, { route = gallery, width = 2800, hasTouch = false, intercept, embeds, assetVersions } = {}) {
+async function openPage(t, { route = gallery, width = 2800, hasTouch = false, intercept, embeds, assetVersions, map = false } = {}) {
+  if (map) route = mapRoute;
   const page = await browser.newPage({ hasTouch, viewport: { width, height: 900 } });
   t.after(() => page.close());
   page.setDefaultTimeout(5000);
@@ -81,7 +112,8 @@ async function openPage(t, { route = gallery, width = 2800, hasTouch = false, in
     const url = new URL(request.request().url());
     requests.push(url.href);
     if (intercept && await intercept(request, url)) return;
-    if (url.pathname === route) return request.fulfill({ contentType: 'text/html', body: pageHtml(route, { embeds, assetVersions }) });
+    if (url.pathname === route) return request.fulfill({ contentType: 'text/html', body: pageHtml(route, { embeds, assetVersions, map }) });
+    if (map && url.pathname === `${gallery}gallery-map.json`) return request.fulfill({ json: mapManifest });
     if (url.pathname === `${gallery}gallery.json` || url.pathname === '/media/gallery.json') {
       return request.fulfill({ json: manifest });
     }
@@ -393,8 +425,8 @@ async function pinchInViewer(session, x, y, startingRadius, endingRadius) {
 }
 
 async function viewerTransform(page) {
-  return page.locator('#original').evaluate(image => {
-    const transform = getComputedStyle(image).transform;
+  return page.locator('#viewer-canvas').evaluate(canvas => {
+    const transform = getComputedStyle(canvas).transform;
     const matrix = new DOMMatrixReadOnly(transform === 'none' ? undefined : transform);
     return { scale: matrix.a, x: matrix.e, y: matrix.f };
   });
@@ -559,6 +591,173 @@ test('comparison hover is limited to the bottom 6% on gallery tiles and fullscre
 });
 
 
+async function enlargeMapPreview(page, selector) {
+  const stage = page.locator(selector);
+  const card = stage.locator('.gallery-map-region').first();
+  const point = await card.evaluate(card => {
+    const stage = card.parentElement, bounds = stage.getBoundingClientRect();
+    return { x: bounds.left + bounds.width * Number(card.dataset.x) / 100, y: bounds.top + bounds.height * Number(card.dataset.y) / 100 };
+  });
+  await page.mouse.move(point.x, point.y);
+  await card.and(stage.locator('[aria-expanded="true"]')).waitFor();
+  await page.waitForFunction(selector => {
+    const stage = document.querySelector(selector), card = stage.querySelector('.is-open');
+    return card && Math.abs(card.getBoundingClientRect().width / stage.getBoundingClientRect().width - .8) < .01;
+  }, selector);
+  return { card, point };
+}
+
+test('Atrium previews stay at 80 percent without navigating and share fullscreen mouse controls', async t => {
+  const { page, errors } = await openPage(t, { map: true, width: 1440 });
+  await page.locator('#public-map').waitFor({ state: 'visible' });
+  assert.equal(await page.locator('#map-error').isVisible(), false);
+  const normal = await enlargeMapPreview(page, '#public-map');
+  const beforeClick = await page.evaluate(() => scrollY);
+  await page.mouse.click(normal.point.x, normal.point.y);
+  assert.equal(await normal.card.getAttribute('aria-expanded'), 'true');
+  assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), false);
+  assert.equal(await page.evaluate(() => scrollY), beforeClick);
+  assert.equal(await page.locator('.gallery-map-shot:focus').count(), 0);
+
+  await page.locator('#map-fullscreen').click();
+  await page.locator('#fullscreen-map').waitFor({ state: 'visible' });
+  assert.equal(await page.locator('#stage > #viewer-canvas > #fullscreen-map').count(), 1);
+  const fullscreen = await enlargeMapPreview(page, '#fullscreen-map');
+  const beforeZoom = await page.evaluate(() => scrollY);
+  await page.mouse.click(fullscreen.point.x, fullscreen.point.y);
+  await page.locator('#stage.zoomed').waitFor();
+  assert.equal((await viewerTransform(page)).scale, 2);
+  assert.equal(await fullscreen.card.getAttribute('aria-expanded'), 'true');
+  assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+  assert.equal(await page.locator('#fullscreen-map').isVisible(), true);
+  assert.equal(await page.evaluate(() => scrollY), beforeZoom);
+  await page.mouse.dblclick(fullscreen.point.x, fullscreen.point.y);
+  await page.locator('#viewer').waitFor({ state: 'hidden' });
+  await page.waitForFunction(() => document.fullscreenElement === null);
+
+  await page.locator('#map-fullscreen').click();
+  await page.locator('#fullscreen-map').waitFor({ state: 'visible' });
+  assert.equal((await viewerTransform(page)).scale, 1);
+  await page.keyboard.press('ArrowRight');
+  await displayed(page, '#original', preview('Second'));
+  assert.equal(await page.locator('#fullscreen-map').isVisible(), false);
+  await page.keyboard.press('ArrowLeft');
+  await page.locator('#fullscreen-map').waitFor({ state: 'visible' });
+  await page.mouse.wheel(0, 160);
+  await displayed(page, '#original', preview('Second'));
+  assert.equal(await page.locator('#counter').textContent(), '2 / 3');
+  await page.keyboard.press('Escape');
+  await page.locator('#viewer').waitFor({ state: 'hidden' });
+  assert.deepEqual(errors, []);
+});
+
+test('Atrium touch taps survive capture while pinch and pan suppress their trailing click', async t => {
+  const { page, errors } = await openPage(t, { map: true, width: 412, hasTouch: true });
+  const session = await page.context().newCDPSession(page);
+  await page.locator('#map-fullscreen').tap();
+  await page.locator('#fullscreen-map').waitFor({ state: 'visible' });
+  const card = page.locator('#fullscreen-map .gallery-map-region').first();
+  await card.tap();
+  assert.equal(await card.getAttribute('aria-expanded'), 'true');
+  assert.equal((await viewerTransform(page)).scale, 1);
+  await card.tap();
+  assert.equal(await card.getAttribute('aria-expanded'), 'false');
+  await card.tap();
+  assert.equal(await card.getAttribute('aria-expanded'), 'true');
+
+  const stage = await page.locator('#stage').boundingBox();
+  const x = stage.x + stage.width / 2, y = stage.y + stage.height / 2;
+  await pinchInViewer(session, x, y, 30, 90);
+  await page.locator('#stage.zoomed').waitFor();
+  const pinched = await viewerTransform(page);
+  assert.ok(pinched.scale > 1);
+  // A compatibility click is not emitted for every OS/browser gesture. Exercise
+  // that event explicitly after real touch input so it cannot toggle a hotspot.
+  await card.dispatchEvent('click', { bubbles: true, cancelable: true, detail: 1, button: 0 });
+  assert.equal(await card.getAttribute('aria-expanded'), 'true');
+  assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+  await swipeInViewer(session, [x - 45, y], [x + 45, y]);
+  const panned = await viewerTransform(page);
+  assert.equal(panned.scale, pinched.scale);
+  assert.notEqual(panned.x, pinched.x);
+  await card.dispatchEvent('click', { bubbles: true, cancelable: true, detail: 1, button: 0 });
+  assert.equal(await card.getAttribute('aria-expanded'), 'true');
+  assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+  // Keyboard activation remains available despite the trailing pointer-click guard.
+  await card.dispatchEvent('click', { bubbles: true, cancelable: true, detail: 0 });
+  assert.equal(await card.getAttribute('aria-expanded'), 'false');
+  assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), true);
+  assert.deepEqual(errors, []);
+});
+
+async function viewerGeometry(page) {
+  return page.evaluate(() => {
+    const image = document.querySelector('#original'), bounds = image.getBoundingClientRect();
+    const ratio = image.naturalWidth / image.naturalHeight;
+    const width = Math.min(bounds.width, bounds.height * ratio), height = width / ratio;
+    const drawn = { x: bounds.left + (bounds.width - width) / 2, y: bounds.top + (bounds.height - height) / 2, width, height };
+    const controls = ['#previous-side', '#next-side', '#viewer .comparison-indicator'].map(selector => {
+      const rect = document.querySelector(selector).getBoundingClientRect();
+      return { selector, x: rect.left, y: rect.top, width: rect.width, height: rect.height };
+    });
+    return { image: drawn, controls };
+  });
+}
+
+function assertAnchored(before, after) {
+  const scale = after.image.width / before.image.width;
+  for (let i = 0; i < before.controls.length; i++) {
+    const a = before.controls[i], b = after.controls[i];
+    for (const [actual, expected, label] of [
+      [b.width, a.width * scale, 'width'], [b.height, a.height * scale, 'height'],
+      [b.x - after.image.x, (a.x - before.image.x) * scale, 'horizontal anchor'],
+      [b.y - after.image.y, (a.y - before.image.y) * scale, 'vertical anchor']
+    ]) assert.ok(Math.abs(actual - expected) < 1.5, `${a.selector} ${label}: ${actual} versus ${expected}`);
+  }
+}
+
+test('pinch and pan keep arrows and comparison strip attached to the image without focus scrolling', async t => {
+  const { page, errors } = await openPage(t, { width: 412, hasTouch: true });
+  const session = await page.context().newCDPSession(page);
+  await page.locator('.shot').first().tap();
+  await displayed(page, '#original', preview('First'));
+  await segment(page, 0).waitFor({ state: 'visible' });
+  const initial = await viewerGeometry(page);
+  for (const control of initial.controls) assert.ok(control.width > 0 && control.height > 0, control.selector);
+  const stage = await page.locator('#stage').boundingBox();
+  const x = stage.x + stage.width / 2, y = stage.y + stage.height / 2;
+  await pinchInViewer(session, x, y, 30, 90);
+  await page.locator('#stage.zoomed').waitFor();
+  const zoomed = await viewerGeometry(page);
+  assert.ok(zoomed.image.width > initial.image.width * 1.5);
+  assertAnchored(initial, zoomed);
+  await swipeInViewer(session, [x - 45, y], [x + 45, y]);
+  const panned = await viewerGeometry(page);
+  assert.ok(Math.abs(panned.image.x - zoomed.image.x) > 10);
+  assertAnchored(zoomed, panned);
+  assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+
+  const offsets = () => page.evaluate(() => Object.fromEntries(['#stage', '#viewer-canvas', '#viewer-frame', '#viewer'].map(selector => {
+    const element = document.querySelector(selector);
+    return [selector, { x: element.scrollLeft, y: element.scrollTop }];
+  })));
+  const expectedOffsets = await offsets();
+  assert.deepEqual(expectedOffsets['#stage'], { x: 0, y: 0 });
+  const transform = await viewerTransform(page);
+  // Visit every enabled dialog control once, including a zoomed-offscreen arrow
+  // and comparison segments. Focus must not introduce a second pan mechanism.
+  const focusTargets = new Set();
+  for (let i = 0; i < 7; i++) {
+    await page.keyboard.press('Tab');
+    focusTargets.add(await page.evaluate(() => document.activeElement.id || document.activeElement.getAttribute('aria-label')));
+    assert.deepEqual(await offsets(), expectedOffsets);
+    assert.deepEqual(await viewerTransform(page), transform);
+  }
+  assert.ok(focusTargets.has('next-side'), 'Tab reaches the next-image arrow');
+  assert.ok([...focusTargets].some(label => /^Show variant/.test(label || '')), 'Tab reaches the comparison strip');
+  assert.deepEqual(errors, []);
+});
+
 test('RZ Start stays behind password and bearer-token delivery', async t => {
   const protectedRequests = [];
   let primaryAttempts = 0;
@@ -597,3 +796,4 @@ test('RZ Start stays behind password and bearer-token delivery', async t => {
   assert.ok(!requests.some(url => url.includes('/public-media/') || url.includes('/1440p/')));
   assert.deepEqual(errors, []);
 });
+
