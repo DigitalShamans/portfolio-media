@@ -15,6 +15,7 @@
   let smoother;
   let dependencies;
   let failed = false;
+  let failureReason = '';
   let disposed = false;
   let opening = false;
   let closing = false;
@@ -37,9 +38,9 @@
       const url = new URL('../assets/vendor/gsap/3.15.1/' + filename, scriptURL).href;
       const existing = [...document.scripts].find(script => script.src === url);
       const script = existing || document.createElement('script');
-      const timer = setTimeout(() => finish(false), 8000);
+      // A slow connection must not permanently disable smoothing. Native
+      // scrolling remains usable until the browser finishes loading the script.
       function finish(loaded) {
-        clearTimeout(timer);
         script.removeEventListener('load', loadedScript);
         script.removeEventListener('error', failedScript);
         if (loaded && window[globalName]) resolve();
@@ -101,7 +102,7 @@
     if (!desktop.matches || reducedMotion.matches || failed) {
       stop();
       report('Native scrolling', reducedMotion.matches ? 'Reduced motion is enabled.'
-        : failed ? 'GSAP scrolling could not initialize; native scrolling remains available.'
+        : failed ? failureReason
           : 'Touch scrolling is managed by the gallery touch controller.');
       return;
     }
@@ -135,12 +136,15 @@
         }
       });
       updatePaused();
-    } catch (_) {
+    } catch (error) {
       failed = true;
+      failureReason = 'GSAP scrolling could not initialize; native scrolling remains available. ' +
+        (error instanceof Error ? error.message : String(error));
+      diagnostics?.event('gallery-smoother', 'initialization-failed', { reason: failureReason });
       stop();
       restoreScrollStyles?.();
       restoreScrollStyles = undefined;
-      report('Native scrolling', 'GSAP scrolling could not initialize; native scrolling remains available.');
+      report('Native scrolling', failureReason);
     }
   }
 

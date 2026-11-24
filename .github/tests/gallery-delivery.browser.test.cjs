@@ -439,6 +439,15 @@ async function viewerTransform(page) {
   });
 }
 
+async function modifiedWheel(page, modifier, deltaX, deltaY) {
+  await page.keyboard.down(modifier);
+  try {
+    await page.mouse.wheel(deltaX, deltaY);
+  } finally {
+    await page.keyboard.up(modifier);
+  }
+}
+
 async function gallerySmootherReady(page, paused = false) {
   await page.waitForFunction(paused => {
     const smoother = window.ScrollSmoother?.get();
@@ -568,6 +577,11 @@ test('Atrium ScrollSmoother pauses for fullscreen wheel input and resumes withou
   await gallerySmootherReady(page, true);
   const stage = await page.locator('#stage').boundingBox();
   await page.mouse.move(stage.x + stage.width / 2, stage.y + stage.height / 2);
+  await modifiedWheel(page, 'Control', 0, -120);
+  await page.locator('#stage.zoomed').waitFor();
+  assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+  assert.ok(Math.abs((await galleryScrollPosition(page)).rendered - before.rendered) < 2,
+    'fullscreen wheel zoom holds the page position');
   await page.mouse.wheel(0, 160);
   await displayed(page, '#original', preview('Second'));
   assert.equal(await page.locator('#counter').textContent(), '2 / 3');
@@ -618,6 +632,65 @@ test('Atrium ScrollSmoother leaves native scrolling usable for reduced motion or
       assert.deepEqual(errors, []);
     });
   }
+});
+
+test('Atrium ScrollSmoother initializes after a slow dependency while native scrolling stays usable', { timeout: 15_000 }, async t => {
+  const dependencyRequested = signal();
+  const releaseDependency = signal();
+  let requestedAt;
+  t.after(releaseDependency.release);
+  const { page, requests, errors } = await openPage(t, {
+    map: true, width: 1440, diagnostics: true, reducedMotion: 'no-preference',
+    intercept: async (request, url) => {
+      if (!url.pathname.endsWith('/ScrollSmoother.min.js')) return false;
+      requestedAt = performance.now();
+      dependencyRequested.release();
+      await releaseDependency.reached;
+      return false;
+    },
+  });
+  await dependencyRequested.reached;
+  await page.locator('#map-screenshots .shot-primary').nth(2).waitFor();
+  assert.equal(await page.evaluate(() => Boolean(window.ScrollSmoother?.get())), false);
+  await page.mouse.move(300, 300);
+  const initial = await page.evaluate(() => scrollY);
+  await page.mouse.wheel(0, 120);
+  await page.waitForFunction(initial => scrollY > initial + 60, initial);
+
+  // Reproduce a real slow response beyond the former eight-second rejection.
+  // The response remains pending, so no download failure has occurred.
+  await page.waitForTimeout(Math.max(0, 8200 - (performance.now() - requestedAt)));
+  assert.ok(performance.now() - requestedAt >= 8000);
+  assert.deepEqual(await page.evaluate(() => ({
+    gsap: window.gsap?.version, trigger: window.ScrollTrigger?.version,
+    smoother: Boolean(window.ScrollSmoother),
+    transform: getComputedStyle(document.querySelector('#gallery-scroll-content')).transform,
+  })), { gsap: '3.15.1', trigger: '3.15.1', smoother: false, transform: 'none' });
+  const waiting = await page.evaluate(() => scrollY);
+  await page.mouse.wheel(0, 120);
+  await page.waitForFunction(waiting => scrollY > waiting + 60, waiting);
+  const beforeRelease = await page.evaluate(() => scrollY);
+  const delayedFor = performance.now() - requestedAt;
+  releaseDependency.release();
+
+  await gallerySmootherReady(page);
+  await page.waitForFunction(position => {
+    const smoother = window.ScrollSmoother.get();
+    return smoother.scrollTrigger.end > 0 && Math.abs(smoother.scrollTop() - position) < 2;
+  }, beforeRelease);
+  assert.equal(requests.filter(url => url.endsWith('/ScrollSmoother.min.js')).length, 1,
+    'the pending request is allowed to complete without a duplicate download');
+  await page.mouse.wheel(0, 120);
+  await page.waitForFunction(position => window.ScrollSmoother.get().scrollTop() > position + 60, beforeRelease);
+  const report = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1));
+  assert.equal(report.features['gallery-smoother'].mode, 'GSAP ScrollSmoother');
+  assert.ok(report.motion['gallery-smoother'].advances > 0);
+  t.diagnostic(JSON.stringify({
+    delayedForMs: Math.round(delayedFor), nativeBeforeRelease: beforeRelease,
+    renderedAfterRelease: await page.evaluate(() => window.ScrollSmoother.get().scrollTop()),
+    mode: report.features['gallery-smoother'].mode,
+  }));
+  assert.deepEqual(errors, []);
 });
 
 test('opening diagnostics update when GSAP loads without scroll input', async t => {
@@ -809,6 +882,78 @@ test('fullscreen desktop left click toggles zoom, middle and right drag pan, and
   assert.deepEqual(errors, []);
 });
 
+test('fullscreen desktop modifier-wheel zoom eases toward the cursor without zooming the page', async t => {
+  const { page, errors } = await openPage(t, { width: 1440 });
+  await page.locator('.shot').first().click();
+  await displayed(page, '#original', preview('First'));
+  await page.waitForFunction(() => document.fullscreenElement?.id === 'viewer-frame');
+  const stage = await page.locator('#stage').boundingBox();
+  const centerX = stage.x + stage.width / 2;
+  // Keep the test off center within Chromium's headless fullscreen surface.
+  const x = Math.round(centerX - stage.width / 10);
+  const y = Math.round(stage.y + stage.height / 2);
+  await page.mouse.move(x, y);
+  const pageZoom = () => page.evaluate(() => [devicePixelRatio, visualViewport.scale, innerWidth, scrollY]);
+  const originalPageZoom = await pageZoom();
+  await page.evaluate(() => {
+    const wheels = [], scales = [];
+    window.viewerWheelTest = { wheels, scales };
+    document.addEventListener('wheel', event => {
+      const { ctrlKey, shiftKey, altKey, defaultPrevented, isTrusted } = event;
+      wheels.push({ ctrlKey, shiftKey, altKey, defaultPrevented, isTrusted });
+    }, { passive: true });
+    document.querySelector('#viewer').addEventListener('gallery-zoomchange', event => scales.push(event.detail.scale));
+  });
+
+  const combinations = [
+    ['Control', 'ctrlKey', 0, -2500],
+    ['Shift', 'shiftKey', -2500, 0],
+    ['Alt', 'altKey', 0, -2500],
+  ];
+  for (const [modifier, eventKey, dx, dy] of combinations) {
+    await page.evaluate(() => window.viewerWheelTest.scales.length = 0);
+    await modifiedWheel(page, modifier, dx, dy);
+    await page.waitForFunction(() => window.viewerWheelTest.scales.at(-1) === 4);
+    const { scales } = await page.evaluate(() => window.viewerWheelTest);
+    assert.ok(scales.filter(scale => scale > 1 && scale < 4).length >= 2, modifier + ' eased through intermediate scales');
+    const transform = await viewerTransform(page);
+    assert.ok(Math.abs(transform.x + (x - centerX) * 3) < 1, modifier + ' kept the point under the cursor');
+
+    await modifiedWheel(page, modifier, -dx, -dy);
+    await page.waitForFunction(() => window.viewerWheelTest.scales.at(-1) === 1);
+    assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
+    const pair = await page.evaluate(() => window.viewerWheelTest.wheels.slice(-2));
+    assert.equal(pair.length, 2);
+    assert.ok(pair.every(event => event[eventKey] && event.isTrusted && event.defaultPrevented), modifier + ' stayed inside the viewer');
+    assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+    assert.deepEqual(await pageZoom(), originalPageZoom);
+  }
+
+  // Three small ticks accumulate before the animation catches up.
+  await page.keyboard.down('Control');
+  for (let tick = 0; tick < 3; tick++) await page.mouse.wheel(0, -120);
+  await page.keyboard.up('Control');
+  await page.waitForFunction(() => window.viewerWheelTest.scales.at(-1) > 1.7);
+
+  // Plain wheel navigation cancels an in-progress zoom and fits the new image.
+  await modifiedWheel(page, 'Control', 0, -2500);
+  await page.mouse.wheel(0, 160);
+  await displayed(page, '#original', preview('Second'));
+  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
+
+  await page.keyboard.press('Escape');
+  await page.locator('#viewer').waitFor({ state: 'hidden' });
+  await page.waitForFunction(() => document.fullscreenElement === null);
+  await page.mouse.move(x, y);
+  await modifiedWheel(page, 'Control', 0, 120);
+  await page.waitForFunction(() => {
+    const event = window.viewerWheelTest.wheels.at(-1);
+    return event?.ctrlKey && event.isTrusted && !event.defaultPrevented;
+  });
+  assert.deepEqual(errors, []);
+});
+
 test('comparison hover is limited to the bottom 6% on gallery tiles and fullscreen images', async t => {
   await t.test('gallery tile', async t => {
     const { page, errors } = await openPage(t, { width: 1440 });
@@ -944,6 +1089,20 @@ test('Atrium previews stay at 80 percent without navigating and share fullscreen
   await page.locator('#map-fullscreen').click();
   await page.locator('#fullscreen-map').waitFor({ state: 'visible' });
   assert.equal((await viewerTransform(page)).scale, 1);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.evaluate(() => {
+    window.mapWheelScales = [];
+    document.querySelector('#viewer').addEventListener('gallery-zoomchange', event => window.mapWheelScales.push(event.detail.scale));
+  });
+  const mapBounds = await page.locator('#stage').boundingBox();
+  await page.mouse.move(mapBounds.x + mapBounds.width / 2, mapBounds.y + mapBounds.height / 2);
+  await modifiedWheel(page, 'Alt', 0, -120);
+  await page.locator('#stage.zoomed').waitFor();
+  const mapWheelScales = await page.evaluate(() => window.mapWheelScales);
+  assert.equal(mapWheelScales.length, 1, 'reduced motion applies the wheel zoom in one update');
+  assert.ok(mapWheelScales[0] > 1 && mapWheelScales[0] < 2);
+  assert.equal(await page.locator('#fullscreen-map').isVisible(), true);
+  assert.equal(await page.locator('#counter').textContent(), '1 / 3');
   await page.keyboard.press('ArrowRight');
   await displayed(page, '#original', preview('Second'));
   assert.equal(await page.locator('#fullscreen-map').isVisible(), false);
@@ -1104,5 +1263,6 @@ test('RZ Start stays behind password and bearer-token delivery', async t => {
   assert.ok(!requests.some(url => url.includes('/public-media/') || url.includes('/1440p/')));
   assert.deepEqual(errors, []);
 });
+
 
 
