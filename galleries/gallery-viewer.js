@@ -654,7 +654,7 @@ function canCompare(event) {
 function comparisonInBottomStrip(event, { left, top, width, height }, count) {
   const x = event.clientX - left;
   const y = event.clientY - top;
-  if (x < 0 || x >= width || y < height * 0.875 || y >= height) return null;
+  if (x < 0 || x >= width || y < height * 0.94 || y >= height) return null;
   return Math.min(count - 1, Math.floor(x * count / width));
 }
 

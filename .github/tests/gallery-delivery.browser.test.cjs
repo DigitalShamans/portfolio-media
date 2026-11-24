@@ -469,7 +469,7 @@ test('fullscreen desktop double-click toggles 200% zoom and the wheel advances f
   assert.deepEqual(errors, []);
 });
 
-test('comparison hover is limited to the bottom eighth on gallery tiles and fullscreen images', async t => {
+test('comparison hover is limited to the bottom 6% on gallery tiles and fullscreen images', async t => {
   await t.test('gallery tile', async t => {
     const { page, errors } = await openPage(t, { width: 1440 });
     const entry = page.locator('.shot-entry').first();
@@ -484,19 +484,19 @@ test('comparison hover is limited to the bottom eighth on gallery tiles and full
 
     const { x, y, width, height } = await image.boundingBox();
     const moveToChecker = fraction => page.mouse.move(x + width / 2, y + height * fraction);
-    await moveToChecker(0.87);
+    await moveToChecker(0.93);
     assert.equal(await chosen(), 'Show variant 1 of 3');
-    await moveToChecker(0.88);
+    await moveToChecker(0.95);
     assert.equal(await chosen(), 'Show variant 2 of 3');
-    await moveToChecker(0.87);
+    await moveToChecker(0.93);
     assert.equal(await chosen(), 'Show variant 1 of 3');
 
     await buttons.nth(2).hover();
     await buttons.nth(2).and(entry.locator('[aria-pressed="true"]')).waitFor();
-    await moveToChecker(0.87);
+    await moveToChecker(0.93);
     assert.equal(await chosen(), 'Show variant 1 of 3');
     await buttons.nth(2).click();
-    await moveToChecker(0.87);
+    await moveToChecker(0.93);
     assert.equal(await chosen(), 'Show variant 3 of 3');
     assert.deepEqual(errors, []);
   });
@@ -520,20 +520,20 @@ test('comparison hover is limited to the bottom eighth on gallery tiles and full
       };
     });
     const moveToChecker = fraction => page.mouse.move(x + width / 2, y + height * fraction);
-    await moveToChecker(0.87);
+    await moveToChecker(0.93);
     assert.equal(await image.getAttribute('src'), preview('First'));
-    await moveToChecker(0.88);
+    await moveToChecker(0.95);
     await displayed(page, '#original', preview('First_Checker'));
-    await moveToChecker(0.87);
+    await moveToChecker(0.93);
     await displayed(page, '#original', preview('First'));
 
     await segment(page, 2).hover();
     await displayed(page, '#original', preview('First_Wireframe'));
-    await moveToChecker(0.87);
+    await moveToChecker(0.93);
     await displayed(page, '#original', preview('First'));
     await segment(page, 2).click();
     await displayed(page, '#original', preview('First_Wireframe'));
-    await moveToChecker(0.87);
+    await moveToChecker(0.93);
     assert.equal(await image.getAttribute('src'), preview('First_Wireframe'));
     assert.deepEqual(errors, []);
   });
