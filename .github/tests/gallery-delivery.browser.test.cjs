@@ -1159,14 +1159,46 @@ async function clickCollapsedMapRegion(page, selector, index = 0) {
   assert.deepEqual(await page.evaluate(() => window.collapsedMapClick), { expanded: 'false', trusted: true });
 }
 
-async function focusedMapScreenshotIsVisible(page, filename) {
-  await page.waitForFunction(filename => {
-    const target = [...document.querySelectorAll('.gallery-map-shot')].find(figure => figure.dataset.image === filename);
-    const bounds = target?.getBoundingClientRect();
-    const smoother = window.ScrollSmoother?.get();
-    return target && document.activeElement === target && bounds.height > 0 && bounds.top >= -2 &&
-      bounds.bottom <= innerHeight + 2 && (!smoother || Math.abs(smoother.scrollTop() - scrollY) < 1);
-  }, filename);
+async function focusedMapScreenshotIsVisible(page, filename, t) {
+  try {
+    await page.waitForFunction(filename => {
+      const target = [...document.querySelectorAll('.gallery-map-shot')].find(figure => figure.dataset.image === filename);
+      const bounds = target?.getBoundingClientRect();
+      const smoother = window.ScrollSmoother?.get();
+      return target && document.activeElement === target && bounds.height > 0 && bounds.top >= -2 &&
+        bounds.bottom <= innerHeight + 2 && (!smoother || Math.abs(smoother.scrollTop() - scrollY) < 1);
+    }, filename);
+  } catch (error) {
+    const diagnostics = await page.evaluate(filename => {
+      const target = [...document.querySelectorAll('.gallery-map-shot')].find(figure => figure.dataset.image === filename);
+      const smoother = window.ScrollSmoother?.get(), content = document.querySelector('#gallery-scroll-content');
+      const rect = element => {
+        if (!element) return null;
+        const { top, bottom, height } = element.getBoundingClientRect();
+        return { top, bottom, height };
+      };
+      const focus = document.activeElement;
+      const snapshot = {
+        filename, focus: { tag: focus.tagName, id: focus.id, class: focus.className, image: focus.closest('.gallery-map-shot')?.dataset.image },
+        targetFocused: focus === target, figure: rect(target), image: rect(target?.querySelector('.shot-primary')),
+        innerHeight, clientHeight: document.documentElement.clientHeight, native: scrollY, rendered: smoother?.scrollTop(),
+        maxScroll: document.scrollingElement.scrollHeight - document.documentElement.clientHeight,
+        triggerEnd: smoother?.scrollTrigger.end, paused: smoother?.paused(),
+        body: { margin: getComputedStyle(document.body).margin, height: document.body.style.height, scrollHeight: document.body.scrollHeight },
+        content: { height: content.style.height, clientHeight: content.clientHeight, scrollHeight: content.scrollHeight },
+        wrapperScrollTop: document.querySelector('#gallery-scroll-wrapper').scrollTop,
+        previews: [...document.querySelectorAll('#public-map .gallery-map-region')].map(card => ({
+          label: card.getAttribute('aria-label'), expanded: card.getAttribute('aria-expanded'),
+          hovered: card.matches(':hover'), focusVisible: card.matches(':focus-visible'), class: card.className,
+        })),
+        events: window.mapKeyboardTrace || [],
+      };
+      snapshot.smootherOffset = target && smoother ? smoother.offset(target, 'top top') : null;
+      return snapshot;
+    }, filename);
+    t.diagnostic('Map navigation failure: ' + JSON.stringify(diagnostics));
+    throw error;
+  }
 }
 
 test('Atrium collapsed thumbnails select the exact gallery screenshot with GSAP and native scrolling', { timeout: 20_000 }, async t => {
@@ -1183,7 +1215,7 @@ test('Atrium collapsed thumbnails select the exact gallery screenshot with GSAP 
       }
       const before = await page.evaluate(() => scrollY);
       await clickCollapsedMapRegion(page, '#public-map');
-      await focusedMapScreenshotIsVisible(page, 'Second.jpg');
+      await focusedMapScreenshotIsVisible(page, 'Second.jpg', t);
       await displayed(page, '.gallery-map-shot[data-image="Second.jpg"] .shot-primary', preview('Second'));
       assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), false);
       assert.equal(await page.locator('#public-map .is-open').count(), 0);
@@ -1207,8 +1239,24 @@ test('Atrium collapsed thumbnails select the exact gallery screenshot with GSAP 
         const keyboardCard = page.locator('#public-map .gallery-map-region').nth(1);
         assert.equal(await keyboardCard.evaluate(card => card === document.activeElement), true);
         assert.equal(await keyboardCard.getAttribute('aria-expanded'), 'false', 'keyboard focus keeps the thumbnail collapsed');
+        t.diagnostic('Before map keyboard activation: ' + JSON.stringify(await page.evaluate(() => {
+          const trace = window.mapKeyboardTrace = [];
+          function record(event) {
+            if (trace.length >= 24) return;
+            const target = event.target, smoother = window.ScrollSmoother?.get();
+            trace.push({ type: event.type, key: event.key, tag: target?.tagName, id: target?.id,
+              expanded: target?.getAttribute?.('aria-expanded'), focus: document.activeElement.id || document.activeElement.className,
+              native: scrollY, rendered: smoother?.scrollTop() });
+          }
+          for (const type of ['keydown', 'keyup', 'click', 'focusin']) document.addEventListener(type, record, { capture: true });
+          window.addEventListener('scroll', record, { passive: true });
+          const target = document.querySelector('.gallery-map-shot[data-image="Third.jpg"]');
+          const { top, bottom, height } = target.getBoundingClientRect();
+          return { focus: document.activeElement.getAttribute('aria-label'), expanded: document.activeElement.getAttribute('aria-expanded'),
+            native: scrollY, rendered: window.ScrollSmoother.get().scrollTop(), figure: { top, bottom, height } };
+        })));
         await page.keyboard.press('Enter');
-        await focusedMapScreenshotIsVisible(page, 'Third.jpg');
+        await focusedMapScreenshotIsVisible(page, 'Third.jpg', t);
         assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), false);
         assert.equal(await page.locator('#public-map .is-open').count(), 0);
       }
