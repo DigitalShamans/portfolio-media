@@ -209,6 +209,7 @@ function setupClassicGalleryScroll() {
   const scroller = document.scrollingElement;
   const twoImageScroll = gallery.hasAttribute('data-two-image-scroll');
   const groupedImageScroll = gallery.hasAttribute('data-grouped-image-scroll');
+  const useExpoOut = gallery.dataset.galleryScrollEase === 'expo.out';
   const combinedImageScroll = groupedImageScroll || gallery.hasAttribute('data-combined-image-scroll');
   let movingDirection = 0;
   let activeStep;
@@ -312,6 +313,11 @@ function setupClassicGalleryScroll() {
 
   function easedProgress(elapsed) {
     if (elapsed <= 0 || elapsed >= 1) return Math.max(0, Math.min(1, elapsed));
+    if (useExpoOut) {
+      // Match the vendored GSAP expo.out curve without waiting for GSAP on the first wheel tick.
+      const remaining = 1 - elapsed;
+      return 1 - (remaining * 2 ** (-10 * elapsed) + remaining ** 6 * elapsed);
+    }
     // Solve x(t) for cubic-bezier(0.4, 0, 0, 1), then evaluate y(t).
     let low = 0;
     let high = 1;
@@ -395,7 +401,7 @@ function setupClassicGalleryScroll() {
       let extra = 0;
       let extending = false;
       if (extension?.started !== undefined) {
-        // The second path starts at zero displacement and speed.
+        // Start the added travel at zero displacement.
         const extraProgress = easedProgress((now - extension.started) / extension.duration);
         extra = extension.offset * extraProgress;
         extending = extraProgress < 1;
@@ -557,9 +563,10 @@ function setupClassicGalleryScroll() {
     if (stroke) stroke.handled = true;
     movingDirection = reducedMotion.matches ? 0 : direction;
     if (oneImageOffset !== undefined && !reducedMotion.matches) {
-      galleryDiagnostics?.state('gallery-wheel', getGallerySmoother() ? 'GSAP image step' : 'JavaScript image step',
-        getGallerySmoother() ? 'GSAP moves to the image selected by the shared wheel controller.'
-          : 'This wheel animation uses requestAnimationFrame.');
+      const smoother = getGallerySmoother();
+      galleryDiagnostics?.state('gallery-wheel', smoother ? 'GSAP image step' : 'JavaScript image step',
+        smoother ? 'GSAP moves to the image selected by the shared wheel controller.'
+          : useExpoOut ? 'Image steps use expo.out easing.' : 'This wheel animation uses requestAnimationFrame.');
       galleryDiagnostics?.count('gallery-wheel', 'animated step started');
       animateGalleryStep(movement, oneImageOffset, extraOffset);
     } else {

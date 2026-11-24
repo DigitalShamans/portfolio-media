@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
 const vm = require('node:vm');
+const { gsap: gsapEases } = require('../../assets/vendor/gsap/3.15.1/gsap.min.js');
 
 const root = path.resolve(__dirname, '../..');
 const viewerSource = fs.readFileSync(path.join(root, 'galleries/gallery-viewer.js'), 'utf8');
@@ -17,7 +18,7 @@ const controller = viewerSource.slice(start, end) + '\nsetupClassicGalleryScroll
 // page can have different values; DOM rectangles follow the rendered position.
 function wheelPage({ map = false, smootherReady = false, ownsGallery = true,
     position = 300, nativePosition = position, reduced = false,
-    nativeOnly = false, height = 1000, scrollHeight = 3700 } = {}) {
+    nativeOnly = false, scrollEase, height = 1000, scrollHeight = 3700 } = {}) {
   let now = 0, native = nativePosition, rendered = position, ready = smootherReady;
   let frameId = 0, timerId = 0, getCalls = 0, paused = false;
   const frames = new Map(), timers = new Map(), tweens = [];
@@ -61,7 +62,9 @@ function wheelPage({ map = false, smootherReady = false, ownsGallery = true,
     id: 'shot-' + index,
     getBoundingClientRect: () => ({ top: top - visiblePosition(), bottom: top + 600 - visiblePosition(), height: 600 }),
   }));
-  const gallery = { children: entries, hasAttribute: name => attributes.has(name) };
+  const gallery = {
+    children: entries, dataset: { galleryScrollEase: scrollEase }, hasAttribute: name => attributes.has(name),
+  };
   const content = { contains: element => ownsGallery && element === gallery };
   const smoother = {
     content: () => content,
@@ -167,6 +170,27 @@ test('listed galleries retain their single native step controller and ignore unr
   assert.ok(page.nativeWrites.length > 1);
   assert.equal(page.tweens.length, 0);
   assert.equal(page.getCalls, 0, 'classic pages do not consult or adopt a smoother');
+});
+
+test('configured expo.out wheel steps match the vendored GSAP curve in both directions', () => {
+  const expoOut = gsapEases.parseEase('expo.out');
+  const duration = Math.sqrt(800) * 1000 / 60;
+  for (const [start, destination, deltaY] of [[300, 1100, 120], [1100, 300, -120]]) {
+    const page = wheelPage({ position: start, scrollEase: 'expo.out' });
+    assert.equal(page.wheel({ deltaY }).defaultPrevented, true);
+    let elapsed = 0;
+    for (const sample of [16, 100, 235, 420]) {
+      page.advance(sample - elapsed);
+      elapsed = sample;
+      const expected = start + (destination - start) * expoOut(elapsed / duration);
+      assert.ok(Math.abs(page.native - expected) < 1e-8, 'rendered position follows expo.out at ' + sample + 'ms');
+    }
+    page.advance(100);
+    assert.equal(page.native, destination);
+    assert.equal(page.pendingFrames, 0);
+    assert.equal(page.getCalls, 0);
+    assert.ok(page.reports.some(([, , reason]) => reason.includes('expo.out')));
+  }
 });
 
 test('a grouped GSAP stroke advances once and absorbs its remaining wheel ticks', () => {
