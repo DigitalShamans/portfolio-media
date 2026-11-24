@@ -94,7 +94,7 @@ h1 { margin: 0; text-align: center; font-size: clamp(1rem, 2.6vw, 2.4rem); line-
 }
 .comparison-indicator[hidden] { display: none; }
 .shot-entry > .comparison-indicator { inset-inline: 0; inset-block-end: 0; }
-.viewer-frame > .comparison-indicator {
+.viewer-canvas > .comparison-indicator {
   inset-block-start: calc(var(--comparison-bottom) - var(--target-height));
 }
 .comparison-indicator > button {
@@ -140,6 +140,7 @@ dialog {
 }
 .viewer-frame { position: absolute; inset: 0; overflow: hidden; background: #000; }
 .stage { position: absolute; inset: 0; overflow: hidden; touch-action: none; cursor: zoom-in; }
+.viewer-canvas { position: absolute; inset: 0; transform-origin: center; }
 .stage img {
   display: block;
   width: 100%;
@@ -174,7 +175,6 @@ dialog {
   padding-inline: clamp(.5rem, 1.2vw, 1.5rem);
   pointer-events: none;
 }
-.stage.zoomed + .viewer-arrows { width: 100%; }
 .viewer-arrows button { pointer-events: auto; }
 .viewer-bar button, .viewer-arrows button, .counter {
   margin: 0;

@@ -1,0 +1,28 @@
+name: Atrium viewer gesture checks
+
+on:
+  push:
+    branches: [qa/atrium-viewer-2026-11-24]
+
+permissions:
+  contents: read
+
+jobs:
+  gestures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser test driver
+        run: npm install --no-audit --no-fund --prefix "$RUNNER_TEMP/atrium-browser" playwright@1.62.1
+      - name: Run offline map and viewer regressions
+        run: node --test .github/tests/gallery-map.test.cjs .github/tests/gallery-arrival.test.cjs
+      - name: Run browser gestures and image-control geometry
+        env:
+          CHROMIUM_PATH: /usr/bin/google-chrome
+        run: |
+          export NODE_PATH="$RUNNER_TEMP/atrium-browser/node_modules"
+          node --test --test-name-pattern='Atrium|pinch and pan keep|fullscreen touch swipes|fullscreen desktop single-click|comparison hover|RZ Start' .github/tests/gallery-delivery.browser.test.cjs

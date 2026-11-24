@@ -55,6 +55,8 @@ if (primaryTouch) {
 }
 const frame = document.querySelector('#viewer-frame');
 const stage = document.querySelector('#stage');
+const canvas = document.querySelector('#viewer-canvas');
+const viewerArrows = document.querySelector('.viewer-arrows');
 const original = document.querySelector('#original');
 original.fetchPriority = 'high';
 const previousSide = document.querySelector('#previous-side');
@@ -465,7 +467,7 @@ setupClassicGalleryScroll();
 function fitImage() {
   clearTimeout(pendingClickZoom);
   setViewerZoom(1, 0, 0);
-  positionViewerIndicator();
+  positionViewerControls();
 }
 
 function showStatus(message) {
@@ -578,7 +580,7 @@ function showImage(index, initialVariant = 0) {
     : null;
   if (viewerIndicator) {
     viewerIndicator.hidden = true;
-    frame.append(viewerIndicator);
+    canvas.append(viewerIndicator);
   }
   fitImage();
   previousSide.disabled = nextSide.disabled = shots.length < 2;
@@ -626,8 +628,8 @@ function imageLoaded() {
     displayedComparison = displayed;
     setActiveSegment(viewerIndicator, displayedComparison);
     viewerIndicator.hidden = false;
-    positionViewerIndicator();
   }
+  positionViewerControls();
   if (!shot.comparison || comparisonsInitialized) return;
   comparisonsInitialized = true;
   for (let index = 1; index < shot.sources.length; index++) shot.comparison.getImage(index, true);
@@ -724,18 +726,23 @@ function viewerImageBounds(rect = original.getBoundingClientRect()) {
   return { left: rect.left + (rect.width - width) / 2, top: rect.top + (rect.height - height) / 2, width, height };
 }
 
-function positionViewerIndicator() {
-  if (!viewerIndicator || viewerIndicator.hidden || !original.naturalWidth) return;
-  const { left, top, width, height } = viewerImageBounds(stage.getBoundingClientRect());
-  const frameRect = frame.getBoundingClientRect();
-  viewerIndicator.style.left = (left - frameRect.left) + 'px';
+function positionViewerControls() {
+  if (!viewerAspect) return;
+  // Lay out image controls before zooming; the canvas carries them with the image.
+  const viewport = stage.getBoundingClientRect();
+  const { left, top, width, height } = viewerImageBounds(viewport);
+  viewerArrows.style.left = (left - viewport.left + width / 2) + 'px';
+  viewerArrows.style.top = (top - viewport.top + height / 2) + 'px';
+  viewerArrows.style.width = width + 'px';
+  if (!viewerIndicator || viewerIndicator.hidden) return;
+  viewerIndicator.style.left = (left - viewport.left) + 'px';
   viewerIndicator.style.width = width + 'px';
-  viewerIndicator.style.setProperty('--comparison-bottom', (top + height - frameRect.top) + 'px');
+  viewerIndicator.style.setProperty('--comparison-bottom', (top + height - viewport.top) + 'px');
 }
 
 new ResizeObserver(() => {
   if (viewerZoom.scale > 1) setViewerZoom(viewerZoom.scale, viewerZoom.x, viewerZoom.y);
-  positionViewerIndicator();
+  positionViewerControls();
 }).observe(stage);
 
 function isInsideImage(event, { left, top, width, height }) {
@@ -1066,8 +1073,7 @@ previousSide.addEventListener('click', () => step(-1));
 nextSide.addEventListener('click', () => step(1));
 
 viewer.addEventListener('keydown', event => {
-  if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey ||
-      viewer.classList.contains('has-overview-map')) return;
+  if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
   if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
     event.preventDefault();
     step(event.key === 'ArrowLeft' ? -1 : 1);
@@ -1083,7 +1089,8 @@ function setViewerZoom(scale, x, y) {
   viewerZoom.x = Math.max(-maxX, Math.min(maxX, x));
   viewerZoom.y = Math.max(-maxY, Math.min(maxY, y));
   stage.classList.toggle('zoomed', scale > 1);
-  original.style.transform = scale === 1 ? '' : `translate(${viewerZoom.x}px, ${viewerZoom.y}px) scale(${scale})`;
+  canvas.style.transform = scale === 1 ? '' : `translate(${viewerZoom.x}px, ${viewerZoom.y}px) scale(${scale})`;
+  viewer.dispatchEvent(new CustomEvent('gallery-zoomchange', { detail: { ...viewerZoom } }));
 }
 
 function zoomViewerAt(scale, anchor, point, from = viewerZoom) {
@@ -1155,8 +1162,15 @@ function viewerHitImage(event) {
   return isInsideImage(event, viewerImageBounds());
 }
 
+// Stop a completed gesture before a hotspot or image-control button can react to its click.
 stage.addEventListener('click', event => {
-  if (suppressViewerClick) return;
+  if (!suppressViewerClick || event.detail === 0) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+}, { capture: true });
+
+stage.addEventListener('click', event => {
+  if (event.target.closest('.viewer-arrows, .comparison-indicator') || event.detail === 0) return;
   if (!viewerHitImage(event)) {
     viewer.close();
     return;
@@ -1186,7 +1200,7 @@ stage.addEventListener('pointerdown', event => {
     }
     viewerTouches.set(event.pointerId, point);
     if (viewerTouches.size === 2) startViewerPinch();
-    stage.setPointerCapture(event.pointerId);
+    event.target.setPointerCapture(event.pointerId);
     return;
   }
   suppressViewerClick = false;
@@ -1228,7 +1242,7 @@ frame.addEventListener('pointerleave', event => {
 });
 
 frame.addEventListener('wheel', event => {
-  if (!viewer.open || viewer.classList.contains('has-overview-map') || event.ctrlKey || event.metaKey || event.altKey ||
+  if (!viewer.open || event.ctrlKey || event.metaKey || event.altKey ||
       !event.deltaY || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
   event.preventDefault();
   const direction = Math.sign(event.deltaY);

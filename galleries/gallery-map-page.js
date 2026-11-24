@@ -95,6 +95,7 @@
     });
 
     const modal = document.querySelector('#viewer'), fullscreenStage = document.querySelector('#fullscreen-map');
+    const viewerStage = document.querySelector('#stage');
     const fullscreenButton = document.querySelector('#map-fullscreen');
     let fullscreenRenderer;
     modal.addEventListener('gallery-imagechange', event => {
@@ -104,12 +105,14 @@
       if (overview && !fullscreenRenderer) {
         fullscreenRenderer = GalleryMap.mount(fullscreenStage, map, resolveImage, {
           previewSize: options.previewSize, navigateOnClick: options.navigateOnClick,
+          isInteractionLocked: () => viewerStage.classList.contains('zoomed'), closeOnEscape: false,
           onNavigate(region) { viewerApi.openImage(region.image); }
         });
       } else if (!overview) {
         fullscreenRenderer?.close();
       }
     });
+    modal.addEventListener('gallery-zoomchange', () => fullscreenRenderer?.refresh());
     modal.addEventListener('close', () => {
       fullscreenRenderer?.destroy(); fullscreenRenderer = undefined;
       fullscreenStage.hidden = true; modal.classList.remove('has-overview-map');

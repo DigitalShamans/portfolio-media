@@ -1,7 +1,7 @@
 'use strict';
 
 const GalleryMap = (() => {
-  function mount(stage, map, resolveImage, { interactive = true, caption, help, onNavigate, navigateOnClick = true, previewSize = 1 } = {}) {
+  function mount(stage, map, resolveImage, { interactive = true, caption, help, onNavigate, navigateOnClick = true, previewSize = 1, isInteractionLocked = () => false, closeOnEscape = true } = {}) {
     const cleanup = [];
     const listen = (target, type, handler) => { target.addEventListener(type, handler); cleanup.push(() => target.removeEventListener(type, handler)); };
     const navigationEnabled = interactive && navigateOnClick && typeof onNavigate === 'function';
@@ -72,7 +72,13 @@ const GalleryMap = (() => {
       const scale = Math.min(5, width / thumbWidth, height / thumbHeight) * previewRatio;
       const panelWidth = thumbWidth * scale, panelHeight = thumbHeight * scale;
       const x = width / 2, y = height / 2;
-      const board = stage.getBoundingClientRect(), left = board.left + stage.clientLeft, top = board.top + stage.clientTop;
+      const board = stage.getBoundingClientRect();
+      const scaleX = board.width / (stage.offsetWidth || board.width);
+      const scaleY = board.height / (stage.offsetHeight || board.height);
+      const left = board.left + stage.clientLeft * scaleX, top = board.top + stage.clientTop * scaleY;
+      const clientRect = (x, y, width, height) => ({
+        left: left + x * scaleX, top: top + y * scaleY, width: width * scaleX, height: height * scaleY
+      });
       // Keep the hover area centred on the original thumbnail, matching the reference.
       // Clip it at the map edges without shifting its centre towards the image centre.
       const hoverLeft = Math.max(0, anchorX - width * .225);
@@ -80,9 +86,9 @@ const GalleryMap = (() => {
       const hoverRight = Math.min(width, anchorX + width * .225);
       const hoverBottom = Math.min(height, anchorY + height * .27);
       return { scale, shiftX: x - anchorX, shiftY: y - anchorY,
-        expanded: { left: left + x - panelWidth / 2, top: top + y - panelHeight / 2, width: panelWidth, height: panelHeight },
-        hoverArea: { left: left + hoverLeft, top: top + hoverTop, width: hoverRight - hoverLeft, height: hoverBottom - hoverTop },
-        thumb: { left: left + anchorX - thumbWidth / 2, top: top + anchorY - thumbHeight / 2, width: thumbWidth, height: thumbHeight } };
+        expanded: clientRect(x - panelWidth / 2, y - panelHeight / 2, panelWidth, panelHeight),
+        hoverArea: clientRect(hoverLeft, hoverTop, hoverRight - hoverLeft, hoverBottom - hoverTop),
+        thumb: clientRect(anchorX - thumbWidth / 2, anchorY - thumbHeight / 2, thumbWidth, thumbHeight) };
     }
     const edgeDistance = (point, rect) => Math.min(point.x - rect.left, rect.left + rect.width - point.x, point.y - rect.top, rect.top + rect.height - point.y);
     function close(block = false) {
@@ -107,14 +113,15 @@ const GalleryMap = (() => {
     function scheduleHover(card) {
       if (pendingCard === card) return;
       cancelPendingHover();
-      if (!card) return;
+      if (!card || isInteractionLocked()) return;
       pendingCard = card;
       hoverTimer = setTimeout(() => {
         pendingCard = null; hoverTimer = undefined;
-        if (hover.matches && !active && pointer && !blocked.has(card) && edgeDistance(pointer, geometry(card).thumb) >= 0) open(card, 'pointer');
+        if (!isInteractionLocked() && hover.matches && !active && pointer && !blocked.has(card) && edgeDistance(pointer, geometry(card).thumb) >= 0) open(card, 'pointer');
       }, hoverDelay);
     }
     function checkHoverPosition() {
+      if (isInteractionLocked()) { cancelPendingHover(); return; }
       if (!pointer) return;
       if (pendingCard && edgeDistance(pointer, geometry(pendingCard).thumb) < 0) cancelPendingHover();
       if (active && mode === 'pointer' && edgeDistance(pointer, geometry(active).hoverArea) <= 0) close(true);
@@ -122,6 +129,7 @@ const GalleryMap = (() => {
     listen(stage, 'pointermove', event => {
       if (!hover.matches || event.pointerType === 'touch') return;
       pointer = { x: event.clientX, y: event.clientY };
+      if (event.buttons || isInteractionLocked()) { cancelPendingHover(); return; }
       for (const card of blocked) if (edgeDistance(pointer, geometry(card).thumb) < 0) blocked.delete(card);
       if (active) {
         if (mode !== 'pointer') return;
@@ -131,15 +139,21 @@ const GalleryMap = (() => {
         scheduleHover(card);
       }
     });
-    listen(stage, 'pointerleave', () => { if (mode === 'pointer') close(); pointer = null; blocked.clear(); });
+    listen(stage, 'pointerdown', cancelPendingHover);
+    listen(stage, 'pointerleave', () => {
+      cancelPendingHover();
+      if (mode === 'pointer' && !isInteractionLocked()) close();
+      pointer = null; blocked.clear();
+    });
     cards.forEach((card, index) => {
       listen(card, 'focus', () => { if (navigationEnabled && card.matches(':focus-visible')) open(card, 'keyboard'); });
       listen(card, 'pointerenter', event => {
-        if (!hover.matches || event.pointerType === 'touch' || active || blocked.has(card)) return;
+        if (!hover.matches || event.pointerType === 'touch' || event.buttons || isInteractionLocked() || active || blocked.has(card)) return;
         pointer = { x: event.clientX, y: event.clientY }; scheduleHover(card);
       });
       listen(card, 'pointerleave', () => { if (pendingCard === card) cancelPendingHover(); });
       listen(card, 'click', event => {
+        if (isInteractionLocked() && event.detail !== 0) return;
         if (navigationEnabled && (hover.matches || event.detail === 0 || active === card)) {
           close(true);
           onNavigate(map.regions[index]);
@@ -149,13 +163,18 @@ const GalleryMap = (() => {
         if (active === card) close(); else open(card, event.detail === 0 ? 'keyboard' : 'touch');
       });
     });
-    listen(stage, 'click', event => { if (!event.target.closest('.gallery-map-region')) close(); });
-    listen(document, 'keydown', event => { if (event.key === 'Escape' && active) { event.preventDefault(); close(true); } });
+    listen(stage, 'click', event => { if (!isInteractionLocked() && !event.target.closest('.gallery-map-region')) close(); });
+    listen(document, 'keydown', event => {
+      if (!closeOnEscape || event.key !== 'Escape' || !active) return;
+      // A background map must not intercept the fullscreen dialog's Escape key.
+      if (event.target?.closest?.('dialog') && !stage.contains(event.target)) return;
+      event.preventDefault(); close(true);
+    });
     listen(stage, 'focusout', event => { if (mode === 'keyboard' && !stage.contains(event.relatedTarget)) close(); });
     const resize = new ResizeObserver(() => { if (active) place(active); checkHoverPosition(); }); resize.observe(stage);
     listen(document, 'scroll', checkHoverPosition);
     listen(hover, 'change', () => { close(); blocked.clear(); updateHelp(); }); updateHelp();
-    return { cards, close, picture, destroy() { close(); resize.disconnect(); cleanup.forEach(remove => remove()); stage.replaceChildren(); } };
+    return { cards, close, refresh: checkHoverPosition, picture, destroy() { close(); resize.disconnect(); cleanup.forEach(remove => remove()); stage.replaceChildren(); } };
   }
   return { mount };
 })();
