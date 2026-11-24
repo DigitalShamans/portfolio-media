@@ -639,6 +639,65 @@ test('Atrium ScrollSmoother leaves native scrolling usable for reduced motion or
   }
 });
 
+test('Atrium ScrollSmoother initializes after a slow dependency while native scrolling stays usable', { timeout: 15_000 }, async t => {
+  const dependencyRequested = signal();
+  const releaseDependency = signal();
+  let requestedAt;
+  t.after(releaseDependency.release);
+  const { page, requests, errors } = await openPage(t, {
+    map: true, width: 1440, diagnostics: true, reducedMotion: 'no-preference',
+    intercept: async (request, url) => {
+      if (!url.pathname.endsWith('/ScrollSmoother.min.js')) return false;
+      requestedAt = performance.now();
+      dependencyRequested.release();
+      await releaseDependency.reached;
+      return false;
+    },
+  });
+  await dependencyRequested.reached;
+  await page.locator('#map-screenshots .shot-primary').nth(2).waitFor();
+  assert.equal(await page.evaluate(() => Boolean(window.ScrollSmoother?.get())), false);
+  await page.mouse.move(300, 300);
+  const initial = await page.evaluate(() => scrollY);
+  await page.mouse.wheel(0, 120);
+  await page.waitForFunction(initial => scrollY > initial + 60, initial);
+
+  // Reproduce a real slow response beyond the former eight-second rejection.
+  // The response remains pending, so no download failure has occurred.
+  await page.waitForTimeout(Math.max(0, 8200 - (performance.now() - requestedAt)));
+  assert.ok(performance.now() - requestedAt >= 8000);
+  assert.deepEqual(await page.evaluate(() => ({
+    gsap: window.gsap?.version, trigger: window.ScrollTrigger?.version,
+    smoother: Boolean(window.ScrollSmoother),
+    transform: getComputedStyle(document.querySelector('#gallery-scroll-content')).transform,
+  })), { gsap: '3.15.1', trigger: '3.15.1', smoother: false, transform: 'none' });
+  const waiting = await page.evaluate(() => scrollY);
+  await page.mouse.wheel(0, 120);
+  await page.waitForFunction(waiting => scrollY > waiting + 60, waiting);
+  const beforeRelease = await page.evaluate(() => scrollY);
+  const delayedFor = performance.now() - requestedAt;
+  releaseDependency.release();
+
+  await gallerySmootherReady(page);
+  await page.waitForFunction(position => {
+    const smoother = window.ScrollSmoother.get();
+    return smoother.scrollTrigger.end > 0 && Math.abs(smoother.scrollTop() - position) < 2;
+  }, beforeRelease);
+  assert.equal(requests.filter(url => url.endsWith('/ScrollSmoother.min.js')).length, 1,
+    'the pending request is allowed to complete without a duplicate download');
+  await page.mouse.wheel(0, 120);
+  await page.waitForFunction(position => window.ScrollSmoother.get().scrollTop() > position + 60, beforeRelease);
+  const report = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1));
+  assert.equal(report.features['gallery-smoother'].mode, 'GSAP ScrollSmoother');
+  assert.ok(report.motion['gallery-smoother'].advances > 0);
+  t.diagnostic(JSON.stringify({
+    delayedForMs: Math.round(delayedFor), nativeBeforeRelease: beforeRelease,
+    renderedAfterRelease: await page.evaluate(() => window.ScrollSmoother.get().scrollTop()),
+    mode: report.features['gallery-smoother'].mode,
+  }));
+  assert.deepEqual(errors, []);
+});
+
 test('opening diagnostics update when GSAP loads without scroll input', async t => {
   const page = await browser.newPage();
   t.after(() => page.close());
@@ -1254,5 +1313,6 @@ test('RZ Start stays behind password and bearer-token delivery', async t => {
   assert.ok(!requests.some(url => url.includes('/public-media/') || url.includes('/1440p/')));
   assert.deepEqual(errors, []);
 });
+
 
 
