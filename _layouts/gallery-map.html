@@ -29,6 +29,8 @@
   <script id="gallery-map-options" type="application/json">
   {
     "defaultGallery": {{ page.gallery | default: 'hb-atrium' | jsonify }},
+    "previewSize": {{ page.map_preview_size | default: 1 | jsonify }},
+    "navigateOnClick": {% if page.map_navigate_on_click == false %}false{% else %}true{% endif %},
     "viewerScript": {{ '/galleries/gallery-viewer.js' | relative_url | append: '?v=49' | jsonify }},
     "personal": {% if page.portfolio == 'personal' %}true{% else %}false{% endif %},
     "galleryRoot": {{ '/galleries/' | relative_url | jsonify }},
@@ -48,7 +50,7 @@
   <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=6" defer></script>
   <script src="{{ '/galleries/gallery-data.js' | relative_url }}?v=3" defer></script>
   <script src="{{ '/galleries/gallery-map-data.js' | relative_url }}?v=1" defer></script>
-  <script src="{{ '/galleries/gallery-map.js' | relative_url }}?v=5" defer></script>
-  <script src="{{ '/galleries/gallery-map-page.js' | relative_url }}?v=6" defer></script>
+  <script src="{{ '/galleries/gallery-map.js' | relative_url }}?v=6" defer></script>
+  <script src="{{ '/galleries/gallery-map-page.js' | relative_url }}?v=7" defer></script>
 </body>
 </html>

@@ -84,6 +84,7 @@
     const stage = document.querySelector('#public-map'); stage.hidden = false;
     GalleryMap.mount(stage, map, resolveImage, {
       caption, help: document.querySelector('#map-help'),
+      previewSize: options.previewSize, navigateOnClick: options.navigateOnClick,
       onNavigate(region) {
         const target = targets.get(region.image);
         if (!target) return;
@@ -102,6 +103,7 @@
       fullscreenStage.hidden = !overview;
       if (overview && !fullscreenRenderer) {
         fullscreenRenderer = GalleryMap.mount(fullscreenStage, map, resolveImage, {
+          previewSize: options.previewSize, navigateOnClick: options.navigateOnClick,
           onNavigate(region) { viewerApi.openImage(region.image); }
         });
       } else if (!overview) {
@@ -115,7 +117,7 @@
     fullscreenButton.disabled = false;
     fullscreenButton.addEventListener('click', event => viewerApi.openImage(map.overview.image, { opener: fullscreenButton, event }));
     // The overview itself should open the viewer just like an ordinary gallery image.
-    // Keep it separate from the hotspot buttons, whose clicks still scroll down.
+    // Keep it separate from hotspot previews and their optional gallery navigation.
     const overview = stage.querySelector('.gallery-map-base');
     const overviewButton = document.createElement('button');
     overviewButton.type = 'button';

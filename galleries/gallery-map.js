@@ -1,10 +1,11 @@
 'use strict';
 
 const GalleryMap = (() => {
-  function mount(stage, map, resolveImage, { interactive = true, caption, help, onNavigate } = {}) {
+  function mount(stage, map, resolveImage, { interactive = true, caption, help, onNavigate, navigateOnClick = true, previewSize = 1 } = {}) {
     const cleanup = [];
     const listen = (target, type, handler) => { target.addEventListener(type, handler); cleanup.push(() => target.removeEventListener(type, handler)); };
-    const navigationEnabled = interactive && typeof onNavigate === 'function';
+    const navigationEnabled = interactive && navigateOnClick && typeof onNavigate === 'function';
+    const previewRatio = Number.isFinite(previewSize) ? Math.max(.2, Math.min(1, previewSize)) : 1;
     function picture(name, alt, primary = false, lazy = false) {
       const source = resolveImage(name);
       const picture = document.createElement('picture');
@@ -68,7 +69,7 @@ const GalleryMap = (() => {
       const thumbWidth = width * .2, thumbHeight = thumbWidth * 9 / 16;
       const anchorX = width * Math.max(10, Math.min(90, Number(card.dataset.x))) / 100;
       const anchorY = height * Math.max(10, Math.min(90, Number(card.dataset.y))) / 100;
-      const scale = Math.min(5, width / thumbWidth, height / thumbHeight);
+      const scale = Math.min(5, width / thumbWidth, height / thumbHeight) * previewRatio;
       const panelWidth = thumbWidth * scale, panelHeight = thumbHeight * scale;
       const x = width / 2, y = height / 2;
       const board = stage.getBoundingClientRect(), left = board.left + stage.clientLeft, top = board.top + stage.clientTop;
