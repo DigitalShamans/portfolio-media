@@ -1137,7 +1137,19 @@ function animateViewerZoom(time) {
   zoom.lastFrame = time;
   // Ease toward the target based on elapsed time at any display refresh rate.
   const remaining = zoom.target - viewerZoom.scale;
-  const amount = Math.abs(remaining) < 0.001 ? 1 : 1 - Math.exp(-elapsed / 40);
+  let amount = 1;
+  if (Math.abs(remaining) >= 0.001) {
+    if (zoom.filteredWheelScale === undefined) {
+      amount = 1 - Math.exp(-elapsed / 40);
+    } else {
+      // Smooth both wheel input and the displayed scale, carrying velocity across ticks.
+      const step = elapsed / 100;
+      const decay = Math.exp(-step);
+      const inputGap = zoom.target - zoom.filteredWheelScale;
+      amount = 1 - (1 + inputGap / remaining * step) * decay;
+      zoom.filteredWheelScale = zoom.target - inputGap * decay;
+    }
+  }
   const scale = amount === 1 ? zoom.target : viewerZoom.scale + remaining * amount;
   if (zoom.target === 1) {
     // Fit has no pan. Ease toward the center together with the scale.
@@ -1150,16 +1162,15 @@ function animateViewerZoom(time) {
   else zoom.frame = requestAnimationFrame(animateViewerZoom);
 }
 
-function easeViewerZoomTo(target, anchor) {
+function easeViewerZoomTo(target, anchor, filteredWheelScale) {
   if (reducedMotion.matches || target === viewerZoom.scale) {
     cancelViewerZoomAnimation();
     if (target === 1) setViewerZoom(1, 0, 0);
     else zoomViewerAt(target, anchor, anchor);
   } else if (viewerZoomAnimation) {
-    viewerZoomAnimation.target = target;
-    viewerZoomAnimation.anchor = anchor;
+    Object.assign(viewerZoomAnimation, { target, anchor, filteredWheelScale });
   } else {
-    viewerZoomAnimation = { target, anchor, frame: requestAnimationFrame(animateViewerZoom) };
+    viewerZoomAnimation = { target, anchor, filteredWheelScale, frame: requestAnimationFrame(animateViewerZoom) };
   }
 }
 
@@ -1178,7 +1189,8 @@ function zoomViewerWithWheel(event) {
     : Math.min(viewerZoom.scale, previousTarget);
   const target = clampViewerScale(baseScale * Math.exp(-delta * unit * 0.0018));
   if (target === previousTarget) return;
-  easeViewerZoomTo(target, pointFor(event));
+  const filteredScale = baseScale === previousTarget ? viewerZoomAnimation?.filteredWheelScale : undefined;
+  easeViewerZoomTo(target, pointFor(event), filteredScale ?? viewerZoom.scale);
 }
 
 function pinchGeometry() {

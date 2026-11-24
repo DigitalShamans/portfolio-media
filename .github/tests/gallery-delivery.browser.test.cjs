@@ -1053,7 +1053,9 @@ test('fullscreen desktop modifier-wheel zoom eases toward the cursor without zoo
     await modifiedWheel(page, modifier, dx, dy);
     await page.waitForFunction(() => window.viewerWheelTest.scales.at(-1) === 4);
     const { scales } = await page.evaluate(() => window.viewerWheelTest);
-    assert.ok(scales.filter(scale => scale > 1 && scale < 4).length >= 2, modifier + ' eased through intermediate scales');
+    const inMotion = scales.filter(scale => scale > 1 && scale < 4);
+    assert.ok(inMotion.length >= 2, modifier + ' eased through intermediate scales');
+    assert.ok((inMotion[0] - 1) / 3 < 0.05, modifier + ' started gently on the first frame');
     const transform = await viewerTransform(page);
     assert.ok(Math.abs(transform.x + (x - centerX) * 3) < 1, modifier + ' kept the point under the cursor');
 
@@ -1072,6 +1074,17 @@ test('fullscreen desktop modifier-wheel zoom eases toward the cursor without zoo
   for (let tick = 0; tick < 3; tick++) await page.mouse.wheel(0, -120);
   await page.keyboard.up('Control');
   await page.waitForFunction(() => window.viewerWheelTest.scales.at(-1) > 1.7);
+
+  // Reverse between two frames so residual zoom-in velocity cannot slip past the assertion.
+  const reversal = await page.evaluate(() => {
+    const scales = window.viewerWheelTest.scales;
+    const before = scales.at(-1);
+    document.querySelector('#viewer-frame').dispatchEvent(new WheelEvent('wheel', {
+      deltaY: 120, ctrlKey: true, bubbles: true, cancelable: true,
+    }));
+    return new Promise(resolve => requestAnimationFrame(() => resolve({ before, after: scales.at(-1) })));
+  });
+  assert.ok(reversal.after < reversal.before, 'a wheel reversal starts moving out on the next frame');
 
   // Plain wheel navigation cancels an in-progress zoom and fits the new image.
   await modifiedWheel(page, 'Control', 0, -2500);
