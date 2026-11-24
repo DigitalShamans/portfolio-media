@@ -82,7 +82,7 @@ let viewerZoomAnimation;
 let mouseGesture;
 let suppressViewerClick = false;
 let lastViewerPointer;
-let pendingClickZoom;
+let viewerZoomClickCount = 0;
 let viewerAspect = 0;
 let viewerRequest = 0;
 let comparisonsInitialized = false;
@@ -472,13 +472,8 @@ function setupClassicGalleryScroll() {
 
 setupClassicGalleryScroll();
 
-function cancelViewerClickZoom() {
-  clearTimeout(pendingClickZoom);
-  pendingClickZoom = undefined;
-}
-
 function fitImage() {
-  cancelViewerClickZoom();
+  viewerZoomClickCount = 0;
   cancelViewerZoomAnimation();
   setViewerZoom(1, 0, 0);
   positionViewerControls();
@@ -1142,9 +1137,15 @@ function animateViewerZoom(time) {
   zoom.lastFrame = time;
   // Ease toward the target based on elapsed time at any display refresh rate.
   const remaining = zoom.target - viewerZoom.scale;
-  const scale = Math.abs(remaining) < 0.001 ? zoom.target
-    : viewerZoom.scale + remaining * (1 - Math.exp(-elapsed / 40));
-  zoomViewerAt(scale, zoom.anchor, zoom.anchor);
+  const amount = Math.abs(remaining) < 0.001 ? 1 : 1 - Math.exp(-elapsed / 40);
+  const scale = amount === 1 ? zoom.target : viewerZoom.scale + remaining * amount;
+  if (zoom.target === 1) {
+    // Fit has no pan. Ease toward the center together with the scale.
+    const panFactor = 1 - amount;
+    setViewerZoom(scale, viewerZoom.x * panFactor, viewerZoom.y * panFactor);
+  } else {
+    zoomViewerAt(scale, zoom.anchor, zoom.anchor);
+  }
   if (scale === zoom.target) viewerZoomAnimation = undefined;
   else zoom.frame = requestAnimationFrame(animateViewerZoom);
 }
@@ -1152,7 +1153,8 @@ function animateViewerZoom(time) {
 function easeViewerZoomTo(target, anchor) {
   if (reducedMotion.matches || target === viewerZoom.scale) {
     cancelViewerZoomAnimation();
-    zoomViewerAt(target, anchor, anchor);
+    if (target === 1) setViewerZoom(1, 0, 0);
+    else zoomViewerAt(target, anchor, anchor);
   } else if (viewerZoomAnimation) {
     viewerZoomAnimation.target = target;
     viewerZoomAnimation.anchor = anchor;
@@ -1167,7 +1169,7 @@ function zoomViewerWithWheel(event) {
   // Shift-wheel can arrive on the horizontal axis.
   const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
   if (!delta) return;
-  cancelViewerClickZoom();
+  viewerZoomClickCount = 0;
   const unit = mode === WheelEvent.DOM_DELTA_LINE ? 16
     : mode === WheelEvent.DOM_DELTA_PAGE ? stage.clientHeight : 1;
   const previousTarget = viewerZoomAnimation?.target ?? viewerZoom.scale;
@@ -1244,10 +1246,10 @@ stage.addEventListener('click', event => {
 stage.addEventListener('click', event => {
   if (event.target.closest('.viewer-arrows, .comparison-indicator') || event.detail === 0) return;
   const mouseClick = lastViewerPointer === 'mouse' && event.button === 0;
-  // A continuing browser click count forms a double-click only with a pending first click.
-  if (mouseClick && pendingClickZoom !== undefined && event.detail > 1) {
-    cancelViewerClickZoom();
-    easeViewerZoomTo(1, pointFor(event));
+  // A browser's click count can continue after we've handled a pair.
+  if (mouseClick && viewerZoomClickCount && event.detail === viewerZoomClickCount + 1) {
+    viewerZoomClickCount = 0;
+    easeViewerZoomTo(1);
     return;
   }
   if (!viewerHitImage(event)) {
@@ -1255,15 +1257,9 @@ stage.addEventListener('click', event => {
     return;
   }
   if (!mouseClick) return;
-  cancelViewerClickZoom();
-  const point = pointFor(event);
-  // Give a second click time to reset before applying the single-click toggle.
-  pendingClickZoom = setTimeout(() => {
-    pendingClickZoom = undefined;
-    if (!viewer.open) return;
-    const scale = viewerZoomAnimation?.target ?? viewerZoom.scale;
-    easeViewerZoomTo(scale > 1 ? 1 : 2, point);
-  }, 300);
+  viewerZoomClickCount = event.detail;
+  const scale = viewerZoomAnimation?.target ?? viewerZoom.scale;
+  easeViewerZoomTo(scale > 1 ? 1 : 2, pointFor(event));
 });
 
 stage.addEventListener('auxclick', event => {
@@ -1278,9 +1274,11 @@ stage.addEventListener('contextmenu', event => {
 
 stage.addEventListener('pointerdown', event => {
   lastViewerPointer = event.pointerType;
-  if (event.pointerType !== 'mouse' || event.button !== 0) cancelViewerZoomAnimation();
+  if (event.pointerType !== 'mouse' || event.button !== 0) {
+    viewerZoomClickCount = 0;
+    cancelViewerZoomAnimation();
+  }
   if (event.pointerType === 'touch') {
-    cancelViewerClickZoom();
     const point = pointFor(event);
     if (!viewerTouches.size) {
       suppressViewerClick = false;
@@ -1298,7 +1296,6 @@ stage.addEventListener('pointerdown', event => {
   if (event.button === 1 || (panning && viewerZoom.scale > 1)) event.preventDefault();
   if (panning) {
     if (viewerZoom.scale === 1) return;
-    cancelViewerClickZoom();
     stage.setPointerCapture(event.pointerId);
     stage.classList.add('dragging');
   }
