@@ -1215,6 +1215,11 @@ function animateViewerZoom(time) {
     return;
   }
   const elapsed = zoom.lastFrame === undefined ? 1000 / 60 : time - zoom.lastFrame;
+  // The frame timestamp can precede wheel input delivered in the same frame.
+  if (elapsed <= 0) {
+    zoom.frame = requestAnimationFrame(animateViewerZoom);
+    return;
+  }
   zoom.lastFrame = time;
   // Ease toward the target based on elapsed time at any display refresh rate.
   const remaining = zoom.target - viewerZoom.scale;
@@ -1255,10 +1260,11 @@ function easeViewerZoomTo(target, anchor, wheel) {
     cancelViewerZoomAnimation();
     if (target === 1) setViewerZoom(1, 0, 0);
     else zoomViewerAt(target, anchor, anchor);
-  } else if (viewerZoomAnimation) {
-    Object.assign(viewerZoomAnimation, { target, anchor, wheel });
   } else {
-    viewerZoomAnimation = { target, anchor, wheel, frame: requestAnimationFrame(animateViewerZoom) };
+    viewerZoomAnimation ??= { frame: requestAnimationFrame(animateViewerZoom) };
+    Object.assign(viewerZoomAnimation, { target, anchor, wheel });
+    // Retain the first wheel timestamp when several ticks arrive before rendering.
+    viewerZoomAnimation.lastFrame ??= wheel?.lastInput;
   }
 }
 

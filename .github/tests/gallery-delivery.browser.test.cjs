@@ -1371,6 +1371,68 @@ test('fullscreen desktop modifier-wheel zoom eases toward the cursor without zoo
   assert.deepEqual(errors, []);
 });
 
+test('fullscreen wheel zoom starts with the elapsed time at 240 Hz', async t => {
+  const { page, errors } = await openPage(t, { width: 1440, reducedMotion: 'no-preference' });
+  await page.locator('.shot').first().click();
+  await displayed(page, '#original', preview('First'));
+  await page.waitForFunction(() => document.fullscreenElement?.id === 'viewer-frame');
+
+  const { beforeAdvance, prevented, scales, settledMs } = await page.evaluate(() => {
+    const viewer = document.querySelector('#viewer');
+    const frame = document.querySelector('#viewer-frame');
+    const interval = 1000 / 240;
+    const started = performance.now();
+    const realNow = performance.now;
+    const realRequest = window.requestAnimationFrame;
+    const realCancel = window.cancelAnimationFrame;
+    const callbacks = new Map();
+    let nextId = 0;
+    const scales = [];
+    const record = event => scales.push(event.detail.scale);
+    viewer.addEventListener('gallery-zoomchange', record);
+    window.requestAnimationFrame = callback => {
+      const id = ++nextId;
+      callbacks.set(id, callback);
+      return id;
+    };
+    window.cancelAnimationFrame = id => callbacks.delete(id);
+
+    function render(time) {
+      const pending = Array.from(callbacks.values());
+      callbacks.clear();
+      for (const callback of pending) callback(time);
+    }
+
+    try {
+      performance.now = () => started;
+      const wheel = new WheelEvent('wheel', { ctrlKey: true, deltaY: -2500, bubbles: true, cancelable: true });
+      frame.dispatchEvent(wheel);
+      render(started - 1);
+      const beforeAdvance = scales.length;
+      let settledMs = 0;
+      for (let frameNumber = 1; frameNumber <= 144 && scales.at(-1) !== 4; frameNumber++) {
+        settledMs = frameNumber * interval;
+        render(started + settledMs);
+      }
+      return { beforeAdvance, prevented: wheel.defaultPrevented, scales, settledMs };
+    } finally {
+      viewer.removeEventListener('gallery-zoomchange', record);
+      performance.now = realNow;
+      window.requestAnimationFrame = realRequest;
+      window.cancelAnimationFrame = realCancel;
+    }
+  });
+
+  assert.ok(prevented, 'modifier-wheel zoom stays inside the viewer');
+  assert.equal(beforeAdvance, 0, 'a frame timestamp before input cannot advance zoom');
+  assert.ok(scales[0] > 1 && scales[0] < 1.01, 'the first 240 Hz frame changes zoom by less than one percentage point');
+  assert.ok(scales[1] - scales[0] > scales[0] - 1, 'zoom accelerates smoothly from the first frame');
+  assert.ok(scales.every((scale, i) => !i || scale > scales[i - 1]), 'the zoom advances without reversals or stalls');
+  assert.equal(scales.at(-1), 4);
+  assert.ok(settledMs < 550, 'the short idle tail still settles within 550ms');
+  assert.deepEqual(errors, []);
+});
+
 test('comparison hover is limited to the bottom 6% on gallery tiles and fullscreen images', async t => {
   await t.test('gallery tile', async t => {
     const { page, errors } = await openPage(t, { width: 1440 });
