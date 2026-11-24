@@ -232,6 +232,14 @@ function setupClassicGalleryScroll() {
     return getGallerySmoother()?.scrollTop() ?? scroller.scrollTop;
   }
 
+  function releaseSmootherWrite(smoother) {
+    if (getGallerySmoother() !== smoother || smoother.paused()) return;
+    // Reconcile the completed direct write with the internal scrub tween.
+    // Otherwise the next small native wheel input can bypass its smoothing.
+    smoother.paused(true);
+    smoother.paused(false);
+  }
+
   function cancelGalleryStep() {
     if (!activeStep) return;
     galleryDiagnostics?.count('gallery-wheel', 'step cancelled');
@@ -242,6 +250,7 @@ function setupClassicGalleryScroll() {
       step.tween.kill();
       if (getGallerySmoother() === step.smoother) {
         step.smoother.scrollTo(step.smoother.scrollTop(), false);
+        releaseSmootherWrite(step.smoother);
       }
     } else cancelAnimationFrame(step.frame);
   }
@@ -324,6 +333,7 @@ function setupClassicGalleryScroll() {
             galleryDiagnostics?.count('gallery-wheel', 'step completed');
             activeStep = undefined;
             movingDirection = 0;
+            releaseSmootherWrite(smoother);
           },
           onInterrupt() {
             if (activeStep !== step || step.retargeting) return;

@@ -123,6 +123,7 @@
       restoreScrollStyles = saveScrollStyles();
       // A step can be using the native fallback while these libraries load.
       document.dispatchEvent(new Event('gallery-scrollcontrollerchange'));
+      const position = window.scrollY;
       smoother = window.ScrollSmoother.create({
         wrapper, content,
         smooth: 0.65,
@@ -144,6 +145,11 @@
           document.dispatchEvent(new Event('gallery-scrollupdate'));
         }
       });
+      // Preserve the interrupted fallback position through the initial refresh.
+      // Reconcile its scrub state before native input or another step resumes.
+      smoother.scrollTo(position, false);
+      smoother.paused(true);
+      smoother.paused(false);
       updatePaused();
     } catch (error) {
       failed = true;
