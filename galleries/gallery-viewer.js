@@ -403,8 +403,9 @@ function setupClassicGalleryScroll() {
         return;
       }
       movement = targets.movement;
+      // Opening alignment and other single stops use the same motion as grouped steps.
+      oneImageOffset = movement;
       extraOffset = targets.extraOffset;
-      if (extraOffset !== undefined) oneImageOffset = movement;
     } else {
       const entry = imageAtViewportCenter();
       const offset = centerOffset(entry);

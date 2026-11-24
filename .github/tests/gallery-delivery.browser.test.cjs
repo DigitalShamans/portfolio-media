@@ -79,7 +79,7 @@ function pageHtml(path, { embeds, assetVersions = {}, map = false } = {}) {
       .replace('{{ site.data.gallery_delivery.service_origin | jsonify }}', JSON.stringify(media))
     : `<div class="gallery-content"><header class="intro"><h1>Hard Bullet - Egypt</h1></header>
         <p id="gallery-status" hidden></p>
-        <section class="gallery"${embeds ? ' data-gallery-embeds="gallery-embeds.json"' : ''}>${galleryLayout.match(/<a class="shot" data-gallery-fallback[\s\S]*?<\/a>/)[0]
+        <section class="gallery" data-grouped-image-scroll${embeds ? ' data-gallery-embeds="gallery-embeds.json"' : ''}>${galleryLayout.match(/<a class="shot" data-gallery-fallback[\s\S]*?<\/a>/)[0]
           .replace('{{ gallery_original_url | escape }}', `${gallery}First.jpg?v=test`)
           .replaceAll('{{ reduced_image_url }}', preview('First').replace('&', '&amp;'))
           .replace('{{ site.gallery_4k_media | escape }}', desktopQuery)
@@ -431,6 +431,41 @@ async function viewerTransform(page) {
     return { scale: matrix.a, x: matrix.e, y: matrix.f };
   });
 }
+
+test('the first desktop wheel step animates the opening image into place', async t => {
+  const { page, errors } = await openPage(t, { width: 1440 });
+  await page.locator('.shot-primary').nth(2).waitFor();
+  await displayed(page, '.shot-primary', preview('First'));
+  // Recreate the space reserved by the site header on a real gallery.
+  await page.addStyleTag({ content: '.gallery-content { padding-top: 120px; }' });
+  const firstCenter = await page.locator('.shot-entry').first().evaluate(entry => {
+    const bounds = entry.getBoundingClientRect();
+    return scrollY + bounds.top + (bounds.height - document.documentElement.clientHeight) / 2;
+  });
+  assert.ok(firstCenter > 24);
+  assert.equal(await page.evaluate(() => scrollY), 0);
+
+  await page.evaluate(() => {
+    const scrollTo = window.scrollTo.bind(window);
+    const scrollBy = window.scrollBy.bind(window);
+    const calls = window.galleryScrollCalls = { offsets: [], browserSteps: 0 };
+    window.scrollTo = options => {
+      calls.offsets.push(options.top);
+      scrollTo(options);
+    };
+    window.scrollBy = options => {
+      calls.browserSteps++;
+      scrollBy(options);
+    };
+  });
+  await page.mouse.move(400, 400);
+  await page.mouse.wheel(0, 120);
+  await page.waitForFunction(target => Math.abs(scrollY - target) <= 1, firstCenter);
+  const calls = await page.evaluate(() => window.galleryScrollCalls);
+  assert.equal(calls.browserSteps, 0);
+  assert.ok(calls.offsets.some(offset => offset > 0 && offset < firstCenter - 1), 'the first step must render intermediate positions');
+  assert.deepEqual(errors, []);
+});
 
 test('fullscreen touch swipes navigate on both axes while pinch and pan stay on the image', async t => {
   const { page, errors } = await openPage(t, { width: 412, hasTouch: true });
