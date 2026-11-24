@@ -258,6 +258,8 @@ function setupClassicGalleryScroll() {
 
     const heading = galleryContent.querySelector('h1');
     heading.tabIndex = -1;
+    button.inert = true;
+    button.hidden = false;
 
     function positionButton() {
       const gutter = scroller.clientWidth - galleryContent.getBoundingClientRect().right;
@@ -271,7 +273,7 @@ function setupClassicGalleryScroll() {
       const pastHeading = !entry.isIntersecting && entry.boundingClientRect.bottom <= 0;
       if (pastHeading) positionButton();
       else if (document.activeElement === button) heading.focus({ preventScroll: true });
-      button.hidden = !pastHeading;
+      button.inert = !pastHeading;
     }).observe(heading);
 
     button.addEventListener('click', () => {

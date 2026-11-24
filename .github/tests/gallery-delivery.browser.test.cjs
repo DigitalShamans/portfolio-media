@@ -1423,11 +1423,19 @@ test('fullscreen desktop modifier-wheel zoom eases toward the cursor without zoo
 });
 
 test('back to top follows the gallery scroll and respects the active scroll controller', async t => {
-  await t.test('desktop button stays in the gutter and returns keyboard focus to the heading', async t => {
+  await t.test('desktop button fades in and out, stays in the gutter and restores keyboard focus', async t => {
     const { page, errors } = await openPage(t, { width: 2300, reducedMotion: 'no-preference' });
     const button = page.locator('.gallery-back-to-top');
     await displayed(page, '.shot-primary', preview('First'));
     assert.equal(await button.isVisible(), false);
+    await button.evaluate(control => {
+      window.topButtonFades = [];
+      control.addEventListener('transitionend', event => {
+        if (event.propertyName === 'opacity') {
+          window.topButtonFades.push({ opacity: Number(getComputedStyle(control).opacity), inert: control.inert });
+        }
+      });
+    });
 
     await page.evaluate(() => window.scrollTo({ top: 840, behavior: 'instant' }));
     await button.waitFor({ state: 'visible' });
@@ -1436,6 +1444,7 @@ test('back to top follows the gallery scroll and respects the active scroll cont
       return rect.left >= document.querySelector('.gallery-content').getBoundingClientRect().right + 12 &&
         rect.top < innerHeight / 3 && rect.width >= 44 && getComputedStyle(control).position === 'fixed';
     }), 'the control sits outside the artwork on a wide desktop');
+    await page.waitForFunction(() => window.topButtonFades.length === 1);
 
     await page.locator('.shot').nth(1).click();
     await page.locator('#viewer[open]').waitFor();
@@ -1448,6 +1457,11 @@ test('back to top follows the gallery scroll and respects the active scroll cont
     await page.getByRole('button', { name: 'Back to top' }).press('Enter');
     await page.waitForFunction(() => scrollY === 0 && document.activeElement === document.querySelector('.intro h1'));
     await button.waitFor({ state: 'hidden' });
+    await page.waitForFunction(() => window.topButtonFades.length >= 2);
+    assert.deepEqual(await page.evaluate(() => window.topButtonFades), [
+      { opacity: 1, inert: false },
+      { opacity: 0, inert: true },
+    ]);
     assert.deepEqual(errors, []);
   });
 
@@ -1472,6 +1486,7 @@ test('back to top follows the gallery scroll and respects the active scroll cont
       return rect.bottom <= innerHeight - 12 && rect.top > innerHeight / 2 &&
         rect.right <= innerWidth - 8 && rect.height >= 44;
     }));
+    assert.equal(await button.evaluate(control => getComputedStyle(control).transitionDuration), '0s');
     await button.tap();
     await page.waitForFunction(() => scrollY === 0);
     assert.deepEqual(await page.evaluate(() => window.topButtonScroll), { top: 0, behavior: 'instant' });

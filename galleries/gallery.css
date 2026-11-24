@@ -84,6 +84,18 @@ h1 { margin: 0; text-align: center; font-size: clamp(1rem, 2.6vw, 2.4rem); line-
 }
 .gallery-back-to-top[hidden],
 body:has(#viewer[open]) .gallery-back-to-top { display: none; }
+.gallery-back-to-top[inert] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gallery-back-to-top {
+    --gallery-back-to-top-fade: 200ms;
+    transition: opacity var(--gallery-back-to-top-fade) ease, visibility 0s;
+  }
+  .gallery-back-to-top[inert] { transition-delay: 0s, var(--gallery-back-to-top-fade); }
+}
 .gallery-back-to-top:hover { color: #fff; border-color: #bbb; }
 .gallery-back-to-top:focus-visible { outline: 2px solid var(--accent, #f59442); outline-offset: 3px; }
 .gallery-back-to-top__icon { position: relative; width: 22px; height: 22px; }
