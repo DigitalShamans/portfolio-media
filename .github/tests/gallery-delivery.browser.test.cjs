@@ -828,9 +828,9 @@ test('fullscreen desktop left click toggles zoom, middle and right drag pan, and
   assert.equal(await page.locator('#original').evaluate(image => getComputedStyle(image).cursor), 'default');
   await page.evaluate(() => {
     window.galleryContextMenus = [];
-    window.galleryClickScales = [];
+    window.galleryClickZoomFrames = [];
     document.querySelector('#viewer').addEventListener('gallery-zoomchange', event => {
-      window.galleryClickScales.push(event.detail.scale);
+      window.galleryClickZoomFrames.push(event.detail);
     });
     document.addEventListener('contextmenu', event => {
       window.galleryContextMenus.push(event.defaultPrevented);
@@ -841,14 +841,31 @@ test('fullscreen desktop left click toggles zoom, middle and right drag pan, and
   assert.deepEqual(await page.evaluate(() => window.galleryContextMenus), [false]);
   assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
 
-  async function assertAnimatedZoom(target) {
-    await waitForViewerScale(page, target);
-    const scales = await page.evaluate(() => window.galleryClickScales.splice(0));
-    assert.equal(scales.at(-1), target);
-    assert.ok(scales.filter(scale => scale > 1 && scale < 2).length > 1);
+  async function scaleOnFirstClickFrame(click) {
+    await page.evaluate(() => {
+      window.scaleOnClickFrame = null;
+      document.querySelector('#viewer').addEventListener('click', () => {
+        requestAnimationFrame(() => {
+          const transform = document.querySelector('#viewer-canvas').style.transform;
+          window.scaleOnClickFrame = new DOMMatrixReadOnly(transform || undefined).a;
+        });
+      }, { once: true });
+    });
+    await click();
+    await page.waitForFunction(() => window.scaleOnClickFrame !== null);
+    return page.evaluate(() => window.scaleOnClickFrame);
   }
 
-  await page.mouse.click(x, y);
+  async function assertAnimatedZoom(target) {
+    await waitForViewerScale(page, target);
+    const frames = await page.evaluate(() => window.galleryClickZoomFrames.splice(0));
+    assert.equal(frames.at(-1).scale, target);
+    assert.ok(frames.filter(({ scale }) => scale > 1 && scale < 2).length > 1);
+    return frames;
+  }
+
+  const firstFrame = await scaleOnFirstClickFrame(() => page.mouse.click(x, y));
+  assert.ok(firstFrame > 1 && firstFrame < 2, 'the single click starts zooming on the next frame');
   await assertAnimatedZoom(2);
   await page.mouse.click(x, y);
   await assertAnimatedZoom(1);
@@ -865,7 +882,7 @@ test('fullscreen desktop left click toggles zoom, middle and right drag pan, and
     await page.mouse.down({ button });
     await page.locator('#stage.dragging').waitFor();
     assert.equal(await page.locator('#original').evaluate(image => getComputedStyle(image).cursor), 'grabbing');
-    await page.mouse.move(x + offset, y, { steps: 3 });
+    await page.mouse.move(x + offset, y - offset / 2, { steps: 3 });
     await page.mouse.up({ button });
     await page.locator('#stage.dragging').waitFor({ state: 'detached' });
     const afterPan = await viewerTransform(page);
@@ -878,9 +895,23 @@ test('fullscreen desktop left click toggles zoom, middle and right drag pan, and
   await page.mouse.down({ button: 'left' });
   await page.mouse.move(x + 100, y, { steps: 3 });
   await page.mouse.up({ button: 'left' });
-  // Check after the single-click delay so a drag cannot toggle the zoom.
-  await page.waitForTimeout(350);
+  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(resolve)));
   assert.deepEqual(await viewerTransform(page), afterPan);
+
+  assert.ok(afterPan.x > 0 && afterPan.y < 0);
+  await page.evaluate(() => window.galleryClickZoomFrames.splice(0));
+  const firstFitFrame = await scaleOnFirstClickFrame(() => page.mouse.click(x - 300, y + 200));
+  assert.ok(firstFitFrame > 1 && firstFitFrame < 2, 'zoom-out starts on the next frame too');
+  const resetFrames = await assertAnimatedZoom(1);
+  let previous = afterPan;
+  for (const frame of resetFrames) {
+    assert.ok(frame.x >= 0 && frame.x <= previous.x + 0.01, 'horizontal pan returns directly to center');
+    assert.ok(frame.y <= 0 && frame.y >= previous.y - 0.01, 'vertical pan returns directly to center');
+    previous = frame;
+  }
+  assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
+  await page.mouse.click(x, y);
+  await waitForViewerScale(page, 2);
 
   const wheelPoint = await page.locator('#stage').boundingBox();
   await page.mouse.move(wheelPoint.x + wheelPoint.width / 2, wheelPoint.y + wheelPoint.height / 2);
@@ -888,19 +919,20 @@ test('fullscreen desktop left click toggles zoom, middle and right drag pan, and
   await displayed(page, '#original', preview('Second'));
   assert.equal(await page.locator('#counter').textContent(), '2 / 3');
   assert.equal((await viewerTransform(page)).scale, 1);
-  await page.mouse.dblclick(x, y);
-  // The first click of the pair must not zoom in after the single-click delay.
-  await page.waitForTimeout(350);
-  assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
-  assert.equal(await viewer.evaluate(element => element.open), true);
-
-  // Chromium can carry the click count into an independent click after a double-click.
   const session = await page.context().newCDPSession(page);
   async function clickWithCount(clickCount) {
     const point = { x, y, button: 'left', clickCount };
     await session.send('Input.dispatchMouseEvent', { ...point, type: 'mousePressed', buttons: 1 });
     await session.send('Input.dispatchMouseEvent', { ...point, type: 'mouseReleased' });
   }
+  const beforeSecondClick = await scaleOnFirstClickFrame(() => clickWithCount(1));
+  assert.ok(beforeSecondClick > 1 && beforeSecondClick < 2);
+  await clickWithCount(2);
+  await waitForViewerScale(page, 1);
+  assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
+  assert.equal(await viewer.evaluate(element => element.open), true);
+
+  // Chromium can carry the click count into an independent click after a double-click.
   await clickWithCount(3);
   await waitForViewerScale(page, 2);
   await clickWithCount(4);
@@ -916,7 +948,7 @@ test('fullscreen desktop left click toggles zoom, middle and right drag pan, and
   });
   await clickWithCount(3);
   await waitForViewerScale(page, 2);
-  await page.evaluate(() => window.galleryClickScales.splice(0));
+  await page.evaluate(() => window.galleryClickZoomFrames.splice(0));
   await page.mouse.dblclick(x, y);
   await assertAnimatedZoom(1);
   assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
