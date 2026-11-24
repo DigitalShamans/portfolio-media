@@ -1195,6 +1195,12 @@ stage.addEventListener('auxclick', event => {
   if (event.button === 1) event.preventDefault();
 });
 
+stage.addEventListener('contextmenu', event => {
+  if (viewerZoom.scale > 1 && lastViewerPointer === 'mouse' && event.button === 2) {
+    event.preventDefault();
+  }
+});
+
 stage.addEventListener('pointerdown', event => {
   lastViewerPointer = event.pointerType;
   if (event.pointerType === 'touch') {
@@ -1210,17 +1216,20 @@ stage.addEventListener('pointerdown', event => {
     return;
   }
   suppressViewerClick = false;
-  if (event.pointerType !== 'mouse' || (event.button !== 0 && event.button !== 1)) return;
-  const panning = event.button === 1;
+  if (event.pointerType !== 'mouse' || ![0, 1, 2].includes(event.button)) return;
+  const panning = event.button !== 0;
+  // The middle button would trigger browser autoscroll even at fit.
+  if (event.button === 1 || (panning && viewerZoom.scale > 1)) event.preventDefault();
   if (panning) {
-    // Suppress the browser's middle-button autoscroll inside the viewer.
-    event.preventDefault();
     if (viewerZoom.scale === 1) return;
     clearTimeout(pendingClickZoom);
     stage.setPointerCapture(event.pointerId);
     stage.classList.add('dragging');
   }
-  mouseGesture = { id: event.pointerId, start: pointFor(event), panning, x: viewerZoom.x, y: viewerZoom.y };
+  mouseGesture = {
+    id: event.pointerId, start: pointFor(event), panning, buttonMask: event.buttons,
+    x: viewerZoom.x, y: viewerZoom.y
+  };
 });
 
 stage.addEventListener('pointermove', event => {
@@ -1229,8 +1238,7 @@ stage.addEventListener('pointermove', event => {
     return;
   }
   if (mouseGesture?.id !== event.pointerId) return;
-  const buttonMask = mouseGesture.panning ? 4 : 1;
-  if (!(event.buttons & buttonMask)) return;
+  if (!(event.buttons & mouseGesture.buttonMask)) return;
   const dx = event.clientX - mouseGesture.start.x;
   const dy = event.clientY - mouseGesture.start.y;
   if (Math.hypot(dx, dy) > 5) suppressViewerClick = true;
