@@ -22,10 +22,14 @@
   let suppressFocus = false;
   let keyboardFocus = false;
   let restoreScrollStyles;
+  let resizeObserver;
+  let resizeFrame;
+  let refreshPosition;
 
   function report(mode, reason) {
     diagnostics?.state('gallery-smoother', mode, reason);
-    diagnostics?.state('gallery-wheel', mode, reason);
+    diagnostics?.state('gallery-wheel', mode === 'GSAP ScrollSmoother' ? 'GSAP image stepping' : mode,
+      mode === 'GSAP ScrollSmoother' ? 'The shared wheel controller selects images; GSAP animates each step.' : reason);
   }
 
   function listen(target, type, callback, options = {}) {
@@ -78,8 +82,54 @@
     });
   }
 
+  function reconcilePosition(position) {
+    const paused = smoother.paused();
+    smoother.scrollTo(position, false);
+    if (!paused) {
+      smoother.paused(true);
+      smoother.paused(false);
+    }
+  }
+
+  function beforeRefresh() {
+    if (!smoother) return;
+    document.dispatchEvent(new Event('gallery-scrollcontrollerchange'));
+    refreshPosition = window.scrollY;
+  }
+
+  function afterRefresh() {
+    if (!smoother || refreshPosition === undefined) return;
+    const position = refreshPosition;
+    refreshPosition = undefined;
+    reconcilePosition(position);
+  }
+
+  function observeContentSize() {
+    if (!window.ResizeObserver) return;
+    let width = content.clientWidth, height = content.clientHeight;
+    resizeObserver = new ResizeObserver(() => {
+      if (content.clientWidth === width && content.clientHeight === height) return;
+      width = content.clientWidth;
+      height = content.clientHeight;
+      if (resizeFrame !== undefined) return;
+      resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = undefined;
+        if (smoother) window.ScrollTrigger.refresh();
+      });
+    });
+    resizeObserver.observe(content);
+  }
+
   function stop() {
     if (!smoother) return;
+    resizeObserver?.disconnect();
+    resizeObserver = undefined;
+    if (resizeFrame !== undefined) cancelAnimationFrame(resizeFrame);
+    resizeFrame = undefined;
+    refreshPosition = undefined;
+    window.ScrollTrigger.removeEventListener('refreshInit', beforeRefresh);
+    window.ScrollTrigger.removeEventListener('refresh', afterRefresh);
+    document.dispatchEvent(new Event('gallery-scrollcontrollerchange'));
     const position = smoother.scrollTop();
     smoother.kill();
     smoother = undefined;
@@ -91,7 +141,10 @@
   function updatePaused() {
     if (!smoother) return;
     const paused = Boolean(opening || closing || viewer.open || document.fullscreenElement);
-    if (smoother.paused() !== paused) smoother.paused(paused);
+    if (smoother.paused() !== paused) {
+      document.dispatchEvent(new Event('gallery-scrollcontrollerchange'));
+      smoother.paused(paused);
+    }
     report(paused ? 'Paused for fullscreen viewer' : 'GSAP ScrollSmoother', paused
       ? 'Page scrolling is held at the visible position while the image viewer is open.'
       : 'GSAP smooths mouse-wheel and trackpad scrolling across the overview and screenshots.');
@@ -116,12 +169,17 @@
       if (disposed || !desktop.matches || reducedMotion.matches || smoother) return;
       if (window.ScrollSmoother.get()) throw new Error('Another component owns page smoothing.');
       restoreScrollStyles = saveScrollStyles();
+      // A step can be using the native fallback while these libraries load.
+      document.dispatchEvent(new Event('gallery-scrollcontrollerchange'));
+      const position = window.scrollY;
       smoother = window.ScrollSmoother.create({
         wrapper, content,
         smooth: 0.65,
         smoothTouch: false,
         effects: false,
         normalizeScroll: false,
+        // Refresh through one lifecycle so a resize cannot replay an old scroll.
+        autoResize: false,
         onFocusIn(self, event) {
           // Pointer clicks and returning from the viewer must not move the page.
           // Keyboard navigation can still bring an offscreen focus target into view.
@@ -137,6 +195,10 @@
           document.dispatchEvent(new Event('gallery-scrollupdate'));
         }
       });
+      window.ScrollTrigger.addEventListener('refreshInit', beforeRefresh);
+      window.ScrollTrigger.addEventListener('refresh', afterRefresh);
+      reconcilePosition(position);
+      observeContentSize();
       updatePaused();
     } catch (error) {
       failed = true;
@@ -180,7 +242,7 @@
   listen(document, 'keydown', () => { keyboardFocus = true; }, { capture: true });
   listen(desktop, 'change', update);
   listen(reducedMotion, 'change', update);
-  listen(window, 'pageshow', () => { update(); smoother?.refresh(); });
+  listen(window, 'pageshow', () => { update(); if (smoother) window.ScrollTrigger.refresh(); });
   listen(window, 'pagehide', event => {
     if (event.persisted) return;
     disposed = true;

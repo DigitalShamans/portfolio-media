@@ -536,7 +536,7 @@ async function gallerySmootherReady(page, paused = false) {
     const features = window.PortfolioDiagnostics?.report?.().pages.at(-1).features;
     const mode = paused ? 'Paused for fullscreen viewer' : 'GSAP ScrollSmoother';
     return smoother && smoother.paused() === paused &&
-      features?.['gallery-smoother']?.mode === mode && features?.['gallery-wheel']?.mode === mode;
+      features?.['gallery-smoother']?.mode === mode;
   }, paused);
 }
 
@@ -548,7 +548,27 @@ async function galleryScrollPosition(page) {
   }));
 }
 
-test('Atrium ScrollSmoother animates wheel and small trackpad deltas and reports actual motion', { timeout: 20_000 }, async t => {
+async function galleryScrollTargets(page, selector) {
+  return page.evaluate(selector => {
+    const rendered = window.ScrollSmoother?.get()?.scrollTop() ?? scrollY;
+    const max = document.scrollingElement.scrollHeight - document.documentElement.clientHeight;
+    return [...document.querySelector(selector).children].map(entry => {
+      const bounds = entry.getBoundingClientRect();
+      return Math.max(0, Math.min(max, rendered + bounds.top + (bounds.height - innerHeight) / 2));
+    });
+  }, selector);
+}
+
+async function completedGalleryStep(page, target, completed) {
+  await page.waitForFunction(({ target, completed }) => {
+    const rendered = window.ScrollSmoother?.get()?.scrollTop() ?? scrollY;
+    const tally = window.PortfolioDiagnostics.report().pages.at(-1).tallies['gallery-wheel'];
+    return Math.abs(rendered - target) < 1 && Math.abs(rendered - scrollY) < 1 &&
+      (tally?.['step completed'] || 0) >= completed;
+  }, { target, completed });
+}
+
+test('Atrium ScrollSmoother moves shared wheel steps once and smooths independent small trackpad deltas', { timeout: 20_000 }, async t => {
   const { page, requests, errors } = await openPage(t, {
     map: true, width: 1440, diagnostics: true, reducedMotion: 'no-preference',
   });
@@ -560,8 +580,8 @@ test('Atrium ScrollSmoother animates wheel and small trackpad deltas and reports
     const bounds = image.getBoundingClientRect();
     return bounds.width > 0 && bounds.height > 0 && bounds.bottom > 0 && bounds.top < innerHeight;
   }).every(image => image.complete && image.naturalWidth > 0));
-  // ScrollSmoother 3.15.1 has a .5s initialization phase and a .2s delayed
-  // ResizeObserver refresh. Measure interpolation after the fixture layout settles.
+  // ScrollSmoother 3.15.1 has a .5s initialization phase. Let startup and the
+  // page controller's observed layout changes settle before measuring interpolation.
   await page.waitForTimeout(600);
   await page.waitForFunction(() => window.ScrollSmoother.get().scrollTrigger.end > 0 &&
     !window.ScrollTrigger.isRefreshing && !window.ScrollSmoother.isRefreshing);
@@ -581,8 +601,11 @@ test('Atrium ScrollSmoother animates wheel and small trackpad deltas and reports
     smooth: .65, effects: false, normalizeScroll: false, smoothTouch: false,
     viewerOutside: true, diagnosticsOutside: true, optIn: true,
   });
+  const [firstTarget] = await galleryScrollTargets(page, '#map-screenshots');
+  assert.ok(firstTarget > 160, 'the first screenshot is below the overview');
   await page.mouse.move(300, 300);
   for (const delta of [160, 12]) {
+    if (delta === 12) await page.waitForTimeout(180); // Start a new gesture after the shared quiet gap.
     const before = await galleryScrollPosition(page);
     await page.evaluate(() => {
       const trace = window.atriumScrollTrace = { active: true, samples: [] };
@@ -597,16 +620,22 @@ test('Atrium ScrollSmoother animates wheel and small trackpad deltas and reports
       sample();
     });
     await page.mouse.wheel(0, delta);
-    await page.waitForFunction(({ before, delta }) => {
+    const target = delta === 160 ? firstTarget : before.native + delta;
+    await page.waitForFunction(target => {
       const rendered = window.ScrollSmoother.get().scrollTop();
-      return scrollY > before.native + delta / 2 && Math.abs(scrollY - rendered) < .5;
-    }, { before, delta });
+      return Math.abs(rendered - target) < 1 && Math.abs(scrollY - rendered) < 1;
+    }, target);
     const after = await galleryScrollPosition(page);
     const samples = await page.evaluate(() => {
       window.atriumScrollTrace.active = false;
       return window.atriumScrollTrace.samples;
     });
     assert.ok(after.rendered - before.rendered > delta / 2, `${delta}px input moves the rendered page`);
+    if (delta === 160) {
+      assert.ok(Math.abs(after.rendered - firstTarget) < 1, 'one coarse gesture centers exactly the first screenshot');
+      assert.ok(Math.max(...samples.map(sample => Math.abs(sample.native - sample.rendered))) <= 1.5,
+        'the GSAP image step writes rendered and native positions together without a second smoothing pass');
+    }
     assert.ok(Math.abs(after.top - before.top + after.rendered - before.rendered) < 2,
       'the visible map follows the smoother position');
     const intermediate = samples.some(sample => sample.rendered > before.rendered + .5 && sample.rendered < after.rendered - .5);
@@ -630,8 +659,10 @@ test('Atrium ScrollSmoother animates wheel and small trackpad deltas and reports
       'GSAP applies the scroll transform to the content');
   }
   const report = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1));
+  assert.equal(report.features['gallery-smoother'].mode, 'GSAP ScrollSmoother');
+  assert.equal(report.tallies['gallery-wheel']['animated step started'], 1);
+  assert.equal(report.tallies['gallery-wheel']['step completed'], 1);
   for (const feature of ['gallery-smoother', 'gallery-wheel']) {
-    assert.equal(report.features[feature].mode, 'GSAP ScrollSmoother');
     assert.ok(report.motion[feature].advances > 1, `${feature} records changing positions`);
   }
   assert.ok(report.input.wheel >= 2);
@@ -639,7 +670,121 @@ test('Atrium ScrollSmoother animates wheel and small trackpad deltas and reports
   for (const name of ['gsap', 'ScrollTrigger', 'ScrollSmoother']) {
     assert.ok(requests.includes(`${portfolio}/assets/vendor/gsap/3.15.1/${name}.min.js`), `${name} is served locally`);
   }
+  await t.test('content-size refresh preserves the view and updates the scroll extent', async () => {
+    const snapshot = () => page.evaluate(() => {
+      const smoother = window.ScrollSmoother.get();
+      return { native: scrollY, rendered: smoother.scrollTop(), end: smoother.scrollTrigger.end,
+        max: document.scrollingElement.scrollHeight - document.documentElement.clientHeight,
+        contentHeight: smoother.content().clientHeight,
+        imageTop: document.querySelector('#map-screenshots .shot-primary').getBoundingClientRect().top };
+    });
+    const before = await snapshot();
+    assert.ok(before.rendered > 100, 'refresh is checked away from the top of the page');
+    try {
+      await page.evaluate(() => {
+        const block = document.createElement('div');
+        block.id = 'gallery-test-late-content';
+        block.style.height = '320px';
+        document.querySelector('#gallery-scroll-content').append(block);
+      });
+      // No explicit refresh: the owned content ResizeObserver must update the extent.
+      await page.waitForFunction(before => {
+        const smoother = window.ScrollSmoother.get();
+        return Math.abs(smoother.scrollTrigger.end - before.end - 320) < 1 &&
+          Math.abs(document.scrollingElement.scrollHeight - document.documentElement.clientHeight - before.max - 320) < 1;
+      }, before);
+      const grown = await snapshot();
+      assert.equal(grown.contentHeight - before.contentHeight, 320);
+      assert.ok(Math.abs(grown.native - before.native) < 2);
+      assert.ok(Math.abs(grown.rendered - before.rendered) < 2);
+      assert.ok(Math.abs(grown.imageTop - before.imageTop) < 2);
+    } finally {
+      await page.evaluate(() => document.querySelector('#gallery-test-late-content')?.remove());
+    }
+    await page.waitForFunction(before => {
+      const smoother = window.ScrollSmoother.get();
+      return Math.abs(smoother.scrollTrigger.end - before.end) < 1 &&
+        Math.abs(document.scrollingElement.scrollHeight - document.documentElement.clientHeight - before.max) < 1;
+    }, before);
+    const restored = await snapshot();
+    assert.equal(restored.contentHeight, before.contentHeight);
+    assert.ok(Math.abs(restored.native - before.native) < 2);
+    assert.ok(Math.abs(restored.rendered - before.rendered) < 2);
+    assert.ok(Math.abs(restored.imageTop - before.imageTop) < 2);
+  });
   assert.deepEqual(errors, []);
+});
+
+test('Atrium and ordinary gallery wheel gestures select one image per quiet gap and reverse cleanly', { timeout: 25_000 }, async t => {
+  for (const map of [false, true]) {
+    await t.test(map ? 'Atrium GSAP stepping' : 'ordinary gallery animation', async t => {
+      const { page, errors } = await openPage(t, { map, width: 1440, diagnostics: true, reducedMotion: 'no-preference' });
+      await page.waitForFunction(() => {
+        const images = [...document.querySelectorAll('.gallery .shot-primary')];
+        return images.length === 3 && images.every(image => image.complete && image.naturalWidth > 0);
+      });
+      await page.waitForLoadState('load');
+      await page.evaluate(() => document.fonts.ready);
+      if (map) {
+        await gallerySmootherReady(page);
+        await page.waitForTimeout(600); // Allow the vendor's initial layout refresh to finish.
+      } else {
+        await page.addStyleTag({ content: '.gallery-content { padding-top: 120px; }' });
+        assert.equal(await page.evaluate(() => Boolean(window.ScrollSmoother?.get())), false);
+      }
+      const [first, second] = await galleryScrollTargets(page, map ? '#map-screenshots' : '.gallery');
+      assert.ok(first > 24 && second > first + 100);
+      await page.evaluate(() => {
+        window.galleryGestureWheels = [];
+        window.addEventListener('wheel', event => {
+          window.galleryGestureWheels.push({ time: event.timeStamp, delta: event.deltaY,
+            trusted: event.isTrusted, prevented: event.defaultPrevented });
+        });
+      });
+      await page.mouse.move(300, 300);
+      for (const delta of [120, 120, 60, 12]) await page.mouse.wheel(0, delta);
+      await page.waitForFunction(() => window.galleryGestureWheels.length === 4);
+      const burst = await page.evaluate(() => window.galleryGestureWheels);
+      assert.equal(burst.length, 4);
+      assert.ok(burst.every(event => event.trusted && event.prevented));
+      assert.ok(burst.slice(1).every((event, index) => event.time - burst[index].time < 150),
+        'the input burst stays within the shared gesture gap');
+      await completedGalleryStep(page, first, 1);
+      const firstReport = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1));
+      assert.equal(firstReport.tallies['gallery-wheel']['animated step started'], 1,
+        'coarse ticks and their small tail select one screenshot');
+
+      await page.waitForTimeout(180);
+      await page.mouse.wheel(0, 120);
+      await completedGalleryStep(page, second, 2);
+      await page.mouse.wheel(0, -120);
+      await completedGalleryStep(page, first, 3);
+      let started = 3, completed = 3;
+      if (map) {
+        // Reverse an active GSAP step after leaving the near-center tolerance.
+        await page.mouse.wheel(0, 120);
+        await page.waitForFunction(({ first, second }) => {
+          const position = window.ScrollSmoother.get().scrollTop();
+          return position > first + 64 && position < second - 24;
+        }, { first, second });
+        await page.mouse.wheel(0, -120);
+        await completedGalleryStep(page, first, 4);
+        started = 5; completed = 4;
+        await page.waitForTimeout(250);
+        const position = await galleryScrollPosition(page);
+        assert.ok(Math.abs(position.rendered - first) < 1, 'the cancelled forward tween cannot move the settled image');
+        await page.mouse.wheel(0, -120);
+        await completedGalleryStep(page, 0, 5);
+        started = 6; completed = 5;
+      }
+      const report = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1));
+      assert.equal(report.tallies['gallery-wheel']['animated step started'], started);
+      assert.equal(report.tallies['gallery-wheel']['step completed'], completed);
+      if (map) assert.ok(report.tallies['gallery-wheel']['step cancelled'] >= 1);
+      t.diagnostic(JSON.stringify({ map, targets: [first, second], wheel: report.tallies['gallery-wheel'] }));
+      assert.deepEqual(errors, []);
+    });
+  }
 });
 
 test('Atrium ScrollSmoother pauses for fullscreen wheel input and resumes at the last image', { timeout: 20_000 }, async t => {
@@ -649,12 +794,22 @@ test('Atrium ScrollSmoother pauses for fullscreen wheel input and resumes at the
   const overview = page.locator('#public-map .gallery-map-overview-button');
   await overview.waitFor();
   await gallerySmootherReady(page);
-  await page.evaluate(() => { window.atriumSmootherInstance = window.ScrollSmoother.get(); });
+  await page.evaluate(() => {
+    window.atriumSmootherInstance = window.ScrollSmoother.get();
+    window.atriumSmootherInstance.scrollTo(120, false);
+  });
+  await page.waitForFunction(() => Math.abs(window.ScrollSmoother.get().scrollTop() - 120) < 1 && Math.abs(scrollY - 120) < 1);
   await overview.evaluate(button => button.focus({ preventScroll: true }));
   const before = await galleryScrollPosition(page);
   await overview.press('Enter');
   await page.locator('#fullscreen-map').waitFor({ state: 'visible' });
   await gallerySmootherReady(page, true);
+  const pausedBeforeRefresh = await galleryScrollPosition(page);
+  await page.evaluate(() => window.ScrollTrigger.refresh());
+  await gallerySmootherReady(page, true);
+  const pausedAfterRefresh = await galleryScrollPosition(page);
+  assert.ok(Math.abs(pausedAfterRefresh.native - pausedBeforeRefresh.native) < 2);
+  assert.ok(Math.abs(pausedAfterRefresh.rendered - pausedBeforeRefresh.rendered) < 2);
   const stage = await page.locator('#stage').boundingBox();
   await page.mouse.move(stage.x + stage.width / 2, stage.y + stage.height / 2);
   await modifiedWheel(page, 'Control', 0, -120);
@@ -752,6 +907,17 @@ test('Atrium ScrollSmoother initializes after a slow dependency while native scr
     transform: getComputedStyle(document.querySelector('#gallery-scroll-content')).transform,
   })), { gsap: '3.15.1', trigger: '3.15.1', smoother: false, transform: 'none' });
   const waiting = await page.evaluate(() => scrollY);
+  await page.evaluate(() => {
+    window.galleryEngineHandoff = null;
+    document.addEventListener('gallery-scrollcontrollerchange', () => {
+      const tally = window.PortfolioDiagnostics.report().pages.at(-1).tallies['gallery-wheel'];
+      window.galleryEngineHandoff = {
+        native: scrollY, hadSmoother: Boolean(window.ScrollSmoother?.get()),
+        activeStep: (tally?.['animated step started'] || 0) >
+          (tally?.['step completed'] || 0) + (tally?.['step cancelled'] || 0),
+      };
+    }, { capture: true, once: true });
+  });
   await page.mouse.wheel(0, 120);
   await page.waitForFunction(waiting => scrollY > waiting + 60, waiting);
   const beforeRelease = await page.evaluate(() => scrollY);
@@ -759,19 +925,46 @@ test('Atrium ScrollSmoother initializes after a slow dependency while native scr
   releaseDependency.release();
 
   await gallerySmootherReady(page);
+  const handoff = await page.evaluate(() => window.galleryEngineHandoff);
+  assert.ok(handoff?.activeStep, 'the actual controller-change event interrupts an active native fallback step');
+  assert.equal(handoff.hadSmoother, false);
   await page.waitForFunction(position => {
     const smoother = window.ScrollSmoother.get();
     return smoother.scrollTrigger.end > 0 && Math.abs(smoother.scrollTop() - position) < 2;
-  }, beforeRelease);
+  }, handoff.native);
+  await page.waitForTimeout(600); // Let startup and any uncancelled old step expose a late movement.
+  const settled = await page.evaluate(() => {
+    const smoother = window.ScrollSmoother.get(), content = smoother.content();
+    const { top, bottom, height } = content.getBoundingClientRect();
+    const focus = document.activeElement;
+    return {
+      time: performance.now(), native: scrollY, rendered: smoother.scrollTop(), paused: smoother.paused(),
+      viewport: innerHeight, clientHeight: document.documentElement.clientHeight,
+      maxScroll: document.scrollingElement.scrollHeight - document.documentElement.clientHeight,
+      body: { margin: getComputedStyle(document.body).margin, height: document.body.style.height, scrollHeight: document.body.scrollHeight },
+      content: { top, bottom, height, clientHeight: content.clientHeight, scrollHeight: content.scrollHeight },
+      triggerEnd: smoother.scrollTrigger.end, triggerProgress: smoother.scrollTrigger.progress,
+      scrubProgress: smoother.scrollTrigger.getTween()?.progress(),
+      refreshing: Boolean(window.ScrollTrigger.isRefreshing || window.ScrollSmoother.isRefreshing),
+      focus: { tag: focus.tagName, id: focus.id, class: focus.className },
+      wheel: window.PortfolioDiagnostics.report().pages.at(-1).tallies['gallery-wheel'],
+    };
+  });
+  if (Math.abs(settled.native - handoff.native) >= 2 || Math.abs(settled.rendered - handoff.native) >= 2) {
+    t.diagnostic('Gallery engine handoff failure: ' + JSON.stringify({ beforeRelease, handoff, settled }));
+  }
+  assert.ok(Math.abs(settled.native - handoff.native) < 2);
+  assert.ok(Math.abs(settled.rendered - handoff.native) < 2);
   assert.equal(requests.filter(url => url.endsWith('/ScrollSmoother.min.js')).length, 1,
     'the pending request is allowed to complete without a duplicate download');
   await page.mouse.wheel(0, 120);
-  await page.waitForFunction(position => window.ScrollSmoother.get().scrollTop() > position + 60, beforeRelease);
+  await page.waitForFunction(position => window.ScrollSmoother.get().scrollTop() > position + 60, handoff.native);
   const report = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1));
   assert.equal(report.features['gallery-smoother'].mode, 'GSAP ScrollSmoother');
   assert.ok(report.motion['gallery-smoother'].advances > 0);
+  assert.ok(report.tallies['gallery-wheel']['step cancelled'] >= 1);
   t.diagnostic(JSON.stringify({
-    delayedForMs: Math.round(delayedFor), nativeBeforeRelease: beforeRelease,
+    delayedForMs: Math.round(delayedFor), nativeBeforeRelease: beforeRelease, handoff,
     renderedAfterRelease: await page.evaluate(() => window.ScrollSmoother.get().scrollTop()),
     mode: report.features['gallery-smoother'].mode,
   }));
@@ -1350,6 +1543,8 @@ test('Atrium collapsed thumbnails select the exact gallery screenshot with GSAP 
       }, selectedPosition);
 
       if (reducedMotion === 'no-preference') {
+        await page.waitForFunction(() =>
+          window.PortfolioDiagnostics.report().pages.at(-1).tallies['gallery-wheel']?.['step completed'] >= 1);
         await page.mouse.move(5, 5);
         await page.evaluate(() => window.ScrollSmoother.get().scrollTo(0, false));
         await page.waitForFunction(() => scrollY < 1 && window.ScrollSmoother.get().scrollTop() < 1);

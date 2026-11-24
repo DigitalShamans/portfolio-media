@@ -23,7 +23,7 @@
     <section id="public-map" class="gallery-map-stage" aria-label="Interactive level overview" aria-describedby="map-help" hidden></section>
     <div class="gallery-map-caption"><p id="map-caption" role="status" aria-live="polite">Loading map…</p><span class="gallery-map-actions"><button id="map-fullscreen" class="gallery-map-fullscreen-button" type="button" aria-label="Open interactive overview in fullscreen" disabled>Fullscreen overview</button><a id="map-gallery-link" hidden>View gallery</a></span></div>
     <p id="gallery-status" role="status" hidden></p>
-    <section id="map-screenshots" class="gallery gallery-map-screenshots" data-gsap-gallery-scroll aria-label="Gallery screenshots" hidden></section>
+    <section id="map-screenshots" class="gallery gallery-map-screenshots" data-gsap-gallery-scroll data-grouped-image-scroll aria-label="Gallery screenshots" hidden></section>
     <noscript><p>Enable JavaScript to explore this interactive map.</p></noscript>
   </main>
   </div>
@@ -36,7 +36,7 @@
     "previewSize": {{ page.map_preview_size | default: 1 | jsonify }},
     "navigateOnClick": {% if page.map_navigate_on_click == false %}false{% else %}true{% endif %},
     "navigateExpandedPreview": {% if page.map_navigate_expanded_preview == false %}false{% else %}true{% endif %},
-    "viewerScript": {{ '/galleries/gallery-viewer.js' | relative_url | append: '?v=67' | jsonify }},
+    "viewerScript": {{ '/galleries/gallery-viewer.js' | relative_url | append: '?v=68' | jsonify }},
     "personal": {% if page.portfolio == 'personal' %}true{% else %}false{% endif %},
     "galleryRoot": {{ '/galleries/' | relative_url | jsonify }},
     "media": {{ site.gallery_4k_media | jsonify }},
@@ -56,7 +56,7 @@
   <script src="{{ '/galleries/gallery-data.js' | relative_url }}?v=3" defer></script>
   <script src="{{ '/galleries/gallery-map-data.js' | relative_url }}?v=1" defer></script>
   <script src="{{ '/galleries/gallery-map.js' | relative_url }}?v=9" defer></script>
-  <script src="{{ '/galleries/gallery-page-scroll.js' | relative_url }}?v=3" defer></script>
+  <script src="{{ '/galleries/gallery-page-scroll.js' | relative_url }}?v=4" defer></script>
   <script src="{{ '/galleries/gallery-map-page.js' | relative_url }}?v=10" defer></script>
 </body>
 </html>
