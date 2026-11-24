@@ -22,6 +22,9 @@
   let suppressFocus = false;
   let keyboardFocus = false;
   let restoreScrollStyles;
+  let resizeObserver;
+  let resizeFrame;
+  let refreshPosition;
 
   function report(mode, reason) {
     diagnostics?.state('gallery-smoother', mode, reason);
@@ -79,8 +82,53 @@
     });
   }
 
+  function reconcilePosition(position) {
+    const paused = smoother.paused();
+    smoother.scrollTo(position, false);
+    if (!paused) {
+      smoother.paused(true);
+      smoother.paused(false);
+    }
+  }
+
+  function beforeRefresh() {
+    if (!smoother) return;
+    document.dispatchEvent(new Event('gallery-scrollcontrollerchange'));
+    refreshPosition = window.scrollY;
+  }
+
+  function afterRefresh() {
+    if (!smoother || refreshPosition === undefined) return;
+    const position = refreshPosition;
+    refreshPosition = undefined;
+    reconcilePosition(position);
+  }
+
+  function observeContentSize() {
+    if (!window.ResizeObserver) return;
+    let width = content.clientWidth, height = content.clientHeight;
+    resizeObserver = new ResizeObserver(() => {
+      if (content.clientWidth === width && content.clientHeight === height) return;
+      width = content.clientWidth;
+      height = content.clientHeight;
+      if (resizeFrame !== undefined) return;
+      resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = undefined;
+        if (smoother) window.ScrollTrigger.refresh();
+      });
+    });
+    resizeObserver.observe(content);
+  }
+
   function stop() {
     if (!smoother) return;
+    resizeObserver?.disconnect();
+    resizeObserver = undefined;
+    if (resizeFrame !== undefined) cancelAnimationFrame(resizeFrame);
+    resizeFrame = undefined;
+    refreshPosition = undefined;
+    window.ScrollTrigger.removeEventListener('refreshInit', beforeRefresh);
+    window.ScrollTrigger.removeEventListener('refresh', afterRefresh);
     document.dispatchEvent(new Event('gallery-scrollcontrollerchange'));
     const position = smoother.scrollTop();
     smoother.kill();
@@ -130,6 +178,8 @@
         smoothTouch: false,
         effects: false,
         normalizeScroll: false,
+        // Refresh through one lifecycle so a resize cannot replay an old scroll.
+        autoResize: false,
         onFocusIn(self, event) {
           // Pointer clicks and returning from the viewer must not move the page.
           // Keyboard navigation can still bring an offscreen focus target into view.
@@ -145,11 +195,10 @@
           document.dispatchEvent(new Event('gallery-scrollupdate'));
         }
       });
-      // Preserve the interrupted fallback position through the initial refresh.
-      // Reconcile its scrub state before native input or another step resumes.
-      smoother.scrollTo(position, false);
-      smoother.paused(true);
-      smoother.paused(false);
+      window.ScrollTrigger.addEventListener('refreshInit', beforeRefresh);
+      window.ScrollTrigger.addEventListener('refresh', afterRefresh);
+      reconcilePosition(position);
+      observeContentSize();
       updatePaused();
     } catch (error) {
       failed = true;
@@ -193,7 +242,7 @@
   listen(document, 'keydown', () => { keyboardFocus = true; }, { capture: true });
   listen(desktop, 'change', update);
   listen(reducedMotion, 'change', update);
-  listen(window, 'pageshow', () => { update(); smoother?.refresh(); });
+  listen(window, 'pageshow', () => { update(); if (smoother) window.ScrollTrigger.refresh(); });
   listen(window, 'pagehide', event => {
     if (event.persisted) return;
     disposed = true;
