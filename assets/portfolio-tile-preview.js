@@ -172,17 +172,23 @@
     if (reducedMotion.matches && diagnosticsEnabled()) diagnostics.event(feature, 'instant changes', { action: 'enlarge' });
   }
 
-  function enter(card, event) {
-    if (!hover.matches || event.pointerType === 'touch' || event.buttons || intent?.card === card) return;
-    cancelIntent();
-    close();
-    const request = intent = { card, dwelled: false, image: null };
+  function waitForHover(request) {
+    clearTimeout(hoverTimer);
+    request.dwelled = false;
     hoverTimer = setTimeout(() => {
       hoverTimer = undefined;
       if (intent !== request) return;
       request.dwelled = true;
       open(request);
     }, hoverDelay);
+  }
+
+  function enter(card, event) {
+    if (!hover.matches || event.pointerType === 'touch' || event.buttons || intent?.card === card) return;
+    cancelIntent();
+    close();
+    const request = intent = { card, dwelled: false, image: null };
+    waitForHover(request);
     loadImage(card).then(image => {
       if (intent !== request) return;
       request.image = image;
@@ -200,7 +206,12 @@
   }
   // These observers never prevent scrolling or change an anchor's click behavior.
   document.addEventListener('pointerdown', reset, { capture: true, passive: true });
-  document.addEventListener('scroll', reset, { capture: true, passive: true });
+  document.addEventListener('scroll', () => {
+    if (active && active === intent) cancelIntent();
+    close(true);
+    // A pointer that enters a tile during eased scrolling can dwell once it settles.
+    if (intent) waitForHover(intent);
+  }, { capture: true, passive: true });
   window.addEventListener('wheel', reset, { capture: true, passive: true });
   window.addEventListener('resize', reset);
   window.addEventListener('blur', reset);
