@@ -4,11 +4,10 @@ html[data-about-entry="pending"] .about-page > main,
 html[data-about-entry="pending"] .about-page > footer { visibility: hidden; }
 
 .about-entry-label { position: relative; display: inline-block; }
+.about-entry-copy { display: block; }
 .about-entry-mask,
-.about-entry-white,
 .about-entry-accent { position: absolute; inset: 0; pointer-events: none; }
 .about-entry-mask { overflow: hidden; }
-.about-entry-white { background: var(--text, #f2f2f2); }
 .about-entry-accent {
   inline-size: clamp(6px, 20%, 36px);
   background: var(--accent, #e18842);

@@ -75,7 +75,7 @@
     if (window.PortfolioAboutArrival === gate) delete window.PortfolioAboutArrival;
     report(reason === 'completed' ? 'reveal completed' : 'reveal skipped', { reason });
     state(reason === 'completed' ? 'GSAP content reveal' : 'Page ready',
-      reason === 'completed' ? 'Completed the header and staggered white/orange text reveals.' :
+      reason === 'completed' ? 'Completed the header and text reveals from behind the orange blocks.' :
         'The page is fully readable. Reveal ended early: ' + reason + '.');
   }
   gate.release = finish;
@@ -94,14 +94,12 @@
       const mask = document.createElement('span');
       mask.className = 'about-entry-mask';
       mask.setAttribute('aria-hidden', 'true');
-      const white = document.createElement('span');
-      white.className = 'about-entry-white';
       const accent = document.createElement('span');
       accent.className = 'about-entry-accent';
-      mask.append(white, accent);
+      mask.append(accent);
       label.append(text, mask);
       heading.append(label);
-      labels.push({ heading, label, text, white, accent });
+      labels.push({ heading, label, text, accent });
     }
     if (!labels.length || getComputedStyle(labels[0].label).position !== 'relative') {
       finish('stylesheet unavailable'); return;
@@ -110,9 +108,8 @@
     context = gsap.context(() => {
       gsap.set(targets, { autoAlpha: 0 });
       gsap.set([header, ...copy, footer].filter(Boolean), { y: 12 });
-      for (const { text, white, accent } of labels) {
-        gsap.set(text, { opacity: 0 });
-        gsap.set(white, { clipPath: 'inset(0 100% 0 0)' });
+      for (const { text, accent } of labels) {
+        gsap.set(text, { clipPath: 'inset(0 100% 0 0)' });
         gsap.set(accent, { xPercent: -100 });
       }
       root.setAttribute('data-about-entry', 'revealing');
@@ -127,16 +124,15 @@
         onUpdate: () => { if (reporting()) diagnostics.sample(feature, header.getBoundingClientRect().top); }
       }, 0).set(content, { autoAlpha: 1 }, .1);
 
-      labels.forEach(({ heading, label, text, white, accent }, index) => {
+      labels.forEach(({ heading, label, text, accent }, index) => {
         const start = .14 + index * .16;
         const width = label.getBoundingClientRect().width;
         const bar = accent.getBoundingClientRect().width;
         timeline.set(heading, { autoAlpha: 1 }, start)
-          .to(white, { clipPath: 'inset(0 0% 0 0)', duration: .24, ease: 'power2.inOut' }, start)
-          .fromTo(accent, { xPercent: 0, x: -bar }, { x: width, duration: .24, ease: 'power2.inOut', immediateRender: false }, start)
-          .set(text, { opacity: 1 }, start + .3)
-          .to(white, { clipPath: 'inset(0 0 0 100%)', duration: .34, ease: 'power2.inOut', onComplete: () => report('text reveals') }, start + .3)
-          .fromTo(accent, { x: -bar }, { x: width, duration: .34, ease: 'power2.inOut', immediateRender: false }, start + .3);
+          .fromTo(accent, { xPercent: 0, x: -bar }, { x: 0, duration: .12, ease: 'power2.out', immediateRender: false }, start)
+          .to(accent, { x: width, duration: .52, ease: 'power2.inOut' }, start + .12)
+          // The clipping edge follows the orange block's trailing edge.
+          .to(text, { clipPath: 'inset(0 0% 0 0)', duration: .52, ease: 'power2.inOut', onComplete: () => report('text reveals') }, start + .12);
       });
       timeline.to(copy, { autoAlpha: 1, y: 0, duration: .4, stagger: .08, ease: 'power2.out' }, .4);
       if (footer) timeline.to(footer, { autoAlpha: 1, y: 0, duration: .3 }, 1.14);
