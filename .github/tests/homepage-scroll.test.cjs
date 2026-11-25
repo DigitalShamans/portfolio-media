@@ -108,7 +108,7 @@ test('the homepage underline follows the active section and measures wrapped lin
 });
 
 
-function wheelHarness(position = 0, page = 0, reduced = false) {
+function wheelHarness(position = 0, page = 0, reduced = false, framing) {
   let inner = position;
   let time = 0;
   const frames = [];
@@ -125,25 +125,41 @@ function wheelHarness(position = 0, page = 0, reduced = false) {
     assert.equal(opts.passive, false);
     handler = callback;
   };
+  let pageHandler;
+  const portfolio = framing && {
+    getBoundingClientRect: () => ({
+      top: framing.top - state.page, bottom: framing.top + framing.height - state.page, height: framing.height
+    })
+  };
+  const header = framing && { getBoundingClientRect: () => ({ height: framing.header ?? 100 }) };
   vm.runInNewContext(wheel, {
     document: {
-      querySelector: () => region,
-      scrollingElement: { scrollHeight: 2000, clientHeight: 800 }
+      querySelector(selector) {
+        if (selector === '.recent-galleries') return region;
+        return selector.includes('data-scroll-framing') ? portfolio : header;
+      },
+      scrollingElement: { scrollHeight: 2000, clientHeight: framing?.viewport ?? 800 },
+      addEventListener(event, callback, options) {
+        assert.equal(event, 'wheel');
+        assert.equal(options.passive, false);
+        pageHandler = callback;
+      }
     },
     window: {
       get scrollY() { return state.page; },
       matchMedia: () => ({ matches: reduced }),
       performance: { now: () => time },
       requestAnimationFrame: callback => frames.push(callback),
+      getComputedStyle: element => ({ overflowY: element.overflowY ?? 'visible' }),
       scrollTo(movement) {
         assert.equal(movement.behavior, 'instant');
         state.page = Math.round(movement.top);
       }
     }
   });
-  function send(deltaY, overrides = {}) {
+  function send(deltaY, overrides = {}, receiver = handler) {
     let prevented = false;
-    handler({
+    receiver({
       deltaY, deltaX: 0, deltaMode: 0, cancelable: true,
       defaultPrevented: false, ctrlKey: false, metaKey: false,
       preventDefault() { prevented = true; },
@@ -160,7 +176,10 @@ function wheelHarness(position = 0, page = 0, reduced = false) {
     for (let count = 0; frames.length && count < 60; count++) step();
     assert.equal(frames.length, 0, 'Wheel scrolling reaches its destination and settles');
   }
-  return { region, state, send, step, settle };
+  function sendPage(deltaY, overrides) {
+    return send(deltaY, overrides, pageHandler);
+  }
+  return { region, state, send, sendPage, step, settle };
 }
 
 test('one wheel step eases through the banner boundary and carries its full distance to the page', () => {
@@ -260,7 +279,7 @@ test('zoom and horizontal trackpad gestures are never hijacked', () => {
 });
 
 test('portfolio GSAP effects are scoped, scroll-safe and reduced-motion aware', () => {
-  assert.match(layout, /recent-galleries-scroll\.js' \| relative_url }}\?v=2/);
+  assert.match(layout, /recent-galleries-scroll\.js' \| relative_url }}\?v=3/);
   assert.match(layout, /portfolio-effects\.js' \| relative_url }}\?v=5/);
   assert.match(layout, /vendor\/gsap\/3\.15\.1\/gsap\.min\.js/);
   assert.match(layout, /vendor\/gsap\/3\.15\.1\/ScrollTrigger\.min\.js/);
@@ -305,4 +324,58 @@ test('the shared grid reveal leaves the Recent Work banner artwork at its origin
   }
   assert.equal(inspect(false), 1);
   assert.equal(inspect(true), 0);
+});
+
+test('Full Portfolio gently slows wheel travel as the grid becomes framed', () => {
+  const layout = { top: 600, height: 400 };
+  const outside = wheelHarness(0, 0, false, layout);
+  assert.equal(outside.sendPage(32), false);
+
+  const approaching = wheelHarness(0, 120, false, layout);
+  assert.equal(approaching.sendPage(32), true);
+  approaching.settle();
+  const tapered = approaching.state.page - 120;
+  assert.ok(tapered > 24 && tapered < 32);
+
+  const framed = wheelHarness(0, 250, false, layout);
+  assert.equal(framed.sendPage(120), true);
+  framed.step();
+  assert.ok(framed.state.page > 250 && framed.state.page < 340);
+  framed.settle();
+  assert.equal(framed.state.page, 340);
+  assert.equal(framed.sendPage(-120), true);
+  framed.settle();
+  assert.equal(framed.state.page, 250);
+  assert.equal(framed.sendPage(.5), false);
+  assert.equal(framed.sendPage(1), true);
+  framed.settle();
+  assert.equal(framed.state.page, 251);
+
+  const below = wheelHarness(0, 670, false, layout);
+  assert.equal(below.sendPage(32), false);
+});
+
+test('the slowdown follows the viewport and accounts for large wheel steps through the grid', () => {
+  const short = wheelHarness(0, 250, false, { top: 600, height: 400, viewport: 450 });
+  assert.equal(short.sendPage(32), false, 'the tiles still sit below the framed position on a short display');
+  const framed = wheelHarness(0, 520, false, { top: 600, height: 400, viewport: 450 });
+  assert.equal(framed.sendPage(32), true);
+  framed.settle();
+  assert.equal(framed.state.page, 544);
+
+  const crossing = wheelHarness(0, 0, false, { top: 600, height: 400 });
+  assert.equal(crossing.sendPage(900), true);
+  assert.equal(crossing.sendPage(120), true, 'keep the queued movement as a burst leaves the frame');
+  crossing.settle();
+  assert.equal(crossing.state.page, 878);
+});
+
+test('the framed slowdown respects reduced motion and independent scroll areas', () => {
+  const layout = { top: 600, height: 400 };
+  const reduced = wheelHarness(0, 250, true, layout);
+  assert.equal(reduced.sendPage(120), false);
+  const active = wheelHarness(0, 250, false, layout);
+  assert.equal(active.sendPage(120, { shiftKey: true }), false);
+  assert.equal(active.sendPage(120, { target: { scrollHeight: 200, clientHeight: 100, overflowY: 'auto' } }), false);
+  assert.equal(active.sendPage(120, { cancelable: false }), false);
 });
