@@ -1164,7 +1164,8 @@ async function loadGallery() {
     }
     const response = galleryAccess ? await galleryAccess.manifest() : await fetch(galleryAssetUrl('gallery.json'));
     if (!response.ok) throw new Error('Gallery order unavailable.');
-    const entries = GalleryData.parse(await response.text());
+    const excluded = new Set(JSON.parse(gallery.dataset.galleryExclude || '[]'));
+    const entries = GalleryData.parse(await response.text()).filter(entry => !excluded.has(entry.image));
     const restoreFocus = fallback && document.activeElement === fallback;
     shots.push(...entries.map((entry, index) => createShot(entry, index, firstImage)));
     gallery.replaceChildren(...shots.map(shot => shot.element));
