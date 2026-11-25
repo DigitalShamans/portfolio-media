@@ -284,7 +284,7 @@ test('touch tiles navigate directly without loading hover screenshots', async t 
 });
 
 test('reduced motion keeps the dwell and native keyboard and modified-click navigation', async t => {
-  const { page, errors } = await openHome(t, { reducedMotion: 'reduce', diagnostics: true });
+  const { page, context, errors } = await openHome(t, { reducedMotion: 'reduce', diagnostics: true });
   const card = await revealCard(page);
   await moveInto(page, card);
   await page.waitForTimeout(180);
@@ -298,10 +298,11 @@ test('reduced motion keeps the dwell and native keyboard and modified-click navi
   assert.equal(report.tallies['portfolio-preview']['instant changes'], 2);
   assert.equal(report.motion['portfolio-preview'], undefined);
   const destination = new URL(await card.getAttribute('href'), origin).href;
-  const [popup] = await Promise.all([page.waitForEvent('popup'), card.click({ modifiers: ['Control'] })]);
-  await popup.waitForURL(destination);
+  // A modified anchor click can open a background tab without an opener popup event.
+  const [newTab] = await Promise.all([context.waitForEvent('page'), card.click({ modifiers: ['Control'] })]);
+  await newTab.waitForURL(destination);
   assert.equal(new URL(page.url()).pathname, '/');
-  await popup.close();
+  await newTab.close();
   await Promise.all([page.waitForURL(destination), card.press('Enter')]);
   assert.deepEqual(errors, []);
 });
