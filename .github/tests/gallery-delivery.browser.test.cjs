@@ -212,23 +212,36 @@ async function displayed(page, selector, source) {
   }, { selector, source });
 }
 
-async function assertFlatViewerControls(page) {
-  const { surface, controls } = await page.evaluate(() => {
+async function assertViewerControlStyles(page, { touch = false } = {}) {
+  const { surface, arrows, bar } = await page.evaluate(() => {
     const read = selector => {
       const style = getComputedStyle(document.querySelector(selector));
       return {
         background: style.backgroundColor, image: style.backgroundImage, border: style.borderTopColor,
+        borderWidth: style.borderTopWidth,
         radius: style.borderTopLeftRadius, shadow: style.boxShadow, color: style.color
       };
     };
     return {
       surface: read('.gallery-back-to-top'),
-      controls: ['#previous-side', '#next-side', '#fullscreen', '#counter'].map(read)
+      arrows: ['#previous-side', '#next-side'].map(read),
+      bar: ['#fullscreen', '#counter'].map(read)
     };
   });
   assert.equal(surface.background, 'rgb(24, 24, 24)');
   assert.equal(surface.image, 'none');
-  assert.deepEqual(controls, [surface, surface, ...Array(2).fill({ ...surface, background: 'rgb(0, 0, 0)' })]);
+  const blackSurface = { ...surface, background: 'rgb(0, 0, 0)' };
+  assert.deepEqual(bar, [blackSurface, blackSurface]);
+  if (touch) {
+    for (const arrow of arrows) {
+      assert.equal(arrow.background, 'rgba(0, 0, 0, 0)');
+      assert.equal(arrow.image, 'none');
+      assert.equal(arrow.borderWidth, '0px');
+      assert.equal(arrow.shadow, 'none');
+    }
+  } else {
+    assert.deepEqual(arrows, [surface, surface]);
+  }
 }
 
 function segment(page, variant) {
@@ -1073,7 +1086,11 @@ test('fullscreen touch swipes navigate on both axes while pinch and pan stay on 
   const session = await page.context().newCDPSession(page);
   await page.locator('.shot').first().tap();
   await displayed(page, '#original', preview('First'));
-  await assertFlatViewerControls(page);
+  await assertViewerControlStyles(page, { touch: true });
+  await page.locator('#next-side').tap();
+  await displayed(page, '#original', preview('Second'));
+  await page.locator('#previous-side').tap();
+  await displayed(page, '#original', preview('First'));
 
   await segment(page, 1).tap();
   await displayed(page, '#original', preview('First_Checker'));
@@ -1111,6 +1128,53 @@ test('fullscreen touch swipes navigate on both axes while pinch and pan stay on 
   assert.deepEqual(errors, []);
 });
 
+test('desktop fullscreen controls fade when idle and return on mouse movement or keyboard use', async t => {
+  const { page, errors } = await openPage(t, { width: 1440 });
+  const first = page.locator('.shot').first();
+  await first.click();
+  await displayed(page, '#original', preview('First'));
+
+  const arrows = await page.locator('.viewer-arrows button').evaluateAll(buttons => buttons.map(button => {
+    const range = document.createRange();
+    range.selectNodeContents(button);
+    const top = range.getBoundingClientRect().top;
+    const height = button.getBoundingClientRect().height;
+    button.style.paddingBottom = '0px';
+    const centeredTop = range.getBoundingClientRect().top;
+    button.style.removeProperty('padding-bottom');
+    return { offset: top - centeredTop, height };
+  }));
+  assert.deepEqual(arrows, [{ offset: -2, height: 48 }, { offset: -2, height: 48 }]);
+
+  const controlsOpacity = opacity => page.waitForFunction(value => {
+    return ['.viewer-arrows', '.viewer-bar'].every(selector =>
+      Number(getComputedStyle(document.querySelector(selector)).opacity) === value);
+  }, opacity);
+  await controlsOpacity(1);
+  await controlsOpacity(0);
+  const targets = page.locator('#previous-side, #next-side, #fullscreen, #counter');
+  assert.deepEqual(await targets.evaluateAll(elements => elements.map(element => getComputedStyle(element).pointerEvents)),
+    ['none', 'none', 'none', 'none']);
+
+  await page.mouse.move(40, 100);
+  await controlsOpacity(1);
+  assert.deepEqual(await targets.evaluateAll(elements => elements.map(element => getComputedStyle(element).pointerEvents)),
+    ['auto', 'auto', 'auto', 'auto']);
+
+  await controlsOpacity(0);
+  await page.keyboard.press('Shift+Tab');
+  await controlsOpacity(1);
+  assert.equal(await page.evaluate(() => document.querySelector('#viewer').contains(document.activeElement)), true);
+  await page.keyboard.press('ArrowRight');
+  await displayed(page, '#original', preview('Second'));
+  await page.locator('#fullscreen').click();
+  await page.locator('#viewer').waitFor({ state: 'hidden' });
+  await page.waitForFunction(() => document.fullscreenElement === null);
+  await first.click();
+  await controlsOpacity(1);
+  assert.deepEqual(errors, []);
+});
+
 test('fullscreen desktop left click toggles zoom, middle and right drag pan, and double-click fits', async t => {
   const { page, errors } = await openPage(t, { width: 1440 });
   const firstShot = page.locator('.shot').first();
@@ -1118,7 +1182,7 @@ test('fullscreen desktop left click toggles zoom, middle and right drag pan, and
   const zoomedStage = page.locator('#stage.zoomed');
   await firstShot.click();
   await displayed(page, '#original', preview('First'));
-  await assertFlatViewerControls(page);
+  await assertViewerControlStyles(page);
   const exit = page.locator('#fullscreen');
   await exit.hover();
   assert.equal(await exit.evaluate(button => getComputedStyle(button).backgroundColor), 'rgb(0, 0, 0)');

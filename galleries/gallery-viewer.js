@@ -97,6 +97,7 @@ let displayedComparison = 0;
 let viewerIndicator;
 let openingPointer;
 let fullscreenActive = false;
+let viewerControlsIdleTimer;
 const imageRetryDelay = 1000;
 const foregroundLoads = new Set();
 let nextBackgroundIndex = 0;
@@ -1245,6 +1246,29 @@ function step(amount) {
 previousSide.addEventListener('click', () => step(-1));
 nextSide.addEventListener('click', () => step(1));
 
+function showViewerControls(hideWhenIdle = false) {
+  clearTimeout(viewerControlsIdleTimer);
+  frame.classList.toggle('viewer-controls-idle', false);
+  if (!hideWhenIdle || !desktopScrolling.matches) return;
+  viewerControlsIdleTimer = setTimeout(() => {
+    if (viewer.open && !frame.querySelector('.viewer-arrows :focus-visible, .viewer-bar :focus-visible')) {
+      frame.classList.add('viewer-controls-idle');
+    }
+  }, 2000);
+}
+
+for (const type of ['pointermove', 'pointerdown']) {
+  frame.addEventListener(type, event => {
+    if (desktopScrolling.matches) showViewerControls(event.pointerType === 'mouse');
+  }, { capture: true, passive: true });
+}
+desktopScrolling.addEventListener('change', () => showViewerControls());
+viewer.addEventListener('focusin', event => {
+  if (event.target.matches(':focus-visible')) showViewerControls(true);
+});
+
+frame.addEventListener('keydown', () => showViewerControls(true), { capture: true });
+
 viewer.addEventListener('keydown', event => {
   if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
   if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
@@ -1576,6 +1600,7 @@ document.addEventListener('fullscreenchange', () => {
 
 viewer.addEventListener('close', async () => {
   if (viewer.open) return;
+  showViewerControls();
   const origin = viewerOrigin;
   viewerOrigin = undefined;
   const fullscreenExit = document.fullscreenElement === frame ? setFullscreen(false) : undefined;
@@ -1628,7 +1653,11 @@ function openViewer(index, variant = 0, source = shots[index].link, event) {
     openingPointer = event ? { x: event.screenX, y: event.screenY } : null;
   }
   showImage(index, variant);
-  if (!viewer.open) viewer.showModal();
+  if (!viewer.open) {
+    viewer.showModal();
+    const openedWithMouse = event?.pointerType ? event.pointerType === 'mouse' : event?.detail > 0;
+    showViewerControls(openedWithMouse);
+  }
   if (document.fullscreenElement !== frame) void setFullscreen(true);
   return true;
 }
