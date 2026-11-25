@@ -78,8 +78,8 @@ async function session(t, { width = 1440, height = 900, touch = false, reducedMo
       window.aboutFrames = [];
       const start = performance.now();
       function sample() {
-        const sheet = document.querySelector('.about-entry-sheet');
-        const title = document.querySelector('#about-title');
+        const header = document.querySelector('.site-header');
+        const rootBefore = getComputedStyle(document.documentElement, '::before');
         const masks = [...document.querySelectorAll('.about-entry-mask')].map(mask => {
           const bounds = mask.getBoundingClientRect();
           const white = mask.querySelector('.about-entry-white');
@@ -93,13 +93,13 @@ async function session(t, { width = 1440, height = 900, touch = false, reducedMo
             accent: accentBounds ? Math.max(0, Math.min(accentBounds.right, bounds.right) - Math.max(accentBounds.left, bounds.left)) : 0,
             accentX: accentBounds ? accentBounds.left - bounds.left : 0 };
         });
-        if (document.documentElement.dataset.aboutEntry || sheet || masks.length) {
+        if (document.documentElement.dataset.aboutEntry || masks.length) {
           window.aboutFrames.push({ time: performance.now() - start,
             state: document.documentElement.dataset.aboutEntry,
-            clip: sheet && getComputedStyle(sheet).clipPath,
-            parentIsBody: sheet?.parentElement === document.body,
-            width: sheet?.getBoundingClientRect().width, height: sheet?.getBoundingClientRect().height,
-            titleOpacity: title && Number(getComputedStyle(title).opacity), masks });
+            sheets: document.querySelectorAll('.about-entry-sheet').length,
+            rootBeforeContent: rootBefore.content,
+            headerTop: header?.getBoundingClientRect().top,
+            headerOpacity: header && Number(getComputedStyle(header).opacity), masks });
         }
         if (performance.now() - start < 6500) requestAnimationFrame(sample);
       }
@@ -159,45 +159,40 @@ async function readable(page) {
 test('listed, unlisted, protected, and map galleries all enter the real About page and recover on Back', { timeout: 35_000 }, async t => {
   for (const path of ['/galleries/hb-egypt/', '/galleries/nfs-unbound/', '/galleries/hb-rzstart/', '/experiments/atrium-overview/']) {
     await t.test(path, async t => {
-      const { page, errors } = await session(t);
+      const { page, errors } = await session(t, { observe: true });
       const link = await source(page, path);
       if (path.includes('rzstart')) assert.equal(await page.locator('#gallery-access-form').isVisible(), true);
       await page.evaluate(() => {
-        const observer = new MutationObserver(() => {
-          const sheet = document.querySelector('.about-entry-sheet');
-          if (!sheet) return;
-          const rect = sheet.getBoundingClientRect();
-          sessionStorage.setItem('about-test-departure', JSON.stringify({ parentIsBody: sheet.parentElement === document.body,
-            path: location.pathname, left: rect.left, top: rect.top, width: rect.width, height: rect.height,
-            viewportWidth: document.documentElement.clientWidth, innerWidth,
-            rootWidth: document.documentElement.getBoundingClientRect().width,
-            scrollbarGutter: getComputedStyle(document.documentElement).scrollbarGutter,
-            viewportHeight: innerHeight }));
-          observer.disconnect();
+        window.addEventListener('click', event => {
+          if (!event.target.closest?.('.site-nav [data-about-entry-link]')) return;
+          sessionStorage.setItem('about-test-native-click', JSON.stringify({ prevented: event.defaultPrevented,
+            path: location.pathname, marker: JSON.parse(sessionStorage.getItem('portfolio-about-entry-v1')),
+            sheets: document.querySelectorAll('.about-entry-sheet').length }));
         });
-        observer.observe(document.body, { childList: true, subtree: true });
       });
       await Promise.all([page.waitForURL(destination), path.includes('nfs') ? link.press('Enter') : link.click()]);
       await finished(page);
       assert.equal(await page.evaluate(key => sessionStorage.getItem(key), markerKey), null, 'arrival consumes its one-shot marker');
-      const departure = await page.evaluate(() => JSON.parse(sessionStorage.getItem('about-test-departure')));
-      assert.ok(departure, 'a departure cover was rendered before navigation');
-      assert.equal(departure.path, path);
-      assert.equal(departure.parentIsBody, true, 'the wipe stays outside transformed map/scroll containers');
-      assert.equal(departure.left, 0);
-      assert.equal(departure.top, 0);
-      assert.ok(departure.width >= departure.viewportWidth - 1, 'cover spans the viewport: ' + JSON.stringify(departure));
-      assert.equal(departure.height, departure.viewportHeight);
+      const click = await page.evaluate(() => JSON.parse(sessionStorage.getItem('about-test-native-click')));
+      assert.ok(click, 'the original link receives the click');
+      assert.equal(click.prevented, false, 'About navigation remains a native, undelayed anchor action');
+      assert.equal(click.path, path);
+      assert.equal(click.marker.from, path);
+      assert.equal(click.marker.to, '/resume/');
+      assert.equal(click.sheets, 0, 'no departure overlay is inserted');
+      const frames = await page.evaluate(() => window.aboutFrames);
+      assert.ok(frames.some(frame => frame.state === 'revealing' && frame.masks.length > 0), 'this gallery triggers the actual destination content reveal');
+      assert.ok(frames.every(frame => frame.sheets === 0 && ['none', 'normal'].includes(frame.rootBeforeContent)), 'the arrival has no full-screen sheet or pending pseudo-element cover');
       await page.goBack({ waitUntil: 'domcontentloaded' });
       assert.equal(new URL(page.url()).pathname, path);
       await page.locator(linkSelector).waitFor({ state: 'visible' });
-      assert.equal(await page.locator('.about-entry-sheet').count(), 0, 'Back does not restore an opaque departure cover');
+      assert.equal(await page.locator(temporarySelector).count(), 0, 'Back does not restore temporary entry effects');
       assert.deepEqual(errors, []);
     });
   }
 });
 
-test('the browser renders the diagonal wipe and two-color text masks before finishing the GSAP reveal', async t => {
+test('the page builds through real header motion and two-color heading masks without a full-screen cover', async t => {
   const { page, errors } = await session(t, { observe: true });
   const link = await source(page, '/galleries/hb-egypt/', true);
   await Promise.all([page.waitForURL(destination), link.click()]);
@@ -211,13 +206,7 @@ test('the browser renders the diagonal wipe and two-color text masks before fini
     }
   }
   const captures = [
-    capture('01-diagonal-wipe', () => {
-      const sheet = document.querySelector('.about-entry-sheet');
-      const clip = sheet && getComputedStyle(sheet).clipPath;
-      const values = clip?.match(/[\d.]+/g)?.map(Number);
-      return values?.length >= 8 && ((values[0] > 25 && values[0] < 90) || (values[1] > 10 && values[1] < 75));
-    }),
-    capture('02-heading-masks', () => [...document.querySelectorAll('.about-entry-white')].some(white => {
+    capture('01-heading-masks', () => [...document.querySelectorAll('.about-entry-white')].some(white => {
       const heading = white.closest('.about-entry-label')?.parentElement;
       const values = getComputedStyle(white).clipPath.match(/[\d.]+/g)?.map(Number);
       return heading && getComputedStyle(heading).visibility === 'visible' &&
@@ -225,13 +214,13 @@ test('the browser renders the diagonal wipe and two-color text masks before fini
     })),
   ];
   await Promise.all([finished(page), ...captures]);
-  await page.screenshot({ path: join(evidence, '03-completed-about-page.png'), fullPage: true });
+  await page.screenshot({ path: join(evidence, '02-completed-about-page.png'), fullPage: true });
   const frames = await page.evaluate(() => window.aboutFrames);
-  const sheetFrames = frames.filter(frame => frame.clip?.startsWith('polygon('));
-  assert.ok(sheetFrames.length >= 4, 'the wipe was actually rendered over multiple frames');
-  assert.ok(new Set(sheetFrames.map(frame => frame.clip)).size > 3, 'the computed clipping geometry moves');
-  assert.ok(sheetFrames.every(frame => frame.parentIsBody));
-  assert.ok(sheetFrames.every(frame => frame.width >= 1400 && frame.height === 900));
+  assert.ok(frames.length >= 4, 'the content reveal renders over multiple frames');
+  assert.ok(frames.every(frame => frame.sheets === 0 && ['none', 'normal'].includes(frame.rootBeforeContent)), 'there is no full-screen color cover at any observed stage');
+  const headerFrames = frames.filter(frame => frame.headerOpacity > 0 && frame.headerOpacity < 1);
+  assert.ok(headerFrames.length >= 2, 'the header fades through intermediate opacity values');
+  assert.ok(new Set(headerFrames.map(frame => frame.headerTop.toFixed(1))).size >= 2, 'the header moves while appearing');
   const masks = frames.flatMap(frame => frame.masks);
   assert.ok(masks.some(mask => mask.width > 20 && mask.white > 2 && mask.white < mask.width - 2), 'a white block expands through an intermediate width');
   assert.ok(masks.some(mask => mask.width > 20 && mask.accent > 2 && mask.accent < mask.width - 2), 'an orange block moves through the reveal');
@@ -241,7 +230,7 @@ test('the browser renders the diagonal wipe and two-color text masks before fini
   const report = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1));
   const tally = report.tallies['about-entry'];
   assert.equal(tally['reveal started'], 1);
-  assert.equal(tally['wipe completed'], 1);
+  assert.equal(tally['wipe completed'], undefined, 'the removed full-screen wipe never runs');
   assert.ok(tally['text reveals'] >= 1);
   assert.equal(tally['reveal completed'], 1);
   await page.reload({ waitUntil: 'domcontentloaded' });
@@ -325,7 +314,7 @@ test('mobile arrivals fit the viewport and an interruption releases every tempor
     assert.equal(await page.locator('html').getAttribute('data-about-entry'), 'pending', 'the second real tap creates a fresh valid arrival');
     assert.equal(await page.evaluate(key => sessionStorage.getItem(key), markerKey), null, 'the destination consumes the fresh marker');
     const revealing = page.waitForFunction(() => document.documentElement.dataset.aboutEntry === 'revealing' &&
-      document.querySelector('.about-entry-sheet') && document.querySelector('.about-entry-mask'));
+      document.querySelector('.about-entry-mask'));
     gate.release();
     await revealing;
     await page.setViewportSize({ width: 844, height: 390 });
@@ -334,6 +323,48 @@ test('mobile arrivals fit the viewport and an interruption releases every tempor
     await tapping;
   }
   await finished(page);
+  assert.deepEqual(errors, []);
+});
+
+test('a timely delayed GSAP load gets a full reveal budget and unchanged-size resize events do not interrupt it', { timeout: 12_000 }, async t => {
+  const requested = signal(), gate = signal();
+  const { page, errors } = await session(t, { arrival: {}, intercept: async (route, url) => {
+    if (!url.pathname.endsWith('/gsap.min.js')) return false;
+    requested.release();
+    await gate.reached;
+    await route.fulfill({ path: join(site, url.pathname) });
+    return true;
+  } });
+  try {
+    await page.goto(destination + '?diagnostics=1', { waitUntil: 'commit' });
+    await withinFiveSeconds(requested.reached, 'the delayed arrival GSAP request');
+    await page.locator('.about-content').waitFor({ state: 'attached' });
+    assert.equal(await page.locator('html').getAttribute('data-about-entry'), 'pending');
+    // Simulate a dependency arriving within its 4500ms loading budget but late
+    // enough that the real 1.44s animation needs its own completion budget.
+    await page.waitForTimeout(3500);
+    assert.equal(await page.locator('html').getAttribute('data-about-entry'), 'pending');
+    const revealing = page.waitForFunction(() => document.documentElement.dataset.aboutEntry === 'revealing' &&
+      document.querySelector('.about-entry-mask'));
+    gate.release();
+    await revealing;
+    const resize = await page.evaluate(() => {
+      const before = [innerWidth, innerHeight];
+      window.dispatchEvent(new Event('resize'));
+      return { before, after: [innerWidth, innerHeight], state: document.documentElement.dataset.aboutEntry,
+        masks: document.querySelectorAll('.about-entry-mask').length };
+    });
+    assert.deepEqual(resize.after, resize.before);
+    assert.equal(resize.state, 'revealing', 'a no-op resize must leave the active reveal running');
+    assert.ok(resize.masks > 0, 'the heading effects remain active after an unchanged-size resize');
+    await finished(page);
+    await page.waitForFunction(() => typeof window.PortfolioDiagnostics?.report === 'function');
+    const tally = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1).tallies['about-entry']);
+    assert.equal(tally['reveal started'], 1);
+    assert.ok(tally['text reveals'] >= 1);
+    assert.equal(tally['reveal completed'], 1, 'the late but timely dependency still permits a complete animation');
+    assert.equal(tally['reveal skipped'], undefined, 'neither the old load deadline nor no-op resize skips the reveal');
+  } finally { gate.release(); }
   assert.deepEqual(errors, []);
 });
 
