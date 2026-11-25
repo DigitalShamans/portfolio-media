@@ -440,6 +440,48 @@ test('navigation holds the visible image and ignores late fallback from a previo
   assert.deepEqual(errors, []);
 });
 
+test('fullscreen hover acknowledges a slow comparison and clears it after a change of target', { timeout: 12_000 }, async t => {
+  const checkerStarted = signal();
+  const releaseChecker = signal();
+  t.after(releaseChecker.release);
+  const { page, errors } = await openPage(t, {
+    width: 1440,
+    intercept: async (_request, url, { preview }) => {
+      if (url.href === preview('First_Checker')) {
+        checkerStarted.release();
+        await releaseChecker.reached;
+      }
+      return false;
+    },
+  });
+  const checker = segment(page, 1);
+  const status = page.locator('#status');
+  await page.locator('.shot').first().click();
+  await displayed(page, '#original', preview('First'));
+  await checkerStarted.reached;
+  await checker.hover();
+  assert.equal(await checker.getAttribute('aria-busy'), 'true');
+  assert.equal(await status.textContent(), 'Loading comparison…');
+  await activeSegment(page, 0);
+  assert.equal(await checker.evaluate(button => getComputedStyle(button, '::before').backgroundColor), 'rgb(119, 119, 119)');
+  assert.equal(await segment(page, 0).evaluate(button => getComputedStyle(button, '::before').backgroundColor), 'rgb(255, 255, 255)');
+
+  await segment(page, 2).hover();
+  await displayed(page, '#original', preview('First_Wireframe'));
+  await activeSegment(page, 2);
+  assert.equal(await checker.getAttribute('aria-busy'), null);
+  assert.equal(await status.isHidden(), true);
+
+  await checker.hover();
+  assert.equal(await checker.getAttribute('aria-busy'), 'true');
+  releaseChecker.release();
+  await displayed(page, '#original', preview('First_Checker'));
+  await activeSegment(page, 1);
+  assert.equal(await checker.getAttribute('aria-busy'), null);
+  assert.equal(await status.isHidden(), true);
+  assert.deepEqual(errors, []);
+});
+
 test('a late Checker fallback cannot replace the selected Wireframe', { timeout: 12_000 }, async t => {
   const releaseChecker = signal();
   const checkerStarted = signal();
@@ -479,6 +521,8 @@ test('a late Checker fallback cannot replace the selected Wireframe', { timeout:
   await segment(page, 1).press('Enter');
   await checkerStarted.reached;
   await activeSegment(page, 0);
+  assert.equal(await segment(page, 1).getAttribute('aria-busy'), 'true');
+  assert.equal(await page.locator('#status').textContent(), 'Loading comparison…');
   await segment(page, 2).press('Enter');
   await displayed(page, '#original', preview('First_Wireframe'));
   await activeSegment(page, 2);
@@ -514,6 +558,8 @@ test('two 4K failures and one WebP failure show an error without restarting the 
   await segment(page, 0).press('Enter');
   await segment(page, 1).press('Enter');
   await activeSegment(page, 0);
+  await page.waitForFunction(() => document.querySelector('#status').textContent === 'This comparison could not be loaded.');
+  assert.equal(await segment(page, 1).getAttribute('aria-busy'), null);
   await page.locator('#next-side').press('Enter');
   await page.waitForFunction(() => document.querySelector('#status').textContent === 'This image could not be loaded.');
   await displayed(page, '#original', originals('First'));

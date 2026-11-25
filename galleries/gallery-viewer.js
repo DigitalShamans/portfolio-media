@@ -796,11 +796,13 @@ function imageLoaded() {
   viewer.dispatchEvent(new CustomEvent('gallery-imagechange', {
     detail: { filename: shot.filenames[displayed], index: current, variant: displayed }
   }));
-  showStatus('');
   if (viewerIndicator) {
     displayedComparison = displayed;
     setActiveSegment(viewerIndicator, displayedComparison);
     viewerIndicator.hidden = false;
+    updateComparisonStatus();
+  } else {
+    showStatus('');
   }
   positionViewerControls();
   if (!shot.comparison || comparisonsInitialized) return;
@@ -808,15 +810,38 @@ function imageLoaded() {
   for (let index = 1; index < shot.sources.length; index++) shot.comparison.getImage(index, true);
 }
 
-function updateComparison(requestImage = false) {
-  if (!viewer.open) return;
-  const shot = shots[current];
-  if (comparisonIndex === 0 && !shot.image.naturalWidth) {
-    if (requestImage) prioritizeShot(shot);
-    return;
+function updateComparisonStatus() {
+  if (!viewerIndicator || viewerIndicator.hidden) return;
+  const previous = viewerIndicator.querySelector('[aria-busy="true"]');
+  let pending = null;
+  let message = '';
+  if (comparisonIndex !== displayedComparison) {
+    const shot = shots[current];
+    const primary = comparisonIndex === 0;
+    const image = primary ? shot.image : shot.comparison.getImage(comparisonIndex);
+    const ready = image?.complete && image.naturalWidth > 0;
+    const downloading = primary ? !shot.primaryFailed : shot.comparison.isLoading(comparisonIndex);
+    if (ready || downloading) {
+      pending = viewerIndicator.children[comparisonIndex];
+      if (!ready || previous === pending) message = 'Loading comparison…';
+    } else {
+      message = 'This comparison could not be loaded.';
+    }
   }
+  if (previous !== pending) {
+    previous?.removeAttribute('aria-busy');
+    pending?.setAttribute('aria-busy', 'true');
+  }
+  if (status.textContent !== message) showStatus(message);
+}
+
+function updateComparison(requestImage = false) {
+  if (!viewer.open || !viewerIndicator) return;
+  const shot = shots[current];
+  if (comparisonIndex === 0 && requestImage && !shot.image.naturalWidth) prioritizeShot(shot);
   const image = comparisonIndex === 0 ? shot.image : shot.comparison.getImage(comparisonIndex, requestImage);
-  if (image?.naturalWidth && original.src !== imageUrl(image)) displayOriginal(image);
+  updateComparisonStatus();
+  if (image?.complete && image.naturalWidth && original.src !== imageUrl(image)) displayOriginal(image);
 }
 
 function selectViewerComparison(index) {
@@ -972,6 +997,7 @@ function setupGalleryComparison(entry, link, sources, shotIndex) {
   let displayed = 0;
   let hovered = null;
   const alternates = [];
+  const loadingAlternates = new Set();
   const indicator = createComparisonIndicator(sources.length, select);
   entry.append(indicator);
 
@@ -994,14 +1020,16 @@ function setupGalleryComparison(entry, link, sources, shotIndex) {
 
     const source = sources[index];
     link.append(alternate);
+    loadingAlternates.add(index);
     void loadImage(alternate, source).then(loaded => {
-      if (!loaded) {
+      loadingAlternates.delete(index);
+      if (loaded) {
+        if (requested === index) show(index);
+      } else {
         // Keep an exhausted 4K/WebP pair from restarting on every hover or toggle.
         if (!source.fallbackUrl) delete alternates[index];
         alternate.remove();
-        return;
       }
-      if (requested === index) show(index);
       if (shots[current]?.link === link && comparisonIndex === index) updateComparison();
     });
     return alternate;
@@ -1044,6 +1072,7 @@ function setupGalleryComparison(entry, link, sources, shotIndex) {
 
   return {
     getImage,
+    isLoading: index => loadingAlternates.has(index),
     select,
     primaryLoaded() {
       if (requested === 0 && displayed !== 0) show(0);
@@ -1093,8 +1122,9 @@ function loadPrimary(shot, priority) {
     if (loaded) {
       shot.comparison?.primaryLoaded();
       if (viewer.open && shots[current] === shot && comparisonIndex === 0) displayOriginal(image);
-    } else if (!source.fallbackUrl) {
-      scheduleVisibleRetry(shot);
+    } else {
+      if (!source.fallbackUrl) scheduleVisibleRetry(shot);
+      if (viewer.open && shots[current] === shot && comparisonIndex === 0) updateComparisonStatus();
     }
     return loaded;
   });
