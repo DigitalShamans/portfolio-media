@@ -1111,6 +1111,53 @@ test('fullscreen touch swipes navigate on both axes while pinch and pan stay on 
   assert.deepEqual(errors, []);
 });
 
+test('desktop fullscreen controls fade when idle and return on mouse movement or keyboard use', async t => {
+  const { page, errors } = await openPage(t, { width: 1440 });
+  const first = page.locator('.shot').first();
+  await first.click();
+  await displayed(page, '#original', preview('First'));
+
+  const arrows = await page.locator('.viewer-arrows button').evaluateAll(buttons => buttons.map(button => {
+    const range = document.createRange();
+    range.selectNodeContents(button);
+    const top = range.getBoundingClientRect().top;
+    const height = button.getBoundingClientRect().height;
+    button.style.paddingBottom = '0px';
+    const centeredTop = range.getBoundingClientRect().top;
+    button.style.removeProperty('padding-bottom');
+    return { offset: top - centeredTop, height };
+  }));
+  assert.deepEqual(arrows, [{ offset: -2, height: 48 }, { offset: -2, height: 48 }]);
+
+  const controlsOpacity = opacity => page.waitForFunction(value => {
+    return ['.viewer-arrows', '.viewer-bar'].every(selector =>
+      Number(getComputedStyle(document.querySelector(selector)).opacity) === value);
+  }, opacity);
+  await controlsOpacity(1);
+  await controlsOpacity(0);
+  const targets = page.locator('#previous-side, #next-side, #fullscreen, #counter');
+  assert.deepEqual(await targets.evaluateAll(elements => elements.map(element => getComputedStyle(element).pointerEvents)),
+    ['none', 'none', 'none', 'none']);
+
+  await page.mouse.move(40, 100);
+  await controlsOpacity(1);
+  assert.deepEqual(await targets.evaluateAll(elements => elements.map(element => getComputedStyle(element).pointerEvents)),
+    ['auto', 'auto', 'auto', 'auto']);
+
+  await controlsOpacity(0);
+  await page.keyboard.press('Shift+Tab');
+  await controlsOpacity(1);
+  assert.equal(await page.evaluate(() => document.querySelector('#viewer').contains(document.activeElement)), true);
+  await page.keyboard.press('ArrowRight');
+  await displayed(page, '#original', preview('Second'));
+  await page.locator('#fullscreen').click();
+  await page.locator('#viewer').waitFor({ state: 'hidden' });
+  await page.waitForFunction(() => document.fullscreenElement === null);
+  await first.click();
+  await controlsOpacity(1);
+  assert.deepEqual(errors, []);
+});
+
 test('fullscreen desktop left click toggles zoom, middle and right drag pan, and double-click fits', async t => {
   const { page, errors } = await openPage(t, { width: 1440 });
   const firstShot = page.locator('.shot').first();
