@@ -1,5 +1,6 @@
 """Write asset versions and homepage gallery preloads for the published commit."""
 
+import hashlib
 import json
 from pathlib import Path, PurePosixPath
 import subprocess
@@ -53,6 +54,10 @@ def gallery_versions():
     return versions
 
 
+def gallery_script_versions():
+    return {'viewer': hashlib.sha256((ROOT / 'galleries/gallery-viewer.js').read_bytes()).hexdigest()}
+
+
 def banner_versions():
     return {
         f'/{path}': digest
@@ -91,6 +96,7 @@ if __name__ == '__main__':
     galleries = gallery_versions()
     for name, versions in (
         ('gallery_asset_versions', galleries),
+        ('gallery_script_versions', gallery_script_versions()),
         ('portfolio_banner_versions', banner_versions()),
         ('portfolio_gallery_preloads', portfolio_gallery_preloads(galleries)),
     ):

@@ -1,3 +1,5 @@
+{% assign gallery_viewer_fallback = site.time | date: '%s' %}
+{% assign gallery_viewer_version = site.data.gallery_script_versions.viewer | default: gallery_viewer_fallback %}
 <!doctype html>
 <html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}" data-gallery-webp-revision="{{ site.gallery_webp_revision | escape }}"{% if site.data.gallery_delivery.revision %} data-gallery-originals-origin="{{ site.data.gallery_delivery.service_origin | escape }}" data-gallery-originals-revision="{{ site.data.gallery_delivery.revision | escape }}" data-gallery-originals-gallery-revisions="{{ site.data.gallery_delivery.gallery_revisions | jsonify | escape }}"{% endif %}>
 <head>
@@ -37,7 +39,7 @@
     "previewSize": {{ page.map_preview_size | default: 1 | jsonify }},
     "navigateOnClick": {% if page.map_navigate_on_click == false %}false{% else %}true{% endif %},
     "navigateExpandedPreview": {% if page.map_navigate_expanded_preview == false %}false{% else %}true{% endif %},
-    "viewerScript": {{ '/galleries/gallery-viewer.js' | relative_url | append: '?v=73' | jsonify }},
+    "viewerScript": {{ '/galleries/gallery-viewer.js' | relative_url | append: '?v=' | append: gallery_viewer_version | jsonify }},
     "personal": {% if page.portfolio == 'personal' %}true{% else %}false{% endif %},
     "galleryRoot": {{ '/galleries/' | relative_url | jsonify }},
     "media": {{ site.gallery_4k_media | jsonify }},

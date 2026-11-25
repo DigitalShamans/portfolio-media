@@ -1,3 +1,5 @@
+{% assign gallery_viewer_fallback = site.time | date: '%s' %}
+{% assign gallery_viewer_version = site.data.gallery_script_versions.viewer | default: gallery_viewer_fallback %}
 {% if page.portfolio == 'personal' %}
   {% assign portfolio_name = site.data.personal_portfolio.name %}
   {% assign portfolio_url = site.data.personal_portfolio.home %}
@@ -261,7 +263,7 @@
       document.querySelector('#gallery-access').replaceWith(template.content);
       try {
         await loadScript('../gallery-data.js?v=3');
-        await loadScript('../gallery-viewer.js?v=73');
+        await loadScript('../gallery-viewer.js?v={{ gallery_viewer_version }}');
       } catch {
         document.querySelector('#gallery-status').textContent =
           'The gallery could not be loaded. Please reload to try again.';
