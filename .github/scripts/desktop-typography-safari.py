@@ -23,6 +23,8 @@ BROWSER = os.environ.get("TYPOGRAPHY_BROWSER", "safari").lower()
 if BROWSER not in {"safari", "chrome"}:
     raise ValueError("TYPOGRAPHY_BROWSER must be safari or chrome.")
 BROWSER_LABEL = "Safari" if BROWSER == "safari" else "Google Chrome"
+CHROME_HEADLESS = BROWSER == "chrome" and os.environ.get("TYPOGRAPHY_CHROME_HEADLESS") == "1"
+BROWSER_MODE = "headless" if CHROME_HEADLESS else "headed"
 ENDPOINT = os.environ.get("TYPOGRAPHY_WEBDRIVER_URL", "http://127.0.0.1:4444").rstrip("/")
 OUTPUT = Path(os.environ.get("TYPOGRAPHY_OUTPUT_DIR", "artifacts/" + BROWSER))
 SOURCE_SHA = os.environ["PORTFOLIO_SOURCE_SHA"]
@@ -81,9 +83,12 @@ class DesktopBrowser:
             "timeouts": {"pageLoad": 30000, "script": 15000, "implicit": 0},
         }
         if BROWSER == "chrome":
+            chrome_args = ["--no-first-run", "--no-default-browser-check"]
+            if CHROME_HEADLESS:
+                chrome_args.append("--headless=new")
             capabilities["goog:chromeOptions"] = {
                 "binary": CHROME_BINARY,
-                "args": ["--no-first-run", "--no-default-browser-check"],
+                "args": chrome_args,
             }
         value = self.request("POST", "/session", {
             "capabilities": {"alwaysMatch": capabilities},
@@ -147,6 +152,7 @@ return {
   screen:{width:screen.width,height:screen.height,availWidth:screen.availWidth,availHeight:screen.availHeight},
   pointerFine:matchMedia('(pointer:fine)').matches,hover:matchMedia('(hover:hover)').matches,
   rootFontSize:parseFloat(getComputedStyle(document.documentElement).fontSize),
+  rootScrollbarGutter:getComputedStyle(document.documentElement).scrollbarGutter,
   rootClasses:[...document.documentElement.classList],
   safariTypography:document.documentElement.hasAttribute('data-desktop-safari'),
   headerInner:rect(headerInner),headerContentWidth,
@@ -186,7 +192,10 @@ def check_metrics(metrics):
     errors = []
     width, root = metrics["innerWidth"], metrics["rootFontSize"]
     if BROWSER == "chrome":
-        expected_name = min(2.3 * root, max(1.6 * root, 2.68 * width / 100))
+        # The page reserves a stable scrollbar gutter, which Chrome excludes
+        # from viewport units. clientWidth measures that usable CSS width.
+        css_viewport_width = metrics["clientWidth"]
+        expected_name = min(2.3 * root, max(1.6 * root, 2.68 * css_viewport_width / 100))
         expected_nav = 1.125 * root
         if metrics["safariTypography"]:
             errors.append("Chrome incorrectly received the Safari-only typography marker.")
@@ -230,7 +239,8 @@ def main():
         "githubRunId": os.environ.get("GITHUB_RUN_ID"),
         "startedUtc": dt.datetime.now(dt.timezone.utc).isoformat(),
         "browser": BROWSER_LABEL,
-        "scope": f"Actual desktop {BROWSER_LABEL} on macOS. Unmodified live page and native window resizing; no CSS zoom, browser emulation, image upscaling or fabricated viewport sizes.",
+        "browserMode": BROWSER_MODE,
+        "scope": f"Installed {BROWSER_LABEL} on macOS in {BROWSER_MODE} mode. Unmodified live page and WebDriver window resizing; no CSS zoom, browser substitution, image upscaling or fabricated viewport sizes.",
         "macOS": platform.mac_ver()[0], "cases": [], "cleanup": {},
     }
     driver = DesktopBrowser()
@@ -261,7 +271,7 @@ def main():
                 case["errors"] = check_metrics(metrics)
                 case["status"] = "fail" if case["errors"] else "pass"
                 if not case["exactViewport"]:
-                    case["viewportNote"] = f"{BROWSER_LABEL}/macOS constrained the native window; the image is labelled with its actual viewport."
+                    case["viewportNote"] = f"{BROWSER_LABEL} returned a constrained viewport; the image is labelled with its actual dimensions."
                 print("CAPTURE", json.dumps({key:case.get(key) for key in ("requestedViewport","exactViewport","screenshot","screenshotPixels","status","errors")}), flush=True)
             except Exception as error:
                 case["status"] = "fail"
@@ -281,7 +291,7 @@ def main():
         report["counts"] = {status: sum(case.get("status") == status for case in report["cases"]) for status in ("pass", "fail")}
         (OUTPUT / "measurements.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
         lines = [f"# {BROWSER_LABEL} desktop typography comparison", "", report["scope"], "",
-                 f"- {BROWSER_LABEL}: {report.get('capabilities', {}).get('browserVersion', 'unavailable')}",
+                 f"- {BROWSER_LABEL}: {report.get('capabilities', {}).get('browserVersion', 'unavailable')} ({BROWSER_MODE})",
                  f"- macOS: {report['macOS']}", f"- Published change: {SOURCE_SHA}",
                  "", "| Requested viewport | Actual viewport | PNG pixels | Name | Navigation | Result |",
                  "|---|---|---|---:|---:|---|"]

@@ -10,12 +10,13 @@ permissions:
 
 jobs:
   safari:
-    name: Actual Safari and Chrome typography captures
+    name: Native browser typography captures
     if: github.ref == 'refs/heads/qa/desktop-typography-2026-11-25'
     runs-on: macos-15-intel
     timeout-minutes: 8
     env:
       PORTFOLIO_SOURCE_SHA: bac778a3babe72dd032209228d03ffa99a604676
+      TYPOGRAPHY_CAPTURE_MODE: chrome
       TYPOGRAPHY_TEST_BUDGET_SECONDS: '180'
       CHROME_BINARY: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
     steps:
@@ -26,10 +27,13 @@ jobs:
           lfs: false
       - name: Record installed browser versions
         run: |
-          mkdir -p artifacts/desktop-typography/safari artifacts/desktop-typography/chrome
+          mkdir -p artifacts/desktop-typography/chrome
           sw_vers > artifacts/desktop-typography/macos-version.txt
-          /usr/bin/safaridriver --version > artifacts/desktop-typography/safari/safaridriver-version.txt
-          /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' /Applications/Safari.app/Contents/Info.plist > artifacts/desktop-typography/safari/safari-version.txt
+          if test "$TYPOGRAPHY_CAPTURE_MODE" != chrome; then
+            mkdir -p artifacts/desktop-typography/safari
+            /usr/bin/safaridriver --version > artifacts/desktop-typography/safari/safaridriver-version.txt
+            /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' /Applications/Safari.app/Contents/Info.plist > artifacts/desktop-typography/safari/safari-version.txt
+          fi
           test -x "$CHROME_BINARY"
           "$CHROME_BINARY" --version > artifacts/desktop-typography/chrome/chrome-version.txt
           typography_chromedriver="${CHROMEWEBDRIVER:+$CHROMEWEBDRIVER/chromedriver}"
@@ -40,8 +44,10 @@ jobs:
           "$typography_chromedriver" --version > artifacts/desktop-typography/chrome/chromedriver-version.txt
           printf 'TYPOGRAPHY_CHROMEDRIVER=%s\n' "$typography_chromedriver" >> "$GITHUB_ENV"
       - name: Enable native Safari automation
+        if: env.TYPOGRAPHY_CAPTURE_MODE != 'chrome'
         run: sudo /usr/bin/safaridriver --enable
       - name: Capture Safari at six resolutions
+        if: env.TYPOGRAPHY_CAPTURE_MODE != 'chrome'
         env:
           TYPOGRAPHY_BROWSER: safari
           TYPOGRAPHY_WEBDRIVER_URL: http://127.0.0.1:4444
@@ -63,10 +69,11 @@ jobs:
                   time.sleep(1)
           PY
           python3 .github/scripts/desktop-typography-safari.py
-      - name: Capture Google Chrome at six resolutions
-        if: ${{ !cancelled() }}
+      - name: Capture headless Google Chrome at six resolutions
+        if: ${{ !cancelled() && env.TYPOGRAPHY_CAPTURE_MODE != 'safari' }}
         env:
           TYPOGRAPHY_BROWSER: chrome
+          TYPOGRAPHY_CHROME_HEADLESS: '1'
           TYPOGRAPHY_WEBDRIVER_URL: http://127.0.0.1:4445
           TYPOGRAPHY_OUTPUT_DIR: artifacts/desktop-typography/chrome
         run: |
