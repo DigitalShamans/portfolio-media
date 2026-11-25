@@ -18,6 +18,10 @@
   {% include site-favicon.html %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=15">
   <link rel="stylesheet" href="{{ '/assets/portfolio.css' | relative_url }}?v=10">
+  {% if page.font_preview == nil %}
+    <link rel="stylesheet" href="{{ '/assets/portfolio-tile-preview.css' | relative_url }}?v=1">
+    <script src="{{ '/assets/portfolio-tile-preview.js' | relative_url }}?v=1" defer></script>
+  {% endif %}
   <script src="{{ '/assets/recent-galleries-scroll.js' | relative_url }}?v=2" defer></script>
   <script src="{{ '/assets/vendor/gsap/3.15.1/gsap.min.js' | relative_url }}" defer></script>
   <script src="{{ '/assets/vendor/gsap/3.15.1/ScrollTrigger.min.js' | relative_url }}" defer></script>
@@ -91,7 +95,23 @@
         {% for project in portfolio.full %}
           <li>
             {% assign studio_project_url = 'https://www.artstation.com/artwork/' | append: project.id %}
-            <a class="portfolio-card" href="{{ project.url | default: studio_project_url | escape }}">
+            {% assign preview_url = nil %}
+            {% if page.font_preview == nil and project.url %}
+              {% assign preview_folder = project.url | remove_first: gallery_prefix | split: '/' | first %}
+              {% assign preview_gallery_url = gallery_prefix | append: preview_folder | append: '/' %}
+              {% if project.url == preview_gallery_url %}
+                {% assign preview_original = site.data.portfolio_gallery_preloads[preview_folder] | first %}
+                {% if preview_original %}
+                  {% assign preview_parts = preview_original | split: '?' %}
+                  {% assign preview_dir = preview_folder | prepend: '/galleries/' | append: '/' %}
+                  {% assign preview_reduced_dir = preview_dir | append: '1440p/' %}
+                  {% assign preview_extension = preview_parts[0] | split: '.' | last | prepend: '.' %}
+                  {% assign preview_stem_length = preview_parts[0] | size | minus: preview_extension.size %}
+                  {% assign preview_url = preview_parts[0] | slice: 0, preview_stem_length | replace_first: preview_dir, preview_reduced_dir | append: '.webp?' | append: preview_parts[1] | append: '&webp=' | append: site.gallery_webp_revision | relative_url %}
+                {% endif %}
+              {% endif %}
+            {% endif %}
+            <a class="portfolio-card" href="{{ project.url | default: studio_project_url | escape }}"{% if preview_url %} data-gallery-preview="{{ preview_url | escape }}"{% endif %}>
               <img src="{{ project.cover | escape }}" width="400" height="400" loading="lazy" decoding="async" alt="{{ project.title | escape }}">
             </a>
           </li>
