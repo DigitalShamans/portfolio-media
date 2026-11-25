@@ -1,0 +1,30 @@
+name: Portfolio tile preview checks
+
+on:
+  push:
+    branches: [qa/portfolio-tile-preview-2026-11-25]
+
+permissions:
+  contents: read
+
+jobs:
+  portfolio-preview:
+    if: github.ref == 'refs/heads/qa/portfolio-tile-preview-2026-11-25'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+      - name: Validate source and build both homepages
+        uses: ./.github/actions/validate-portfolio
+      - name: Install browser test driver
+        run: npm install --no-audit --no-fund --prefix "$RUNNER_TEMP/portfolio-browser" playwright@1.62.1
+      - name: Record source and browser
+        run: |
+          git rev-parse HEAD
+          /usr/bin/google-chrome --version
+      - name: Check homepage tile previews
+        env:
+          CHROMIUM_PATH: /usr/bin/google-chrome
+        run: |
+          export NODE_PATH="$RUNNER_TEMP/portfolio-browser/node_modules"
+          node --test .github/tests/portfolio-tile-preview.browser.test.cjs

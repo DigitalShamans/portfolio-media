@@ -15,7 +15,8 @@
     'gallery-map-preview': 'Map thumbnail animation',
     'gallery-touch': 'Gallery touch scrolling',
     'gallery-swipe': 'Gallery touch navigation',
-    'portfolio-reveals': 'Portfolio card reveals'
+    'portfolio-reveals': 'Portfolio card reveals',
+    'portfolio-preview': 'Portfolio tile previews'
   };
   const expected = {
     resume: ['resume-timeline', 'resume-smoother', 'resume-reveals'],
@@ -265,6 +266,9 @@
       results.append(title, details);
     }
     const visibleFeatures = [...(expected[section] || [])];
+    if (section === 'portfolio' && document.querySelector('.portfolio-card[data-gallery-preview]')) {
+      visibleFeatures.push('portfolio-preview');
+    }
     if (section === 'gallery' && document.querySelector('#public-map')) {
       visibleFeatures.unshift('gallery-map-preview');
     }
