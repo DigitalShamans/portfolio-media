@@ -12,7 +12,7 @@ jobs:
   safari:
     name: Actual Safari typography captures
     if: github.ref == 'refs/heads/qa/desktop-typography-2026-11-25'
-    runs-on: macos-15
+    runs-on: macos-15-intel
     timeout-minutes: 8
     env:
       SAFARI_WEBDRIVER_URL: http://127.0.0.1:4444
@@ -65,3 +65,4 @@ jobs:
           path: artifacts/safari-typography/
           if-no-files-found: error
           retention-days: 7
+

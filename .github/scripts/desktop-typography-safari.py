@@ -21,7 +21,7 @@ import urllib.request
 ORIGIN = os.environ.get("PORTFOLIO_ORIGIN", "https://digitalshamans.co.uk").rstrip("/")
 ENDPOINT = os.environ.get("SAFARI_WEBDRIVER_URL", "http://127.0.0.1:4444").rstrip("/")
 OUTPUT = Path(os.environ.get("SAFARI_OUTPUT_DIR", "artifacts"))
-SOURCE_SHA = os.environ.get("PORTFOLIO_SOURCE_SHA", "7489099be6212f8417976a629d34e4ae7de269c1")
+SOURCE_SHA = os.environ.get("PORTFOLIO_SOURCE_SHA", "7cb8f87feac62e6a7abf31643f41f32c919dcad9")
 DIAGNOSTIC_ONLY = os.environ.get("SAFARI_DIAGNOSTIC_ONLY") == "1"
 REQUIRE_NORMAL_MOTION = os.environ.get("SAFARI_REQUIRE_NORMAL_MOTION") == "1"
 ELEMENT_KEY = "element-6066-11e4-a52e-4f735466cecf"
@@ -114,7 +114,7 @@ class Safari:
 
 
 
-TARGETS = [(1280, 800), (1440, 900), (1920, 1080), (2560, 1440), (3840, 2160)]
+TARGETS = [(1024, 768), (1280, 800), (1440, 900), (1920, 1080), (2560, 1440), (3840, 2160)]
 METRICS = r"""
 const rect = element => {
   const r = element.getBoundingClientRect();
@@ -271,3 +271,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
