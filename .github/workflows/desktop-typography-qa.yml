@@ -1,4 +1,4 @@
-name: Safari desktop typography captures
+name: Safari and Chrome desktop typography captures
 
 on:
   push:
@@ -10,39 +10,51 @@ permissions:
 
 jobs:
   safari:
-    name: Actual Safari typography captures
+    name: Actual Safari and Chrome typography captures
     if: github.ref == 'refs/heads/qa/desktop-typography-2026-11-25'
     runs-on: macos-15-intel
     timeout-minutes: 8
     env:
-      SAFARI_WEBDRIVER_URL: http://127.0.0.1:4444
-      SAFARI_OUTPUT_DIR: artifacts/safari-typography
-      PORTFOLIO_SOURCE_SHA: 7cb8f87feac62e6a7abf31643f41f32c919dcad9
-      SAFARI_TEST_BUDGET_SECONDS: '300'
+      PORTFOLIO_SOURCE_SHA: bac778a3babe72dd032209228d03ffa99a604676
+      TYPOGRAPHY_TEST_BUDGET_SECONDS: '180'
+      CHROME_BINARY: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
     steps:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
           sparse-checkout: .github/scripts
           lfs: false
-      - name: Record Safari version
+      - name: Record installed browser versions
         run: |
-          mkdir -p "$SAFARI_OUTPUT_DIR"
-          sw_vers > "$SAFARI_OUTPUT_DIR/macos-version.txt"
-          /usr/bin/safaridriver --version > "$SAFARI_OUTPUT_DIR/safaridriver-version.txt"
-          /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' /Applications/Safari.app/Contents/Info.plist > "$SAFARI_OUTPUT_DIR/safari-version.txt"
+          mkdir -p artifacts/desktop-typography/safari artifacts/desktop-typography/chrome
+          sw_vers > artifacts/desktop-typography/macos-version.txt
+          /usr/bin/safaridriver --version > artifacts/desktop-typography/safari/safaridriver-version.txt
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' /Applications/Safari.app/Contents/Info.plist > artifacts/desktop-typography/safari/safari-version.txt
+          test -x "$CHROME_BINARY"
+          "$CHROME_BINARY" --version > artifacts/desktop-typography/chrome/chrome-version.txt
+          typography_chromedriver="${CHROMEWEBDRIVER:+$CHROMEWEBDRIVER/chromedriver}"
+          if test -z "$typography_chromedriver"; then
+            typography_chromedriver="$(command -v chromedriver)"
+          fi
+          test -x "$typography_chromedriver"
+          "$typography_chromedriver" --version > artifacts/desktop-typography/chrome/chromedriver-version.txt
+          printf 'TYPOGRAPHY_CHROMEDRIVER=%s\n' "$typography_chromedriver" >> "$GITHUB_ENV"
       - name: Enable native Safari automation
         run: sudo /usr/bin/safaridriver --enable
-      - name: Capture published page at several resolutions
+      - name: Capture Safari at six resolutions
+        env:
+          TYPOGRAPHY_BROWSER: safari
+          TYPOGRAPHY_WEBDRIVER_URL: http://127.0.0.1:4444
+          TYPOGRAPHY_OUTPUT_DIR: artifacts/desktop-typography/safari
         run: |
-          /usr/bin/safaridriver -p 4444 > "$SAFARI_OUTPUT_DIR/safaridriver.log" 2>&1 &
+          /usr/bin/safaridriver -p 4444 > "$TYPOGRAPHY_OUTPUT_DIR/safaridriver.log" 2>&1 &
           typography_driver_pid=$!
           trap 'kill "$typography_driver_pid" 2>/dev/null || true' EXIT
           python3 - <<'PY'
-          import time, urllib.request
+          import os, time, urllib.request
           for attempt in range(20):
               try:
-                  with urllib.request.urlopen('http://127.0.0.1:4444/status', timeout=2) as response:
+                  with urllib.request.urlopen(os.environ['TYPOGRAPHY_WEBDRIVER_URL'] + '/status', timeout=2) as response:
                       print(response.read().decode())
                   break
               except Exception:
@@ -51,18 +63,42 @@ jobs:
                   time.sleep(1)
           PY
           python3 .github/scripts/desktop-typography-safari.py
-      - name: Publish capture summary
+      - name: Capture Google Chrome at six resolutions
+        if: ${{ !cancelled() }}
+        env:
+          TYPOGRAPHY_BROWSER: chrome
+          TYPOGRAPHY_WEBDRIVER_URL: http://127.0.0.1:4445
+          TYPOGRAPHY_OUTPUT_DIR: artifacts/desktop-typography/chrome
+        run: |
+          "$TYPOGRAPHY_CHROMEDRIVER" --port=4445 > "$TYPOGRAPHY_OUTPUT_DIR/chromedriver.log" 2>&1 &
+          typography_driver_pid=$!
+          trap 'kill "$typography_driver_pid" 2>/dev/null || true' EXIT
+          python3 - <<'PY'
+          import os, time, urllib.request
+          for attempt in range(20):
+              try:
+                  with urllib.request.urlopen(os.environ['TYPOGRAPHY_WEBDRIVER_URL'] + '/status', timeout=2) as response:
+                      print(response.read().decode())
+                  break
+              except Exception:
+                  if attempt == 19:
+                      raise
+                  time.sleep(1)
+          PY
+          python3 .github/scripts/desktop-typography-safari.py
+      - name: Publish capture summaries
         if: always()
         run: |
-          if test -f "$SAFARI_OUTPUT_DIR/report.md"; then
-            cat "$SAFARI_OUTPUT_DIR/report.md" >> "$GITHUB_STEP_SUMMARY"
-          fi
-      - name: Keep Safari captures and measurements
+          for typography_report in artifacts/desktop-typography/{safari,chrome}/report.md; do
+            if test -f "$typography_report"; then
+              cat "$typography_report" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+      - name: Keep native browser captures and measurements
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: safari-desktop-typography
-          path: artifacts/safari-typography/
+          name: desktop-typography-safari-chrome
+          path: artifacts/desktop-typography/
           if-no-files-found: error
           retention-days: 7
-

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Capture and measure the published personal header in actual desktop Safari."""
+"""Capture the published personal header in native Safari or installed Google Chrome."""
 
 from __future__ import annotations
 
@@ -19,14 +19,20 @@ import urllib.request
 
 
 ORIGIN = os.environ.get("PORTFOLIO_ORIGIN", "https://digitalshamans.co.uk").rstrip("/")
-ENDPOINT = os.environ.get("SAFARI_WEBDRIVER_URL", "http://127.0.0.1:4444").rstrip("/")
-OUTPUT = Path(os.environ.get("SAFARI_OUTPUT_DIR", "artifacts"))
-SOURCE_SHA = os.environ.get("PORTFOLIO_SOURCE_SHA", "7cb8f87feac62e6a7abf31643f41f32c919dcad9")
-DIAGNOSTIC_ONLY = os.environ.get("SAFARI_DIAGNOSTIC_ONLY") == "1"
-REQUIRE_NORMAL_MOTION = os.environ.get("SAFARI_REQUIRE_NORMAL_MOTION") == "1"
-ELEMENT_KEY = "element-6066-11e4-a52e-4f735466cecf"
+BROWSER = os.environ.get("TYPOGRAPHY_BROWSER", "safari").lower()
+if BROWSER not in {"safari", "chrome"}:
+    raise ValueError("TYPOGRAPHY_BROWSER must be safari or chrome.")
+BROWSER_LABEL = "Safari" if BROWSER == "safari" else "Google Chrome"
+ENDPOINT = os.environ.get("TYPOGRAPHY_WEBDRIVER_URL", "http://127.0.0.1:4444").rstrip("/")
+OUTPUT = Path(os.environ.get("TYPOGRAPHY_OUTPUT_DIR", "artifacts/" + BROWSER))
+SOURCE_SHA = os.environ["PORTFOLIO_SOURCE_SHA"]
+if not re.fullmatch(r"[0-9a-f]{40}", SOURCE_SHA):
+    raise ValueError("PORTFOLIO_SOURCE_SHA must identify the published production commit.")
+STYLESHEET_VERSION = "4"
+CHROME_BINARY = os.environ.get("CHROME_BINARY", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
 START = time.monotonic()
-DEADLINE = START + float(os.environ.get("SAFARI_TEST_BUDGET_SECONDS", "300"))
+TEST_BUDGET = float(os.environ.get("TYPOGRAPHY_TEST_BUDGET_SECONDS", "180"))
+DEADLINE = START + TEST_BUDGET
 
 
 class WebDriverError(RuntimeError):
@@ -36,20 +42,18 @@ class WebDriverError(RuntimeError):
         self.command = command
 
 
-class Safari:
+class DesktopBrowser:
     def __init__(self):
         self.session_id = None
         self.capabilities = {}
-        self.wheel_sequence = 0
-        self.click_waits = []
 
     def request(self, method, path, payload=None, session=True):
         remaining = DEADLINE - time.monotonic()
         if remaining <= 0:
-            raise TimeoutError("The 300-second test budget was exhausted.")
+            raise TimeoutError(f"The {TEST_BUDGET:g}-second test budget was exhausted.")
         if session:
             if not self.session_id:
-                raise RuntimeError("No native Safari WebDriver session exists.")
+                raise RuntimeError("No desktop WebDriver session exists.")
             path = f"/session/{self.session_id}" + path
         body = None if payload is None else json.dumps(payload).encode("utf-8")
         request = urllib.request.Request(
@@ -72,11 +76,17 @@ class Safari:
         return value
 
     def start(self):
+        capabilities = {
+            "browserName": BROWSER, "pageLoadStrategy": "normal",
+            "timeouts": {"pageLoad": 30000, "script": 15000, "implicit": 0},
+        }
+        if BROWSER == "chrome":
+            capabilities["goog:chromeOptions"] = {
+                "binary": CHROME_BINARY,
+                "args": ["--no-first-run", "--no-default-browser-check"],
+            }
         value = self.request("POST", "/session", {
-            "capabilities": {"alwaysMatch": {
-                "browserName": "safari", "pageLoadStrategy": "normal",
-                "timeouts": {"pageLoad": 30000, "script": 15000, "implicit": 0},
-            }},
+            "capabilities": {"alwaysMatch": capabilities},
         }, session=False)
         self.session_id = value["sessionId"]
         self.capabilities = value.get("capabilities", {})
@@ -123,6 +133,11 @@ const rect = element => {
 const brand = document.querySelector('.site-brand--personal');
 const nav = document.querySelector('.site-header--personal .site-nav');
 const header = document.querySelector('.site-header--personal');
+const headerInner = header.querySelector('.site-header__inner');
+const innerStyle = getComputedStyle(headerInner);
+const headerContentWidth = headerInner.getBoundingClientRect().width
+  - parseFloat(innerStyle.paddingLeft) - parseFloat(innerStyle.paddingRight)
+  - parseFloat(innerStyle.borderLeftWidth) - parseFloat(innerStyle.borderRightWidth);
 const style = element => {
   const s = getComputedStyle(element);
   return {fontSize:parseFloat(s.fontSize),fontFamily:s.fontFamily,lineHeight:s.lineHeight,rect:rect(element)};
@@ -132,6 +147,10 @@ return {
   screen:{width:screen.width,height:screen.height,availWidth:screen.availWidth,availHeight:screen.availHeight},
   pointerFine:matchMedia('(pointer:fine)').matches,hover:matchMedia('(hover:hover)').matches,
   rootFontSize:parseFloat(getComputedStyle(document.documentElement).fontSize),
+  rootClasses:[...document.documentElement.classList],
+  safariTypography:document.documentElement.hasAttribute('data-desktop-safari'),
+  headerInner:rect(headerInner),headerContentWidth,
+  headerContainerType:innerStyle.containerType,
   fontStatus:document.fonts.status,
   fontFaces:[...document.fonts].map(f=>({family:f.family,status:f.status})),
   stylesheet:document.querySelector('link[href*="/assets/personal-typography.css"]')?.href,
@@ -166,8 +185,21 @@ def resize_viewport(driver, width, height):
 def check_metrics(metrics):
     errors = []
     width, root = metrics["innerWidth"], metrics["rootFontSize"]
-    expected_name = min(4.6 * root, max(1.25 * root, 1.9166667 * width / 100))
-    expected_nav = min(2.25 * root, max(.875 * root, .9375 * width / 100))
+    if BROWSER == "chrome":
+        expected_name = min(2.3 * root, max(1.6 * root, 2.68 * width / 100))
+        expected_nav = 1.125 * root
+        if metrics["safariTypography"]:
+            errors.append("Chrome incorrectly received the Safari-only typography marker.")
+        if metrics["headerContainerType"] != "normal":
+            errors.append("Chrome incorrectly received header size containment.")
+    else:
+        content_width = metrics["headerContentWidth"]
+        expected_name = min(2 * root, max(root, .022 * content_width))
+        expected_nav = min(root, max(.75 * root, .011 * content_width))
+        if not metrics["safariTypography"]:
+            errors.append("Safari did not receive the desktop Safari typography marker.")
+        if metrics["headerContainerType"] != "inline-size":
+            errors.append("Safari's header is not the expected inline-size container.")
     if not metrics["pointerFine"] or not metrics["hover"]:
         errors.append("The session is not a desktop fine-pointer hover viewport.")
     if abs(metrics["brand"]["fontSize"] - expected_name) > .15:
@@ -197,15 +229,16 @@ def main():
         "sourceCommit": SOURCE_SHA, "testCommit": os.environ.get("GITHUB_SHA"),
         "githubRunId": os.environ.get("GITHUB_RUN_ID"),
         "startedUtc": dt.datetime.now(dt.timezone.utc).isoformat(),
-        "scope": "Actual desktop Safari on macOS. Unmodified live page and native window resizing; no CSS zoom, browser emulation, image upscaling or fabricated viewport sizes.",
+        "browser": BROWSER_LABEL,
+        "scope": f"Actual desktop {BROWSER_LABEL} on macOS. Unmodified live page and native window resizing; no CSS zoom, browser emulation, image upscaling or fabricated viewport sizes.",
         "macOS": platform.mac_ver()[0], "cases": [], "cleanup": {},
     }
-    driver = Safari()
+    driver = DesktopBrowser()
     try:
         driver.start()
         report["capabilities"] = driver.capabilities
-        if driver.capabilities.get("browserName", "").lower() != "safari":
-            raise AssertionError("Native Safari session was not created.")
+        if driver.capabilities.get("browserName", "").lower() != BROWSER:
+            raise AssertionError(f"Native {BROWSER_LABEL} session was not created.")
         report["userAgent"] = driver.js("return navigator.userAgent")
         for width, height in TARGETS:
             case = {"requestedViewport": {"width": width, "height": height}}
@@ -213,7 +246,7 @@ def main():
             try:
                 case["resizeAttempts"] = resize_viewport(driver, width, height)
                 driver.navigate("/artur/?typography-check=" + SOURCE_SHA[:12])
-                driver.wait("return document.querySelector('link[href*=\"/assets/personal-typography.css\"]')?.href.includes('?v=3')", timeout=8, label="published typography v3")
+                driver.wait("return document.querySelector('link[href*=\"/assets/personal-typography.css\"]')?.href.includes('?v=" + STYLESHEET_VERSION + "')", timeout=8, label="published typography v" + STYLESHEET_VERSION)
                 driver.wait("return document.fonts.status==='loaded'&&[...document.fonts].some(f=>f.family.replaceAll('\"','')==='Conifers Breeze'&&f.status==='loaded')", timeout=12, label="loaded personal font")
                 driver.wait("return [...document.querySelectorAll('.recent-gallery img')].filter(i=>{const r=i.getBoundingClientRect();return r.top<innerHeight&&r.bottom>0}).every(i=>i.complete&&i.naturalWidth>0)", timeout=12, label="visible gallery banners")
                 time.sleep(.6)
@@ -221,14 +254,14 @@ def main():
                 case["metrics"] = metrics
                 actual_width, actual_height = metrics["innerWidth"], metrics["innerHeight"]
                 case["exactViewport"] = abs(actual_width - width) <= 1 and abs(actual_height - height) <= 1
-                filename = f"safari-{actual_width}x{actual_height}-requested-{width}x{height}"
+                filename = f"{BROWSER}-{actual_width}x{actual_height}-requested-{width}x{height}"
                 case["screenshot"] = driver.screenshot(filename)
                 png = (OUTPUT / case["screenshot"]).read_bytes()
                 case["screenshotPixels"] = {"width": int.from_bytes(png[16:20], "big"), "height": int.from_bytes(png[20:24], "big")}
                 case["errors"] = check_metrics(metrics)
                 case["status"] = "fail" if case["errors"] else "pass"
                 if not case["exactViewport"]:
-                    case["viewportNote"] = "Safari/macOS constrained the native window; the image is labelled with its actual viewport."
+                    case["viewportNote"] = f"{BROWSER_LABEL}/macOS constrained the native window; the image is labelled with its actual viewport."
                 print("CAPTURE", json.dumps({key:case.get(key) for key in ("requestedViewport","exactViewport","screenshot","screenshotPixels","status","errors")}), flush=True)
             except Exception as error:
                 case["status"] = "fail"
@@ -241,14 +274,14 @@ def main():
     finally:
         try:
             driver.close()
-            report["cleanup"]["safariSession"] = "closed"
+            report["cleanup"]["browserSession"] = "closed"
         except Exception as error:
             report["cleanup"]["error"] = str(error)
         report["finishedUtc"] = dt.datetime.now(dt.timezone.utc).isoformat()
         report["counts"] = {status: sum(case.get("status") == status for case in report["cases"]) for status in ("pass", "fail")}
         (OUTPUT / "measurements.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-        lines = ["# Safari desktop typography comparison", "", report["scope"], "",
-                 f"- Safari: {report.get('capabilities', {}).get('browserVersion', 'unavailable')}",
+        lines = [f"# {BROWSER_LABEL} desktop typography comparison", "", report["scope"], "",
+                 f"- {BROWSER_LABEL}: {report.get('capabilities', {}).get('browserVersion', 'unavailable')}",
                  f"- macOS: {report['macOS']}", f"- Published change: {SOURCE_SHA}",
                  "", "| Requested viewport | Actual viewport | PNG pixels | Name | Navigation | Result |",
                  "|---|---|---|---:|---:|---|"]
@@ -257,15 +290,15 @@ def main():
             pixels = case.get("screenshotPixels", {})
             lines.append(f"| {requested['width']} x {requested['height']} | {metrics.get('innerWidth','?')} x {metrics.get('innerHeight','?')} | {pixels.get('width','?')} x {pixels.get('height','?')} | {metrics.get('brand',{}).get('fontSize','?')} px | {(metrics.get('links') or [{}])[0].get('fontSize','?')} px | {case['status']} |")
         lines.extend(["", "Screenshot files retain their native pixels. Any constrained viewport is recorded in measurements.json.",
-                      "This verifies desktop Safari, not iOS Safari or real touch hardware.",
-                      f"Safari session cleanup: {report['cleanup']}", ""])
+                      "This verifies desktop browsers, not iOS Safari or real touch hardware.",
+                      f"Browser session cleanup: {report['cleanup']}", ""])
         if report.get("fatalError"):
             lines.extend(["## Error", "", report["fatalError"], ""])
         for case in report["cases"]:
             if case.get("errors"):
                 lines.extend(["- " + error for error in case["errors"]])
         (OUTPUT / "report.md").write_text("\n".join(lines), encoding="utf-8")
-        print("SAFARI_TYPOGRAPHY_SUMMARY", json.dumps({"counts":report["counts"],"fatalError":report.get("fatalError"),"cleanup":report["cleanup"]}), flush=True)
+        print("TYPOGRAPHY_SUMMARY", json.dumps({"browser":BROWSER_LABEL,"counts":report["counts"],"fatalError":report.get("fatalError"),"cleanup":report["cleanup"]}), flush=True)
     return 1 if report.get("fatalError") or report["counts"]["fail"] else 0
 
 
