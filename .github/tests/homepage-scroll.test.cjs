@@ -279,7 +279,7 @@ test('zoom and horizontal trackpad gestures are never hijacked', () => {
 });
 
 test('portfolio GSAP effects are scoped, scroll-safe and reduced-motion aware', () => {
-  assert.match(layout, /recent-galleries-scroll\.js' \| relative_url }}\?v=3/);
+  assert.match(layout, /recent-galleries-scroll\.js' \| relative_url }}\?v=4/);
   assert.match(layout, /portfolio-effects\.js' \| relative_url }}\?v=5/);
   assert.match(layout, /vendor\/gsap\/3\.15\.1\/gsap\.min\.js/);
   assert.match(layout, /vendor\/gsap\/3\.15\.1\/ScrollTrigger\.min\.js/);
@@ -328,14 +328,14 @@ test('the shared grid reveal leaves the Recent Work banner artwork at its origin
 
 test('Full Portfolio gently slows wheel travel as the grid becomes framed', () => {
   const layout = { top: 600, height: 400 };
-  const outside = wheelHarness(0, 0, false, layout);
+  const outside = wheelHarness(0, 0, false, { ...layout, top: 900 });
   assert.equal(outside.sendPage(32), false);
 
   const approaching = wheelHarness(0, 120, false, layout);
   assert.equal(approaching.sendPage(32), true);
   approaching.settle();
   const tapered = approaching.state.page - 120;
-  assert.ok(tapered > 24 && tapered < 32);
+  assert.ok(tapered > 24 && tapered <= 27);
 
   const framed = wheelHarness(0, 250, false, layout);
   assert.equal(framed.sendPage(120), true);
@@ -367,7 +367,7 @@ test('the slowdown follows the viewport and accounts for large wheel steps throu
   assert.equal(crossing.sendPage(900), true);
   assert.equal(crossing.sendPage(120), true, 'keep the queued movement as a burst leaves the frame');
   crossing.settle();
-  assert.equal(crossing.state.page, 878);
+  assert.equal(crossing.state.page, 854);
 });
 
 test('the framed slowdown respects reduced motion and independent scroll areas', () => {

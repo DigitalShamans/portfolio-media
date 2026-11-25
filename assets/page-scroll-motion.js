@@ -104,27 +104,11 @@
 
   if (!about || !aboutLink) return;
 
-  // Two cubic segments from the About Us easing reference.
-  const aboutCurve = [
-    [0, 0, .391, 1.298, .421, .715, .772, .923],
-    [.772, .923, .902, 1, .889, 1, 1, 1]
-  ];
-
-  function cubic(start, first, second, end, time) {
-    const rest = 1 - time;
-    return start * rest ** 3 + 3 * first * rest ** 2 * time + 3 * second * rest * time ** 2 + end * time ** 3;
-  }
-
-  function aboutEase(progress) {
-    if (progress <= 0 || progress >= 1) return progress;
-    const [startX, startY, x1, y1, x2, y2, endX, endY] = aboutCurve[progress <= aboutCurve[0][6] ? 0 : 1];
-    let low = 0, high = 1;
-    for (let iteration = 0; iteration < 20; iteration++) {
-      const time = (low + high) / 2;
-      if (cubic(startX, x1, x2, endX, time) < progress) low = time;
-      else high = time;
-    }
-    return cubic(startY, y1, y2, endY, (low + high) / 2);
+  function travelProgress(time) {
+    const ramp = .14;
+    if (time < ramp) return time ** 2 / (2 * ramp * (1 - ramp));
+    if (time > 1 - ramp) return 1 - (1 - time) ** 2 / (2 * ramp * (1 - ramp));
+    return (time - ramp / 2) / (1 - ramp);
   }
 
   about.tabIndex = -1;
@@ -135,6 +119,8 @@
 
     event.preventDefault();
     resetMotion();
+    const framing = window.portfolioScrollFraming;
+    framing?.stop();
     if (window.location.hash !== aboutLink.hash) {
       window.history.pushState(window.history.state, '', aboutLink.hash);
     }
@@ -147,11 +133,22 @@
       return;
     }
 
+    const frame = framing?.measure(start);
+    const from = frame?.wheelPosition(start) ?? start;
+    const to = frame?.wheelPosition(destination) ?? destination;
+    const low = Math.min(start, destination);
+    const high = Math.max(start, destination);
+    const distance = Math.abs(to - from);
     const position = { top: start };
     aboutScroll = gsap.to(position, {
       top: destination,
-      duration: 2.5,
-      ease: aboutEase,
+      duration: Math.max(.35, Math.min(3.6, distance / 1000)),
+      ease(time) {
+        const progress = travelProgress(time);
+        if (!frame || time === 0 || time === 1) return progress;
+        const top = frame.positionAt(from + (to - from) * progress, low, high);
+        return (top - start) / (destination - start);
+      },
       onUpdate() { window.scrollTo({ top: position.top, behavior: 'instant' }); },
       onComplete() {
         aboutScroll = undefined;

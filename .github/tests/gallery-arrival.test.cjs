@@ -468,7 +468,7 @@ test('the browser reveals the gallery snapshot without replaying or blending the
 
 test('the real home and recent gallery pages register the reveal before first paint', () => {
   assert.match(portfolioLayout, /page\.font_preview == nil %\}[\s\S]*?page\.url == '\/' or page\.url == site\.data\.personal_portfolio\.home[\s\S]*?portfolio-gallery-transition\.js' \| relative_url }}\?v=6"><\/script>/);
-  assert.match(portfolioLayout, /recent-galleries-scroll\.js' \| relative_url }}\?v=3/);
+  assert.match(portfolioLayout, /recent-galleries-scroll\.js' \| relative_url }}\?v=4/);
   for (const [layout, readyId] of [[layouts[0], 'portfolio-gallery-ready'], [layouts[1], 'access-message']]) {
     const head = layout.split('</head>')[0];
     assert.match(head, /portfolio-gallery-transition\.js' \| relative_url }}\?v=6"><\/script>/);

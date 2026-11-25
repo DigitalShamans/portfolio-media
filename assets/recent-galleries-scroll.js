@@ -71,14 +71,14 @@
     return Math.max(0, Math.min(limit, position));
   }
 
-  function framedPageTarget(from, delta, current, limit, unadjusted) {
-    if (!header || reducedMotion.matches || !delta) return unadjusted;
+  function measureFraming(current) {
+    if (!header || reducedMotion.matches) return;
 
     const headerHeight = header.getBoundingClientRect().height;
     const usableHeight = page.clientHeight - headerHeight;
-    if (usableHeight <= 0) return unadjusted;
+    if (usableHeight <= 0) return;
     const rect = portfolio.getBoundingClientRect();
-    if (rect.height <= 0) return unadjusted;
+    if (rect.height <= 0) return;
 
     // These are the two positions where a grid edge meets the visible area.
     // Between them either the whole grid fits or it fills the available height.
@@ -86,32 +86,42 @@
     const bottomEdge = current + rect.bottom - page.clientHeight;
     const first = Math.min(topEdge, bottomEdge);
     const last = Math.max(topEdge, bottomEdge);
-    const ramp = Math.min(160, usableHeight * .18);
-    let low = Math.min(from, unadjusted);
-    let high = Math.max(from, unadjusted);
-    if (high <= first - ramp || low >= last + ramp) return unadjusted;
+    const approach = Math.min(320, usableHeight * .4);
+    const exit = Math.min(160, usableHeight * .18);
+    const entry = first - approach;
+    const leave = last + exit;
 
-    // Integrate the two smoothstep ramps. A pixel in the fully framed range
-    // takes 4/3 as much wheel input, including when a large step crosses it.
-    function rampArea(distance) {
+    // The same distance map slows wheel gestures and the About Us scroll.
+    function rampArea(distance, ramp) {
       if (distance <= 0) return 0;
       if (distance >= ramp) return distance - ramp / 2;
       const progress = distance / ramp;
       return ramp * progress ** 3 * (1 - progress / 2);
     }
     function wheelPosition(top) {
-      return top + (rampArea(top - first + ramp) - rampArea(top - last)) / 3;
+      return top + (rampArea(top - entry, approach) - rampArea(top - last, exit)) / 3;
     }
 
-    const target = wheelPosition(from) + delta;
-    if (target >= wheelPosition(limit)) return limit;
-    if (target <= wheelPosition(0)) return 0;
-    for (let iteration = 0; iteration < 18 && high - low > .05; iteration++) {
-      const middle = (low + high) / 2;
-      if (wheelPosition(middle) < target) low = middle;
-      else high = middle;
+    function positionAt(distance, low, high) {
+      if (distance <= wheelPosition(low)) return low;
+      if (distance >= wheelPosition(high)) return high;
+      for (let iteration = 0; iteration < 24 && high - low > .002; iteration++) {
+        const middle = (low + high) / 2;
+        if (wheelPosition(middle) < distance) low = middle;
+        else high = middle;
+      }
+      return (low + high) / 2;
     }
-    return (low + high) / 2;
+    return { entry, leave, wheelPosition, positionAt };
+  }
+
+  function framedPageTarget(from, delta, current, limit, unadjusted) {
+    const frame = delta && measureFraming(current);
+    const low = Math.min(from, unadjusted);
+    const high = Math.max(from, unadjusted);
+    if (!frame || high <= frame.entry || low >= frame.leave) return unadjusted;
+
+    return frame.positionAt(frame.wheelPosition(from) + delta, Math.max(0, low), Math.min(limit, high));
   }
 
   function hasIndependentScroller(target) {
@@ -177,5 +187,11 @@
   }
 
   region.addEventListener('wheel', event => handleWheel(event, true), { passive: false });
-  if (header) document.addEventListener('wheel', event => handleWheel(event, false), { passive: false });
+  if (header) {
+    window.portfolioScrollFraming = {
+      measure: measureFraming,
+      stop() { motion = undefined; }
+    };
+    document.addEventListener('wheel', event => handleWheel(event, false), { passive: false });
+  }
 })();
