@@ -84,7 +84,12 @@
   syncBoundary();
   window.addEventListener('scroll', observeBottom, { passive: true });
   if (hasGallerySmoother) document.addEventListener('gallery-scrollupdate', observeBottom);
-  for (const event of ['pageshow', 'pagehide', 'resize', 'popstate']) window.addEventListener(event, resetMotion);
+  for (const event of ['pagehide', 'resize', 'popstate']) window.addEventListener(event, resetMotion);
+  window.addEventListener('pageshow', event => {
+    // Initial loading can finish during a scroll that the visitor already requested.
+    if (!event.persisted && aboutScroll) return;
+    resetMotion();
+  });
   reducedMotion.addEventListener('change', resetMotion);
   window.addEventListener('wheel', event => {
     stopAboutScroll();

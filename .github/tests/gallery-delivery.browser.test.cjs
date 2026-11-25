@@ -1555,6 +1555,8 @@ test('studio About Us follows the supplied custom curve to its anchor', async t 
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
   t.after(() => page.close());
   page.setDefaultTimeout(5000);
+  const startupImage = signal();
+  t.after(startupImage.release);
   const markup = `<!doctype html><link rel="stylesheet" href="/assets/site.css">
     <link rel="stylesheet" href="/assets/home-sections.css">
     <body class="portfolio-page portfolio-home">
@@ -1564,18 +1566,24 @@ test('studio About Us follows the supplied custom curve to its anchor', async t 
       </header>
       <main data-page-scroll-motion><div id="portfolio" style="height:2200px"></div>
         <section id="about-us" style="height:340px"><h2>About Us</h2></section>
-      </main><footer style="height:64px">Copyright</footer>
+      </main><footer style="height:64px">Copyright<img src="/startup.jpg" width="1" height="1" alt=""></footer>
       <script src="/assets/vendor/gsap/3.15.1/gsap.min.js"></script>
       <script src="/assets/home-sections.js"></script>
       <script src="/assets/page-scroll-motion.js"></script>
     </body>`;
-  await page.route('http://localhost:3000/**', route => {
+  await page.route('http://localhost:3000/**', async route => {
     const { pathname } = new URL(route.request().url());
     if (pathname === '/') return route.fulfill({ contentType: 'text/html', body: markup });
+    if (pathname === '/startup.jpg') {
+      await startupImage.reached;
+      return route.fulfill({ contentType: 'image/jpeg', body: jpeg });
+    }
     return route.fulfill({ path: resolve(root, pathname.slice(1)) });
   });
-  await page.goto('http://localhost:3000/');
+  await page.goto('http://localhost:3000/', { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => {
+    window.aboutPageShown = false;
+    window.addEventListener('pageshow', () => { window.aboutPageShown = true; }, { once: true });
     window.aboutEases = [];
     window.extraSprings = 0;
     const to = window.gsap.to;
@@ -1592,6 +1600,10 @@ test('studio About Us follows the supplied custom curve to its anchor', async t 
     };
   });
   await page.getByRole('link', { name: 'About Us' }).click();
+  await page.waitForFunction(() => scrollY > 20);
+  assert.equal(await page.evaluate(() => window.aboutPageShown), false);
+  startupImage.release();
+  await page.waitForFunction(() => window.aboutPageShown);
   await page.waitForFunction(() => document.activeElement?.id === 'about-us');
   assert.equal(new URL(page.url()).hash, '#about-us');
   const phases = await page.evaluate(() => window.aboutEases);
