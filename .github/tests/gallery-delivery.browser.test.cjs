@@ -2203,6 +2203,75 @@ test('Atrium collapsed fullscreen thumbnails select an image at fit and exit to 
   assert.deepEqual(errors, []);
 });
 
+test('Atrium hover previews close at either boundary on all four edges in page and fullscreen maps', { timeout: 40_000 }, async t => {
+  const cases = [
+    { edge: 'left', x: 20, y: 50, inside: [.3, .5], outsideImage: [.08, .5], outsideHover: [.45, .5] },
+    { edge: 'right', x: 80, y: 50, inside: [.7, .5], outsideImage: [.92, .5], outsideHover: [.55, .5] },
+    { edge: 'top', x: 50, y: 20, inside: [.5, .3], outsideImage: [.5, .08], outsideHover: [.5, .49] },
+    { edge: 'bottom', x: 50, y: 80, inside: [.5, .7], outsideImage: [.5, .92], outsideHover: [.5, .51] },
+  ];
+  const contains = (rect, point) => point.x > rect.x && point.x < rect.x + rect.width &&
+    point.y > rect.y && point.y < rect.y + rect.height;
+  for (const selector of ['#public-map', '#fullscreen-map']) {
+    for (const fixture of cases) {
+      await t.test(`${selector}: ${fixture.edge}`, async t => {
+        const { page, errors } = await openPage(t, {
+          map: true, width: 1440, diagnostics: true, reducedMotion: 'no-preference',
+          intercept: async (request, url) => {
+            if (url.pathname !== `${gallery}gallery-map.json`) return false;
+            // Put the same screenshot near each edge without changing production geometry.
+            await request.fulfill({ json: { ...mapManifest,
+              regions: [{ ...mapManifest.regions[0], x: fixture.x, y: fixture.y }],
+            } });
+            return true;
+          },
+        });
+        await gallerySmootherReady(page);
+        if (selector === '#fullscreen-map') {
+          await page.locator('#map-fullscreen').click();
+          await page.locator(selector).waitFor({ state: 'visible' });
+          await gallerySmootherReady(page, true);
+          await page.waitForFunction(() => document.fullscreenElement?.id === 'viewer-frame');
+        }
+        await page.locator(`${selector} .gallery-map-region`).first().waitFor({ state: 'visible' });
+        await mapPreviewSettled(page, selector, .2);
+        const board = await page.locator(selector).boundingBox();
+        const point = ([x, y]) => ({ x: board.x + board.width * x, y: board.y + board.height * y });
+        const inside = point(fixture.inside), outsideImage = point(fixture.outsideImage), outsideHover = point(fixture.outsideHover);
+        const move = target => page.mouse.move(target.x, target.y);
+        // The original rectangle is 45% by 54%, centred on the thumbnail and clipped to the map.
+        const hoverLeft = Math.max(0, fixture.x / 100 - .225), hoverTop = Math.max(0, fixture.y / 100 - .27);
+        const hover = { x: board.x + board.width * hoverLeft, y: board.y + board.height * hoverTop,
+          width: board.width * (Math.min(1, fixture.x / 100 + .225) - hoverLeft),
+          height: board.height * (Math.min(1, fixture.y / 100 + .27) - hoverTop) };
+        assert.ok(contains(hover, inside) && contains(hover, outsideImage), 'the image exit is still inside the original rectangle');
+        assert.equal(contains(hover, outsideHover), false, 'the original rectangle also has a separate exit');
+        const navigation = () => page.evaluate(() => ({ url: location.href, scroll: scrollY,
+          viewer: document.querySelector('#viewer').open, fullscreen: document.fullscreenElement?.id || null,
+          counter: document.querySelector('#counter').textContent,
+          focusedScreenshot: Boolean(document.querySelector('.gallery-map-shot:focus')) }));
+        const before = await navigation();
+        for (const [boundary, exit] of [['enlarged image', outsideImage], ['original rectangle', outsideHover]]) {
+          // Leaving the collapsed thumbnail clears its re-entry guard before a new hover.
+          await move(point([.5, .5]));
+          const preview = await enlargeMapPreview(page, selector);
+          await mapPreviewSettled(page, selector, .8);
+          const expanded = await preview.card.boundingBox();
+          assert.ok(contains(expanded, inside) && contains(expanded, outsideHover), 'the old shrink zone remains inside the enlarged image');
+          assert.equal(contains(expanded, outsideImage), false, 'the image exit really crosses the rendered image edge');
+          await move(inside);
+          assert.equal(await preview.card.getAttribute('aria-expanded'), 'true', 'the intersection keeps the preview open');
+          await move(exit);
+          assert.equal(await preview.card.getAttribute('aria-expanded'), 'false', `${boundary} exit closes the preview`);
+          await mapPreviewSettled(page, selector, .2);
+          assert.deepEqual(await navigation(), before, 'hovering and shrinking do not navigate or change fullscreen state');
+        }
+        assert.deepEqual(errors, []);
+      });
+    }
+  }
+});
+
 test('Atrium previews stay at 80 percent without navigating and share fullscreen mouse controls', async t => {
   const { page, errors } = await openPage(t, { map: true, width: 1440, diagnostics: true, reducedMotion: 'no-preference' });
   await page.locator('#public-map').waitFor({ state: 'visible' });
@@ -2440,4 +2509,5 @@ test('RZ Start stays behind password and bearer-token delivery', async t => {
   assert.ok(!requests.some(url => url.includes('/public-media/') || url.includes('/1440p/')));
   assert.deepEqual(errors, []);
 });
+
 

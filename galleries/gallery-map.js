@@ -195,7 +195,11 @@ const GalleryMap = (() => {
       if (isInteractionLocked()) { cancelPendingHover(); return; }
       if (!pointer) return;
       if (pendingCard && edgeDistance(pointer, geometry(pendingCard).thumb) < 0) cancelPendingHover();
-      if (active && mode === 'pointer' && edgeDistance(pointer, geometry(active).hoverArea) <= 0) close(true);
+      if (active && mode === 'pointer') {
+        const { hoverArea, expanded } = geometry(active);
+        // Keep the thumbnail-centred hover area, but exclude the space outside the enlarged image.
+        if (edgeDistance(pointer, hoverArea) <= 0 || edgeDistance(pointer, expanded) <= 0) close(true);
+      }
     }
     listen(stage, 'pointermove', event => {
       if (!hover.matches || event.pointerType === 'touch') return;
