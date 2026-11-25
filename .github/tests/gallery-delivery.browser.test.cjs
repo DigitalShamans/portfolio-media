@@ -1625,7 +1625,7 @@ test('studio About Us uses power4.out and reaches its anchor during startup', as
 
 test('back to top follows the gallery scroll and respects the active scroll controller', async t => {
   await t.test('desktop button fades in and out, stays in the gutter and restores keyboard focus', async t => {
-    const { page, errors } = await openPage(t, { width: 2300, reducedMotion: 'no-preference' });
+    const { page, errors } = await openPage(t, { width: 2300, reducedMotion: 'no-preference', diagnostics: true });
     const button = page.locator('.gallery-back-to-top');
     await displayed(page, '.shot-primary', preview('First'));
     assert.equal(await button.isVisible(), false);
@@ -1646,6 +1646,20 @@ test('back to top follows the gallery scroll and respects the active scroll cont
         rect.top < innerHeight / 3 && rect.width >= 44 && getComputedStyle(control).position === 'fixed';
     }), 'the control sits outside the artwork on a wide desktop');
     await page.waitForFunction(() => window.topButtonFades.length === 1);
+    await page.waitForFunction(() => {
+      const panel = document.querySelector('.portfolio-diagnostics');
+      return panel && getComputedStyle(panel).position === 'fixed';
+    });
+    const surfaces = await button.evaluate(control => {
+      const panel = document.querySelector('.portfolio-diagnostics');
+      const properties = ['backgroundColor', 'backgroundImage', 'borderTopColor', 'borderTopWidth',
+        'borderTopLeftRadius', 'boxShadow', 'color'];
+      return [control, panel].map(element => {
+        const style = getComputedStyle(element);
+        return properties.map(property => style[property]);
+      });
+    });
+    assert.deepEqual(surfaces[0], surfaces[1]);
 
     await page.locator('.shot').nth(1).click();
     await page.locator('#viewer[open]').waitFor();
