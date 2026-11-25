@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="{{ '/galleries/gallery.css' | relative_url }}?v=40">
   <link rel="stylesheet" href="{{ '/galleries/gallery-map.css' | relative_url }}?v=9">
   {% include personal-typography.html %}
+  {% unless page.portfolio == 'personal' %}{% include about-entry.html %}{% endunless %}
 </head>
 <body class="gallery-map-experiment" data-gallery-revision="{{ site.github.build_revision | escape }}">
   <div id="gallery-scroll-wrapper">

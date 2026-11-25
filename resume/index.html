@@ -9,6 +9,7 @@ seo_image: hb-egypt
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  {% include portfolio-diagnostics.html section='about' %}
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
   {% include seo.html %}
@@ -16,6 +17,7 @@ seo_image: hb-egypt
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=12">
   <link rel="stylesheet" href="{{ '/assets/portfolio.css' | relative_url }}?v=7">
   <link rel="stylesheet" href="{{ '/assets/about.css' | relative_url }}?v=6">
+  {% include about-entry.html arrival=true %}
 </head>
 <body class="portfolio-page about-page">
   {% include site-header.html %}

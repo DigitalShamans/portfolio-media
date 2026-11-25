@@ -16,12 +16,14 @@
     'gallery-touch': 'Gallery touch scrolling',
     'gallery-swipe': 'Gallery touch navigation',
     'portfolio-reveals': 'Portfolio card reveals',
-    'portfolio-preview': 'Portfolio tile previews'
+    'portfolio-preview': 'Portfolio tile previews',
+    'about-entry': 'About Us page reveal'
   };
   const expected = {
     resume: ['resume-timeline', 'resume-smoother', 'resume-reveals'],
     gallery: ['gallery-edge', 'gallery-wheel', 'gallery-touch', 'gallery-swipe'],
-    portfolio: ['portfolio-reveals']
+    portfolio: ['portfolio-reveals'],
+    about: ['about-entry']
   };
   const features = {};
   const tallies = {};
@@ -268,6 +270,9 @@
     const visibleFeatures = [...(expected[section] || [])];
     if (section === 'portfolio' && document.querySelector('.portfolio-card[data-gallery-preview]')) {
       visibleFeatures.push('portfolio-preview');
+    }
+    if (section === 'gallery' && document.querySelector('[data-about-entry-link]')) {
+      visibleFeatures.push('about-entry');
     }
     if (section === 'gallery' && document.querySelector('#public-map')) {
       visibleFeatures.unshift('gallery-map-preview');

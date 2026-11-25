@@ -1,0 +1,38 @@
+name: About Us entry checks
+
+on:
+  push:
+    branches: [qa/about-entry-2026-11-25]
+
+permissions:
+  contents: read
+
+jobs:
+  about-entry:
+    if: github.ref == 'refs/heads/qa/about-entry-2026-11-25'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+      - name: Validate source and build portfolio
+        uses: ./.github/actions/validate-portfolio
+      - name: Install browser test driver
+        run: npm install --no-audit --no-fund --prefix "$RUNNER_TEMP/portfolio-browser" playwright@1.62.1
+      - name: Record source and browser
+        run: |
+          git rev-parse HEAD
+          /usr/bin/google-chrome --version
+      - name: Check About Us entry transitions
+        env:
+          CHROMIUM_PATH: /usr/bin/google-chrome
+        run: |
+          export NODE_PATH="$RUNNER_TEMP/portfolio-browser/node_modules"
+          node --test .github/tests/about-entry.browser.test.cjs
+      - name: Upload About Us visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: about-entry-visuals
+          path: test-results/about-entry/
+          if-no-files-found: warn
+          retention-days: 7

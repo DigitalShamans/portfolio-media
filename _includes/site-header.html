@@ -19,7 +19,7 @@
         <a href="#about-us" data-home-link="about">About Us</a>
         {% else %}
         <a href="{{ '/' | relative_url }}"{% unless page.url == '/resume/' %} aria-current="true"{% endunless %}>Portfolio</a>
-        <a href="{{ '/resume/' | relative_url }}"{% if page.url == '/resume/' %} aria-current="page"{% endif %}>About Us</a>
+        <a href="{{ '/resume/' | relative_url }}" data-about-entry-link{% if page.url == '/resume/' %} aria-current="page"{% endif %}>About Us</a>
         {% endif %}
         <a href="https://tally.so/r/3Ey0V4">Contact</a>
         <a href="https://digital_shamans.artstation.com/blog">Jobs</a>
