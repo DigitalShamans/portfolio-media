@@ -1,0 +1,33 @@
+name: Map preview bounds QA
+
+on:
+  push:
+    branches: [qa/map-preview-bounds-2026-11-25]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    if: github.ref == 'refs/heads/qa/map-preview-bounds-2026-11-25'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Validate portfolio
+        uses: ./.github/actions/validate-portfolio
+      - name: Install browser test dependency
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: npm install --prefix "$RUNNER_TEMP/map-preview-bounds-browser" --no-audit --no-fund --save-exact playwright@1.62.1
+      - name: Verify Atrium map preview behavior in Chrome
+        env:
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          NODE_PATH: ${{ runner.temp }}/map-preview-bounds-browser/node_modules
+        run: >-
+          node --test
+          --test-name-pattern='^Atrium (hover previews|thumbnail previews|collapsed .*thumbnails|previews stay at 80 percent|touch taps)'
+          .github/tests/gallery-delivery.browser.test.cjs

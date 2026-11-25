@@ -185,6 +185,14 @@ function mapRenderer(hoverEnabled = true, position = { x: 25, y: 29 }) {
   return { mount: options => renderer.mount(stage, map, name => ({ src: name }), options), stage, advance, document, resize: () => onResize() };
 }
 
+function mapPointer(stage, { x, y }) {
+  return {
+    pointerType: 'mouse',
+    clientX: stage.left + (stage.clientLeft + stage.clientWidth * x / 100) * stage.renderScale,
+    clientY: stage.top + (stage.clientTop + stage.clientHeight * y / 100) * stage.renderScale
+  };
+}
+
 test('hover requires a continuous 400ms stay without restarting on small cursor movements', () => {
   const { mount, stage, advance } = mapRenderer();
   const view = mount({}), card = view.cards[0];
@@ -346,6 +354,85 @@ test('each thumbnail anchors its own keep-open rectangle on all four sides', () 
   }
 });
 
+test('80-percent previews close beyond every image edge and wait for thumbnail re-entry', () => {
+  const edges = [
+    { edge: 'left', position: { x: 15, y: 50 }, axis: 'x', inside: 10.1, outside: 9.9, leave: 4 },
+    { edge: 'right', position: { x: 85, y: 50 }, axis: 'x', inside: 89.9, outside: 90.1, leave: 96 },
+    { edge: 'top', position: { x: 50, y: 15 }, axis: 'y', inside: 10.1, outside: 9.9, leave: 4 },
+    { edge: 'bottom', position: { x: 50, y: 85 }, axis: 'y', inside: 89.9, outside: 90.1, leave: 96 }
+  ];
+  for (const transformed of [false, true]) {
+    for (const { edge, position, axis, inside, outside, leave } of edges) {
+      const { mount, stage, advance } = mapRenderer(true, position);
+      if (transformed) Object.assign(stage, { left: 110, top: 35, clientLeft: 3, clientTop: 5, renderScale: 1.75 });
+      const view = mount({ previewSize: .8 }), card = view.cards[0];
+      const point = value => mapPointer(stage, { ...position, [axis]: value });
+      const label = edge + (transformed ? ' on a transformed map' : ' on an ordinary map');
+      card.fire('pointerenter', mapPointer(stage, position));
+      advance(400);
+      stage.fire('pointermove', point(inside));
+      assert.equal(card.getAttribute('aria-expanded'), 'true', label + ' stays open just inside the image');
+      // Both probes remain within the old keep-open rectangle and the original thumbnail.
+      stage.fire('pointermove', point(outside));
+      assert.equal(card.getAttribute('aria-expanded'), 'false', label + ' closes just outside the image');
+      card.fire('pointerenter', point(outside));
+      stage.fire('pointermove', mapPointer(stage, position));
+      advance(800);
+      assert.equal(card.getAttribute('aria-expanded'), 'false', label + ' cannot reopen while still over its thumbnail');
+      stage.fire('pointermove', point(leave));
+      card.fire('pointerenter', mapPointer(stage, position));
+      advance(399);
+      assert.equal(card.getAttribute('aria-expanded'), 'false', label + ' requires a new dwell after leaving the thumbnail');
+      advance(1);
+      assert.equal(card.getAttribute('aria-expanded'), 'true', label + ' can reopen after a fresh dwell');
+      view.destroy();
+    }
+  }
+});
+
+test('80-percent previews retain thumbnail close regions inside the enlarged image', () => {
+  for (const { edge, axis, inside, outside } of [
+    { edge: 'left', axis: 'x', inside: 27.6, outside: 27.4 },
+    { edge: 'right', axis: 'x', inside: 72.4, outside: 72.6 },
+    { edge: 'top', axis: 'y', inside: 23.1, outside: 22.9 },
+    { edge: 'bottom', axis: 'y', inside: 76.9, outside: 77.1 }
+  ]) {
+    const position = { x: 50, y: 50 };
+    const { mount, stage, advance } = mapRenderer(true, position);
+    const view = mount({ previewSize: .8 }), card = view.cards[0];
+    const point = value => mapPointer(stage, { ...position, [axis]: value });
+    card.fire('pointerenter', mapPointer(stage, position));
+    advance(400);
+    stage.fire('pointermove', point(inside));
+    assert.equal(card.getAttribute('aria-expanded'), 'true', edge + ' stays open inside both bounds');
+    stage.fire('pointermove', point(outside));
+    assert.equal(card.getAttribute('aria-expanded'), 'false', edge + ' closes beyond the thumbnail rectangle while still inside the image');
+    view.destroy();
+  }
+});
+
+test('image bounds are rechecked on scrolling, refresh and resize without pointer movement', () => {
+  for (const trigger of ['scroll', 'gallery-scrollupdate', 'refresh', 'resize']) {
+    const { mount, stage, advance, document, resize } = mapRenderer(true, { x: 15, y: 50 });
+    const view = mount({ previewSize: .8 }), card = view.cards[0];
+    card.fire('pointerenter', mapPointer(stage, { x: 15, y: 50 }));
+    advance(400);
+    stage.fire('pointermove', mapPointer(stage, { x: 10.1, y: 50 }));
+    assert.equal(card.getAttribute('aria-expanded'), 'true');
+    // Move the image edge past the stationary pointer while its thumbnail area still contains it.
+    if (trigger === 'resize') {
+      stage.clientWidth = 1020; stage.clientHeight = 573.75;
+      resize();
+    } else {
+      stage.left = 2;
+      if (trigger === 'refresh') view.refresh();
+      else document.fire(trigger);
+    }
+    assert.equal(card.getAttribute('aria-expanded'), 'false', trigger + ' closes a pointer left outside the image');
+    view.destroy();
+  }
+});
+
 test('Reception stays open near its origin and closes in the red area without a centre visit', () => {
   const { mount, stage, advance } = mapRenderer(true, { x: 37, y: 70 });
   const view = mount({}), card = view.cards[0];
@@ -444,6 +531,7 @@ test('zoom locks an open preview and pressed-pointer movement cannot schedule an
   assert.equal(card.getAttribute('aria-expanded'), 'false');
   view.destroy();
 });
+
 
 
 
