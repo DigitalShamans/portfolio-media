@@ -28,6 +28,15 @@ function signal() {
   return { reached: new Promise(resolve => { release = resolve; }), release: () => release() };
 }
 
+async function withinFiveSeconds(promise, label) {
+  let timer;
+  try {
+    return await Promise.race([promise, new Promise((_, reject) => {
+      timer = setTimeout(() => reject(new Error(label + ' was not observed within 5000ms')), 5000);
+    })]);
+  } finally { clearTimeout(timer); }
+}
+
 async function session(t, { width = 1440, height = 900, touch = false, reducedMotion = 'no-preference',
   javaScriptEnabled = true, storageDenied = false, arrival, observe = false, intercept } = {}) {
   const context = await browser.newContext({ viewport: { width, height }, hasTouch: touch,
@@ -288,15 +297,42 @@ test('modified clicks keep a native background tab and personal gallery navigati
   assert.deepEqual(errors, []);
 });
 
-test('mobile arrivals fit the viewport and an interruption releases every temporary effect', async t => {
-  const { page, errors } = await session(t, { width: 390, height: 844, touch: true });
+test('mobile arrivals fit the viewport and an interruption releases every temporary effect', { timeout: 15_000 }, async t => {
+  const requested = signal(), gate = signal();
+  let arrivalRequests = 0;
+  const { page, errors } = await session(t, { width: 390, height: 844, touch: true,
+    intercept: async (route, url) => {
+      if (!url.pathname.endsWith('/gsap.min.js') ||
+          new URL(route.request().frame().url()).pathname !== '/resume/') return false;
+      if (++arrivalRequests !== 2) return false;
+      requested.release();
+      await gate.reached;
+      await route.fulfill({ path: join(site, url.pathname) });
+      return true;
+    },
+  });
   const link = await source(page, '/galleries/hb-egypt/');
   await Promise.all([page.waitForURL(destination), link.tap()]);
   await finished(page);
   await page.goBack({ waitUntil: 'domcontentloaded' });
-  await Promise.all([page.waitForURL(destination), page.locator(linkSelector).tap()]);
-  await page.waitForFunction(() => document.documentElement.dataset.aboutEntry === 'revealing');
-  await page.setViewportSize({ width: 844, height: 390 });
+  const navigation = page.waitForURL(destination, { waitUntil: 'commit' });
+  const tapping = page.locator(linkSelector).tap();
+  tapping.catch(() => {}); // The assertion path below still awaits and checks this real gesture.
+  try {
+    await navigation;
+    await withinFiveSeconds(requested.reached, 'the second arrival GSAP request');
+    await page.locator('.about-content').waitFor({ state: 'attached' });
+    assert.equal(await page.locator('html').getAttribute('data-about-entry'), 'pending', 'the second real tap creates a fresh valid arrival');
+    assert.equal(await page.evaluate(key => sessionStorage.getItem(key), markerKey), null, 'the destination consumes the fresh marker');
+    const revealing = page.waitForFunction(() => document.documentElement.dataset.aboutEntry === 'revealing' &&
+      document.querySelector('.about-entry-sheet') && document.querySelector('.about-entry-mask'));
+    gate.release();
+    await revealing;
+    await page.setViewportSize({ width: 844, height: 390 });
+  } finally {
+    gate.release();
+    await tapping;
+  }
   await finished(page);
   assert.deepEqual(errors, []);
 });
