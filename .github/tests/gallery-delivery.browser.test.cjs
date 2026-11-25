@@ -1928,6 +1928,31 @@ test('fullscreen wheel zoom starts with the elapsed time at 240 Hz', async t => 
   assert.deepEqual(errors, []);
 });
 
+test('the visible comparison mark follows the foreground palette in the gallery and fullscreen', async t => {
+  const { page, errors } = await openPage(t, { width: 1440 });
+  const themedForeground = 'rgb(232, 230, 227)';
+  await page.addStyleTag({ content: `.comparison-indicator > button { color: ${themedForeground} }` });
+  const strip = page.locator('.shot-entry .comparison-indicator').first();
+  const fill = button => button.evaluate(element => getComputedStyle(element, '::before').backgroundColor);
+  const chosen = container => container.locator('button[aria-pressed="true"]');
+  assert.equal(await fill(chosen(strip)), themedForeground);
+
+  await strip.locator('button').nth(2).hover();
+  await displayed(page, '.shot-comparison.is-visible', preview('First_Wireframe'));
+  assert.equal(await fill(chosen(strip)), themedForeground);
+  assert.equal(await fill(strip.locator('button').first()), 'rgb(59, 59, 59)');
+
+  await page.locator('.shot').first().click();
+  await activeSegment(page, 0);
+  const fullscreenStrip = page.locator('#viewer .comparison-indicator');
+  assert.equal(await fill(chosen(fullscreenStrip)), themedForeground);
+  await segment(page, 2).hover();
+  await displayed(page, '#original', preview('First_Wireframe'));
+  await activeSegment(page, 2);
+  assert.equal(await fill(chosen(fullscreenStrip)), themedForeground);
+  assert.deepEqual(errors, []);
+});
+
 test('comparison hover is limited to the bottom 6% on gallery tiles and fullscreen images', async t => {
   await t.test('gallery tile', async t => {
     const { page, errors } = await openPage(t, { width: 1440 });
