@@ -7,6 +7,8 @@
   const about = document.querySelector('.portfolio-home #about-us');
   const aboutLink = document.querySelector('.portfolio-home [data-home-link="about"]');
   const aboutContent = about?.closest('[data-page-scroll-motion]');
+  const elasticPeriod = .38;
+  const elasticDuration = .98;
   let spring, aboutScroll;
   let previousTop, atBottom;
 
@@ -39,14 +41,18 @@
     if (!content?.animate) return;
     stopSpring();
 
-    // GSAP's default elastic.out curve, sampled for pages that scroll without GSAP.
+    // Sample the same elastic.out as the About Us scroll for pages without GSAP.
+    const pushTime = 140;
+    const settleTime = elasticDuration * 1000;
+    const duration = pushTime + settleTime;
     const frames = [{ offset: 0, translate: '0 0px', easing: 'ease-out' }];
-    for (let sample = 0; sample <= 48; sample++) {
-      const progress = sample / 48;
-      const remaining = progress === 1 ? 0 : 2 ** (-10 * progress) * Math.cos(progress * 2 * Math.PI / .3);
-      frames.push({ offset: .14 + .86 * progress, translate: '0 ' + (-18 * remaining) + 'px' });
+    const samples = 80;
+    for (let sample = 0; sample <= samples; sample++) {
+      const progress = sample / samples;
+      const remaining = progress === 1 ? 0 : 2 ** (-10 * progress) * Math.cos(progress * 2 * Math.PI / elasticPeriod);
+      frames.push({ offset: (pushTime + settleTime * progress) / duration, translate: '0 ' + (-30 * remaining) + 'px' });
     }
-    const animation = content.animate(frames, { duration: 650 });
+    const animation = content.animate(frames, { duration });
     spring = animation;
     animation.onfinish = () => { if (spring === animation) spring = undefined; };
   }
@@ -116,7 +122,7 @@
     }
 
     // Keep the elastic part local to the anchor, even on a long page.
-    const lastStretch = Math.sign(distance) * Math.min(24, Math.abs(distance) * .14);
+    const lastStretch = Math.sign(distance) * Math.min(36, Math.abs(distance) * .14);
     const travelTime = Math.max(.65, Math.min(1.2, Math.sqrt(Math.abs(distance)) * .019));
     const position = { top: start };
     aboutScroll = gsap.timeline({
@@ -136,6 +142,6 @@
       }
     });
     aboutScroll.to(position, { top: destination - lastStretch, duration: travelTime, ease: 'power4.out' })
-      .to(position, { top: destination, duration: .62, ease: 'elastic.out' }).play();
+      .to(position, { top: destination, duration: elasticDuration, ease: 'elastic.out(1,' + elasticPeriod + ')' }).play();
   });
 })();

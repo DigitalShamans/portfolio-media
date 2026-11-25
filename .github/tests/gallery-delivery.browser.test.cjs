@@ -1404,6 +1404,7 @@ test('page-end motion rebounds without changing the scroll limit', async t => {
         const animate = content.animate;
         content.animate = function(frames, options) {
           window.bottomMotion.starts++;
+          window.bottomMotion.duration = options.duration;
           window.bottomMotion.offsets = frames.map(frame => Number.parseFloat(frame.translate.split(' ')[1]));
           const animation = animate.call(this, frames, options);
           animation.oncancel = () => { window.bottomMotion.cancelled = true; };
@@ -1421,7 +1422,9 @@ test('page-end motion rebounds without changing the scroll limit', async t => {
         await page.waitForFunction(() => window.bottomMotion.starts === 1);
         const track = await page.evaluate(() => window.bottomMotion);
         assert.equal(track.offsets[0], 0);
-        assert.ok(Math.min(...track.offsets) <= -18 && Math.max(...track.offsets) > 0);
+        assert.equal(track.duration, 1120);
+        assert.equal(Math.min(...track.offsets), -30);
+        assert.ok(Math.max(...track.offsets) > 8);
         assert.ok(track.offsets.at(-1) === 0);
         assert.equal(await page.evaluate(() => document.scrollingElement.scrollHeight - innerHeight), track.limit);
         await page.mouse.wheel(0, -120);
@@ -1464,7 +1467,7 @@ test('studio About Us scroll uses power4.out for travel and elastic.out for arri
       const timeline = createTimeline(options);
       const to = timeline.to;
       timeline.to = function(target, vars) {
-        window.aboutEases.push(vars.ease);
+        window.aboutEases.push({ ease: vars.ease, duration: vars.duration, top: vars.top });
         return to.call(this, target, vars);
       };
       return timeline;
@@ -1479,7 +1482,10 @@ test('studio About Us scroll uses power4.out for travel and elastic.out for arri
   await page.getByRole('link', { name: 'About Us' }).click();
   await page.waitForFunction(() => document.activeElement?.id === 'about-us');
   assert.equal(new URL(page.url()).hash, '#about-us');
-  assert.deepEqual(await page.evaluate(() => window.aboutEases), ['power4.out', 'elastic.out']);
+  const phases = await page.evaluate(() => window.aboutEases);
+  assert.deepEqual(phases.map(phase => phase.ease), ['power4.out', 'elastic.out(1,0.38)']);
+  assert.equal(phases.at(-1).duration, .98);
+  assert.equal(phases[1].top - phases[0].top, 36);
   assert.equal(await page.evaluate(() => window.extraSprings), 0);
   assert.equal(await page.evaluate(() => document.scrollingElement.scrollHeight - innerHeight - scrollY), 0);
 });
