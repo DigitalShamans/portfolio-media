@@ -2,6 +2,16 @@
   {% if page.font_preview %}
     <link rel="stylesheet" href="{{ '/assets/font-previews/previews.css' | relative_url }}?v=2">
   {% else %}
-    <link rel="stylesheet" href="{{ '/assets/personal-typography.css' | relative_url }}?v=3">
+    <script>
+      (function () {
+        var agent = navigator.userAgent;
+        var desktopSafari = navigator.vendor === 'Apple Computer, Inc.' &&
+          /Macintosh/.test(agent) && /Version\/[\d.]+.*Safari\//.test(agent) &&
+          !/(Chrome|Chromium|CriOS|Edg|Edge|EdgiOS|OPR|OPiOS|FxiOS|Firefox)\//.test(agent) &&
+          (navigator.maxTouchPoints || 0) < 2;
+        if (desktopSafari) document.documentElement.setAttribute('data-desktop-safari', '');
+      }());
+    </script>
+    <link rel="stylesheet" href="{{ '/assets/personal-typography.css' | relative_url }}?v=4">
   {% endif %}
 {% endif %}
