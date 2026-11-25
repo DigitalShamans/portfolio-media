@@ -234,7 +234,8 @@ test('both gallery layouts construct the arriving panel before the real header a
     assert.match(layout, /<div id="gallery-edge-arrival"><script src="\.\.\/gallery-arrival\.js\?v=4"><\/script><\/div>/);
     assert.match(layout, /gallery-edge-arrival[\s\S]*include site-header\.html[\s\S]*gallery-edge-ready/);
   }
-  for (const layout of layouts) assert.match(layout, /gallery-viewer\.js\?v=73/);
+  assert.match(layouts[0], /gallery-viewer\.js\?v=74/);
+  assert.match(layouts[1], /gallery-viewer\.js\?v=73/);
   const mapLayout = fs.readFileSync(path.join(root, '_layouts/gallery-map.html'), 'utf8');
   assert.match(mapLayout, /gallery-viewer\.js[^\n]*\?v=73/);
 });
@@ -472,3 +473,23 @@ test('the real home and recent gallery pages register the reveal before first pa
   }
 });
 
+
+test('personal Vegetation excludes its final two images without changing the studio gallery', async () => {
+  const personal = fs.readFileSync(path.join(root, 'artur/galleries/vegetation/index.html'), 'utf8');
+  const studio = fs.readFileSync(path.join(root, 'galleries/vegetation/index.html'), 'utf8');
+  const manifest = fs.readFileSync(path.join(root, 'galleries/vegetation/gallery.json'), 'utf8');
+  const original = JSON.parse(manifest);
+  const excluded = JSON.parse(personal.match(/^gallery_exclude: (.+)$/m)[1]);
+  assert.deepEqual(excluded, original.slice(-2).map(entry => entry.image));
+  assert.doesNotMatch(studio, /^gallery_exclude:/m);
+  assert.match(layouts[0], /data-gallery-exclude="{{ page.gallery_exclude \| jsonify \| escape }}"/);
+  const start = viewer.indexOf('    const excluded = new Set(JSON.parse(gallery.dataset.galleryExclude');
+  const end = viewer.indexOf('    const restoreFocus', start);
+  assert.ok(start >= 0 && end > start);
+  const run = dataset => vm.runInNewContext(
+    '(async () => {' + viewer.slice(start, end) + 'return JSON.stringify(entries);})()',
+    { gallery: { dataset }, GalleryData: { parse: JSON.parse }, response: { text: async () => manifest } }
+  );
+  assert.deepEqual(JSON.parse(await run({ galleryExclude: JSON.stringify(excluded) })), original.slice(0, -2));
+  assert.deepEqual(JSON.parse(await run({})), original);
+});
