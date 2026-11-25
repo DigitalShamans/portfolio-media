@@ -1551,7 +1551,7 @@ test('page-end motion rebounds without changing the scroll limit', async t => {
   }
 });
 
-test('studio About Us slows at the framed tiles and reaches its anchor in one direction', async t => {
+test('studio About Us uses power4.out and reaches its anchor during startup', async t => {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
   t.after(() => page.close());
   page.setDefaultTimeout(5000);
@@ -1564,14 +1564,10 @@ test('studio About Us slows at the framed tiles and reaches its anchor in one di
         <nav class="site-nav"><a href="#portfolio" data-home-link="portfolio">Portfolio</a>
         <a href="#about-us" data-home-link="about">About Us</a></nav>
       </header>
-      <main data-page-scroll-motion><div id="portfolio" style="height:2200px;position:relative">
-        <div class="recent-galleries"></div>
-        <section id="full-portfolio" data-scroll-framing style="position:absolute;top:1000px;height:560px"></section>
-      </div>
+      <main data-page-scroll-motion><div id="portfolio" style="height:2200px"></div>
         <section id="about-us" style="height:340px"><h2>About Us</h2></section>
       </main><footer style="height:64px">Copyright<img src="/startup.jpg" width="1" height="1" alt=""></footer>
       <script src="/assets/vendor/gsap/3.15.1/gsap.min.js"></script>
-      <script src="/assets/recent-galleries-scroll.js"></script>
       <script src="/assets/home-sections.js"></script>
       <script src="/assets/page-scroll-motion.js"></script>
     </body>`;
@@ -1598,8 +1594,7 @@ test('studio About Us slows at the framed tiles and reaches its anchor in one di
     };
     const to = window.gsap.to;
     window.gsap.to = function(target, vars) {
-      const samples = Array.from({ length: 1001 }, (_, i) => vars.ease(i / 1000) * vars.top);
-      window.aboutEases.push({ duration: vars.duration, top: vars.top, samples });
+      window.aboutEases.push({ ease: vars.ease, duration: vars.duration, top: vars.top });
       return to.call(this, target, vars);
     };
     const content = document.querySelector('[data-page-scroll-motion]');
@@ -1622,17 +1617,8 @@ test('studio About Us slows at the framed tiles and reaches its anchor in one di
   const writes = await page.evaluate(() => window.aboutScrollWrites);
   assert.ok(writes.length > 10 && writes.every((top, i) => i === 0 || top >= writes[i - 1]),
     'the rendered page never moves backwards');
-  const { samples, duration } = phases[0];
-  assert.ok(duration > phases[0].top / 1000, 'duration accounts for the framed part of the trip');
-  assert.equal(samples[0], 0);
-  assert.equal(samples.at(-1), phases[0].top);
-  assert.ok(samples.every((top, i) => i === 0 || top >= samples[i - 1]), 'scroll progress never reverses');
-  const travelAt = top => {
-    const index = samples.findIndex(position => position >= top);
-    return samples[index + 5] - samples[index];
-  };
-  const ratio = travelAt(850) / travelAt(400);
-  assert.ok(ratio >= .72 && ratio <= .78, 'the viewport slows while the grid is framed: ' + ratio);
+  assert.equal(phases[0].ease, 'power4.out');
+  assert.ok(phases[0].duration >= .65 && phases[0].duration <= 1.2);
   assert.equal(await page.evaluate(() => window.extraSprings), 0);
   assert.equal(await page.evaluate(() => document.scrollingElement.scrollHeight - innerHeight - scrollY), 0);
 });
