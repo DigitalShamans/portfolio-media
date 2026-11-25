@@ -31,6 +31,7 @@ async function openHome(t, {
   reducedMotion = 'no-preference', touch = false, intercept,
 } = {}) {
   const context = await browser.newContext({ viewport: { width, height }, hasTouch: touch, isMobile: touch, reducedMotion });
+  context.setDefaultTimeout(5000);
   t.after(() => context.close());
   const page = await context.newPage();
   page.setDefaultTimeout(5000);
@@ -298,9 +299,26 @@ test('reduced motion keeps the dwell and native keyboard and modified-click navi
   assert.equal(report.tallies['portfolio-preview']['instant changes'], 2);
   assert.equal(report.motion['portfolio-preview'], undefined);
   const destination = new URL(await card.getAttribute('href'), origin).href;
+  const navigationEvents = [];
+  context.on('request', request => {
+    if (request.isNavigationRequest()) navigationEvents.push({ event: 'request', url: request.url() });
+  });
+  context.on('requestfailed', request => {
+    if (request.isNavigationRequest()) navigationEvents.push({ event: 'failed', url: request.url(), error: request.failure()?.errorText });
+  });
+  context.on('response', response => {
+    if (response.request().isNavigationRequest()) navigationEvents.push({ event: 'response', url: response.url(), status: response.status() });
+  });
   // A modified anchor click can open a background tab without an opener popup event.
   const [newTab] = await Promise.all([context.waitForEvent('page'), card.click({ modifiers: ['Control'] })]);
-  await newTab.waitForURL(destination);
+  const createdURL = newTab.url();
+  try {
+    await newTab.bringToFront();
+    await newTab.waitForURL(destination, { timeout: 5000 });
+  } catch (error) {
+    t.diagnostic(JSON.stringify({ destination, createdURL, tabURLs: context.pages().map(page => page.url()), navigationEvents }));
+    throw error;
+  }
   assert.equal(new URL(page.url()).pathname, '/');
   await newTab.close();
   await Promise.all([page.waitForURL(destination), card.press('Enter')]);
