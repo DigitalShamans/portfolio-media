@@ -1162,7 +1162,7 @@ async function loadGallery() {
       const source = GalleryResolution.publicImageSource(fallback.dataset.galleryOriginal, imageResolution);
       firstImage = { image, link: fallback, source, load: loadImage(image, source, { link: fallback, pictureSource }) };
     }
-    const response = galleryAccess ? await galleryAccess.manifest() : await fetch(galleryAssetUrl('gallery.json'));
+    const response = galleryAccess ? await galleryAccess.manifest() : await fetch(galleryAssetUrl(gallery.dataset.galleryManifest || 'gallery.json'));
     if (!response.ok) throw new Error('Gallery order unavailable.');
     const excluded = new Set(JSON.parse(gallery.dataset.galleryExclude || '[]'));
     const entries = GalleryData.parse(await response.text()).filter(entry => !excluded.has(entry.image));

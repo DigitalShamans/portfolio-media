@@ -63,6 +63,7 @@
       {% endif %}
       <section class="gallery" data-grouped-image-scroll
         {% if page.gallery_exclude %}data-gallery-exclude="{{ page.gallery_exclude | jsonify | escape }}"{% endif %}
+        {% if page.portfolio == "personal" and page.gallery == "vegetation" and gallery_asset_versions["gallery-personal.json"] %}data-gallery-manifest="gallery-personal.json"{% endif %}
         {% if gallery_page.gallery_scroll_ease %}data-gallery-scroll-ease="{{ gallery_page.gallery_scroll_ease | escape }}"{% endif %}
         {% if gallery_page.gallery_embeds %}data-gallery-embeds="gallery-embeds.json"{% endif %}
         aria-label="{{ gallery_label | escape }}">

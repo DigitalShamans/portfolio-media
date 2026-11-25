@@ -17,6 +17,9 @@ runs:
       with:
         source: ./
         destination: ./_site
+    - name: Verify built personal Vegetation gallery
+      shell: bash
+      run: python3 .github/scripts/validate-personal-vegetation.py ./_site
     - name: Prune unpublished gallery images
       shell: bash
       run: |

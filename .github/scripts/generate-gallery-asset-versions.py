@@ -54,6 +54,25 @@ def gallery_versions():
     return versions
 
 
+def generate_personal_vegetation_manifest(galleries):
+    """Publish a filtered manifest derived from the shared order, not a second hand-edited list."""
+    page = ROOT / 'artur/galleries/vegetation/index.html'
+    excluded = set(json.loads(next(line.split(':', 1)[1] for line in
+                                  page.read_text(encoding='utf-8').splitlines()
+                                  if line.startswith('gallery_exclude:'))))
+    folder = ROOT / 'galleries/vegetation'
+    entries = json.loads((folder / 'gallery.json').read_text(encoding='utf-8-sig'))
+    if not excluded <= {entry['image'] for entry in entries}:
+        raise ValueError('Personal Vegetation exclusion refers to an unknown image.')
+    filtered = [entry for entry in entries if entry['image'] not in excluded]
+    if not filtered:
+        raise ValueError('Personal Vegetation must retain at least one image.')
+    name = 'gallery-personal.json'
+    payload = (json.dumps(filtered, indent=2) + '\n').encode('utf-8')
+    (folder / name).write_bytes(payload)
+    galleries['vegetation'][name] = hashlib.sha256(payload).hexdigest()
+
+
 def gallery_script_versions():
     return {'viewer': hashlib.sha256((ROOT / 'galleries/gallery-viewer.js').read_bytes()).hexdigest()}
 
@@ -94,6 +113,7 @@ def portfolio_gallery_preloads(galleries):
 
 if __name__ == '__main__':
     galleries = gallery_versions()
+    generate_personal_vegetation_manifest(galleries)
     for name, versions in (
         ('gallery_asset_versions', galleries),
         ('gallery_script_versions', gallery_script_versions()),

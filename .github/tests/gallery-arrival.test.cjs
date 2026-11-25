@@ -485,6 +485,8 @@ test('personal Vegetation excludes its final two images without changing the stu
   const excluded = JSON.parse(personal.match(/^gallery_exclude: (.+)$/m)[1]);
   assert.deepEqual(excluded, original.slice(-2).map(entry => entry.image));
   assert.doesNotMatch(studio, /^gallery_exclude:/m);
+  assert.match(layouts[0], /data-gallery-manifest="gallery-personal\.json"/);
+  assert.ok(viewer.includes("galleryAssetUrl(gallery.dataset.galleryManifest || 'gallery.json')"));
   assert.match(layouts[0], /data-gallery-exclude="{{ page.gallery_exclude \| jsonify \| escape }}"/);
   const start = viewer.indexOf('    const excluded = new Set(JSON.parse(gallery.dataset.galleryExclude');
   const end = viewer.indexOf('    const restoreFocus', start);
