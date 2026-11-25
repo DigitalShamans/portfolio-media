@@ -3,6 +3,10 @@ html[data-about-entry="pending"]::before,
 .about-entry-sheet {
   position: fixed;
   inset: 0;
+  /* Fixed inset bounds can exclude the root's reserved scrollbar gutter. */
+  inline-size: 100vw;
+  block-size: 100vh;
+  block-size: 100dvh;
   z-index: 2147483000;
   background: var(--accent, #e18842);
   pointer-events: none;

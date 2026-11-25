@@ -35,8 +35,18 @@ async function session(t, { width = 1440, height = 900, touch = false, reducedMo
   context.setDefaultTimeout(5000);
   context.setDefaultNavigationTimeout(5000);
   t.after(() => context.close());
-  const requests = [], errors = [];
-  context.on('page', page => page.on('pageerror', error => errors.push(error.message)));
+  const requests = [], errors = [], platformNotices = [];
+  context.on('page', page => page.on('pageerror', error => {
+    // Chrome also emits this with JavaScript disabled when only the outgoing document
+    // opted into cross-document View Transitions. The About entry deliberately uses GSAP.
+    if (error.message === 'Transition was aborted because of invalid state. ViewTransition opt-in disabled') {
+      platformNotices.push(error.message);
+    } else errors.push(error.message);
+  }));
+  t.after(() => {
+    if (platformNotices.length) t.diagnostic('Chrome cancelled ' + platformNotices.length +
+      ' cross-document View Transition(s) at the non-opted-in About destination; application errors remain independently checked.');
+  });
   if (storageDenied) {
     await context.addInitScript(() => {
       Object.defineProperty(window, 'sessionStorage', {
@@ -150,7 +160,10 @@ test('listed, unlisted, protected, and map galleries all enter the real About pa
           const rect = sheet.getBoundingClientRect();
           sessionStorage.setItem('about-test-departure', JSON.stringify({ parentIsBody: sheet.parentElement === document.body,
             path: location.pathname, left: rect.left, top: rect.top, width: rect.width, height: rect.height,
-            viewportWidth: document.documentElement.clientWidth, viewportHeight: innerHeight }));
+            viewportWidth: document.documentElement.clientWidth, innerWidth,
+            rootWidth: document.documentElement.getBoundingClientRect().width,
+            scrollbarGutter: getComputedStyle(document.documentElement).scrollbarGutter,
+            viewportHeight: innerHeight }));
           observer.disconnect();
         });
         observer.observe(document.body, { childList: true, subtree: true });
@@ -164,7 +177,7 @@ test('listed, unlisted, protected, and map galleries all enter the real About pa
       assert.equal(departure.parentIsBody, true, 'the wipe stays outside transformed map/scroll containers');
       assert.equal(departure.left, 0);
       assert.equal(departure.top, 0);
-      assert.ok(departure.width >= departure.viewportWidth - 1);
+      assert.ok(departure.width >= departure.viewportWidth - 1, 'cover spans the viewport: ' + JSON.stringify(departure));
       assert.equal(departure.height, departure.viewportHeight);
       await page.goBack({ waitUntil: 'domcontentloaded' });
       assert.equal(new URL(page.url()).pathname, path);
