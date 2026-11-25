@@ -212,6 +212,25 @@ async function displayed(page, selector, source) {
   }, { selector, source });
 }
 
+async function assertFlatViewerControls(page) {
+  const { surface, controls } = await page.evaluate(() => {
+    const read = selector => {
+      const style = getComputedStyle(document.querySelector(selector));
+      return {
+        background: style.backgroundColor, image: style.backgroundImage, border: style.borderTopColor,
+        radius: style.borderTopLeftRadius, shadow: style.boxShadow, color: style.color
+      };
+    };
+    return {
+      surface: read('.gallery-back-to-top'),
+      controls: ['#previous-side', '#next-side', '#fullscreen', '#counter'].map(read)
+    };
+  });
+  assert.equal(surface.background, 'rgb(24, 24, 24)');
+  assert.equal(surface.image, 'none');
+  assert.deepEqual(controls, [surface, surface, ...Array(2).fill({ ...surface, background: 'rgb(0, 0, 0)' })]);
+}
+
 function segment(page, variant) {
   return page.locator('#viewer .comparison-indicator button').nth(variant);
 }
@@ -1054,6 +1073,7 @@ test('fullscreen touch swipes navigate on both axes while pinch and pan stay on 
   const session = await page.context().newCDPSession(page);
   await page.locator('.shot').first().tap();
   await displayed(page, '#original', preview('First'));
+  await assertFlatViewerControls(page);
 
   await segment(page, 1).tap();
   await displayed(page, '#original', preview('First_Checker'));
@@ -1098,6 +1118,10 @@ test('fullscreen desktop left click toggles zoom, middle and right drag pan, and
   const zoomedStage = page.locator('#stage.zoomed');
   await firstShot.click();
   await displayed(page, '#original', preview('First'));
+  await assertFlatViewerControls(page);
+  const exit = page.locator('#fullscreen');
+  await exit.hover();
+  assert.equal(await exit.evaluate(button => getComputedStyle(button).backgroundColor), 'rgb(0, 0, 0)');
   const image = await page.locator('#original').boundingBox();
   const x = image.x + image.width / 2;
   const y = image.y + image.height / 2;

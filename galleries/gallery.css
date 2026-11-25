@@ -58,6 +58,17 @@ h1 { margin: 0; text-align: center; font-size: clamp(1rem, 2.6vw, 2.4rem); line-
   .description { font-size: .75rem; }
 }
 
+.gallery-back-to-top,
+.viewer-arrows button,
+.viewer-bar button,
+.counter {
+  border: 1px solid #656565;
+  border-radius: .45rem;
+  background: #181818;
+  box-shadow: 0 4px 20px #0008;
+  color: #f4f4f4;
+}
+
 .gallery-back-to-top {
   position: fixed;
   z-index: 19;
@@ -69,11 +80,6 @@ h1 { margin: 0; text-align: center; font-size: clamp(1rem, 2.6vw, 2.4rem); line-
   width: 48px;
   height: 48px;
   padding: 0;
-  border: 1px solid #656565;
-  border-radius: .45rem;
-  background: #181818;
-  box-shadow: 0 4px 20px #0008;
-  color: #f4f4f4;
   cursor: pointer;
   touch-action: manipulation;
 }
@@ -96,8 +102,12 @@ body:has(#viewer[open]) .gallery-back-to-top { display: none; }
   }
   .gallery-back-to-top[inert] { transition-delay: 0s, var(--gallery-back-to-top-fade); }
 }
-.gallery-back-to-top:hover { color: #fff; border-color: #bbb; }
-.gallery-back-to-top:focus-visible { outline: 2px solid #e18842; outline-offset: 2px; }
+.gallery-back-to-top:hover,
+.viewer-arrows button:hover:not(:disabled),
+.viewer-bar button:hover:not(:disabled) { color: #fff; border-color: #bbb; }
+.gallery-back-to-top:focus-visible,
+.viewer-arrows button:focus-visible,
+.viewer-bar button:focus-visible { outline: 2px solid #e18842; outline-offset: 2px; }
 .gallery-back-to-top__icon { position: relative; width: 22px; height: 22px; }
 .gallery-back-to-top__icon::before,
 .gallery-back-to-top__icon::after {
@@ -236,28 +246,15 @@ dialog {
 .viewer-bar button, .viewer-arrows button, .counter {
   margin: 0;
   min-height: 42px;
-  border: 1px solid #555;
-  border-radius: .35rem;
   padding: .35rem .7rem;
-  background: rgba(16, 16, 16, .94);
-  color: var(--text);
   font: inherit;
   font-size: .875rem;
 }
 .viewer-bar button, .viewer-arrows button { min-width: 42px; cursor: pointer; }
-.viewer-bar button:hover:not(:disabled), .viewer-arrows button:hover:not(:disabled) { background: #333; }
+.viewer-bar button, .counter { background: #000; }
 .viewer-bar button:disabled, .viewer-arrows button:disabled { opacity: .45; cursor: default; }
 .viewer-arrows button { width: 48px; height: 48px; padding: 0; font-size: 1.4rem; }
 .counter { display: inline-flex; align-items: center; font-variant-numeric: tabular-nums; }
-@media (pointer: coarse) {
-  .viewer-arrows button,
-  .viewer-arrows button:hover:not(:disabled),
-  .viewer-bar .counter {
-    border-color: transparent;
-    background: transparent;
-    color: #fff;
-  }
-}
 .status {
   position: absolute;
   bottom: 1rem;
