@@ -1,0 +1,30 @@
+<link rel="stylesheet" href="{{ '/assets/about-entry.css' | relative_url }}?v=1">
+{% if include.arrival %}
+<script>
+  (() => {
+    try {
+      const key = 'portfolio-about-entry-v1';
+      const saved = sessionStorage.getItem(key);
+      sessionStorage.removeItem(key);
+      const entry = JSON.parse(saved || 'null');
+      const navigation = performance.getEntriesByType('navigation')[0]?.type;
+      const age = Date.now() - entry?.at;
+      if (!entry || entry.to !== location.pathname || !/^\/(?:galleries|experiments)\//.test(entry.from) ||
+          !Number.isFinite(age) || age < 0 || age > 10000 || navigation === 'reload' ||
+          navigation === 'back_forward' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const root = document.documentElement;
+      const gate = window.PortfolioAboutArrival = { expired: false };
+      gate.release = () => {
+        gate.expired = true;
+        root.removeAttribute('data-about-entry');
+        if (window.PortfolioAboutArrival === gate) delete window.PortfolioAboutArrival;
+      };
+      root.setAttribute('data-about-entry', 'pending');
+      // A failed or delayed script must never leave the destination covered.
+      gate.timer = setTimeout(() => gate.release('timeout'), 4500);
+    } catch { /* Direct navigation remains readable when storage is unavailable. */ }
+  })();
+</script>
+<script src="{{ '/assets/vendor/gsap/3.15.1/gsap.min.js' | relative_url }}" defer></script>
+{% endif %}
+<script src="{{ '/assets/about-entry.js' | relative_url }}?v=1" defer></script>

@@ -44,6 +44,7 @@
     <link rel="expect" href="{{ page.url | relative_url }}#portfolio-gallery-ready" blocking="render" media="(prefers-reduced-motion: no-preference)">
   {% endif %}
   {% include personal-typography.html %}
+  {% unless page.portfolio == 'personal' %}{% include about-entry.html %}{% endunless %}
 </head>
 <body data-gallery-revision="{{ site.github.build_revision | escape }}"{% if gallery_asset_versions %} data-gallery-asset-versions="{{ gallery_asset_versions | jsonify | escape }}"{% endif %}>
   <div id="gallery-edge-arrival"><script src="../gallery-arrival.js?v=4"></script></div>
