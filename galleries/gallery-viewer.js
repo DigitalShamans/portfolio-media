@@ -15,6 +15,7 @@ const desktopScrolling = window.matchMedia('(any-hover: hover) and (any-pointer:
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 let displaySize = `${screen.width}x${screen.height}`;
 let baselinePixelRatio = window.devicePixelRatio;
+let restoreGalleryViewportPosition;
 
 function fitGallery() {
   const viewport = document.documentElement;
@@ -35,7 +36,10 @@ function fitGallery() {
 }
 
 fitGallery();
-window.addEventListener('resize', fitGallery);
+window.addEventListener('resize', () => {
+  fitGallery();
+  restoreGalleryViewportPosition?.();
+});
 finePointer.addEventListener('change', fitGallery);
 const galleryStatus = document.querySelector('#gallery-status');
 const shots = [];
@@ -114,6 +118,7 @@ function getGalleryPositionStorage() {
 const galleryPositionStorage = getGalleryPositionStorage();
 
 function readGalleryPosition() {
+  if (window.location.hash) return;
   try {
     const position = JSON.parse(galleryPositionStorage?.getItem(galleryPositionKey) ?? 'null');
     if (Number.isFinite(position?.top) && position.top >= 0) return position;
@@ -141,16 +146,17 @@ function currentGalleryPosition() {
   return position;
 }
 
+function scrollTopForGalleryRow(element, offset) {
+  const rect = element.getBoundingClientRect();
+  return window.scrollY + rect.top + offset * rect.height - document.documentElement.clientHeight / 2;
+}
+
 function restoreGalleryPosition(position) {
-  if (!position || window.location.hash) return;
+  if (!position) return;
   const shot = Number.isFinite(position.offset)
     ? shots.find(item => item.filenames.includes(position.filename))
     : undefined;
-  let top = position.top;
-  if (shot) {
-    const rect = shot.element.getBoundingClientRect();
-    top = window.scrollY + rect.top + position.offset * rect.height - document.documentElement.clientHeight / 2;
-  }
+  const top = shot ? scrollTopForGalleryRow(shot.element, position.offset) : position.top;
   window.scrollTo({ top, behavior: 'instant' });
   return shot;
 }
@@ -166,31 +172,64 @@ function settleGalleryPosition(position, imageReady, embedsReady) {
   return Promise.all([imageReady, embedsReady, document.fonts?.ready]).then(([loaded]) => {
     // Replace the placeholder-based position once the real image aspect ratio
     // and any embedded rows are known, unless the viewer has interacted.
-    if (!input.signal.aborted) restoreGalleryPosition(position);
+    if (!input.signal.aborted && !window.location.hash) restoreGalleryPosition(position);
     return loaded;
   }).finally(() => input.abort());
 }
 
 function trackGalleryPosition() {
-  if (!galleryPositionStorage) return;
-  // Mobile browsers can change the viewport geometry while hiding a page.
-  // Use the last position measured while the gallery was visible.
-  let position = currentGalleryPosition();
+  if (!galleryContent.classList.contains('gallery-content')) return;
+  const viewport = document.documentElement;
+  let position;
+  let lastViewport;
   let frame;
+
+  function capturePosition() {
+    // Keep the last visible position before browser fullscreen or a viewport resize.
+    if (document.hidden || viewer.open || document.fullscreenElement) return;
+    position = currentGalleryPosition();
+    lastViewport = undefined;
+    if (!finePointer.matches) return;
+
+    const center = viewport.clientHeight / 2;
+    const embed = document.elementFromPoint(viewport.clientWidth / 2, center)?.closest('.gallery-embed');
+    const rect = embed?.getBoundingClientRect();
+    lastViewport = {
+      width: window.innerWidth, height: window.innerHeight,
+      atEnd: position.top > 0 && position.top >= viewport.scrollHeight - viewport.clientHeight - 1,
+      embed: rect?.height > 0 ? embed : undefined,
+      embedOffset: rect?.height > 0 ? (center - rect.top) / rect.height : undefined
+    };
+  }
+
   function updatePosition() {
     if (frame !== undefined) return;
     frame = window.requestAnimationFrame(() => {
       frame = undefined;
-      if (!document.hidden && !viewer.open) position = currentGalleryPosition();
+      capturePosition();
     });
   }
+
+  restoreGalleryViewportPosition = () => {
+    if (lastViewport && finePointer.matches && !document.hidden && !viewer.open && !document.fullscreenElement &&
+        (window.innerWidth !== lastViewport.width || window.innerHeight !== lastViewport.height)) {
+      const { atEnd, embed, embedOffset } = lastViewport;
+      if (atEnd || embed?.parentElement === gallery) {
+        const top = atEnd ? viewport.scrollHeight : scrollTopForGalleryRow(embed, embedOffset);
+        window.scrollTo({ top, behavior: 'instant' });
+      } else restoreGalleryPosition(position);
+    }
+    updatePosition();
+  };
+
   function savePosition() {
+    if (!position || !galleryPositionStorage) return;
     try {
       galleryPositionStorage.setItem(galleryPositionKey, JSON.stringify(position));
     } catch { /* Navigating still works without storage. */ }
   }
+  capturePosition();
   window.addEventListener('scroll', updatePosition, { passive: true });
-  window.addEventListener('resize', updatePosition);
   window.addEventListener('pagehide', savePosition);
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) savePosition();

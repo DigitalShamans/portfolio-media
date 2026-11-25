@@ -1379,6 +1379,85 @@ test('fullscreen desktop modifier-wheel zoom eases toward the cursor without zoo
   assert.deepEqual(errors, []);
 });
 
+test('desktop gallery viewport resize preserves the visible part of the same image', async t => {
+  const width = 1920;
+  const entries = Array.from({ length: 10 }, (_, index) => ({ image: 'Screenshot-' + (index + 1) + '.jpg' }));
+  for (const route of [gallery, '/artur' + gallery, '/artur' + locked]) {
+    await t.test(route, async t => {
+      const protectedGallery = route.endsWith(locked);
+      const embeds = protectedGallery ? undefined : [
+        { type: 'video', file: 'preview.mp4', title: 'Preview', after: entries[8].image },
+      ];
+      const { page, errors } = await openPage(t, {
+        route, width, embeds,
+        async intercept(request, url) {
+          if (url.pathname === '/unlock') {
+            await request.fulfill({ json: { token: 'fixture-token', expiresAt: Date.now() + 60_000 } });
+          } else if ([gallery + 'gallery.json', '/media/gallery.json'].includes(url.pathname)) {
+            await request.fulfill({ json: entries });
+          } else return false;
+          return true;
+        },
+      });
+      if (protectedGallery) {
+        await page.locator('#gallery-password').fill('fixture-password');
+        await page.locator('button[type="submit"]').press('Enter');
+      }
+      await page.waitForFunction(length => {
+        const images = [...document.querySelectorAll('.gallery .shot-primary')];
+        return images.length === length && images.every(image => image.complete && image.naturalWidth > 0);
+      }, entries.length);
+      const shot = index => page.locator('.gallery .shot').nth(index);
+      const sample = row => row.evaluate(element => {
+        const { top, height } = element.getBoundingClientRect();
+        return { center: document.documentElement.clientHeight / 2, top, height };
+      });
+      async function resize(height) {
+        await page.setViewportSize({ width, height });
+        await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      }
+      async function centerRow(row, fraction) {
+        await row.evaluate(async (element, fraction) => {
+          const { top, height } = element.getBoundingClientRect();
+          window.scrollTo({
+            top: scrollY + top + height * fraction - document.documentElement.clientHeight / 2, behavior: 'instant',
+          });
+          await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        }, fraction);
+      }
+
+      await resize(990);
+      assert.equal(await page.evaluate(() => scrollY), 0);
+      await resize(900);
+      const rows = [[shot(1), .5], [shot(8), .35]];
+      if (embeds) rows.push([page.locator('.gallery-embed'), .25]);
+      for (const [row, fraction] of rows) {
+        await centerRow(row, fraction);
+        const before = await sample(row);
+        const position = (before.center - before.top) / before.height;
+        assert.ok(Math.abs(position - fraction) < .01);
+        for (const height of [990, 900]) {
+          await resize(height);
+          const after = await sample(row);
+          assert.equal(after.center, height / 2);
+          if (height === 990) assert.ok(after.height > before.height + 60, 'the viewport change grows the row');
+          const drift = Math.abs(after.top + position * after.height - after.center);
+          assert.ok(drift <= 2, 'same point remains centered after resize, drift ' + drift.toFixed(2) + 'px');
+        }
+      }
+
+      await page.evaluate(async () => {
+        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' });
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      });
+      await resize(990);
+      assert.ok(await page.evaluate(() => document.documentElement.scrollHeight - innerHeight - scrollY <= 1),
+        'the bottom of the page stays at the bottom');
+      assert.deepEqual(errors, []);
+    });
+  }
+});
+
 test('page-end motion rebounds without changing the scroll limit', async t => {
   for (const scene of ['gallery', 'Atrium', 'reduced motion']) {
     await t.test(scene, async t => {

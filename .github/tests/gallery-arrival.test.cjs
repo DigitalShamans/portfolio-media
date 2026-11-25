@@ -182,6 +182,7 @@ test('a saved scroll offset waits for the real image and does not override user 
     const image = deferred();
     const embeds = deferred();
     const window = new EventTarget();
+    window.location = { hash: '' };
     const position = { top: 1200, filename: 'second.jpg', offset: .8 };
     const restored = [];
     const settle = vm.runInNewContext(source + '\nsettleGalleryPosition', {
