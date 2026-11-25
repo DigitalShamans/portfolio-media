@@ -82,14 +82,22 @@ async function session(t, { width = 1440, height = 900, touch = false, reducedMo
         const rootBefore = getComputedStyle(document.documentElement, '::before');
         const masks = [...document.querySelectorAll('.about-entry-mask')].map(mask => {
           const bounds = mask.getBoundingClientRect();
-          const white = mask.querySelector('.about-entry-white');
+          const label = mask.closest('.about-entry-label');
+          const copy = label.querySelector('.about-entry-copy');
           const accent = mask.querySelector('.about-entry-accent');
-          const whiteBounds = white?.getBoundingClientRect(), accentBounds = accent?.getBoundingClientRect();
-          const clip = white && getComputedStyle(white).clipPath;
+          const copyBounds = copy?.getBoundingClientRect(), accentBounds = accent?.getBoundingClientRect();
+          const clip = copy && getComputedStyle(copy).clipPath;
           const inset = clip?.match(/^inset\((.+)\)$/)?.[1].split(/\s+/);
-          const pixels = value => parseFloat(value) * (value.endsWith('%') ? whiteBounds.width / 100 : 1);
-          const visibleWhite = inset?.length === 4 ? Math.max(0, whiteBounds.width - pixels(inset[1]) - pixels(inset[3])) : 0;
-          return { width: bounds.width, white: visibleWhite, whiteClip: clip,
+          const pixels = value => parseFloat(value) * (value.endsWith('%') ? copyBounds.width / 100 : 1);
+          const visibleText = inset?.length === 4 ? Math.max(0, Math.min(copyBounds.width,
+            copyBounds.width - pixels(inset[1]) - pixels(inset[3]))) : 0;
+          const headingStyle = getComputedStyle(label.parentElement);
+          return { width: bounds.width, textWidth: copyBounds?.width, textVisible: visibleText,
+            textRight: copyBounds ? copyBounds.left - bounds.left + visibleText : 0, textClip: clip,
+            headingVisible: headingStyle.visibility === 'visible' && Number(headingStyle.opacity) === 1,
+            backgrounds: [label, copy, mask].map(element => getComputedStyle(element).backgroundColor),
+            overlayColors: [...mask.children].map(element => getComputedStyle(element).backgroundColor),
+            accentColor: accent && getComputedStyle(accent).backgroundColor,
             accent: accentBounds ? Math.max(0, Math.min(accentBounds.right, bounds.right) - Math.max(accentBounds.left, bounds.left)) : 0,
             accentX: accentBounds ? accentBounds.left - bounds.left : 0 };
         });
@@ -97,6 +105,7 @@ async function session(t, { width = 1440, height = 900, touch = false, reducedMo
           window.aboutFrames.push({ time: performance.now() - start,
             state: document.documentElement.dataset.aboutEntry,
             sheets: document.querySelectorAll('.about-entry-sheet').length,
+            whiteBlocks: document.querySelectorAll('.about-entry-white').length,
             rootBeforeContent: rootBefore.content,
             headerTop: header?.getBoundingClientRect().top,
             headerOpacity: header && Number(getComputedStyle(header).opacity), masks });
@@ -183,6 +192,7 @@ test('listed, unlisted, protected, and map galleries all enter the real About pa
       const frames = await page.evaluate(() => window.aboutFrames);
       assert.ok(frames.some(frame => frame.state === 'revealing' && frame.masks.length > 0), 'this gallery triggers the actual destination content reveal');
       assert.ok(frames.every(frame => frame.sheets === 0 && ['none', 'normal'].includes(frame.rootBeforeContent)), 'the arrival has no full-screen sheet or pending pseudo-element cover');
+      assert.ok(frames.every(frame => frame.whiteBlocks === 0), 'this gallery never creates a white heading block');
       await page.goBack({ waitUntil: 'domcontentloaded' });
       assert.equal(new URL(page.url()).pathname, path);
       await page.locator(linkSelector).waitFor({ state: 'visible' });
@@ -192,7 +202,7 @@ test('listed, unlisted, protected, and map galleries all enter the real About pa
   }
 });
 
-test('the page builds through real header motion and two-color heading masks without a full-screen cover', async t => {
+test('orange blocks reveal clipped text directly behind them without white or full-screen covers', async t => {
   const { page, errors } = await session(t, { observe: true });
   const link = await source(page, '/galleries/hb-egypt/', true);
   await Promise.all([page.waitForURL(destination), link.click()]);
@@ -206,11 +216,11 @@ test('the page builds through real header motion and two-color heading masks wit
     }
   }
   const captures = [
-    capture('01-heading-masks', () => [...document.querySelectorAll('.about-entry-white')].some(white => {
-      const heading = white.closest('.about-entry-label')?.parentElement;
-      const values = getComputedStyle(white).clipPath.match(/[\d.]+/g)?.map(Number);
+    capture('01-orange-text-reveal', () => [...document.querySelectorAll('.about-entry-copy')].some(copy => {
+      const heading = copy.closest('.about-entry-label')?.parentElement;
+      const values = getComputedStyle(copy).clipPath.match(/[\d.]+/g)?.map(Number);
       return heading && getComputedStyle(heading).visibility === 'visible' &&
-        values?.length === 4 && (values[1] > 10 && values[1] < 85 || values[3] > 10 && values[3] < 85);
+        values?.length === 4 && values[1] > 10 && values[1] < 85;
     })),
   ];
   await Promise.all([finished(page), ...captures]);
@@ -218,13 +228,21 @@ test('the page builds through real header motion and two-color heading masks wit
   const frames = await page.evaluate(() => window.aboutFrames);
   assert.ok(frames.length >= 4, 'the content reveal renders over multiple frames');
   assert.ok(frames.every(frame => frame.sheets === 0 && ['none', 'normal'].includes(frame.rootBeforeContent)), 'there is no full-screen color cover at any observed stage');
+  assert.ok(frames.every(frame => frame.whiteBlocks === 0), 'white heading blocks are absent throughout the animation');
   const headerFrames = frames.filter(frame => frame.headerOpacity > 0 && frame.headerOpacity < 1);
   assert.ok(headerFrames.length >= 2, 'the header fades through intermediate opacity values');
   assert.ok(new Set(headerFrames.map(frame => frame.headerTop.toFixed(1))).size >= 2, 'the header moves while appearing');
   const masks = frames.flatMap(frame => frame.masks);
-  assert.ok(masks.some(mask => mask.width > 20 && mask.white > 2 && mask.white < mask.width - 2), 'a white block expands through an intermediate width');
+  assert.ok(masks.every(mask => mask.backgrounds.every(color => color === 'rgba(0, 0, 0, 0)') &&
+    mask.overlayColors.length === 1 && mask.overlayColors[0] === mask.accentColor &&
+    mask.accentColor === 'rgb(225, 136, 66)'), 'only the orange accent paints a block over the transparent text and mask wrappers');
   assert.ok(masks.some(mask => mask.width > 20 && mask.accent > 2 && mask.accent < mask.width - 2), 'an orange block moves through the reveal');
   assert.ok(new Set(masks.map(mask => mask.accentX.toFixed(1))).size > 4, 'the orange leading edge changes its rendered position');
+  const textReveals = masks.filter(mask => mask.headingVisible && mask.textWidth > 20 &&
+    mask.textVisible > 2 && mask.textVisible < mask.textWidth - 2);
+  assert.ok(textReveals.length >= 4, 'the text itself is visibly clipped through intermediate reveal widths');
+  assert.ok(textReveals.every(mask => Math.abs(mask.textRight - mask.accentX) <= 1),
+    'the visible text edge stays within one CSS pixel of the orange block trailing edge');
   assert.equal(await page.locator(temporarySelector).count(), 0);
   await page.waitForFunction(() => typeof window.PortfolioDiagnostics?.report === 'function');
   const report = await page.evaluate(() => window.PortfolioDiagnostics.report().pages.at(-1));

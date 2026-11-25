@@ -104,13 +104,6 @@
 
   if (!about || !aboutLink) return;
 
-  function travelProgress(time) {
-    const ramp = .14;
-    if (time < ramp) return time ** 2 / (2 * ramp * (1 - ramp));
-    if (time > 1 - ramp) return 1 - (1 - time) ** 2 / (2 * ramp * (1 - ramp));
-    return (time - ramp / 2) / (1 - ramp);
-  }
-
   about.tabIndex = -1;
   aboutLink.addEventListener('click', event => {
     const gsap = window.gsap;
@@ -119,8 +112,6 @@
 
     event.preventDefault();
     resetMotion();
-    const framing = window.portfolioScrollFraming;
-    framing?.stop();
     if (window.location.hash !== aboutLink.hash) {
       window.history.pushState(window.history.state, '', aboutLink.hash);
     }
@@ -133,22 +124,12 @@
       return;
     }
 
-    const frame = framing?.measure(start);
-    const from = frame?.wheelPosition(start) ?? start;
-    const to = frame?.wheelPosition(destination) ?? destination;
-    const low = Math.min(start, destination);
-    const high = Math.max(start, destination);
-    const distance = Math.abs(to - from);
+    const distance = Math.abs(destination - start);
     const position = { top: start };
     aboutScroll = gsap.to(position, {
       top: destination,
-      duration: Math.max(.35, Math.min(3.6, distance / 1000)),
-      ease(time) {
-        const progress = travelProgress(time);
-        if (!frame || time === 0 || time === 1) return progress;
-        const top = frame.positionAt(from + (to - from) * progress, low, high);
-        return (top - start) / (destination - start);
-      },
+      duration: Math.max(.65, Math.min(1.2, Math.sqrt(distance) * .019)),
+      ease: 'power4.out',
       onUpdate() { window.scrollTo({ top: position.top, behavior: 'instant' }); },
       onComplete() {
         aboutScroll = undefined;
