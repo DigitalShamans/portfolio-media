@@ -25,6 +25,7 @@
   let resizeObserver;
   let resizeFrame;
   let refreshPosition;
+  let selectedScreenshot;
 
   function report(mode, reason) {
     diagnostics?.state('gallery-smoother', mode, reason);
@@ -91,6 +92,22 @@
     }
   }
 
+  function selectedPosition() {
+    if (selectedScreenshot && selectedScreenshot === document.activeElement) {
+      return smoother.offset(selectedScreenshot, 'top top');
+    }
+  }
+
+  function scrollToScreenshot(target, smooth) {
+    selectedScreenshot = target;
+    if (!smoother) return false;
+    const animate = smooth && !smoother.paused();
+    // Clear a preceding instant write before starting a new scrub.
+    if (animate) reconcilePosition(smoother.scrollTop());
+    smoother.scrollTo(target, animate, 'top top');
+    return true;
+  }
+
   function beforeRefresh() {
     if (!smoother) return;
     document.dispatchEvent(new Event('gallery-scrollcontrollerchange'));
@@ -99,7 +116,8 @@
 
   function afterRefresh() {
     if (!smoother || refreshPosition === undefined) return;
-    const position = refreshPosition;
+    // Earlier images can change height while a selected screenshot is loading.
+    const position = selectedPosition() ?? refreshPosition;
     refreshPosition = undefined;
     reconcilePosition(position);
   }
@@ -197,7 +215,7 @@
       });
       window.ScrollTrigger.addEventListener('refreshInit', beforeRefresh);
       window.ScrollTrigger.addEventListener('refresh', afterRefresh);
-      reconcilePosition(position);
+      reconcilePosition(selectedPosition() ?? position);
       observeContentSize();
       updatePaused();
     } catch (error) {
@@ -238,18 +256,27 @@
     });
   });
   listen(document, 'fullscreenchange', updatePaused);
-  listen(document, 'pointerdown', () => { keyboardFocus = false; }, { capture: true, passive: true });
-  listen(document, 'keydown', () => { keyboardFocus = true; }, { capture: true });
+  listen(document, 'pointerdown', () => {
+    selectedScreenshot = undefined;
+    keyboardFocus = false;
+  }, { capture: true, passive: true });
+  listen(document, 'keydown', () => {
+    selectedScreenshot = undefined;
+    keyboardFocus = true;
+  }, { capture: true });
+  listen(document, 'wheel', () => { selectedScreenshot = undefined; }, { capture: true, passive: true });
   listen(desktop, 'change', update);
   listen(reducedMotion, 'change', update);
   listen(window, 'pageshow', () => { update(); if (smoother) window.ScrollTrigger.refresh(); });
   listen(window, 'pagehide', event => {
+    selectedScreenshot = undefined;
     if (event.persisted) return;
     disposed = true;
     viewerObserver.disconnect();
     events.abort();
     stop();
   });
+  window.GalleryPageScroll = { scrollToScreenshot };
   update();
 })();
 

@@ -91,17 +91,9 @@
         if (!target) return;
         viewerApi.selectImage(region.image);
         target.focus({ preventScroll: true });
-        const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const smoother = window.ScrollSmoother?.get?.();
-        if (smoother?.content().contains(target)) {
-          if (reducedMotion) smoother.scrollTo(target, false, 'top top');
-          else {
-            // An instant reset can consume the next scroll update in ScrollSmoother.
-            // Give it intermediate native scroll positions to follow to the destination.
-            window.scrollTo({ top: smoother.offset(target, 'top top'), behavior: 'smooth' });
-          }
-        } else {
-          target.scrollIntoView({ behavior: reducedMotion ? 'instant' : 'smooth', block: 'start' });
+        const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!window.GalleryPageScroll?.scrollToScreenshot(target, smooth)) {
+          target.scrollIntoView({ behavior: smooth ? 'smooth' : 'instant', block: 'start' });
         }
       }
     });

@@ -1619,6 +1619,37 @@ async function setFullscreen(enabled) {
   }
 }
 
+// Chrome can suppress the click from a valid touch tap just after a swipe.
+let fullscreenTap;
+function isFullscreenTap(event) {
+  return fullscreenTap?.id === event.pointerId &&
+    Math.hypot(event.clientX - fullscreenTap.x, event.clientY - fullscreenTap.y) < 10;
+}
+
+fullscreen.addEventListener('pointerdown', event => {
+  fullscreenTap = event.pointerType === 'touch' && event.isPrimary
+    ? { id: event.pointerId, ...pointFor(event) }
+    : undefined;
+});
+fullscreen.addEventListener('pointermove', event => {
+  if (fullscreenTap?.id === event.pointerId && !isFullscreenTap(event)) fullscreenTap = undefined;
+});
+fullscreen.addEventListener('pointerup', event => {
+  if (fullscreenTap?.id !== event.pointerId) return;
+  const tapped = isFullscreenTap(event) && fullscreen.contains(document.elementFromPoint(event.clientX, event.clientY));
+  fullscreenTap = undefined;
+  if (!tapped) return;
+  // Keep the dialog in place until the touch sequence and any native click finish.
+  const origin = viewerOrigin;
+  requestAnimationFrame(() => {
+    if (viewer.open && viewerOrigin === origin) viewer.close();
+  });
+});
+for (const type of ['pointercancel', 'lostpointercapture']) {
+  fullscreen.addEventListener(type, event => {
+    if (fullscreenTap?.id === event.pointerId) fullscreenTap = undefined;
+  });
+}
 fullscreen.addEventListener('click', () => viewer.close());
 document.addEventListener('fullscreenchange', () => {
   const isFullscreen = document.fullscreenElement === frame;
@@ -1636,6 +1667,7 @@ viewer.addEventListener('close', async () => {
   const fullscreenExit = document.fullscreenElement === frame ? setFullscreen(false) : undefined;
   const request = ++viewerRequest;
   viewerTouches.clear();
+  fullscreenTap = undefined;
   viewerGesture = viewerWheel = mouseGesture = undefined;
   lastViewerPointer = undefined;
   viewerAspect = 0;

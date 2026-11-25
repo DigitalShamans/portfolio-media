@@ -1174,6 +1174,36 @@ test('fullscreen touch swipes navigate on both axes while pinch and pan stay on 
   assert.deepEqual(errors, []);
 });
 
+test('a touch tap exits fullscreen after a swipe even when Chrome omits the click', async t => {
+  const { page, errors } = await openPage(t, { width: 412, hasTouch: true });
+  const session = await page.context().newCDPSession(page);
+  await page.locator('.shot').first().tap();
+  await displayed(page, '#original', preview('First'));
+
+  const stage = await page.locator('#stage').boundingBox();
+  const x = stage.x + stage.width / 2;
+  const y = stage.y + stage.height / 2;
+  await swipeInViewer(session, [x + 70, y], [x - 70, y]);
+  await displayed(page, '#original', preview('Second'));
+
+  const exit = page.locator('#fullscreen');
+  await exit.evaluate(button => button.addEventListener('click', event => {
+    // Model Chromium's post-swipe tap suppression without relying on its timing.
+    event.stopImmediatePropagation();
+  }, { capture: true }));
+  const box = await exit.boundingBox();
+  const midY = box.y + box.height / 2;
+  await swipeInViewer(session, [box.x + 10, midY], [box.x + box.width - 10, midY]);
+  assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), true, 'dragging across Exit does not close the viewer');
+  await exit.evaluate(button => button.addEventListener('touchend', () => {
+    window.viewerOpenAtTouchEnd = document.querySelector('#viewer').open;
+  }, { once: true }));
+  await exit.tap();
+  await page.locator('#viewer[open]').waitFor({ state: 'hidden', timeout: 2500 });
+  assert.equal(await page.evaluate(() => window.viewerOpenAtTouchEnd), true, 'the release stays on the viewer, including in landscape');
+  assert.deepEqual(errors, []);
+});
+
 test('desktop fullscreen controls fade when idle and return on mouse movement or keyboard use', async t => {
   const { page, errors } = await openPage(t, { width: 1440 });
   const first = page.locator('.shot').first();
@@ -2237,6 +2267,32 @@ test('Atrium collapsed thumbnails select the exact gallery screenshot with GSAP 
       assert.deepEqual(errors, []);
     });
   }
+});
+
+test('an Atrium hotspot reaches its screenshot through a ScrollTrigger refresh', { timeout: 15_000 }, async t => {
+  const { page, errors } = await openPage(t, { map: true, width: 1440, diagnostics: true });
+  await page.locator('#public-map').waitFor({ state: 'visible' });
+  await gallerySmootherReady(page);
+  await page.locator('#public-map .gallery-map-region').first().evaluate(card => {
+    card.addEventListener('click', () => {
+      window.addEventListener('scroll', () => {
+        // Reproduce an earlier screenshot changing height while the map scrolls.
+        document.querySelector('.gallery-map-shot').style.marginBottom = '420px';
+        window.ScrollTrigger.refresh();
+        window.mapScrollRefreshed = true;
+      }, { once: true });
+    }, { capture: true, once: true });
+  });
+  await clickCollapsedMapRegion(page, '#public-map');
+  await page.waitForFunction(() => window.mapScrollRefreshed);
+  await focusedMapScreenshotIsVisible(page, 'Second.jpg', t);
+  const { rendered: selected } = await galleryScrollPosition(page);
+  await page.mouse.move(300, 300);
+  await page.mouse.wheel(0, 120);
+  await page.waitForFunction(selected => window.ScrollSmoother.get().scrollTop() > selected + 60, selected);
+  await page.evaluate(() => window.ScrollTrigger.refresh());
+  assert.ok((await galleryScrollPosition(page)).rendered > selected + 60, 'a refresh after new wheel input keeps the user position');
+  assert.deepEqual(errors, []);
 });
 
 test('Atrium collapsed fullscreen thumbnails select an image at fit and exit to that gallery screenshot', { timeout: 15_000 }, async t => {
