@@ -1,31 +1,7 @@
-/* Only a fresh gallery-to-About navigation opts into the arrival sequence. */
-html[data-about-entry="pending"]::before,
-.about-entry-sheet {
-  position: fixed;
-  inset: 0;
-  /* Fixed inset bounds can exclude the root's reserved scrollbar gutter. */
-  inline-size: 100vw;
-  block-size: 100vh;
-  block-size: 100dvh;
-  z-index: 2147483000;
-  background: var(--accent, #e18842);
-  pointer-events: none;
-}
-
-html[data-about-entry="pending"]::before { content: ""; }
+/* Only a fresh gallery-to-About navigation opts into the content reveal. */
 html[data-about-entry="pending"] .about-page > .site-header,
 html[data-about-entry="pending"] .about-page > main,
 html[data-about-entry="pending"] .about-page > footer { visibility: hidden; }
-
-.about-entry-sheet {
-  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
-  will-change: clip-path;
-}
-
-.about-entry-sheet--departure {
-  animation: about-entry-cover 180ms ease-out both;
-  pointer-events: auto;
-}
 
 .about-entry-label { position: relative; display: inline-block; }
 .about-entry-mask,
@@ -38,11 +14,7 @@ html[data-about-entry="pending"] .about-page > footer { visibility: hidden; }
   background: var(--accent, #e18842);
 }
 
-@keyframes about-entry-cover { from { opacity: 0; } to { opacity: 1; } }
-
 @media (prefers-reduced-motion: reduce) {
-  html[data-about-entry="pending"]::before,
-  .about-entry-sheet,
   .about-entry-mask { display: none; }
   html[data-about-entry="pending"] .about-page > .site-header,
   html[data-about-entry="pending"] .about-page > main,
