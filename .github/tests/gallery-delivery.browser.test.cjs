@@ -1458,14 +1458,12 @@ test('desktop gallery viewport resize preserves the visible part of the same ima
   }
 });
 
-test('top arrival plays the supplied custom curve on both homepages and galleries', async t => {
-  for (const route of ['/', '/artur/', gallery, '/artur' + gallery, 'reduced motion']) {
+test('both homepages and galleries return to the top with ordinary scrolling', async t => {
+  for (const route of ['/', '/artur/', gallery, '/artur' + gallery]) {
     await t.test(route, async t => {
-      const reducedMotion = route === 'reduced motion' ? 'reduce' : 'no-preference';
       const home = route === '/' || route === '/artur/';
       const { page, errors } = await openPage(t, {
-        route: home ? route : route === 'reduced motion' ? gallery : route,
-        width: 1440, reducedMotion,
+        route, width: 1440, reducedMotion: 'no-preference',
         async intercept(request, url) {
           if (!home || url.pathname !== route) return false;
           await request.fulfill({ contentType: 'text/html', body: `<!doctype html>
@@ -1480,10 +1478,8 @@ test('top arrival plays the supplied custom curve on both homepages and gallerie
         content.setAttribute('data-page-scroll-motion', '');
         const animate = content.animate;
         content.animate = function(frames, options) {
-          const animation = animate.call(this, frames, options);
-          window.topArrival = { frames, duration: options.duration };
-          animation.oncancel = () => { window.topArrival.cancelled = true; };
-          return animation;
+          window.topArrival = true;
+          return animate.call(this, frames, options);
         };
         window.scrollTo({ top: 66, behavior: 'instant' });
         await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
@@ -1492,20 +1488,8 @@ test('top arrival plays the supplied custom curve on both homepages and gallerie
       await page.mouse.move(12, 12);
       await page.mouse.wheel(0, -200);
       await page.waitForFunction(() => scrollY === 0);
-      if (reducedMotion === 'reduce') {
-        assert.equal(await page.evaluate(() => window.topArrival), undefined);
-      } else {
-        await page.waitForFunction(() => window.topArrival);
-        const { frames, duration } = await page.evaluate(() => window.topArrival);
-        assert.equal(duration, 2500);
-        assert.deepEqual(frames.map(frame => frame.offset), [0, .269, .447, .626, .884, 1]);
-        const translations = frames.map(frame => Number.parseFloat(frame.translate.split(' ')[1]));
-        assert.ok(translations[0] < 0 && translations[0] >= -40);
-        assert.deepEqual(translations.map(value => +(1 - value / translations[0]).toFixed(3)),
-          [0, .218, .553, .849, .901, 1]);
-        await page.mouse.wheel(0, 180);
-        await page.waitForFunction(() => window.topArrival.cancelled);
-      }
+      await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      assert.equal(await page.evaluate(() => window.topArrival), undefined);
       assert.deepEqual(errors, []);
     });
   }
@@ -1567,7 +1551,7 @@ test('page-end motion rebounds without changing the scroll limit', async t => {
   }
 });
 
-test('studio About Us scroll lands directly at its anchor with power4.out', async t => {
+test('studio About Us follows the supplied custom curve to its anchor', async t => {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
   t.after(() => page.close());
   page.setDefaultTimeout(5000);
@@ -1596,7 +1580,8 @@ test('studio About Us scroll lands directly at its anchor with power4.out', asyn
     window.extraSprings = 0;
     const to = window.gsap.to;
     window.gsap.to = function(target, vars) {
-      window.aboutEases.push({ ease: vars.ease, duration: vars.duration, top: vars.top });
+      const checkpoints = [0, .23621875, .401, .47658203125, .55828125, .772, .893125, 1];
+      window.aboutEases.push({ duration: vars.duration, top: vars.top, samples: checkpoints.map(vars.ease) });
       return to.call(this, target, vars);
     };
     const content = document.querySelector('[data-page-scroll-motion]');
@@ -1611,8 +1596,12 @@ test('studio About Us scroll lands directly at its anchor with power4.out', asyn
   assert.equal(new URL(page.url()).hash, '#about-us');
   const phases = await page.evaluate(() => window.aboutEases);
   assert.equal(phases.length, 1);
-  assert.deepEqual([phases[0].ease, phases[0].top], ['power4.out', await page.evaluate(() => scrollY)]);
-  assert.ok(phases[0].duration >= .65 && phases[0].duration <= 1.2);
+  assert.equal(phases[0].top, await page.evaluate(() => scrollY));
+  assert.equal(phases[0].duration, 2.5);
+  const reference = [0, .6625625, .87025, .881796875, .8735625, .923, .990375, 1];
+  for (const [index, actual] of phases[0].samples.entries()) {
+    assert.ok(Math.abs(actual - reference[index]) < .00001, 'custom curve sample ' + index + ': ' + actual);
+  }
   assert.equal(await page.evaluate(() => window.extraSprings), 0);
   assert.equal(await page.evaluate(() => document.scrollingElement.scrollHeight - innerHeight - scrollY), 0);
 });
@@ -1651,23 +1640,14 @@ test('back to top follows the gallery scroll and respects the active scroll cont
     await button.waitFor({ state: 'visible' });
     await page.evaluate(() => {
       const scrollTo = window.scrollTo;
-      window.topScrollWrites = [];
-      window.scrollTo = function(options) {
-        window.topScrollWrites.push({ time: performance.now(), top: options.top });
+      window.scrollTo = options => {
+        window.topButtonScroll = options;
         scrollTo.call(window, options);
       };
     });
     await page.getByRole('button', { name: 'Back to top' }).press('Enter');
     await page.waitForFunction(() => scrollY === 0 && document.activeElement === document.querySelector('.intro h1'));
-    await page.waitForFunction(() => window.topScrollWrites.at(-1)?.top === 0);
-    const writes = await page.evaluate(() => window.topScrollWrites);
-    const first = writes[0];
-    assert.ok(writes.at(-1).time - first.time >= 2490);
-    for (const [timeFraction, fractionScrolled] of [[.269, .218], [.447, .553], [.626, .849], [.884, .901]]) {
-      const target = first.time + timeFraction * 2500;
-      const nearest = writes.reduce((a, b) => Math.abs(a.time - target) < Math.abs(b.time - target) ? a : b);
-      assert.ok(Math.abs(1 - nearest.top / first.top - fractionScrolled) < .045);
-    }
+    assert.deepEqual(await page.evaluate(() => window.topButtonScroll), { top: 0, behavior: 'smooth' });
     await button.waitFor({ state: 'hidden' });
     await page.waitForFunction(() => window.topButtonFades.length >= 2);
     assert.deepEqual(await page.evaluate(() => window.topButtonFades), [

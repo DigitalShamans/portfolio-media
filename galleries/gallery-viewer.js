@@ -318,7 +318,6 @@ function setupClassicGalleryScroll() {
 
     button.addEventListener('click', () => {
       interruptGalleryScroll();
-      if (!document.dispatchEvent(new Event('page-scroll-to-top', { cancelable: true }))) return;
       const smoother = getGallerySmoother();
       const smooth = !reducedMotion.matches;
       if (smoother && !smoother.paused()) smoother.scrollTo(0, smooth);
