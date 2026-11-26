@@ -41,5 +41,11 @@ button, input, select, textarea {
     inset-block-start: auto;
     inset-block-end: .4375rem;
   }
+
+  /* Use the supplied regular face without Safari's extra synthetic bold. */
+  html[data-desktop-safari] .site-header--personal .site-brand--personal,
+  html[data-desktop-safari] .site-header--personal .site-nav a {
+    font-synthesis-weight: none;
+  }
 }
 
