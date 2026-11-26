@@ -1,170 +1,374 @@
 [
   {
-    "image": "P_Hex_Environment_3DAssets_ChestB.jpg"
+    "image": "Hex-Character-Skins-3D-03.jpg",
+    "compare": "C_Hex_Character_design_01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_01A.jpg"
+    "image": "Hex-Character-Skins-3D-02.jpg",
+    "compare": "C_Hex_Character_design_02.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_01C.jpg"
+    "image": "Hex-Character-Skins-3D-01.jpg",
+    "compare": "C_Hex_Character_design_04.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_01D.jpg"
+    "image": "C_Hex_Character_design_05.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_02A.jpg"
+    "image": "C_Hex_Character_design_06.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_02B.jpg"
+    "image": "C_Hex_Character_design_07.jpg",
+    "compare": "C_Hex_Character_design_08.jpg",
+    "additionalImages": [
+      "C_Hex_Character_design_03.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_02C.jpg"
+    "image": "P_Hex_Environment_3DAssets_ChestA.jpg",
+    "compare": "P_Hex_Environment_3DAssets_ChestA_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_ChestA_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_03A.jpg"
+    "image": "P_Hex_Environment_3DAssets_01A.jpg",
+    "compare": "P_Hex_Environment_3DAssets_01A_Hex.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_03B.jpg"
+    "image": "P_Hex_Environment_3DAssets_01C.jpg",
+    "compare": "P_Hex_Environment_3DAssets_01C_Hex.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_03C.jpg"
+    "image": "P_Hex_Environment_3DAssets_01D.jpg",
+    "compare": "P_Hex_Environment_3DAssets_01D_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_01D_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_04A.jpg"
+    "image": "P_Hex_Environment_3DAssets_02A.jpg",
+    "compare": "P_Hex_Environment_3DAssets_02A_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_04B.jpg"
+    "image": "P_Hex_Environment_3DAssets_02B.jpg",
+    "compare": "P_Hex_Environment_3DAssets_02B_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_04C.jpg"
+    "image": "P_Hex_Environment_3DAssets_02C.jpg",
+    "compare": "P_Hex_Environment_3DAssets_02C_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_02C_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_05A.jpg"
+    "image": "P_Hex_Environment_3DAssets_03A.jpg",
+    "compare": "P_Hex_Environment_3DAssets_03A_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_05B.jpg"
+    "image": "P_Hex_Environment_3DAssets_03B.jpg",
+    "compare": "P_Hex_Environment_3DAssets_03B_Hex03.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_05C.jpg"
+    "image": "P_Hex_Environment_3DAssets_03C.jpg",
+    "compare": "P_Hex_Environment_3DAssets_03C_Hex02.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_06A.jpg"
+    "image": "P_Hex_Environment_3DAssets_04A.jpg",
+    "compare": "P_Hex_Environment_3DAssets_04A_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_04A_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_06B.jpg"
+    "image": "P_Hex_Environment_3DAssets_04B.jpg",
+    "compare": "P_Hex_Environment_3DAssets_04B_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_04B_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_06C.jpg"
+    "image": "P_Hex_Environment_3DAssets_04C.jpg",
+    "compare": "P_Hex_Environment_3DAssets_04C_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_04C_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_07AA.jpg"
+    "image": "P_Hex_Environment_3DAssets_05A.jpg",
+    "compare": "P_Hex_Environment_3DAssets_05A_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_05A_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_07AB.jpg"
+    "image": "P_Hex_Environment_3DAssets_05B.jpg",
+    "compare": "P_Hex_Environment_3DAssets_05B_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_05B_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_07CA.jpg"
+    "image": "P_Hex_Environment_3DAssets_05C.jpg",
+    "compare": "P_Hex_Environment_3DAssets_05C_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_05C_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_07CB.jpg"
+    "image": "P_Hex_Environment_3DAssets_06A.jpg",
+    "compare": "P_Hex_Environment_3DAssets_06A_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_06A_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_07CC.jpg"
+    "image": "P_Hex_Environment_3DAssets_06B.jpg",
+    "compare": "P_Hex_Environment_3DAssets_06B_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_06B_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_08A.jpg"
+    "image": "P_Hex_Environment_3DAssets_06C.jpg",
+    "compare": "P_Hex_Environment_3DAssets_06C_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_06C_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_08B.jpg"
+    "image": "P_Hex_Environment_3DAssets_07AA.jpg",
+    "compare": "P_Hex_Environment_3DAssets_07AA_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_07AA_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_08C.jpg"
+    "image": "P_Hex_Environment_3DAssets_07AB.jpg",
+    "compare": "P_Hex_Environment_3DAssets_07AB_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_07AB_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_09A.jpg"
+    "image": "P_Hex_Environment_3DAssets_07CA.jpg",
+    "compare": "P_Hex_Environment_3DAssets_07CA_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_07CA_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_09B.jpg"
+    "image": "P_Hex_Environment_3DAssets_07CB.jpg",
+    "compare": "P_Hex_Environment_3DAssets_07CB_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_07CB_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_09C.jpg"
+    "image": "P_Hex_Environment_3DAssets_07CC.jpg",
+    "compare": "P_Hex_Environment_3DAssets_07CC_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_07CC_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_13A.jpg"
+    "image": "P_Hex_Environment_3DAssets_08A.jpg",
+    "compare": "P_Hex_Environment_3DAssets_08A_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_08A_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_14Ab.jpg"
+    "image": "P_Hex_Environment_3DAssets_08B.jpg",
+    "compare": "P_Hex_Environment_3DAssets_08B_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_08B_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_14B.jpg"
+    "image": "P_Hex_Environment_3DAssets_08C.jpg",
+    "compare": "P_Hex_Environment_3DAssets_08C_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_08C_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_15A.jpg"
+    "image": "P_Hex_Environment_3DAssets_09A.jpg",
+    "compare": "P_Hex_Environment_3DAssets_09A_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_09A_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_15B.jpg"
+    "image": "P_Hex_Environment_3DAssets_09B.jpg",
+    "compare": "P_Hex_Environment_3DAssets_09B_hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_09B_hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_15C.jpg"
+    "image": "P_Hex_Environment_3DAssets_09C.jpg",
+    "compare": "P_Hex_Environment_3DAssets_09C_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_09C_Hex02.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_17A.jpg"
+    "image": "P_Hex_Environment_3DAssets_13A.jpg",
+    "compare": "P_Hex_Environment_3DAssets_13A_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_17B.jpg"
+    "image": "P_Hex_Environment_3DAssets_14Ab.jpg",
+    "compare": "P_Hex_Environment_3DAssets_14A_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_17C.jpg"
+    "image": "P_Hex_Environment_3DAssets_14B.jpg",
+    "compare": "P_Hex_Environment_3DAssets_14B_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_22A.jpg"
+    "image": "P_Hex_Environment_3DAssets_15A.jpg",
+    "compare": "P_Hex_Environment_3DAssets_15A_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_23A.jpg"
+    "image": "P_Hex_Environment_3DAssets_15C.jpg",
+    "compare": "P_Hex_Environment_3DAssets_15C_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_23B.jpg"
+    "image": "P_Hex_Environment_3DAssets_13C.jpg",
+    "compare": "P_Hex_Environment_3DAssets_13C_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_24A.jpg"
+    "image": "P_Hex_Environment_3DAssets_15B.jpg",
+    "compare": "P_Hex_Environment_3DAssets_13B_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_15B_Hex01.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_26.jpg"
+    "image": "P_Hex_Environment_3DAssets_17A.jpg",
+    "compare": "P_Hex_Environment_3DAssets_17A_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_27A.jpg"
+    "image": "P_Hex_Environment_3DAssets_17B.jpg",
+    "compare": "P_Hex_Environment_3DAssets_17B_Hex01.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_17B_Hex01b.jpg"
+    ]
   },
   {
-    "image": "P_Hex_Environment_3DAssets_27B.jpg"
+    "image": "P_Hex_Environment_3DAssets_17C.jpg",
+    "compare": "P_Hex_Environment_3DAssets_17C_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_28A.jpg"
+    "image": "P_Hex_Environment_3DAssets_22A.jpg",
+    "compare": "P_Hex_Environment_3DAssets_22A_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_28B.jpg"
+    "image": "P_Hex_Environment_3DAssets_23A.jpg",
+    "compare": "P_Hex_Environment_3DAssets_23A_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_29B.jpg"
+    "image": "P_Hex_Environment_3DAssets_23B.jpg",
+    "compare": "P_Hex_Environment_3DAssets_23B_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_30.jpg"
+    "image": "P_Hex_Environment_3DAssets_24A.jpg",
+    "compare": "P_Hex_Environment_3DAssets_24A_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_31.jpg"
+    "image": "P_Hex_Environment_3DAssets_26.jpg",
+    "compare": "P_Hex_Environment_3DAssets_26_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_32a.jpg"
+    "image": "P_Hex_Environment_3DAssets_27A.jpg",
+    "compare": "P_Hex_Environment_3DAssets_27A_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_32b.jpg"
+    "image": "P_Hex_Environment_3DAssets_27B.jpg",
+    "compare": "P_Hex_Environment_3DAssets_27B_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_34a.jpg"
+    "image": "P_Hex_Environment_3DAssets_28A.jpg",
+    "compare": "P_Hex_Environment_3DAssets_28A_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_34b.jpg"
+    "image": "P_Hex_Environment_3DAssets_28B.jpg",
+    "compare": "P_Hex_Environment_3DAssets_28B_Hex01.jpg"
   },
   {
-    "image": "P_Hex_Environment_3DAssets_ChestA.jpg"
+    "image": "P_Hex_Environment_3DAssets_29B.jpg",
+    "compare": "P_Hex_Environment_3DAssets_29B_Hex01.jpg"
+  },
+  {
+    "image": "P_Hex_Environment_3DAssets_30.jpg",
+    "compare": "P_Hex_Environment_3DAssets_30_Hex01.jpg"
+  },
+  {
+    "image": "P_Hex_Environment_3DAssets_31.jpg",
+    "compare": "P_Hex_Environment_3DAssets_31_Hex01.jpg"
+  },
+  {
+    "image": "P_Hex_Environment_3DAssets_32a.jpg",
+    "compare": "P_Hex_Environment_3DAssets_32a_Hex01.jpg"
+  },
+  {
+    "image": "P_Hex_Environment_3DAssets_34a.jpg",
+    "compare": "P_Hex_Environment_3DAssets_34a_Hex02.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_34a_Hex01.jpg"
+    ]
+  },
+  {
+    "image": "P_Hex_Environment_3DAssets_34b.jpg",
+    "compare": "P_Hex_Environment_3DAssets_34b_Hex02.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_34b_Hex01.jpg"
+    ]
+  },
+  {
+    "image": "P_Hex_Environment_3DAssets_32b.jpg",
+    "compare": "P_Hex_Environment_3DAssets_32b_Hex02.jpg",
+    "additionalImages": [
+      "P_Hex_Environment_3DAssets_32b_Hex01.jpg"
+    ]
+  },
+  {
+    "image": "P_Hex_Environment_3DAssets_ChestB.jpg",
+    "compare": "P_Hex_Environment_3DAssets_ChestB_Hex01.jpg"
+  },
+  {
+    "image": "Lockpicking_mockup01g.jpg"
+  },
+  {
+    "image": "Hex-UI-S_v0.6.jpg",
+    "compare": "Hex-UI-S_CRAFT_INVENTORY_V0.4_no.jpg"
+  },
+  {
+    "image": "Hex-UI-S_CRAFT_INVENTORY_V0.4.jpg",
+    "compare": "Hex-UI-S_CRAFT_INVENTORY_V0.4_yes.jpg",
+    "additionalImages": [
+      "Hex-UI-S_SKINS_INVENTORY_V03.jpg"
+    ]
+  },
+  {
+    "image": "Hex-UI-S_UNLOCK_V0.4.jpg",
+    "compare": "Hex-UI-S_UNLOCK_V0.5.jpg"
+  },
+  {
+    "image": "UI_HEX_A_1-5.jpg",
+    "compare": "UI_HEX_A_1-6.jpg",
+    "additionalImages": [
+      "UI_HEX_A_1-7.jpg",
+      "UI_HEX_A_1-8.jpg"
+    ]
+  },
+  {
+    "image": "UI_HEX_A_1-10.jpg",
+    "compare": "UI_HEX_A_1-11.jpg",
+    "additionalImages": [
+      "UI_HEX_A_1-12.jpg",
+      "UI_HEX_A_1-13.jpg",
+      "UI_HEX_A_1-14.jpg"
+    ]
   }
 ]
