@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import base64
 import datetime as dt
+import io
 import json
 import os
 from pathlib import Path
@@ -16,6 +17,8 @@ import traceback
 import urllib.error
 import urllib.parse
 import urllib.request
+
+from PIL import Image
 
 
 ORIGIN = os.environ.get("PORTFOLIO_ORIGIN", "https://digitalshamans.co.uk").rstrip("/")
@@ -114,11 +117,32 @@ class DesktopBrowser:
             time.sleep(0.2)
         raise AssertionError(f"Timed out waiting for {label or expression}; last value={last_value!r}")
 
-    def screenshot(self, name):
-        data = self.request("GET", "/screenshot")
+    def screenshot(self, name, metrics):
         path = OUTPUT / f"{name}.png"
-        path.write_bytes(base64.b64decode(data))
-        return path.name
+        for attempt in range(3):
+            data = base64.b64decode(self.request("GET", "/screenshot"))
+            path.write_bytes(data)
+            with Image.open(io.BytesIO(data)) as original:
+                image = original.convert("RGB")
+                scale_x = image.width / metrics["innerWidth"]
+                scale_y = image.height / metrics["innerHeight"]
+                rect = metrics["brand"]["rect"]
+                crop = image.crop((int(rect["x"] * scale_x), int(rect["y"] * scale_y),
+                                   int(rect["right"] * scale_x) + 1,
+                                   int(rect["bottom"] * scale_y) + 1))
+                text_pixels = sum(min(rgb) >= 170 and max(rgb) - min(rgb) <= 35
+                                  for rgb in crop.getdata())
+                if image.getbbox() is not None and text_pixels >= 20:
+                    self.last_capture_validation = {"attempts": attempt + 1,
+                                                    "nameLightPixels": text_pixels,
+                                                    "nonblank": True}
+                    return path.name
+            if attempt < 2:
+                self.request("POST", "/refresh", {})
+                self.wait("return document.readyState==='complete'&&document.fonts.status==='loaded'",
+                          timeout=12, label="repainted page and font")
+                time.sleep(1)
+        raise AssertionError("Safari/Chrome returned a blank screenshot or the rendered name is missing; computed layout alone is not a visual pass.")
 
     def close(self):
         if self.session_id:
@@ -302,7 +326,8 @@ def main():
                 actual_width, actual_height = metrics["innerWidth"], metrics["innerHeight"]
                 case["exactViewport"] = abs(actual_width - width) <= 1 and abs(actual_height - height) <= 1
                 filename = f"{BROWSER}-{actual_width}x{actual_height}-requested-{width}x{height}"
-                case["screenshot"] = driver.screenshot(filename)
+                case["screenshot"] = driver.screenshot(filename, metrics)
+                case["screenshotContentCheck"] = driver.last_capture_validation
                 png = (OUTPUT / case["screenshot"]).read_bytes()
                 case["screenshotPixels"] = {"width": int.from_bytes(png[16:20], "big"), "height": int.from_bytes(png[20:24], "big")}
                 case["errors"] = check_metrics(metrics)

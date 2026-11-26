@@ -25,6 +25,11 @@ jobs:
           persist-credentials: false
           sparse-checkout: .github/scripts
           lfs: false
+      - name: Prepare screenshot pixel validation
+        run: |
+          python3 -m venv "$RUNNER_TEMP/typography-python"
+          "$RUNNER_TEMP/typography-python/bin/python" -m pip install --disable-pip-version-check Pillow
+          printf '%s\n' "$RUNNER_TEMP/typography-python/bin" >> "$GITHUB_PATH"
       - name: Record installed browser versions
         run: |
           mkdir -p artifacts/desktop-typography/chrome
@@ -68,7 +73,7 @@ jobs:
                       raise
                   time.sleep(1)
           PY
-          python3 .github/scripts/desktop-typography-safari.py
+          swift .github/scripts/desktop-capture-display.swift -- python3 .github/scripts/desktop-typography-safari.py
       - name: Capture headless Google Chrome at six resolutions
         if: ${{ !cancelled() && env.TYPOGRAPHY_CAPTURE_MODE != 'safari' }}
         env:
