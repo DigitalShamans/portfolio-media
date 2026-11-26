@@ -12,5 +12,8 @@ $RECYCLE.BIN/
 *.lnk
 
 /_data/gallery_asset_versions.json
+/_data/gallery_published_replacements.json
+/_data/gallery_webp_asset_versions.json
 /_data/portfolio_banner_versions.json
 /_data/portfolio_gallery_preloads.json
+/gallery-webp-state.json

@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
 
 permissions:
   contents: read
@@ -20,7 +22,7 @@ jobs:
       contents: read
       pages: read
     outputs:
-      workflow_source: ${{ steps.source.outputs.workflow_source }}
+      publish: ${{ steps.media.outputs.publish }}
     steps:
       - name: Check Pages publishing source
         id: source
@@ -35,17 +37,28 @@ jobs:
         if: steps.source.outputs.workflow_source == 'true'
         with:
           persist-credentials: false
+      - name: Sync published gallery WebPs
+        id: media
+        if: steps.source.outputs.workflow_source == 'true'
+        env:
+          CHECK_LIVE: ${{ github.event_name == 'schedule' }}
+        run: |
+          if [[ "$CHECK_LIVE" == "true" ]]; then
+            python3 .github/scripts/sync-public-gallery-webps.py --check-live
+          else
+            python3 .github/scripts/sync-public-gallery-webps.py
+          fi
       - uses: actions/configure-pages@v5
-        if: steps.source.outputs.workflow_source == 'true'
+        if: steps.media.outputs.publish == 'true'
       - name: Validate portfolio
-        if: steps.source.outputs.workflow_source == 'true'
+        if: steps.media.outputs.publish == 'true'
         uses: ./.github/actions/validate-portfolio
       - uses: actions/upload-pages-artifact@v4
-        if: steps.source.outputs.workflow_source == 'true'
+        if: steps.media.outputs.publish == 'true'
 
   deploy:
     needs: build
-    if: needs.build.outputs.workflow_source == 'true'
+    if: needs.build.outputs.publish == 'true'
     runs-on: ubuntu-latest
     permissions:
       pages: write

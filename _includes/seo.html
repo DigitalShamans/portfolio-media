@@ -18,6 +18,10 @@
   <meta name="twitter:description" content="{{ seo_description | escape }}">
   {% if seo_image %}
     {% assign seo_image_url = seo_image.path | absolute_url %}
+    {% assign seo_image_version = site.data.gallery_webp_asset_versions[seo_image.path] %}
+    {% if seo_image_version %}
+      {% assign seo_image_url = seo_image_url | append: '?v=' | append: seo_image_version %}
+    {% endif %}
     <meta property="og:image" content="{{ seo_image_url | escape }}">
     <meta property="og:image:alt" content="{{ seo_image.alt | escape }}">
     {% if seo_image.width and seo_image.height %}

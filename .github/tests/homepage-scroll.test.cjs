@@ -26,7 +26,7 @@ test('Recent Work retains the original six-banner viewport and accessible scroll
 });
 
 test('both homepages keep a sticky header and all gallery banners', () => {
-  assert.match(layout, /portfolio\.css' \| relative_url }}\?v=11/);
+  assert.match(layout, /portfolio\.css' \| relative_url }}\?v=12/);
   assert.match(layout, /<body class="portfolio-page[^\n]*>[\s\S]*?include site-header\.html/);
   assert.match(css, /\.portfolio-page > \.site-header\s*\{[^}]*position:\s*sticky;[^}]*inset-block-start:\s*0;/);
   assert.match(css, /#recent-work\s*\{[^}]*scroll-margin-block-start:[^;]*--home-header-height/);

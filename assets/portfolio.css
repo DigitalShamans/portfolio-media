@@ -129,19 +129,7 @@
   object-fit: cover;
 }
 
-/* The Vegetation cover is missing the stripe used in the other covers. */
-.portfolio-card[href$="/galleries/vegetation/"]::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0;
-  height: 2.5%;
-  background: #401f58;
-  clip-path: polygon(0 100%, 100% 0, 100% 100%);
-  pointer-events: none;
-}
-
-.portfolio-card:hover img,
-.portfolio-card[href$="/galleries/vegetation/"]:hover::after { filter: brightness(1.16); }
+.portfolio-card:hover img { filter: brightness(1.16); }
 
 .portfolio-footer {
   padding-block: 1rem;

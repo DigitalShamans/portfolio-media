@@ -24,8 +24,14 @@ def tracked_versions(directory):
             yield PurePosixPath(path.decode('utf-8')), digest.decode('ascii')
 
 
-def gallery_versions():
-    tracked = dict(tracked_versions('galleries'))
+def gallery_webp_versions(tracked, release):
+    versions = {f'/{path}': digest for path, digest in tracked.items()
+                if len(path.parts) == 4 and path.parts[2] == '1440p' and path.suffix == '.webp'}
+    versions.update(release.get('assets', {}))
+    return versions
+
+
+def gallery_versions(tracked, webps):
     delivery = json.loads((ROOT / '_data/gallery_delivery.json').read_text(encoding='utf-8'))
     versions = {}
     for path, digest in tracked.items():
@@ -49,7 +55,7 @@ def gallery_versions():
                     continue
                 preview = path.parent / '1440p' / PurePosixPath(name).with_suffix('.webp').name
                 asset = preview if delivery['revision'] else path.parent / name
-                files[name] = tracked[asset]
+                files[name] = webps[f'/{asset}'] if delivery['revision'] else tracked[asset]
         versions[path.parent.name] = files
     return versions
 
@@ -112,10 +118,16 @@ def portfolio_gallery_preloads(galleries):
 
 
 if __name__ == '__main__':
-    galleries = gallery_versions()
+    state = ROOT / 'gallery-webp-state.json'
+    release = json.loads(state.read_text(encoding='utf-8')) if state.is_file() else {}
+    tracked = dict(tracked_versions('galleries'))
+    webps = gallery_webp_versions(tracked, release)
+    galleries = gallery_versions(tracked, webps)
     generate_personal_vegetation_manifest(galleries)
     for name, versions in (
         ('gallery_asset_versions', galleries),
+        ('gallery_webp_asset_versions', webps),
+        ('gallery_published_replacements', release.get('releases', {})),
         ('gallery_script_versions', gallery_script_versions()),
         ('portfolio_banner_versions', banner_versions()),
         ('portfolio_gallery_preloads', portfolio_gallery_preloads(galleries)),

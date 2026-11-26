@@ -22,6 +22,8 @@ Adding new originals or replacing image bytes uses the media publication workflo
 
 ## Publish gallery image updates
 
+To replace an image already published in a public gallery, push the JPG to the same path in the private media repository. The private workflow publishes the JPG and a new WebP together. Galleries, homepage previews and preloads request that release. The Pages workflow checks for new releases every 15 minutes and republishes the static WebPs and their versioned links when it finds one.
+
 For a new ArtStation gallery, use the [single-gallery import workflow](.github/gallery-imports/IMPORT-WORKFLOW.md).
 It provides resumable downloads, cached WebP preparation, both route stubs and reviewable
 private/service/website metadata plans. Each gallery still has its own release and acceptance checks.

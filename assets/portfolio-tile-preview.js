@@ -11,6 +11,7 @@
   const hoverDelay = 400;
   const closeDeadline = 330;
   const cache = new Map();
+  const replacementChecks = new Map();
   const layer = document.createElement('div');
   layer.className = 'portfolio-tile-preview';
   layer.hidden = true;
@@ -65,8 +66,7 @@
     });
   }
 
-  function loadImage(card) {
-    const url = card.dataset.galleryPreview;
+  function loadImage(url) {
     if (cache.has(url)) {
       const entry = cache.get(url);
       cache.delete(url);
@@ -92,6 +92,22 @@
     while (cache.size > 4) cache.delete(cache.keys().next().value);
     image.src = url;
     return entry;
+  }
+
+  async function loadPreview(card) {
+    const original = card.dataset.galleryPreviewOriginal;
+    if (!original || typeof GalleryResolution === 'undefined') return loadImage(card.dataset.galleryPreview);
+
+    let check = replacementChecks.get(original);
+    const now = performance.now();
+    if (!check || now - check.started >= 30_000) {
+      check = { started: now, ready: GalleryResolution.refreshPublicImageUpdates(original) };
+      replacementChecks.set(original, check);
+    }
+    await check.ready;
+    const { url, fallbackUrl } = GalleryResolution.publicImageSource(original, '1440p');
+    const image = await loadImage(url);
+    return image ?? (fallbackUrl ? loadImage(fallbackUrl) : null);
   }
 
   function setOrigin(card) {
@@ -189,7 +205,7 @@
     close();
     const request = intent = { card, dwelled: false, image: null };
     waitForHover(request);
-    loadImage(card).then(image => {
+    loadPreview(card).then(image => {
       if (intent !== request) return;
       request.image = image;
       if (!image && diagnosticsEnabled()) diagnostics.event(feature, 'preview image unavailable');

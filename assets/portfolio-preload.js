@@ -30,6 +30,8 @@
 
   async function preloadGalleryImages() {
     await Promise.all(visibleBanners().map(waitForImage));
+    await Promise.all(galleryImages.filter(images => images.length)
+      .map(images => GalleryResolution.refreshPublicImageUpdates(images[0])));
 
     const resolution = GalleryResolution.current();
     const queue = new Set();
@@ -40,11 +42,16 @@
       }
     }
 
-    for (const url of queue) {
+    for (const original of queue) {
       const image = new Image();
       image.fetchPriority = 'low';
-      image.src = GalleryResolution.publicImageUrl(url, resolution);
+      const { url, fallbackUrl } = GalleryResolution.publicImageSource(original, resolution);
+      image.src = url;
       await waitForImage(image);
+      if (!image.naturalWidth && fallbackUrl) {
+        image.src = fallbackUrl;
+        await waitForImage(image);
+      }
     }
   }
 

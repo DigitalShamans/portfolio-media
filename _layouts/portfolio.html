@@ -17,10 +17,13 @@
   {% include seo.html %}
   {% include site-favicon.html %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=15">
-  <link rel="stylesheet" href="{{ '/assets/portfolio.css' | relative_url }}?v=11">
+  <link rel="stylesheet" href="{{ '/assets/portfolio.css' | relative_url }}?v=12">
   {% if page.font_preview == nil %}
+    {% if site.data.portfolio_gallery_preloads %}
+      <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=8" defer></script>
+    {% endif %}
     <link rel="stylesheet" href="{{ '/assets/portfolio-tile-preview.css' | relative_url }}?v=1">
-    <script src="{{ '/assets/portfolio-tile-preview.js' | relative_url }}?v=2" defer></script>
+    <script src="{{ '/assets/portfolio-tile-preview.js' | relative_url }}?v=3" defer></script>
   {% endif %}
   <script src="{{ '/assets/recent-galleries-scroll.js' | relative_url }}?v=5" defer></script>
   <script src="{{ '/assets/vendor/gsap/3.15.1/gsap.min.js' | relative_url }}" defer></script>
@@ -32,8 +35,7 @@
     <script src="{{ '/assets/home-sections.js' | relative_url }}?v=2" defer></script>
   {% endunless %}
   {% if site.data.portfolio_gallery_preloads and page.font_preview == nil %}
-    <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=6" defer></script>
-    <script src="{{ '/assets/portfolio-preload.js' | relative_url }}?v=3" defer></script>
+    <script src="{{ '/assets/portfolio-preload.js' | relative_url }}?v=4" defer></script>
   {% endif %}
   {% if page.font_preview == nil %}
     {% if page.url == '/' or page.url == site.data.personal_portfolio.home %}
@@ -111,8 +113,9 @@
                 {% endif %}
               {% endif %}
             {% endif %}
-            <a class="portfolio-card" href="{{ project.url | default: studio_project_url | escape }}"{% if preview_url %} data-gallery-preview="{{ preview_url | escape }}"{% endif %}>
-              <img src="{{ project.cover | escape }}" width="400" height="400" loading="lazy" decoding="async" alt="{{ project.title | escape }}">
+            {% assign cover_version = site.data.portfolio_banner_versions[project.cover] %}
+            <a class="portfolio-card" href="{{ project.url | default: studio_project_url | escape }}"{% if preview_url %} data-gallery-preview="{{ preview_url | escape }}" data-gallery-preview-original="{{ preview_original | relative_url | escape }}"{% endif %}>
+              <img src="{{ project.cover | escape }}{% if cover_version %}?v={{ cover_version | escape }}{% endif %}" width="400" height="400" loading="lazy" decoding="async" alt="{{ project.title | escape }}">
             </a>
           </li>
         {% endfor %}

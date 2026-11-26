@@ -15,6 +15,21 @@ const GalleryResolution = (() => {
     if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) galleryRevisions = parsed;
   } catch { /* Older pages can continue using their existing media revision. */ }
 
+  function replacementMap(images) {
+    if (!images || typeof images !== 'object' || Array.isArray(images)) return;
+    const entries = Object.entries(images);
+    if (entries.some(([name, revision]) => !imageName.test(name) ||
+        typeof revision !== 'string' || !revisionPattern.test(revision))) return;
+    return new Map(entries);
+  }
+
+  if (settings.galleryReplacementFolder) {
+    try {
+      const published = replacementMap(JSON.parse(settings.galleryPublishedReplacements));
+      if (published) replacementVersions.set(settings.galleryReplacementFolder, published);
+    } catch { /* The live gallery lookup can still load the replacement index. */ }
+  }
+
   function current() {
     return wide.matches ? '4k' : '1440p';
   }
@@ -67,14 +82,12 @@ const GalleryResolution = (() => {
       });
       if (!response.ok) return false;
       const { images } = await response.json();
-      if (!images || typeof images !== 'object' || Array.isArray(images)) return false;
-      const entries = Object.entries(images);
-      if (entries.some(([name, revision]) => !imageName.test(name) ||
-          typeof revision !== 'string' || !revisionPattern.test(revision))) return false;
+      const published = replacementMap(images);
+      if (!published) return false;
       const previous = replacementVersions.get(gallery);
-      replacementVersions.set(gallery, new Map(entries));
-      return (previous?.size ?? 0) !== entries.length ||
-        entries.some(([name, revision]) => previous?.get(name) !== revision);
+      replacementVersions.set(gallery, published);
+      return (previous?.size ?? 0) !== published.size ||
+        [...published].some(([name, revision]) => previous?.get(name) !== revision);
     } catch {
       return false;
     } finally {
@@ -96,5 +109,10 @@ const GalleryResolution = (() => {
     return replacementRequests.get(gallery);
   }
 
-  return { current, publicImageSource, publicImageUrl, refreshPublicUpdates };
+  function refreshPublicImageUpdates(original) {
+    const url = new URL(original, document.baseURI);
+    return refreshPublicUpdates(new URL('.', url).href);
+  }
+
+  return { current, publicImageSource, publicImageUrl, refreshPublicUpdates, refreshPublicImageUpdates };
 })();

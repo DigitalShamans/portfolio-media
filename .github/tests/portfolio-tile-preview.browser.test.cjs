@@ -2,23 +2,40 @@
 
 const assert = require('node:assert/strict');
 const { existsSync, readFileSync, statSync } = require('node:fs');
+const { createServer } = require('node:http');
 const { join, resolve, sep } = require('node:path');
 const { after, before, test } = require('node:test');
 const { chromium } = require('playwright');
 
 const root = resolve(__dirname, '../..');
 const site = join(root, '_site');
-const origin = 'http://localhost:3000';
 const cardsSelector = '#full-portfolio .portfolio-card';
 const layerSelector = '.portfolio-tile-preview';
 const image = Buffer.from('UklGRjAAAABXRUJQVlA4ICQAAABQAQCdASoQAAkAAUAmJQBOgCgAAP7nMP6+8odiZDdJ+p/KAAA=', 'base64');
-let browser;
+const galleryDestination = '<!doctype html><title>Gallery destination</title><h1>Gallery destination</h1>';
+let browser, server, origin;
 
 before(async () => {
   assert.ok(existsSync(join(site, 'index.html')), 'Build _site with the shared validation action before running browser checks.');
+  // Chromium may start a native background tab before Playwright can route its first request.
+  server = createServer((request, response) => {
+    if (/^\/(?:artur\/)?galleries\//.test(request.url)) {
+      response.writeHead(200, { 'content-type': 'text/html' }).end(galleryDestination);
+    } else {
+      response.writeHead(404).end();
+    }
+  });
+  await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', resolve);
+  });
+  origin = 'http://127.0.0.1:' + server.address().port;
   browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH });
 });
-after(() => browser?.close());
+after(async () => {
+  await browser?.close();
+  if (server) await new Promise(resolve => server.close(resolve));
+});
 
 function signal() {
   let release;
@@ -47,7 +64,7 @@ async function openHome(t, {
     if (url.origin !== origin) return route.fulfill({ status: 404 });
     // Keep genuine link navigation without loading an unrelated gallery viewer.
     if (/^\/(?:artur\/)?galleries\//.test(url.pathname) && route.request().isNavigationRequest()) {
-      return route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>Gallery destination</title><h1>Gallery destination</h1>' });
+      return route.fulfill({ contentType: 'text/html', body: galleryDestination });
     }
     let file = resolve(site, '.' + decodeURIComponent(url.pathname));
     if (file !== site && !file.startsWith(site + sep)) return route.fulfill({ status: 404 });
@@ -126,7 +143,7 @@ async function assertFrame(page) {
   return frame;
 }
 
-test('both built homepages preview the first manifest image of all 24 Full Portfolio cards', async t => {
+test('both built homepages preview the first manifest image of all 26 Full Portfolio cards', async t => {
   const versions = JSON.parse(readFileSync(join(root, '_data/gallery_asset_versions.json'), 'utf8'));
   let checked = 0;
   for (const home of ['/', '/artur/']) {
@@ -134,7 +151,7 @@ test('both built homepages preview the first manifest image of all 24 Full Portf
     const entries = await page.locator(cardsSelector).evaluateAll(cards => cards.map(card => ({
       href: card.href, preview: card.dataset.galleryPreview, cover: card.querySelector('img').src,
     })));
-    assert.equal(entries.length, 12);
+    assert.equal(entries.length, 13);
     const webpRevision = await page.locator('html').getAttribute('data-gallery-webp-revision');
     for (const entry of entries) {
       const route = new URL(entry.href);
@@ -156,7 +173,43 @@ test('both built homepages preview the first manifest image of all 24 Full Portf
     assert.equal(await page.locator('.recent-gallery[data-gallery-preview]').count(), 0, 'Recent Work banners keep their current behavior, including password-protected galleries');
     assert.deepEqual(errors, []);
   }
-  assert.equal(checked, 24);
+  assert.equal(checked, 26);
+});
+
+test('Battlezone hover uses the current published replacement on both portfolios', { timeout: 25_000 }, async t => {
+  const folder = 'battlezone-vr';
+  const first = JSON.parse(readFileSync(join(root, 'galleries', folder, 'gallery.json'), 'utf8'))[0].image;
+  const revision = 'a'.repeat(40);
+  const indexPath = '/public-replacements/' + folder + '.json';
+  const replacementPath = '/public-replacements/' + folder + '/' + revision + '/1440p/' + first;
+
+  for (const [home, unavailable] of [['/', false], ['/artur/', false], ['/artur/', true]]) {
+    await t.test(home + (unavailable ? ' fallback' : ''), async t => {
+      const { page, errors, requests } = await openHome(t, { home, intercept: async (route, url) => {
+        if (url.pathname === indexPath) {
+          await route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: { images: { [first]: revision } } });
+          return true;
+        }
+        if (url.pathname === replacementPath && unavailable) {
+          await route.fulfill({ status: 503 });
+          return true;
+        }
+        return false;
+      } });
+      const position = await page.locator(cardsSelector).evaluateAll(cards =>
+        cards.findIndex(card => card.href.endsWith('/galleries/battlezone-vr/')));
+      assert.ok(position >= 0);
+      const card = await revealCard(page, position);
+      const fallback = new URL(await card.getAttribute('data-gallery-preview'), origin);
+      await moveInto(page, card);
+      await settled(page);
+      const shown = new URL(await page.locator(layerSelector + ' img').evaluate(image => image.currentSrc));
+      assert.equal(shown.pathname, unavailable ? fallback.pathname : replacementPath);
+      assert.equal(requests.filter(url => new URL(url).pathname === indexPath).length, 1);
+      if (!unavailable) assert.ok(!requests.includes(fallback.href), 'the older Pages copy was not requested');
+      assert.deepEqual(errors, []);
+    });
+  }
 });
 
 test('both homepages dwell before a real CSS expansion, restore the tile view, and retain link navigation', { timeout: 25_000 }, async t => {
