@@ -336,6 +336,47 @@ test('healthy 4K stays in 4K, and 1440p viewports go directly to WebP', async t 
   }
 });
 
+test('widening an open fullscreen viewer upgrades its selected WebP to the original', async t => {
+  const { page, requests, errors, urls } = await openPage(t, { width: 1440 });
+  await page.locator('.shot').first().press('Enter');
+  await displayed(page, '#original', urls.preview('First'));
+  assert.ok(!requests.includes(urls.originals('First')));
+  await page.setViewportSize({ width: 2800, height: 1000 });
+  await displayed(page, '#original', urls.originals('First'));
+  await activeSegment(page, 0);
+  assert.deepEqual(errors, []);
+});
+
+test('published replacements refresh both image sizes, including an open fullscreen viewer', async t => {
+  let replacement = 'b'.repeat(40);
+  const updatedPath = () => `/public-replacements/hb-egypt/${replacement}/`;
+  const { page, errors, urls } = await openPage(t, {
+    width: 1440,
+    intercept: async (route, url) => {
+      if (url.pathname === '/public-replacements/hb-egypt.json') {
+        await route.fulfill({ json: { images: { 'First.jpg': replacement } },
+          headers: { 'Access-Control-Allow-Origin': '*' } });
+        return true;
+      }
+      if (url.pathname === updatedPath() + '1440p/First.jpg') {
+        await route.fulfill({ contentType: 'image/webp', body: webp });
+        return true;
+      }
+      return false;
+    },
+  });
+  await displayed(page, '.shot-primary', urls.media + updatedPath() + '1440p/First.jpg');
+  await page.locator('.shot').first().press('Enter');
+  await displayed(page, '#original', urls.media + updatedPath() + 'First.jpg');
+
+  replacement = 'c'.repeat(40);
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await displayed(page, '#original', urls.media + updatedPath() + 'First.jpg');
+  await page.locator('#fullscreen').click();
+  await displayed(page, '.shot-primary', urls.media + updatedPath() + '1440p/First.jpg');
+  assert.deepEqual(errors, []);
+});
+
 test('a temporary 4K failure retries the same JPG after a second and keeps 4K on success', async t => {
   let failedAt;
   let retryAt;

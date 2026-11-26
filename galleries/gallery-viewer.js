@@ -39,6 +39,9 @@ fitGallery();
 window.addEventListener('resize', () => {
   fitGallery();
   restoreGalleryViewportPosition?.();
+  if (viewer.open && GalleryResolution.current() === '4k') {
+    loadViewerOriginal(shots[current], comparisonIndex);
+  }
 });
 finePointer.addEventListener('change', fitGallery);
 const galleryStatus = document.querySelector('#gallery-status');
@@ -735,11 +738,39 @@ async function loadImage(image, source, { link, pictureSource } = {}) {
   return loadImageSource(image, source.fallbackUrl);
 }
 
+let viewerOriginalRequest;
+
+function loadViewerOriginal(shot, variant) {
+  if (galleryAccess) return;
+  const source = GalleryResolution.publicImageSource(galleryAssetUrl(shot.filenames[variant]), '4k');
+  if (!source.fallbackUrl || source.url === shot.sources[variant].url ||
+      (!source.isReplacement && GalleryResolution.current() !== '4k')) {
+    viewerOriginalRequest = undefined;
+    return;
+  }
+  if (viewerOriginalRequest?.variant === variant && viewerOriginalRequest.url === source.url) return;
+  const image = new Image();
+  image.decoding = 'async';
+  image.fetchPriority = 'high';
+  const request = { variant, url: source.url, image };
+  viewerOriginalRequest = request;
+  void loadImageSource(image, source.url).then(loaded => {
+    if (loaded && viewer.open && viewerOriginalRequest === request) displayOriginal(image);
+  });
+}
+
+function preferredViewerImage(preview, variant) {
+  const originalRequest = viewerOriginalRequest;
+  return originalRequest?.variant === variant && originalRequest.image.naturalWidth
+    ? originalRequest.image : preview;
+}
+
 function showImage(index, initialVariant = 0) {
   const shot = shots[index];
   const { image, sources } = shot;
   const primary = prioritizeShot(shot);
   const request = ++viewerRequest;
+  viewerOriginalRequest = undefined;
   current = index;
   comparisonsInitialized = false;
   viewerHover = null;
@@ -766,10 +797,12 @@ function showImage(index, initialVariant = 0) {
     viewerAspect = 0;
     original.removeAttribute('src');
   }
+  loadViewerOriginal(shot, initialVariant);
 
   void primary.then(loaded => {
     if (request !== viewerRequest || !viewer.open || comparisonIndex !== 0) return;
-    if (loaded) displayOriginal(image);
+    const selected = preferredViewerImage(image, 0);
+    if (loaded || selected.naturalWidth) displayOriginal(selected);
     else if (initialVariant === 0) showStatus('This image could not be loaded.');
   });
 }
@@ -787,10 +820,13 @@ function imageLoaded() {
   if (!viewer.open || !original.complete || !original.naturalWidth) return;
   const shot = shots[current];
   const source = imageUrl(original);
-  const displayed = shot.sources.findIndex((_, index) => {
-    const image = index === 0 ? shot.image : shot.comparison.getImage(index);
-    return image?.naturalWidth && imageUrl(image) === source;
-  });
+  const upgraded = viewerOriginalRequest;
+  const displayed = upgraded?.image.naturalWidth && imageUrl(upgraded.image) === source
+    ? upgraded.variant
+    : shot.sources.findIndex((_, index) => {
+      const image = index === 0 ? shot.image : shot.comparison.getImage(index);
+      return image?.naturalWidth && imageUrl(image) === source;
+    });
   if (displayed < 0) return;
   if (viewerZoom.scale > 1) setViewerZoom(viewerZoom.scale, viewerZoom.x, viewerZoom.y);
   viewer.dispatchEvent(new CustomEvent('gallery-imagechange', {
@@ -839,9 +875,11 @@ function updateComparison(requestImage = false) {
   if (!viewer.open || !viewerIndicator) return;
   const shot = shots[current];
   if (comparisonIndex === 0 && requestImage && !shot.image.naturalWidth) prioritizeShot(shot);
-  const image = comparisonIndex === 0 ? shot.image : shot.comparison.getImage(comparisonIndex, requestImage);
+  const preview = comparisonIndex === 0 ? shot.image : shot.comparison.getImage(comparisonIndex, requestImage);
+  const image = preferredViewerImage(preview, comparisonIndex);
   updateComparisonStatus();
   if (image?.complete && image.naturalWidth && original.src !== imageUrl(image)) displayOriginal(image);
+  if (requestImage) loadViewerOriginal(shot, comparisonIndex);
 }
 
 function selectViewerComparison(index) {
@@ -1121,7 +1159,9 @@ function loadPrimary(shot, priority) {
     shot.primaryFailed = !loaded;
     if (loaded) {
       shot.comparison?.primaryLoaded();
-      if (viewer.open && shots[current] === shot && comparisonIndex === 0) displayOriginal(image);
+      if (viewer.open && shots[current] === shot && comparisonIndex === 0) {
+        displayOriginal(preferredViewerImage(image, 0));
+      }
     } else {
       if (!source.fallbackUrl) scheduleVisibleRetry(shot);
       if (viewer.open && shots[current] === shot && comparisonIndex === 0) updateComparisonStatus();
@@ -1232,7 +1272,11 @@ async function loadGallery() {
       const source = GalleryResolution.publicImageSource(fallback.dataset.galleryOriginal, imageResolution);
       firstImage = { image, link: fallback, source, load: loadImage(image, source, { link: fallback, pictureSource }) };
     }
-    const response = galleryAccess ? await galleryAccess.manifest() : await fetch(galleryAssetUrl(gallery.dataset.galleryManifest || 'gallery.json'));
+    const publicBase = !galleryAccess && (gallery.dataset.galleryRoot || document.baseURI);
+    const [response] = await Promise.all([
+      galleryAccess ? galleryAccess.manifest() : fetch(galleryAssetUrl(gallery.dataset.galleryManifest || 'gallery.json')),
+      publicBase && GalleryResolution.refreshPublicUpdates?.(publicBase)
+    ]);
     if (!response.ok) throw new Error('Gallery order unavailable.');
     const excluded = new Set(JSON.parse(gallery.dataset.galleryExclude || '[]'));
     const entries = GalleryData.parse(await response.text()).filter(entry => !excluded.has(entry.image));
@@ -1248,6 +1292,7 @@ async function loadGallery() {
         galleryAssetUrl(gallery.dataset.galleryEmbeds), galleryAssetUrl)
       : undefined;
     if (restoreFocus) shots[0].link.focus({ preventScroll: true });
+    if (publicBase && GalleryResolution.refreshPublicUpdates) watchPublicUpdates(publicBase);
     galleryStatus.hidden = true;
 
     const arrivalShot = restoredShot ?? shots[0];
@@ -1266,6 +1311,23 @@ async function loadGallery() {
     console.error('Gallery could not be loaded', error);
     galleryStatus.textContent = 'The gallery could not be loaded. Please refresh to try again.';
   }
+}
+
+function watchPublicUpdates(publicBase) {
+  let reloadAfterViewer = false;
+  async function refresh() {
+    if (document.visibilityState === 'hidden' || !await GalleryResolution.refreshPublicUpdates(publicBase)) return;
+    if (!viewer.open) {
+      location.reload();
+      return;
+    }
+    reloadAfterViewer = true;
+    loadViewerOriginal(shots[current], comparisonIndex);
+  }
+  window.addEventListener('pageshow', event => { if (event.persisted) void refresh(); });
+  document.addEventListener('visibilitychange', () => { void refresh(); });
+  window.setInterval(() => { void refresh(); }, 45000);
+  viewer.addEventListener('close', () => { if (reloadAfterViewer) location.reload(); });
 }
 
 function step(amount) {

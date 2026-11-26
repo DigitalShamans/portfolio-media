@@ -5,6 +5,10 @@ const GalleryResolution = (() => {
   const wide = window.matchMedia(settings.gallery4kMedia);
   const originalsOrigin = settings.galleryOriginalsOrigin;
   const originalsRevision = settings.galleryOriginalsRevision;
+  const revisionPattern = /^[a-f0-9]{40}$/;
+  const imageName = /^[A-Za-z0-9][A-Za-z0-9_.-]*\.jpg$/i;
+  const replacementVersions = new Map();
+  const replacementRequests = new Map();
   let galleryRevisions = {};
   try {
     const parsed = JSON.parse(settings.galleryOriginalsGalleryRevisions || '{}');
@@ -26,14 +30,23 @@ const GalleryResolution = (() => {
 
   function publicImageSource(original, resolution) {
     const url = new URL(original, document.baseURI);
-    if (resolution === '4k' && originalsOrigin && originalsRevision &&
-        url.origin === new URL(document.baseURI).origin) {
-      const galleryPath = url.pathname.match(/\/galleries\/([a-z0-9-]+\/[A-Za-z0-9_.-]+\.jpe?g)$/i)?.[1];
-      if (galleryPath) {
-        const override = galleryRevisions[galleryPath.split('/')[0]];
-        const revision = /^[a-f0-9]{40}$/.test(override || '') ? override : originalsRevision;
+    if (originalsOrigin && originalsRevision && url.origin === new URL(document.baseURI).origin) {
+      const match = url.pathname.match(/\/galleries\/([a-z0-9-]+)\/([A-Za-z0-9_.-]+\.jpe?g)$/i);
+      if (match) {
+        const [, gallery, filename] = match;
+        const replacement = replacementVersions.get(gallery)?.get(filename);
+        if (replacement) {
+          const directory = `${originalsOrigin}/public-replacements/${gallery}/${replacement}/`;
+          const preview = directory + '1440p/' + filename;
+          return resolution === '4k'
+            ? { url: directory + filename, fallbackUrl: preview, isReplacement: true }
+            : { url: preview, fallbackUrl: webpUrl(url) };
+        }
+        if (resolution !== '4k') return { url: webpUrl(url) };
+        const override = galleryRevisions[gallery];
+        const revision = revisionPattern.test(override || '') ? override : originalsRevision;
         return {
-          url: `${originalsOrigin}/public-media/${revision}/${galleryPath}`,
+          url: `${originalsOrigin}/public-media/${revision}/${gallery}/${filename}`,
           fallbackUrl: webpUrl(url),
         };
       }
@@ -45,5 +58,43 @@ const GalleryResolution = (() => {
     return publicImageSource(original, resolution).url;
   }
 
-  return { current, publicImageSource, publicImageUrl };
+  async function fetchReplacementVersions(gallery) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 1600);
+    try {
+      const response = await fetch(`${originalsOrigin}/public-replacements/${gallery}.json`, {
+        cache: 'no-store', credentials: 'omit', signal: controller.signal
+      });
+      if (!response.ok) return false;
+      const { images } = await response.json();
+      if (!images || typeof images !== 'object' || Array.isArray(images)) return false;
+      const entries = Object.entries(images);
+      if (entries.some(([name, revision]) => !imageName.test(name) ||
+          typeof revision !== 'string' || !revisionPattern.test(revision))) return false;
+      const previous = replacementVersions.get(gallery);
+      replacementVersions.set(gallery, new Map(entries));
+      return (previous?.size ?? 0) !== entries.length ||
+        entries.some(([name, revision]) => previous?.get(name) !== revision);
+    } catch {
+      return false;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  function refreshPublicUpdates(galleryBase) {
+    if (!originalsOrigin || !originalsRevision) return Promise.resolve(false);
+    const url = new URL(galleryBase, document.baseURI);
+    const gallery = url.pathname.match(/\/galleries\/([a-z0-9-]+)\/$/)?.[1];
+    if (!gallery || url.origin !== new URL(document.baseURI).origin || gallery === 'hb-rzstart') {
+      return Promise.resolve(false);
+    }
+    if (!replacementRequests.has(gallery)) {
+      replacementRequests.set(gallery, fetchReplacementVersions(gallery)
+        .finally(() => replacementRequests.delete(gallery)));
+    }
+    return replacementRequests.get(gallery);
+  }
+
+  return { current, publicImageSource, publicImageUrl, refreshPublicUpdates };
 })();

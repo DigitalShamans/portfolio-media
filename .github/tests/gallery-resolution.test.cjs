@@ -9,9 +9,9 @@ const source = fs.readFileSync(path.join(__dirname, '../../assets/gallery-resolu
 const serviceOrigin = 'https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site';
 const commit = '1234567890abcdef1234567890abcdef12345678';
 
-function resolution(baseURI, wide = false, delivery = {}) {
+function resolution(baseURI, wide = false, delivery = {}, fetch = undefined) {
   return vm.runInNewContext(source + '\nGalleryResolution;', {
-    URL,
+    URL, AbortController, setTimeout, clearTimeout, fetch,
     window: { matchMedia: () => ({ matches: wide }) },
     document: {
       baseURI,
@@ -33,6 +33,36 @@ test('primary, wireframe and checker names become clean WebP URLs on both portfo
       assert.equal(url.searchParams.get('webp'), 'q92-m6');
     }
   }
+});
+
+test('published replacements revalidate both sizes without changing unrelated image URLs', async () => {
+  const base = 'https://digitalshamans.co.uk/galleries/stylised-artworks/';
+  const initial = 'd'.repeat(40);
+  const updated = 'e'.repeat(40);
+  let revision = initial;
+  let online = true;
+  const mapper = resolution(base, false, {
+    galleryOriginalsOrigin: serviceOrigin, galleryOriginalsRevision: commit,
+  }, async (url, options) => {
+    assert.equal(url, serviceOrigin + '/public-replacements/stylised-artworks.json');
+    assert.equal(options.cache, 'no-store');
+    assert.equal(options.credentials, 'omit');
+    return { ok: online, json: async () => ({ images: { 'Daisy.jpg': revision } }) };
+  });
+  assert.equal(await mapper.refreshPublicUpdates(base), true);
+  assert.equal(await mapper.refreshPublicUpdates(base), false);
+  assert.equal(mapper.publicImageUrl('Daisy.jpg', '1440p'),
+    `${serviceOrigin}/public-replacements/stylised-artworks/${initial}/1440p/Daisy.jpg`);
+  revision = updated;
+  assert.equal(await mapper.refreshPublicUpdates(base), true);
+  assert.equal(mapper.publicImageUrl('Daisy.jpg', '4k'),
+    `${serviceOrigin}/public-replacements/stylised-artworks/${updated}/Daisy.jpg`);
+  assert.equal(mapper.publicImageUrl('Other.jpg', '4k'),
+    `${serviceOrigin}/public-media/${commit}/stylised-artworks/Other.jpg`);
+  online = false;
+  assert.equal(await mapper.refreshPublicUpdates(base), false);
+  assert.equal(mapper.publicImageUrl('Daisy.jpg', '4k'),
+    `${serviceOrigin}/public-replacements/stylised-artworks/${updated}/Daisy.jpg`);
 });
 
 test('only the final extension is replaced, including uppercase extensions and encoded names', () => {
