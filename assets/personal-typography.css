@@ -29,17 +29,17 @@ button, input, select, textarea {
   font-family: inherit;
 }
 
-/* Desktop Safari sizes follow the header's content width, not the display width. */
+/* Match Chrome's layout-viewport sizing and keep the name anchored above the accent. */
 @media (min-width: 48rem) and (hover: hover) and (pointer: fine) {
-  html[data-desktop-safari] .site-header--personal .site-header__inner {
+  html[data-desktop-safari] .site-header--personal {
     container-type: inline-size;
   }
 
   html[data-desktop-safari] .site-header--personal .site-brand--personal {
-    font-size: clamp(1rem, 2.2cqi, 2rem);
-  }
-
-  html[data-desktop-safari] .site-header--personal .site-nav a {
-    font-size: clamp(.75rem, 1.1cqi, 1rem);
+    font-size: clamp(1.6rem, 2.68cqi, 2.3rem);
+    align-self: flex-end;
+    inset-block-start: auto;
+    inset-block-end: .4375rem;
   }
 }
+
