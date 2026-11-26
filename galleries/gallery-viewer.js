@@ -17,6 +17,22 @@ let displaySize = `${screen.width}x${screen.height}`;
 let baselinePixelRatio = window.devicePixelRatio;
 let restoreGalleryViewportPosition;
 
+gallery.addEventListener('mousedown', event => {
+  if (event.button !== 1) return;
+  const link = event.target.closest?.('a.shot[href]');
+  if (!link) return;
+  const href = link.getAttribute('href');
+  // Temporarily remove the link so the browser's middle-button default starts autoscroll.
+  link.removeAttribute('href');
+  setTimeout(() => {
+    if (!link.hasAttribute('href')) link.setAttribute('href', href);
+  }, 0);
+}, true);
+
+gallery.addEventListener('auxclick', event => {
+  if (event.button === 1 && event.target.closest?.('a.shot')) event.preventDefault();
+}, true);
+
 function fitGallery() {
   const viewport = document.documentElement;
   const currentDisplaySize = `${screen.width}x${screen.height}`;

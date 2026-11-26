@@ -50,7 +50,10 @@ const { portfolio, originals, preview } = routedUrls;
 
 let browser;
 before(async () => {
-  browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH });
+  browser = await chromium.launch({
+    executablePath: process.env.CHROMIUM_PATH,
+    args: ['--enable-blink-features=MiddleClickAutoscroll'],
+  });
 });
 after(() => browser?.close());
 
@@ -331,6 +334,38 @@ test('healthy 4K stays in 4K, and 1440p viewports go directly to WebP', async t 
       await activeSegment(page, 2);
       onceEach(requests, source('First'), source('First_Wireframe'));
       assert.ok(!requests.includes(unused('First')) && !requests.includes(unused('First_Wireframe')));
+      assert.deepEqual(errors, []);
+    });
+  }
+});
+
+test('middle-click on a gallery image starts native autoscroll without opening a tab', async t => {
+  const galleries = [
+    ['studio gallery', {}],
+    ['personal gallery', { route: '/artur' + gallery }],
+    ['interactive map screenshots', { map: true }],
+  ];
+  for (const [name, options] of galleries) {
+    await t.test(name, async t => {
+      const { page, errors } = await openPage(t, { width: 1440, reducedMotion: 'reduce', ...options });
+      await page.locator('.shot').nth(2).waitFor({ state: 'attached' });
+      const shot = page.locator('.shot').first();
+      await shot.scrollIntoViewIfNeeded();
+      const href = await shot.getAttribute('href');
+      const { x, y, width, height } = await shot.boundingBox();
+      const mouseX = x + width / 2;
+      const mouseY = Math.max(0, y) + Math.min(height / 2, 96);
+      assert.ok(await page.evaluate(({ x, y }) => Boolean(document.elementFromPoint(x, y)?.closest('a.shot')),
+        { x: mouseX, y: mouseY }), 'middle-click starts on a gallery image');
+      const start = await page.evaluate(() => window.scrollY);
+
+      await page.mouse.click(mouseX, mouseY, { button: 'middle' });
+      await page.mouse.move(mouseX, Math.min(page.viewportSize().height - 5, mouseY + 230));
+
+      await page.waitForFunction(start => window.scrollY > start + 20, start, { timeout: 2200 });
+      assert.equal(page.context().pages().length, 1);
+      assert.equal(await shot.getAttribute('href'), href);
+      assert.ok(!await page.locator('#viewer').isVisible());
       assert.deepEqual(errors, []);
     });
   }
