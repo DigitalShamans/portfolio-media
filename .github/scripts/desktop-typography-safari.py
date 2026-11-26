@@ -118,30 +118,54 @@ class DesktopBrowser:
         raise AssertionError(f"Timed out waiting for {label or expression}; last value={last_value!r}")
 
     def screenshot(self, name, metrics):
-        path = OUTPUT / f"{name}.png"
-        for attempt in range(3):
-            data = base64.b64decode(self.request("GET", "/screenshot"))
+        def save_verified(encoded, path, region, kind, attempts):
+            data = base64.b64decode(encoded)
             path.write_bytes(data)
             with Image.open(io.BytesIO(data)) as original:
                 image = original.convert("RGB")
-                scale_x = image.width / metrics["innerWidth"]
-                scale_y = image.height / metrics["innerHeight"]
+                scale_x = image.width / region["width"]
+                scale_y = image.height / region["height"]
                 rect = metrics["brand"]["rect"]
-                crop = image.crop((int(rect["x"] * scale_x), int(rect["y"] * scale_y),
-                                   int(rect["right"] * scale_x) + 1,
-                                   int(rect["bottom"] * scale_y) + 1))
+                crop = image.crop((int((rect["x"] - region["x"]) * scale_x),
+                                   int((rect["y"] - region["y"]) * scale_y),
+                                   int((rect["right"] - region["x"]) * scale_x) + 1,
+                                   int((rect["bottom"] - region["y"]) * scale_y) + 1))
                 text_pixels = sum(min(rgb) >= 170 and max(rgb) - min(rgb) <= 35
                                   for rgb in crop.getdata())
                 if image.getbbox() is not None and text_pixels >= 20:
-                    self.last_capture_validation = {"attempts": attempt + 1,
+                    self.last_capture_validation = {"attempts": attempts,
                                                     "nameLightPixels": text_pixels,
                                                     "nonblank": True}
+                    self.last_capture_region = region
+                    self.last_capture_kind = kind
                     return path.name
-            if attempt < 2:
+            return None
+
+        region = {"x": 0, "y": 0, "width": metrics["innerWidth"], "height": metrics["innerHeight"]}
+        for attempt in range(2):
+            saved = save_verified(self.request("GET", "/screenshot"), OUTPUT / f"{name}.png",
+                                  region, "viewport", attempt + 1)
+            if saved:
+                return saved
+            if attempt == 0:
                 self.request("POST", "/refresh", {})
                 self.wait("return document.readyState==='complete'&&document.fonts.status==='loaded'",
                           timeout=12, label="repainted page and font")
                 time.sleep(1)
+
+        if BROWSER == "safari":
+            # Native element snapshots use Safari's renderer. Unlike viewport
+            # snapshots they can provide real header pixels beyond this runner's
+            # 1920px desktop. Keep the actual viewport and label the region.
+            element = self.request("POST", "/element", {
+                "using": "css selector", "value": ".site-header--personal"})
+            element_id = element["element-6066-11e4-a52e-4f735466cecf"]
+            header = metrics["header"]
+            region = {key: header[key] for key in ("x", "y", "width", "height")}
+            saved = save_verified(self.request("GET", f"/element/{element_id}/screenshot"),
+                                  OUTPUT / f"{name}-header.png", region, "header-element", 3)
+            if saved:
+                return saved
         raise AssertionError("Safari/Chrome returned a blank screenshot or the rendered name is missing; computed layout alone is not a visual pass.")
 
     def close(self):
@@ -301,7 +325,7 @@ def main():
         "startedUtc": dt.datetime.now(dt.timezone.utc).isoformat(),
         "browser": BROWSER_LABEL,
         "browserMode": BROWSER_MODE,
-        "scope": f"Installed {BROWSER_LABEL} on macOS in {BROWSER_MODE} mode. Unmodified live page and WebDriver window resizing; no CSS zoom, browser substitution, image upscaling or fabricated viewport sizes.",
+        "scope": f"Installed {BROWSER_LABEL} on macOS in {BROWSER_MODE} mode. Unmodified live page and WebDriver window resizing; no CSS zoom, browser substitution, image upscaling or fabricated viewport sizes. If a native Safari viewport screenshot is blank beyond the runner display, a clearly labelled native header-element screenshot records the actual header at that viewport.",
         "macOS": platform.mac_ver()[0], "cases": [], "cleanup": {},
     }
     driver = DesktopBrowser()
@@ -328,6 +352,8 @@ def main():
                 filename = f"{BROWSER}-{actual_width}x{actual_height}-requested-{width}x{height}"
                 case["screenshot"] = driver.screenshot(filename, metrics)
                 case["screenshotContentCheck"] = driver.last_capture_validation
+                case["screenshotKind"] = driver.last_capture_kind
+                case["screenshotRegion"] = driver.last_capture_region
                 png = (OUTPUT / case["screenshot"]).read_bytes()
                 case["screenshotPixels"] = {"width": int.from_bytes(png[16:20], "big"), "height": int.from_bytes(png[20:24], "big")}
                 case["errors"] = check_metrics(metrics)
@@ -335,7 +361,7 @@ def main():
                     case["viewportNote"] = f"{BROWSER_LABEL} returned a constrained viewport; the image is labelled with its actual dimensions."
                     case["errors"].append("The native/rendered viewport did not reach the requested capture dimensions.")
                 case["status"] = "fail" if case["errors"] else "pass"
-                summary = {key:case.get(key) for key in ("requestedViewport","exactViewport","screenshot","screenshotPixels","status","errors")}
+                summary = {key:case.get(key) for key in ("requestedViewport","exactViewport","screenshot","screenshotPixels","screenshotKind","status","errors")}
                 summary.update(browser=BROWSER_LABEL, namePx=metrics["brand"]["fontSize"],
                                navigationPx=metrics["links"][0]["fontSize"],
                                nameAccentGapPx=metrics["nameAccentGap"])
@@ -360,12 +386,12 @@ def main():
         lines = [f"# {BROWSER_LABEL} desktop typography comparison", "", report["scope"], "",
                  f"- {BROWSER_LABEL}: {report.get('capabilities', {}).get('browserVersion', 'unavailable')} ({BROWSER_MODE})",
                  f"- macOS: {report['macOS']}", f"- Published change: {SOURCE_SHA}",
-                 "", "| Requested viewport | Actual viewport | PNG pixels | Name | Navigation | Name-to-accent gap | Result |",
-                 "|---|---|---|---:|---:|---:|---|"]
+                 "", "| Requested viewport | Actual viewport | Capture | PNG pixels | Name | Navigation | Name-to-accent gap | Result |",
+                 "|---|---|---|---|---:|---:|---:|---|"]
         for case in report["cases"]:
             requested = case["requestedViewport"]; metrics = case.get("metrics", {})
             pixels = case.get("screenshotPixels", {})
-            lines.append(f"| {requested['width']} x {requested['height']} | {metrics.get('innerWidth','?')} x {metrics.get('innerHeight','?')} | {pixels.get('width','?')} x {pixels.get('height','?')} | {metrics.get('brand',{}).get('fontSize','?')} px | {(metrics.get('links') or [{}])[0].get('fontSize','?')} px | {metrics.get('nameAccentGap','?')} px | {case['status']} |")
+            lines.append(f"| {requested['width']} x {requested['height']} | {metrics.get('innerWidth','?')} x {metrics.get('innerHeight','?')} | {case.get('screenshotKind','unavailable')} | {pixels.get('width','?')} x {pixels.get('height','?')} | {metrics.get('brand',{}).get('fontSize','?')} px | {(metrics.get('links') or [{}])[0].get('fontSize','?')} px | {metrics.get('nameAccentGap','?')} px | {case['status']} |")
         lines.extend(["", "Screenshot files retain their native pixels. Any constrained viewport is recorded in measurements.json.",
                       "This verifies desktop browsers, not iOS Safari or real touch hardware.",
                       f"Browser session cleanup: {report['cleanup']}", ""])

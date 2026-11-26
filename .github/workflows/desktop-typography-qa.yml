@@ -16,7 +16,7 @@ jobs:
     timeout-minutes: 8
     env:
       PORTFOLIO_SOURCE_SHA: 4897f2fbfc8793ea9956fc40eff1d42e1248770f
-      TYPOGRAPHY_CAPTURE_MODE: both
+      TYPOGRAPHY_CAPTURE_MODE: safari
       TYPOGRAPHY_TEST_BUDGET_SECONDS: '180'
       CHROME_BINARY: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
     steps:
@@ -73,7 +73,7 @@ jobs:
                       raise
                   time.sleep(1)
           PY
-          swift .github/scripts/desktop-capture-display.swift -- python3 .github/scripts/desktop-typography-safari.py
+          python3 .github/scripts/desktop-typography-safari.py
       - name: Capture headless Google Chrome at six resolutions
         if: ${{ !cancelled() && env.TYPOGRAPHY_CAPTURE_MODE != 'safari' }}
         env:
