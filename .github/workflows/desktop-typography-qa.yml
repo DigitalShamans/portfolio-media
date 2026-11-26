@@ -1,0 +1,148 @@
+name: Safari and Chrome desktop typography captures
+
+on:
+  push:
+    branches: [qa/safari-font-match-2026-11-26]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  safari:
+    name: Matched font sizes and Safari bottom alignment
+    if: github.ref == 'refs/heads/qa/safari-font-match-2026-11-26'
+    runs-on: macos-15-intel
+    timeout-minutes: 8
+    env:
+      PORTFOLIO_SOURCE_SHA: 4897f2fbfc8793ea9956fc40eff1d42e1248770f
+      TYPOGRAPHY_CAPTURE_MODE: both
+      TYPOGRAPHY_TEST_BUDGET_SECONDS: '180'
+      CHROME_BINARY: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+          lfs: false
+      - name: Record installed browser versions
+        run: |
+          mkdir -p artifacts/desktop-typography/chrome
+          sw_vers > artifacts/desktop-typography/macos-version.txt
+          if test "$TYPOGRAPHY_CAPTURE_MODE" != chrome; then
+            mkdir -p artifacts/desktop-typography/safari
+            /usr/bin/safaridriver --version > artifacts/desktop-typography/safari/safaridriver-version.txt
+            /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' /Applications/Safari.app/Contents/Info.plist > artifacts/desktop-typography/safari/safari-version.txt
+          fi
+          test -x "$CHROME_BINARY"
+          "$CHROME_BINARY" --version > artifacts/desktop-typography/chrome/chrome-version.txt
+          typography_chromedriver="${CHROMEWEBDRIVER:+$CHROMEWEBDRIVER/chromedriver}"
+          if test -z "$typography_chromedriver"; then
+            typography_chromedriver="$(command -v chromedriver)"
+          fi
+          test -x "$typography_chromedriver"
+          "$typography_chromedriver" --version > artifacts/desktop-typography/chrome/chromedriver-version.txt
+          printf 'TYPOGRAPHY_CHROMEDRIVER=%s\n' "$typography_chromedriver" >> "$GITHUB_ENV"
+      - name: Enable native Safari automation
+        if: env.TYPOGRAPHY_CAPTURE_MODE != 'chrome'
+        run: sudo /usr/bin/safaridriver --enable
+      - name: Capture Safari at six resolutions
+        if: env.TYPOGRAPHY_CAPTURE_MODE != 'chrome'
+        env:
+          TYPOGRAPHY_BROWSER: safari
+          TYPOGRAPHY_WEBDRIVER_URL: http://127.0.0.1:4444
+          TYPOGRAPHY_OUTPUT_DIR: artifacts/desktop-typography/safari
+        run: |
+          /usr/bin/safaridriver -p 4444 > "$TYPOGRAPHY_OUTPUT_DIR/safaridriver.log" 2>&1 &
+          typography_driver_pid=$!
+          trap 'kill "$typography_driver_pid" 2>/dev/null || true' EXIT
+          python3 - <<'PY'
+          import os, time, urllib.request
+          for attempt in range(20):
+              try:
+                  with urllib.request.urlopen(os.environ['TYPOGRAPHY_WEBDRIVER_URL'] + '/status', timeout=2) as response:
+                      print(response.read().decode())
+                  break
+              except Exception:
+                  if attempt == 19:
+                      raise
+                  time.sleep(1)
+          PY
+          python3 .github/scripts/desktop-typography-safari.py
+      - name: Capture headless Google Chrome at six resolutions
+        if: ${{ !cancelled() && env.TYPOGRAPHY_CAPTURE_MODE != 'safari' }}
+        env:
+          TYPOGRAPHY_BROWSER: chrome
+          TYPOGRAPHY_CHROME_HEADLESS: '1'
+          TYPOGRAPHY_WEBDRIVER_URL: http://127.0.0.1:4445
+          TYPOGRAPHY_OUTPUT_DIR: artifacts/desktop-typography/chrome
+        run: |
+          "$TYPOGRAPHY_CHROMEDRIVER" --port=4445 > "$TYPOGRAPHY_OUTPUT_DIR/chromedriver.log" 2>&1 &
+          typography_driver_pid=$!
+          trap 'kill "$typography_driver_pid" 2>/dev/null || true' EXIT
+          python3 - <<'PY'
+          import os, time, urllib.request
+          for attempt in range(20):
+              try:
+                  with urllib.request.urlopen(os.environ['TYPOGRAPHY_WEBDRIVER_URL'] + '/status', timeout=2) as response:
+                      print(response.read().decode())
+                  break
+              except Exception:
+                  if attempt == 19:
+                      raise
+                  time.sleep(1)
+          PY
+          python3 .github/scripts/desktop-typography-safari.py
+      - name: Compare font sizes and Safari bottom spacing
+        if: ${{ !cancelled() && env.TYPOGRAPHY_CAPTURE_MODE == 'both' }}
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          root = Path('artifacts/desktop-typography')
+          reports = {browser: json.loads((root / browser / 'measurements.json').read_text()) for browser in ('safari', 'chrome')}
+          def key(case):
+              r = case['requestedViewport']
+              return r['width'], r['height']
+          cases = {browser: {key(case): case for case in report['cases']} for browser, report in reports.items()}
+          errors = []
+          rows = []
+          if len(cases['safari']) != 6 or set(cases['safari']) != set(cases['chrome']):
+              errors.append('Both browsers must provide the same six requested viewports.')
+          for viewport in sorted(set(cases['safari']) & set(cases['chrome'])):
+              safari, chrome = cases['safari'][viewport], cases['chrome'][viewport]
+              if any(case.get('status') != 'pass' or not case.get('exactViewport') for case in (safari, chrome)):
+                  errors.append(f'{viewport}: at least one browser capture did not pass at the exact viewport.')
+                  continue
+              s, c = safari['metrics'], chrome['metrics']
+              name_delta = abs(s['brand']['fontSize'] - c['brand']['fontSize'])
+              nav_delta = max(abs(a['fontSize'] - b['fontSize']) for a, b in zip(s['links'], c['links']))
+              if name_delta > .1 or nav_delta > .1:
+                  errors.append(f'{viewport}: Safari and Chrome font sizes differ.')
+              rows.append({'viewport': list(viewport), 'safariNamePx': s['brand']['fontSize'], 'chromeNamePx': c['brand']['fontSize'], 'safariNavigationPx': s['links'][0]['fontSize'], 'chromeNavigationPx': c['links'][0]['fontSize'], 'safariNameAccentGapPx': s['nameAccentGap']})
+          gaps = [row['safariNameAccentGapPx'] for row in rows]
+          if gaps and max(gaps) - min(gaps) > .15:
+              errors.append('Safari name-to-accent spacing changes between capture sizes.')
+          result = {'sourceCommit': reports['safari']['sourceCommit'], 'rows': rows, 'errors': errors, 'status': 'fail' if errors else 'pass'}
+          (root / 'comparison.json').write_text(json.dumps(result, indent=2) + '\n')
+          print('FONT_MATCH_SUMMARY', json.dumps(result))
+          if errors:
+              raise SystemExit(1)
+          PY
+      - name: Publish capture summaries
+        if: always()
+        run: |
+          for typography_report in artifacts/desktop-typography/{safari,chrome}/report.md; do
+            if test -f "$typography_report"; then
+              cat "$typography_report" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+      - name: Keep native browser captures and measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-typography-safari-chrome
+          path: artifacts/desktop-typography/
+          if-no-files-found: error
+          retention-days: 7
+
