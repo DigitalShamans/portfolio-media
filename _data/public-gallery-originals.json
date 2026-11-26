@@ -2,16 +2,16 @@
   "galleries": {
     "battlezone-vr": {
       "digital-shamans-artur-perzyna-battlezone-cg3d-1.jpg": {
-        "blob": "600986757445d527ac0a68ea26e0b430432a61f4",
-        "size": 496878
+        "blob": "422550fda3396c5116e71039f93548d0e54067b0",
+        "size": 1281048
       },
       "digital-shamans-artur-perzyna-battlezone-cg3d-2.jpg": {
-        "blob": "624b861721f998a192dbb0bdd0d56eba9ea53fb7",
-        "size": 426151
+        "blob": "53b0d6be3830a34f670172c8d1aeb13383adbcf0",
+        "size": 1086278
       },
       "digital-shamans-artur-perzyna-battlezone-cg3d-3.jpg": {
-        "blob": "6ad6cf9ab0dbfb81fed7905aee4bd9b961382a73",
-        "size": 471203
+        "blob": "b183efed88959f19364d70ef1e23be9a716dda5f",
+        "size": 1163435
       },
       "digital-shamans-artur-perzyna-battlezone-cg3d-4.jpg": {
         "blob": "f1e4cb1744ae4207191301107d0481e073825d66",
@@ -34,32 +34,36 @@
         "size": 361846
       },
       "digital-shamans-artur-perzyna-battlezone-presentation-a00b-impr2-denoised.jpg": {
-        "blob": "43f0598f2658008f93210689e624779ee76b8d7e",
-        "size": 390575
+        "blob": "e057a0123c91ce07d3f8ac486f13b2e361775e20",
+        "size": 987555
       },
       "digital-shamans-artur-perzyna-battlezone-presentation-a01-impr-denoised.jpg": {
-        "blob": "ee20f56e94e0015580570d432152f901a5fdf836",
-        "size": 474163
+        "blob": "1e3eaac76fc8808aa01b3adcfb585be980c33a06",
+        "size": 1163166
       },
       "digital-shamans-artur-perzyna-battlezone-presentation-a04-impr-denoised.jpg": {
-        "blob": "412eca7465bd0544ad9736687148c1064f88335b",
-        "size": 297358
+        "blob": "4293e02097deb26fcc163b8c53ef072470bf78f6",
+        "size": 790150
       },
       "digital-shamans-artur-perzyna-battlezone-presentation-a10-impr-denoised.jpg": {
-        "blob": "ad1e37f8e0bf58f10d1a0ea006773355f3c573de",
-        "size": 461862
+        "blob": "40a90196f3cee607f8fda6159af2108849cc268e",
+        "size": 1180191
       },
       "digital-shamans-artur-perzyna-battlezone-presentation-c01-impr-denoised-m.jpg": {
-        "blob": "1071a8b82ce2b6cc28137a48c5ccdca0134073e7",
-        "size": 397713
+        "blob": "da7beb3518cec48fa7f299fa1f5f2774f2b29803",
+        "size": 1012483
       },
       "digital-shamans-artur-perzyna-battlezone-presentation-c02-impr-denoised-m.jpg": {
-        "blob": "591e27285d23012ede975e6131a71b40457db2c9",
-        "size": 380325
+        "blob": "4b345bd28c4f26f42edd0611b35c324426cf0ac2",
+        "size": 1065569
       },
       "digital-shamans-artur-perzyna-battlezone-presentation-c06-impr-denoised-m.jpg": {
-        "blob": "358168338821fbfd6069a5f11a5b712b8a16d9bc",
-        "size": 306563
+        "blob": "e0da21ca1a2b13a728651c389335d5ee5e83167c",
+        "size": 916924
+      },
+      "the-digital-shaman-battlezone.jpg": {
+        "blob": "38a46528cf3156ece64e3ade24aa732f5c90247e",
+        "size": 680263
       }
     },
     "carve-snowboarding-vr-concept-art-design": {
