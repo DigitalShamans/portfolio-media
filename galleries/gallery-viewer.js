@@ -145,25 +145,27 @@ function readGalleryPosition() {
   } catch { /* Treat unavailable or unreadable storage as a first visit. */ }
 }
 
-function currentGalleryPosition() {
-  const top = Math.max(0, window.scrollY);
-  const position = { top };
-  if (top > 0) {
-    const height = document.documentElement.clientHeight;
-    const center = height / 2;
-    let nearest = Infinity;
-    for (const shot of shots) {
-      const rect = shot.element.getBoundingClientRect();
-      if (rect.top >= height) break;
-      if (rect.bottom <= 0 || rect.height <= 0) continue;
-      const distance = Math.abs(center - (rect.top + rect.height / 2));
-      if (distance >= nearest) continue;
-      nearest = distance;
-      position.filename = shot.filenames[0];
-      position.offset = (center - rect.top) / rect.height;
-    }
+function visibleGalleryShot() {
+  const height = document.documentElement.clientHeight;
+  const center = height / 2;
+  let nearest = Infinity;
+  let visible;
+  for (let index = 0; index < shots.length; index++) {
+    const rect = shots[index].element.getBoundingClientRect();
+    if (rect.top >= height) break;
+    if (rect.bottom <= 0 || rect.height <= 0) continue;
+    const distance = Math.abs(center - (rect.top + rect.height / 2));
+    if (distance >= nearest) continue;
+    nearest = distance;
+    visible = { index, offset: (center - rect.top) / rect.height };
   }
-  return position;
+  return visible;
+}
+
+function preloadComparisonPair(index, wrap = false) {
+  shots[index].comparison?.preload();
+  const next = wrap ? (index + 1) % shots.length : index + 1;
+  if (next !== index) shots[next]?.comparison?.preload();
 }
 
 function scrollTopForGalleryRow(element, offset) {
@@ -198,16 +200,42 @@ function settleGalleryPosition(position, imageReady, embedsReady) {
 }
 
 function trackGalleryPosition() {
-  if (!galleryContent.classList.contains('gallery-content')) return;
+  const restorePosition = galleryContent.classList.contains('gallery-content');
   const viewport = document.documentElement;
   let position;
   let lastViewport;
   let frame;
+  let preloadIndex;
+  let preloadTimer;
+
+  function scheduleComparisonPreload(index) {
+    if (index === preloadIndex) return;
+    preloadIndex = index;
+    clearTimeout(preloadTimer);
+    if (index === undefined) return;
+    // Skip images that pass through the viewport during fast scrolling.
+    preloadTimer = setTimeout(() => {
+      if (document.hidden || viewer.open || document.fullscreenElement) {
+        preloadIndex = undefined;
+        return;
+      }
+      preloadComparisonPair(index);
+    }, 120);
+  }
 
   function capturePosition() {
     // Keep the last visible position before browser fullscreen or a viewport resize.
     if (document.hidden || viewer.open || document.fullscreenElement) return;
-    position = currentGalleryPosition();
+    const visible = visibleGalleryShot();
+    scheduleComparisonPreload(visible?.index);
+    if (!restorePosition) return;
+
+    const top = Math.max(0, window.scrollY);
+    position = { top };
+    if (top > 0 && visible) {
+      position.filename = shots[visible.index].filenames[0];
+      position.offset = visible.offset;
+    }
     lastViewport = undefined;
     if (!finePointer.matches) return;
 
@@ -250,6 +278,8 @@ function trackGalleryPosition() {
   }
   capturePosition();
   window.addEventListener('scroll', updatePosition, { passive: true });
+  viewer.addEventListener('close', updatePosition);
+  document.addEventListener('fullscreenchange', updatePosition);
   window.addEventListener('pagehide', savePosition);
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) savePosition();
@@ -261,6 +291,7 @@ function trackGalleryPosition() {
       updatePosition();
     }
   });
+  return updatePosition;
 }
 
 function setupClassicGalleryScroll() {
@@ -806,7 +837,7 @@ function showImage(index, initialVariant = 0) {
   previousSide.disabled = nextSide.disabled = shots.length < 2;
   counter.textContent = (index + 1) + ' / ' + shots.length;
   showStatus('Loading image…');
-  const selectedImage = initialVariant === 0 ? image : shot.comparison.getImage(initialVariant, true);
+  const selectedImage = initialVariant === 0 ? image : shot.comparison.getImage(initialVariant, 'high');
   if (selectedImage?.naturalWidth) {
     displayOriginal(selectedImage);
   } else if (!sources[0].fallbackUrl) {
@@ -857,9 +888,9 @@ function imageLoaded() {
     showStatus('');
   }
   positionViewerControls();
-  if (!shot.comparison || comparisonsInitialized) return;
+  if (comparisonsInitialized) return;
   comparisonsInitialized = true;
-  for (let index = 1; index < shot.sources.length; index++) shot.comparison.getImage(index, true);
+  preloadComparisonPair(current, true);
 }
 
 function updateComparisonStatus() {
@@ -891,7 +922,8 @@ function updateComparison(requestImage = false) {
   if (!viewer.open || !viewerIndicator) return;
   const shot = shots[current];
   if (comparisonIndex === 0 && requestImage && !shot.image.naturalWidth) prioritizeShot(shot);
-  const preview = comparisonIndex === 0 ? shot.image : shot.comparison.getImage(comparisonIndex, requestImage);
+  const preview = comparisonIndex === 0
+    ? shot.image : shot.comparison.getImage(comparisonIndex, requestImage ? 'high' : undefined);
   const image = preferredViewerImage(preview, comparisonIndex);
   updateComparisonStatus();
   if (image?.complete && image.naturalWidth && original.src !== imageUrl(image)) displayOriginal(image);
@@ -1003,7 +1035,7 @@ function isInsideImage(event, { left, top, width, height }) {
 }
 
 function compareAtPointer(event) {
-  if (viewerZoom.scale > 1 || !comparisonsInitialized || !viewerAspect || !canCompare(event)) return;
+  if (!viewerIndicator || viewerZoom.scale > 1 || !comparisonsInitialized || !viewerAspect || !canCompare(event)) return;
   if (openingPointer && event.screenX === openingPointer.x && event.screenY === openingPointer.y) return;
   openingPointer = null;
   const overComparison = stage.contains(event.target) || viewerIndicator?.contains(event.target);
@@ -1063,9 +1095,20 @@ function setupGalleryComparison(entry, link, sources, shotIndex) {
   }
 
   // The tile and fullscreen viewer share each alternate image and its in-flight request.
-  function getImage(index, request = false) {
-    if (alternates[index] || !request) return alternates[index];
+  function getImage(index, priority) {
+    const existing = alternates[index];
+    if (!priority) return existing;
+    if (existing) {
+      // A failed preload gets one new attempt when the viewer requests it.
+      const retryPreload = priority === 'high' && existing.fetchPriority === 'low' &&
+        !loadingAlternates.has(index) && !existing.naturalWidth;
+      if (!retryPreload) {
+        if (priority === 'high') existing.fetchPriority = priority;
+        return existing;
+      }
+    }
     const alternate = new Image();
+    alternate.fetchPriority = priority;
     alternate.className = 'shot-comparison';
     alternate.alt = '';
     alternate.setAttribute('aria-hidden', 'true');
@@ -1081,7 +1124,7 @@ function setupGalleryComparison(entry, link, sources, shotIndex) {
         if (requested === index) show(index);
       } else {
         // Keep an exhausted 4K/WebP pair from restarting on every hover or toggle.
-        if (!source.fallbackUrl) delete alternates[index];
+        if (!source.fallbackUrl && alternate.fetchPriority === 'high') delete alternates[index];
         alternate.remove();
       }
       if (shots[current]?.link === link && comparisonIndex === index) updateComparison();
@@ -1098,7 +1141,7 @@ function setupGalleryComparison(entry, link, sources, shotIndex) {
         return;
       }
     }
-    if (index !== displayed && (index === 0 || getImage(index, request)?.naturalWidth)) show(index);
+    if (index !== displayed && (index === 0 || getImage(index, request ? 'high' : undefined)?.naturalWidth)) show(index);
   }
 
   function select(index) {
@@ -1126,6 +1169,9 @@ function setupGalleryComparison(entry, link, sources, shotIndex) {
 
   return {
     getImage,
+    preload() {
+      for (let index = 1; index < sources.length; index++) getImage(index, 'low');
+    },
     isLoading: index => loadingAlternates.has(index),
     select,
     primaryLoaded() {
@@ -1212,7 +1258,7 @@ function prioritizeShot(shot) {
   return request;
 }
 
-function loadVisibleShotsFirst() {
+function loadVisibleShotsFirst(updatePosition) {
   const shotsByElement = new Map(shots.map(shot => [shot.element, shot]));
   const observer = new IntersectionObserver(entries => {
     for (const { isIntersecting, target } of entries) {
@@ -1225,6 +1271,7 @@ function loadVisibleShotsFirst() {
         shot.retryTimer = undefined;
       }
     }
+    updatePosition();
   });
 
   const visible = shots.filter(shot => {
@@ -1301,8 +1348,8 @@ async function loadGallery() {
     gallery.replaceChildren(...shots.map(shot => shot.element));
     const position = readGalleryPosition();
     const restoredShot = restoreGalleryPosition(position);
-    trackGalleryPosition();
-    loadVisibleShotsFirst();
+    const updatePosition = trackGalleryPosition();
+    loadVisibleShotsFirst(updatePosition);
     const embedsReady = gallery.dataset.galleryEmbeds && typeof GalleryEmbeds !== 'undefined'
       ? GalleryEmbeds.mount(gallery, entries, shots.map(shot => shot.element),
         galleryAssetUrl(gallery.dataset.galleryEmbeds), galleryAssetUrl)

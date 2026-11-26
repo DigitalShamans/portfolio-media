@@ -163,7 +163,7 @@ async function startFixtureServer(t, serve, errors) {
 
 async function openPage(t, {
   route = gallery, width = 2800, hasTouch = false, intercept, embeds, assetVersions,
-  map = false, diagnostics = false, reducedMotion, cacheImages = false,
+  map = false, diagnostics = false, reducedMotion, cacheImages = false, galleryEntries = manifest,
 } = {}) {
   if (map) route = mapRoute;
   const page = await browser.newPage({ hasTouch, viewport: { width, height: 900 } });
@@ -183,7 +183,7 @@ async function openPage(t, {
     }
     if (map && url.pathname === `${gallery}gallery-map.json`) return request.fulfill({ json: mapManifest });
     if (url.pathname === `${gallery}gallery.json` || url.pathname === '/media/gallery.json') {
-      return request.fulfill({ json: manifest });
+      return request.fulfill({ json: galleryEntries });
     }
     if (embeds && url.pathname === `${gallery}gallery-embeds.json`) return request.fulfill({ json: embeds });
     if (url.pathname.endsWith('.webp')) return request.fulfill({ headers: imageHeaders, contentType: 'image/webp', body: webp });
@@ -337,6 +337,79 @@ test('healthy 4K stays in 4K, and 1440p viewports go directly to WebP', async t 
       assert.deepEqual(errors, []);
     });
   }
+});
+
+test('gallery comparisons preload for the visible image and its next neighbor', async t => {
+  const galleryEntries = [
+    manifest[0],
+    { ...manifest[1], compare: 'Second_Checker.jpg' },
+    { ...manifest[2], compare: 'Third_Checker.jpg' },
+  ];
+  const { page, requests, errors, urls: { preview } } = await openPage(t, {
+    route: '/artur' + gallery, width: 1440, cacheImages: true, galleryEntries,
+  });
+  await displayed(page, '.shot-comparison[src*="First_Checker"]', preview('First_Checker'));
+  await displayed(page, '.shot-comparison[src*="First_Wireframe"]', preview('First_Wireframe'));
+  await displayed(page, '.shot-comparison[src*="Second_Checker"]', preview('Second_Checker'));
+  assert.ok(!requests.includes(preview('Third_Checker')));
+  assert.equal(await page.locator('.shot-comparison.is-visible').count(), 0);
+  assert.equal(await page.locator('.shot-comparison[src*="Second_Checker"]').getAttribute('fetchpriority'), 'low');
+
+  await page.locator('.shot').nth(1).evaluate(shot => shot.scrollIntoView({ block: 'center', behavior: 'instant' }));
+  await displayed(page, '.shot-comparison[src*="Third_Checker"]', preview('Third_Checker'));
+  await page.locator('.shot-entry').nth(1).locator('.comparison-indicator button').nth(1).press('Enter');
+  await displayed(page, '.shot-comparison.is-visible', preview('Second_Checker'));
+  onceEach(requests, preview('First_Checker'), preview('First_Wireframe'), preview('Second_Checker'), preview('Third_Checker'));
+  assert.deepEqual(errors, []);
+});
+
+test('fullscreen preloads the next comparison even when the current image has no variants', async t => {
+  const galleryEntries = [
+    ...manifest,
+    { image: 'Fourth.jpg', compare: 'Fourth_Checker.jpg' },
+    { image: 'Fifth.jpg', compare: 'Fifth_Checker.jpg' },
+  ];
+  const { page, requests, errors, urls: { preview } } = await openPage(t, {
+    width: 1440, cacheImages: true, galleryEntries,
+  });
+  await page.locator('.shot').last().waitFor({ state: 'attached' });
+  assert.ok(await page.evaluate(() => window.GalleryViewer.openImage('Third.jpg')));
+  await displayed(page, '#original', preview('Third'));
+  await displayed(page, '.shot-comparison[src*="Fourth_Checker"]', preview('Fourth_Checker'));
+  assert.ok(!requests.includes(preview('Fifth_Checker')));
+
+  await page.locator('#next-side').press('Enter');
+  await displayed(page, '#original', preview('Fourth'));
+  await displayed(page, '.shot-comparison[src*="Fifth_Checker"]', preview('Fifth_Checker'));
+  await segment(page, 1).press('Enter');
+  await displayed(page, '#original', preview('Fourth_Checker'));
+  await activeSegment(page, 1);
+  onceEach(requests, preview('Fourth_Checker'), preview('Fifth_Checker'));
+  assert.deepEqual(errors, []);
+});
+
+test('selecting a comparison can retry a failed background preload', { timeout: 12_000 }, async t => {
+  const failedPreview = signal();
+  let originalAttempts = 0;
+  const { page, errors, urls: { originals } } = await openPage(t, {
+    cacheImages: true,
+    intercept: async (request, url, { originals, preview }) => {
+      if (url.href === originals('First_Checker') && ++originalAttempts <= 2) {
+        await request.fulfill({ status: 503 });
+        return true;
+      }
+      if (url.href !== preview('First_Checker')) return false;
+      await request.fulfill({ status: 503 });
+      failedPreview.release();
+      return true;
+    },
+  });
+  await failedPreview.reached;
+  await page.locator('.shot-comparison[src*="First_Checker"]').waitFor({ state: 'detached' });
+  await page.locator('.shot-entry .comparison-indicator button').nth(1).press('Enter');
+  await displayed(page, '.shot-comparison.is-visible', originals('First_Checker'));
+  assert.equal(originalAttempts, 3);
+  assert.deepEqual(errors, []);
 });
 
 test('middle-click on a gallery image starts native autoscroll without opening a tab', async t => {
