@@ -11,8 +11,8 @@ const personal = JSON.parse(fs.readFileSync(path.join(root, '_data/personal_port
 const navigation = fs.readFileSync(path.join(root, '_includes/gallery-navigation.html'), 'utf8');
 const homepage = fs.readFileSync(path.join(root, '_layouts/portfolio.html'), 'utf8');
 
-test('all twelve studio Full Portfolio cards link to existing local gallery pages', () => {
-  assert.equal(studio.full.length, 12);
+test('all thirteen studio Full Portfolio cards link to existing local gallery pages', () => {
+  assert.equal(studio.full.length, 13);
   assert.match(homepage, /for project in portfolio\.full/);
   assert.match(homepage, /project\.url \| default: studio_project_url/);
   const seen = new Set();
@@ -28,11 +28,12 @@ test('all twelve studio Full Portfolio cards link to existing local gallery page
   }
 });
 
-test('studio Full Portfolio follows card order and wraps Vegetation to NFS Unbound', () => {
+test('studio Full Portfolio follows card order and wraps Hex: The Journey to NFS Unbound', () => {
   const list = studio.full;
   assert.equal(list[0].url, '/galleries/nfs-unbound/');
   assert.equal(list[1].url, '/galleries/vehicles-aircrafts/');
-  assert.equal(list[list.length - 1].url, '/galleries/vegetation/');
+  assert.equal(list.at(-2).url, '/galleries/vegetation/');
+  assert.equal(list.at(-1).url, '/galleries/hex/');
   for (let i = 0; i < list.length; i++) {
     const previous = list[(i + list.length - 1) % list.length];
     const next = list[(i + 1) % list.length];

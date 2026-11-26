@@ -11,8 +11,8 @@ const recent = JSON.parse(fs.readFileSync(path.join(root, '_data/portfolio.json'
 const navigation = fs.readFileSync(path.join(root, '_includes/gallery-navigation.html'), 'utf8');
 const homepage = fs.readFileSync(path.join(root, '_layouts/portfolio.html'), 'utf8');
 
-test('all 12 Full Portfolio cards resolve to existing personal gallery pages', () => {
-  assert.equal(personal.full.length, 12);
+test('all 13 Full Portfolio cards resolve to existing personal gallery pages', () => {
+  assert.equal(personal.full.length, 13);
   assert.match(homepage, /for project in portfolio\.full/);
   assert.match(homepage, /project\.url \| default: studio_project_url/);
   const paths = new Set();
@@ -38,7 +38,8 @@ test('each Full Portfolio page has precisely one previous and next in tile order
     assert.match(previous.url, /^\/artur\/galleries\//);
     assert.match(next.url, /^\/artur\/galleries\//);
   }
-  assert.equal(list.at(-1).url, '/artur/galleries/high-poly-models/');
+  assert.equal(list.at(-2).url, '/artur/galleries/high-poly-models/');
+  assert.equal(list.at(-1).url, '/artur/galleries/hex/');
   assert.equal(list[0].url, '/artur/galleries/nfs-unbound/');
   assert.equal(list[1].url, '/artur/galleries/phantom-covert-ops/');
   // The template derives the loop directly from the homepage card order.
