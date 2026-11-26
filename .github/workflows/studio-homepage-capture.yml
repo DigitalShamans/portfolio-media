@@ -1,0 +1,150 @@
+name: Digital Shamans Safari and Chrome homepage captures
+
+on:
+  push:
+    branches: [qa/ds-homepage-captures-2026-11-26]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  safari:
+    name: Studio homepage at six desktop resolutions
+    if: github.ref == 'refs/heads/qa/ds-homepage-captures-2026-11-26'
+    runs-on: macos-15-intel
+    timeout-minutes: 8
+    env:
+      PORTFOLIO_SOURCE_SHA: 4897f2fbfc8793ea9956fc40eff1d42e1248770f
+      TYPOGRAPHY_CAPTURE_MODE: both
+      CAPTURE_BUDGET_SECONDS: '240'
+      CAPTURE_PERSONAL_WEIGHT_PROBE: '1'
+      CHROME_BINARY: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+          lfs: false
+      - name: Prepare screenshot pixel validation
+        run: |
+          python3 -m venv "$RUNNER_TEMP/typography-python"
+          "$RUNNER_TEMP/typography-python/bin/python" -m pip install --disable-pip-version-check Pillow
+          printf '%s\n' "$RUNNER_TEMP/typography-python/bin" >> "$GITHUB_PATH"
+      - name: Record installed browser versions
+        run: |
+          mkdir -p artifacts/studio-homepage/chrome
+          sw_vers > artifacts/studio-homepage/macos-version.txt
+          if test "$TYPOGRAPHY_CAPTURE_MODE" != chrome; then
+            mkdir -p artifacts/studio-homepage/safari
+            /usr/bin/safaridriver --version > artifacts/studio-homepage/safari/safaridriver-version.txt
+            /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' /Applications/Safari.app/Contents/Info.plist > artifacts/studio-homepage/safari/safari-version.txt
+          fi
+          test -x "$CHROME_BINARY"
+          "$CHROME_BINARY" --version > artifacts/studio-homepage/chrome/chrome-version.txt
+          typography_chromedriver="${CHROMEWEBDRIVER:+$CHROMEWEBDRIVER/chromedriver}"
+          if test -z "$typography_chromedriver"; then
+            typography_chromedriver="$(command -v chromedriver)"
+          fi
+          test -x "$typography_chromedriver"
+          "$typography_chromedriver" --version > artifacts/studio-homepage/chrome/chromedriver-version.txt
+          printf 'TYPOGRAPHY_CHROMEDRIVER=%s\n' "$typography_chromedriver" >> "$GITHUB_ENV"
+      - name: Enable native Safari automation
+        if: env.TYPOGRAPHY_CAPTURE_MODE != 'chrome'
+        run: sudo /usr/bin/safaridriver --enable
+      - name: Capture Safari at six resolutions
+        if: env.TYPOGRAPHY_CAPTURE_MODE != 'chrome'
+        env:
+          CAPTURE_BROWSER: safari
+          CAPTURE_WEBDRIVER_URL: http://127.0.0.1:4444
+          CAPTURE_OUTPUT_DIR: artifacts/studio-homepage/safari
+        run: |
+          /usr/bin/safaridriver -p 4444 > "$CAPTURE_OUTPUT_DIR/safaridriver.log" 2>&1 &
+          typography_driver_pid=$!
+          trap 'kill "$typography_driver_pid" 2>/dev/null || true' EXIT
+          python3 - <<'PY'
+          import os, time, urllib.request
+          for attempt in range(20):
+              try:
+                  with urllib.request.urlopen(os.environ['CAPTURE_WEBDRIVER_URL'] + '/status', timeout=2) as response:
+                      print(response.read().decode())
+                  break
+              except Exception:
+                  if attempt == 19:
+                      raise
+                  time.sleep(1)
+          PY
+          python3 .github/scripts/studio-homepage-capture.py
+      - name: Capture headless Google Chrome at six resolutions
+        if: ${{ !cancelled() && env.TYPOGRAPHY_CAPTURE_MODE != 'safari' }}
+        env:
+          CAPTURE_BROWSER: chrome
+          CAPTURE_CHROME_HEADLESS: '1'
+          CAPTURE_WEBDRIVER_URL: http://127.0.0.1:4445
+          CAPTURE_OUTPUT_DIR: artifacts/studio-homepage/chrome
+        run: |
+          "$TYPOGRAPHY_CHROMEDRIVER" --port=4445 > "$CAPTURE_OUTPUT_DIR/chromedriver.log" 2>&1 &
+          typography_driver_pid=$!
+          trap 'kill "$typography_driver_pid" 2>/dev/null || true' EXIT
+          python3 - <<'PY'
+          import os, time, urllib.request
+          for attempt in range(20):
+              try:
+                  with urllib.request.urlopen(os.environ['CAPTURE_WEBDRIVER_URL'] + '/status', timeout=2) as response:
+                      print(response.read().decode())
+                  break
+              except Exception:
+                  if attempt == 19:
+                      raise
+                  time.sleep(1)
+          PY
+          python3 .github/scripts/studio-homepage-capture.py
+      - name: Record paired browser measurements
+        if: ${{ !cancelled() && env.TYPOGRAPHY_CAPTURE_MODE == 'both' }}
+        run: |
+          python3 - <<'PYCODE'
+          from pathlib import Path
+          import json
+          root = Path('artifacts/studio-homepage')
+          reports = {browser: json.loads((root / browser / 'measurements.json').read_text()) for browser in ('safari', 'chrome')}
+          def key(case):
+              r = case['requestedViewport']
+              return r['width'], r['height']
+          cases = {browser: {key(case): case for case in report['cases']} for browser, report in reports.items()}
+          errors = []
+          rows = []
+          if len(cases['safari']) != 6 or set(cases['safari']) != set(cases['chrome']):
+              errors.append('Both browsers must provide the same six requested viewports.')
+          for viewport in sorted(set(cases['safari']) & set(cases['chrome'])):
+              safari, chrome = cases['safari'][viewport], cases['chrome'][viewport]
+              if any(case.get('status') != 'pass' or not case.get('exactViewport') for case in (safari, chrome)):
+                  errors.append(f'{viewport}: at least one browser capture did not pass at the exact viewport.')
+                  continue
+              s, c = safari['metrics'], chrome['metrics']
+              rows.append({'viewport': list(viewport), 'safariLogoFrame': s['brand']['rect'], 'chromeLogoFrame': c['brand']['rect'],
+                           'safariNavigation': [{'label':a['label'],'fontSize':a['fontSize'],'fontWeight':a['fontWeight']} for a in s['links']],
+                           'chromeNavigation': [{'label':a['label'],'fontSize':a['fontSize'],'fontWeight':a['fontWeight']} for a in c['links']]})
+          result = {'sourceCommit': reports['safari']['sourceCommit'], 'purpose': 'Record the current live site; browser differences are observations, not forced to match.',
+                    'rows': rows, 'errors': errors, 'status': 'fail' if errors else 'pass'}
+          (root / 'comparison.json').write_text(json.dumps(result, indent=2) + '\n')
+          print('STUDIO_COMPARISON_SUMMARY', json.dumps(result))
+          if errors:
+              raise SystemExit(1)
+          PYCODE
+      - name: Publish capture summaries
+        if: always()
+        run: |
+          for typography_report in artifacts/studio-homepage/{safari,chrome}/report.md; do
+            if test -f "$typography_report"; then
+              cat "$typography_report" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+      - name: Keep native browser captures and measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio-homepage-safari-chrome
+          path: artifacts/studio-homepage/
+          if-no-files-found: error
+          retention-days: 7
+
