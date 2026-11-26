@@ -25,6 +25,45 @@
     ]
   },
   {
+    "image": "DS_CaveGames_ConceptArt_CharacterSkins_May_01.jpg",
+    "compare": "DS_CaveGames_ConceptArt_CharacterSkins_May_02.jpg"
+  },
+  {
+    "image": "DS_CaveGames_ConceptArt_CharacterSkins_May_04.jpg",
+    "compare": "DS_CaveGames_ConceptArt_CharacterSkins_May_03.jpg"
+  },
+  {
+    "image": "DS_CaveGames_ConceptArt_CharacterSkins_May_05.jpg",
+    "compare": "DS_CaveGames_ConceptArt_CharacterSkins_May_06.jpg"
+  },
+  {
+    "image": "DS_CaveGames_ConceptArt_CharacterSkins_May_11.jpg",
+    "compare": "DS_CaveGames_ConceptArt_CharacterSkins_May_09.jpg"
+  },
+  {
+    "image": "DS_CaveGames_ConceptArt_CharacterSkins_May_07.jpg",
+    "compare": "DS_CaveGames_ConceptArt_CharacterSkins_May_08.jpg",
+    "additionalImages": [
+      "DS_CaveGames_ConceptArt_CharacterSkins_May_12.jpg",
+      "DS_CaveGames_ConceptArt_CharacterSkins_May_13.jpg"
+    ]
+  },
+  {
+    "image": "C_Hex_Character_design_E_01.jpg",
+    "compare": "C_Hex_Character_design_D_01.jpg",
+    "additionalImages": [
+      "DS_CaveGames_ConceptArt_Character-Skins_1.jpg",
+      "DS_CaveGames_ConceptArt_Character-Skins_2.jpg"
+    ]
+  },
+  {
+    "image": "C_Hex_Environment_Assets_Boxes_01.jpg",
+    "compare": "C_Hex_Environment_Assets_Boxes_02.jpg",
+    "additionalImages": [
+      "C_Hex_Environment_Assets_Boxes_03.jpg"
+    ]
+  },
+  {
     "image": "P_Hex_Environment_3DAssets_ChestA.jpg",
     "compare": "P_Hex_Environment_3DAssets_ChestA_Hex01.jpg",
     "additionalImages": [
