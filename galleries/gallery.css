@@ -58,10 +58,7 @@ h1 { margin: 0; text-align: center; font-size: clamp(1rem, 2.6vw, 2.4rem); line-
   .description { font-size: .75rem; }
 }
 
-.gallery-back-to-top,
-.viewer-arrows button,
-.viewer-bar button,
-.counter {
+.gallery-back-to-top {
   border: 1px solid #656565;
   border-radius: .45rem;
   background: #181818;
@@ -249,27 +246,24 @@ dialog {
   padding-inline: clamp(.5rem, 1.2vw, 1.5rem);
   pointer-events: none;
 }
-.viewer-arrows button { pointer-events: auto; }
+.viewer-arrows button { pointer-events: auto; touch-action: none; }
 .viewer-bar button, .viewer-arrows button, .counter {
   margin: 0;
   min-height: 42px;
   padding: .35rem .7rem;
   font: inherit;
   font-size: .875rem;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: #f4f4f4;
+  -webkit-tap-highlight-color: transparent;
 }
 .viewer-bar button, .viewer-arrows button { min-width: 42px; cursor: pointer; }
-.viewer-bar button, .counter { background: #000; }
 .viewer-bar button:disabled, .viewer-arrows button:disabled { opacity: .45; cursor: default; }
 .viewer-arrows button { width: 48px; height: 48px; padding: 0 0 4px; font-size: 1.4rem; }
-@media (pointer: coarse) {
-  .viewer-arrows button {
-    appearance: none;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-}
 .counter { display: inline-flex; align-items: center; font-variant-numeric: tabular-nums; }
 .viewer-controls-idle :is(.viewer-arrows, .viewer-bar) { opacity: 0; }
 .viewer-controls-idle :is(.viewer-arrows button, .viewer-group > *) { pointer-events: none; }
@@ -437,4 +431,5 @@ body:has(dialog[open]) .gallery-desktop-edge-panel { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   .gallery-swipe-feedback { transition: none; }
 }
+
 
