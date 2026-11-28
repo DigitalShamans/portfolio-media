@@ -16,13 +16,14 @@
 {% endif %}
 {% assign gallery_folder = gallery_page.url | remove_first: '/galleries/' | split: '/' | first %}
 {% assign recent_gallery = site.data.portfolio.recent | where: 'folder', gallery_folder | first %}
+{% assign local_gallery_source = site.data.gallery_delivery.local_galleries[gallery_folder] %}
 {% assign gallery_originals_revision = site.data.gallery_delivery.gallery_revisions[gallery_folder] | default: site.data.gallery_delivery.revision %}
 {% assign gallery_asset_versions = site.data.gallery_asset_versions[gallery_folder] %}
 {% assign gallery_replacement_versions = site.data.gallery_published_replacements[gallery_folder] %}
 {% assign first_image_url = site.data.portfolio_gallery_preloads[gallery_folder] | first %}
 {% assign gallery_seo_title = gallery_page.gallery_title | append: ' Environment Art | ' | append: portfolio_name %}
 <!doctype html>
-<html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}" data-gallery-webp-revision="{{ site.gallery_webp_revision | escape }}"{% if site.data.gallery_delivery.revision %} data-gallery-originals-origin="{{ site.data.gallery_delivery.service_origin | escape }}" data-gallery-originals-revision="{{ site.data.gallery_delivery.revision | escape }}" data-gallery-originals-gallery-revisions="{{ site.data.gallery_delivery.gallery_revisions | jsonify | escape }}"{% endif %}{% if gallery_replacement_versions %} data-gallery-replacement-folder="{{ gallery_folder | escape }}" data-gallery-published-replacements="{{ gallery_replacement_versions | jsonify | escape }}"{% endif %}>
+<html lang="en" data-gallery4k-media="{{ site.gallery_4k_media | escape }}" data-gallery-webp-revision="{{ site.gallery_webp_revision | escape }}"{% if local_gallery_source %} data-gallery-local-images="true"{% elsif site.data.gallery_delivery.revision %} data-gallery-originals-origin="{{ site.data.gallery_delivery.service_origin | escape }}" data-gallery-originals-revision="{{ site.data.gallery_delivery.revision | escape }}" data-gallery-originals-gallery-revisions="{{ site.data.gallery_delivery.gallery_revisions | jsonify | escape }}"{% endif %}{% if gallery_replacement_versions %} data-gallery-replacement-folder="{{ gallery_folder | escape }}" data-gallery-published-replacements="{{ gallery_replacement_versions | jsonify | escape }}"{% endif %}>
 <head>
   <meta charset="utf-8">
   {% include portfolio-diagnostics.html section='gallery' %}
@@ -34,7 +35,8 @@
   {% endif %}
   {% include site-favicon.html %}
   <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}?v=15">
-  <link rel="stylesheet" href="../gallery.css?v=47">
+  <link rel="stylesheet" href="../gallery.css?v=48">
+  {% if gallery_page.gallery_stylesheet %}<link rel="stylesheet" href="{{ gallery_page.gallery_stylesheet | relative_url }}?v=2">{% endif %}
   {% if gallery_page.gallery_captions %}<link rel="stylesheet" href="../gallery-captions.css?v=1">{% endif %}
   <link rel="expect" href="#gallery-edge-ready" blocking="render">
   {% if gallery_page.gallery_embeds %}<link rel="stylesheet" href="../gallery-embeds.css?v=2">{% endif %}
@@ -69,7 +71,12 @@
         {% if gallery_page.gallery_scroll_ease %}data-gallery-scroll-ease="{{ gallery_page.gallery_scroll_ease | escape }}"{% endif %}
         {% if gallery_page.gallery_embeds %}data-gallery-embeds="gallery-embeds.json"{% endif %}
         aria-label="{{ gallery_label | escape }}">
-        {% if first_image_url %}
+        {% if first_image_url and local_gallery_source %}
+          {% assign first_image_url = first_image_url | relative_url | escape %}
+          <a class="shot" data-gallery-fallback data-gallery-original="{{ first_image_url }}" href="{{ first_image_url }}">
+            <img class="shot-primary" src="{{ first_image_url }}" alt="{{ gallery_page.gallery_title | escape }}" decoding="async" fetchpriority="high" draggable="false">
+          </a>
+        {% elsif first_image_url %}
           {% assign gallery_original_url = first_image_url | relative_url %}
           {% assign image_parts = first_image_url | split: '?' %}
           {% assign image_dir = gallery_folder | prepend: '/galleries/' | append: '/' %}
@@ -112,7 +119,7 @@
   {% include gallery-back-to-top.html %}
   {% include gallery-viewer.html %}
 
-  <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=8"></script>
+  <script src="{{ '/assets/gallery-resolution.js' | relative_url }}?v=9"></script>
   <script src="../gallery-data.js?v=3"></script>
   {% if gallery_page.gallery_embeds %}<script src="../gallery-embeds.js?v=3"></script>{% endif %}
   <script src="../gallery-viewer.js?v={{ gallery_viewer_version | escape }}"></script>

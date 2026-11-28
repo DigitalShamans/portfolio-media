@@ -59,6 +59,26 @@ test('unlisted galleries are validated once and remain covered by a personal rou
   const remote = validate();
   assert.equal(remote.status, 0, remote.stderr);
 
+  const delivery = JSON.parse(readFileSync(join(cwd, '_data/gallery_delivery.json'), 'utf8'));
+  delivery.local_galleries = { branding: 'branding' };
+  write('_data/gallery_delivery.json', JSON.stringify(delivery));
+  write('galleries/branding/index.html', '---\nlayout: gallery\nseo_noindex: true\n---\n');
+  write('galleries/branding/gallery.json', '[{"image":"Logo.PNG"}]');
+  write('branding/Logos/Logo.PNG', '');
+  write('branding/drafts/Unused.png', '');
+  write('branding/archive/Unused.png', '');
+  commit();
+  const mixedDelivery = validate();
+  assert.equal(mixedDelivery.status, 0, mixedDelivery.stderr);
+  assert.match(mixedDelivery.stdout, /Validated galleries\/branding\/gallery\.json/);
+
+  write('galleries/branding/gallery.json', '[{"image":"logo.png"}]');
+  commit();
+  const untrackedLocal = validate();
+  assert.equal(untrackedLocal.status, 1);
+  assert.match(untrackedLocal.stderr, /Use the exact tracked filename "Logo.PNG"/);
+  write('galleries/branding/gallery.json', '[{"image":"Logo.PNG"}]');
+
   write(manifest, '[{"image":"unapproved.jpg"}]');
   commit();
   const unapproved = validate();

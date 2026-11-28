@@ -5,6 +5,7 @@ const GalleryResolution = (() => {
   const wide = window.matchMedia(settings.gallery4kMedia);
   const originalsOrigin = settings.galleryOriginalsOrigin;
   const originalsRevision = settings.galleryOriginalsRevision;
+  const localImages = settings.galleryLocalImages === 'true';
   const revisionPattern = /^[a-f0-9]{40}$/;
   const imageName = /^[A-Za-z0-9][A-Za-z0-9_.-]*\.jpg$/i;
   const replacementVersions = new Map();
@@ -45,6 +46,7 @@ const GalleryResolution = (() => {
 
   function publicImageSource(original, resolution) {
     const url = new URL(original, document.baseURI);
+    if (localImages) return { url: url.href };
     if (originalsOrigin && originalsRevision && url.origin === new URL(document.baseURI).origin) {
       const match = url.pathname.match(/\/galleries\/([a-z0-9-]+)\/([A-Za-z0-9_.-]+\.jpe?g)$/i);
       if (match) {
@@ -96,7 +98,7 @@ const GalleryResolution = (() => {
   }
 
   function refreshPublicUpdates(galleryBase) {
-    if (!originalsOrigin || !originalsRevision) return Promise.resolve(false);
+    if (localImages || !originalsOrigin || !originalsRevision) return Promise.resolve(false);
     const url = new URL(galleryBase, document.baseURI);
     const gallery = url.pathname.match(/\/galleries\/([a-z0-9-]+)\/$/)?.[1];
     if (!gallery || url.origin !== new URL(document.baseURI).origin || gallery === 'hb-rzstart') {

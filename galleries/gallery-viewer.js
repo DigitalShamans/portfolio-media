@@ -8,6 +8,7 @@ const galleryRevision = document.body.dataset.galleryRevision;
 const galleryAccess = window.galleryAccess;
 const imageResolution = galleryAccess?.resolution ?? GalleryResolution.current();
 const galleryAssetVersions = JSON.parse(document.body.dataset.galleryAssetVersions || '{}');
+const localImages = document.documentElement.dataset.galleryLocalImages === 'true';
 const title = document.querySelector('.intro h1, #map-title').textContent;
 
 const finePointer = window.matchMedia('(pointer: fine)');
@@ -114,13 +115,12 @@ let viewerZoomAnimation;
 let mouseGesture;
 let suppressViewerClick = false;
 let lastViewerPointer;
+let lastViewerTap;
 let viewerZoomClickCount = 0;
 let viewerAspect = 0;
 let viewerRequest = 0;
 let comparisonsInitialized = false;
-let viewerHover = null;
 let comparisonIndex = 0;
-let selectedComparison = 0;
 let displayedComparison = 0;
 let viewerIndicator;
 let openingPointer;
@@ -697,6 +697,7 @@ setupClassicGalleryScroll();
 
 function fitImage() {
   viewerZoomClickCount = 0;
+  clearViewerTap();
   cancelViewerZoomAnimation();
   setViewerZoom(1, 0, 0);
   positionViewerControls();
@@ -821,8 +822,9 @@ function preferredViewerImage(preview, variant) {
     ? originalRequest.image : preview;
 }
 
-function showImage(index, initialVariant = 0) {
+function showImage(index, variant) {
   const shot = shots[index];
+  const initialVariant = variant ?? shot.comparison?.visibleVariant ?? 0;
   const { image, sources } = shot;
   const primary = prioritizeShot(shot);
   const request = ++viewerRequest;
@@ -834,9 +836,7 @@ function showImage(index, initialVariant = 0) {
   viewerOriginalRequest = undefined;
   current = index;
   comparisonsInitialized = false;
-  viewerHover = null;
   comparisonIndex = initialVariant;
-  selectedComparison = initialVariant;
   displayedComparison = initialVariant;
   stage.classList.toggle('has-comparison', sources.length > 1);
   viewerIndicator?.remove();
@@ -932,21 +932,22 @@ function updateComparisonStatus() {
   if (status.textContent !== message) showStatus(message);
 }
 
-function updateComparison(requestImage = false) {
+function updateComparison() {
   if (!viewer.open || !viewerIndicator) return;
   const shot = shots[current];
-  if (comparisonIndex === 0 && requestImage && !shot.image.naturalWidth) prioritizeShot(shot);
   const preview = comparisonIndex === 0
-    ? shot.image : shot.comparison.getImage(comparisonIndex, requestImage ? 'high' : undefined);
+    ? shot.image : shot.comparison.getImage(comparisonIndex);
   const image = preferredViewerImage(preview, comparisonIndex);
   updateComparisonStatus();
   if (image?.complete && image.naturalWidth && original.src !== imageUrl(image)) displayOriginal(image);
-  if (requestImage) loadViewerOriginal(shot, comparisonIndex);
 }
 
 function selectViewerComparison(index) {
-  selectedComparison = comparisonIndex = index;
-  updateComparison(true);
+  comparisonIndex = index;
+  const shot = shots[current];
+  shot.comparison.select(index);
+  updateComparison();
+  loadViewerOriginal(shot, index);
 }
 
 function canCompare(event) {
@@ -1053,14 +1054,9 @@ function compareAtPointer(event) {
   if (!viewerIndicator || viewerZoom.scale > 1 || !comparisonsInitialized || !viewerAspect || !canCompare(event)) return;
   if (openingPointer && event.screenX === openingPointer.x && event.screenY === openingPointer.y) return;
   openingPointer = null;
-  const overComparison = stage.contains(event.target) || viewerIndicator?.contains(event.target);
-  const hovered = overComparison
-    ? comparisonInBottomStrip(event, viewerImageBounds(), shots[current].sources.length)
-    : null;
-  if (viewerHover === hovered) return;
-  viewerHover = hovered;
-  comparisonIndex = hovered ?? selectedComparison;
-  updateComparison(hovered !== null);
+  if (!stage.contains(event.target)) return;
+  const index = comparisonInBottomStrip(event, viewerImageBounds(), shots[current].sources.length);
+  if (index !== null && index !== comparisonIndex) selectViewerComparison(index);
 }
 
 original.addEventListener('load', imageLoaded);
@@ -1093,10 +1089,8 @@ function setActiveSegment(indicator, index) {
 }
 
 function setupGalleryComparison(entry, link, sources, shotIndex) {
-  let selected = 0;
   let requested = 0;
   let displayed = 0;
-  let hovered = null;
   const alternates = [];
   const loadingAlternates = new Set();
   const indicator = createComparisonIndicator(sources.length, select);
@@ -1147,33 +1141,22 @@ function setupGalleryComparison(entry, link, sources, shotIndex) {
     return alternate;
   }
 
-  function preview(index, request = true) {
+  function select(index) {
     requested = index;
     if (index === 0) {
       const shot = shots[shotIndex];
       if (!shot.image.naturalWidth) {
-        if (request) prioritizeShot(shot);
+        prioritizeShot(shot);
         return;
       }
     }
-    if (index !== displayed && (index === 0 || getImage(index, request ? 'high' : undefined)?.naturalWidth)) show(index);
-  }
-
-  function select(index) {
-    selected = index;
-    preview(index);
+    if (index !== displayed && (index === 0 || getImage(index, 'high')?.naturalWidth)) show(index);
   }
 
   entry.addEventListener('pointermove', event => {
     if (!canCompare(event)) return;
     const index = comparisonInBottomStrip(event, link.getBoundingClientRect(), sources.length);
-    if (index === hovered) return;
-    hovered = index;
-    preview(index ?? selected, index !== null);
-  });
-  entry.addEventListener('pointerleave', event => {
-    hovered = null;
-    if (canCompare(event)) preview(selected, false);
+    if (index !== null && index !== requested) select(index);
   });
   link.classList.add('has-comparison');
   setupImageTouch(link, () => ({
@@ -1192,11 +1175,7 @@ function setupGalleryComparison(entry, link, sources, shotIndex) {
     primaryLoaded() {
       if (requested === 0 && displayed !== 0) show(0);
     },
-    finishPreview() {
-      const initialVariant = displayed;
-      preview(selected, false);
-      return initialVariant;
-    }
+    get visibleVariant() { return displayed; }
   };
 }
 
@@ -1299,7 +1278,7 @@ function loadVisibleShotsFirst(updatePosition) {
 }
 
 function createShot(entry, index, firstImage) {
-  const label = title + ' screenshot ' + (index + 1);
+  const label = (localImages && entry.label) || title + ' screenshot ' + (index + 1);
   const filenames = GalleryData.images(entry);
   const sources = filenames.map(filename => galleryAccess
     ? { url: filename }
@@ -1320,6 +1299,15 @@ function createShot(entry, index, firstImage) {
     image.draggable = false;
     link.append(image);
   }
+  if (localImages) {
+    image.alt = label;
+    if (Number.isInteger(entry.width) && entry.width > 0 &&
+        Number.isInteger(entry.height) && entry.height > 0) {
+      image.width = entry.width;
+      image.height = entry.height;
+      image.style.aspectRatio = `auto ${entry.width} / ${entry.height}`;
+    }
+  }
   let element = link;
   let comparison;
   if (sources.length > 1) {
@@ -1332,8 +1320,31 @@ function createShot(entry, index, firstImage) {
     link.addEventListener('click', event => {
       if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
-      openViewer(index, comparison?.finishPreview() ?? 0, link, event);
+      openViewer(index, { source: link, event });
     });
+  }
+  if (localImages) {
+    const asset = document.createElement('div');
+    asset.className = 'gallery-asset';
+    asset.style.setProperty('--asset-width', image.width + 'px');
+    if (entry.heading) {
+      const heading = document.createElement('h2');
+      heading.className = 'gallery-asset-heading';
+      heading.textContent = entry.heading;
+      asset.append(heading);
+    }
+    const details = document.createElement('div');
+    details.className = 'gallery-asset-details';
+    const caption = document.createElement('span');
+    caption.textContent = label;
+    const download = document.createElement('a');
+    download.href = sources[0].url;
+    download.download = filenames[0];
+    download.textContent = 'Download ' + filenames[0].split('.').pop().toUpperCase();
+    download.setAttribute('aria-label', download.textContent + ' — ' + label);
+    details.append(caption, download);
+    asset.append(element, details);
+    element = asset;
   }
   return { element, image, link, filenames, sources, comparison, initialLoad: existing?.load };
 }
@@ -1350,7 +1361,7 @@ async function loadGallery() {
       const source = GalleryResolution.publicImageSource(fallback.dataset.galleryOriginal, imageResolution);
       firstImage = { image, link: fallback, source, load: loadImage(image, source, { link: fallback, pictureSource }) };
     }
-    const publicBase = !galleryAccess && (gallery.dataset.galleryRoot || document.baseURI);
+    const publicBase = !galleryAccess && !localImages && (gallery.dataset.galleryRoot || document.baseURI);
     const [response] = await Promise.all([
       galleryAccess ? galleryAccess.manifest() : fetch(galleryAssetUrl(gallery.dataset.galleryManifest || 'gallery.json')),
       publicBase && GalleryResolution.refreshPublicUpdates?.(publicBase)
@@ -1431,6 +1442,9 @@ for (const type of ['pointermove', 'pointerdown']) {
   frame.addEventListener(type, event => {
     // Mixed-input devices can report a mouse until the first real touch.
     if (event.pointerType === 'touch') anchorViewerArrows();
+    if (type === 'pointerdown' && (event.pointerType !== 'touch' || !isViewerTapSurface(event.target))) {
+      clearViewerTap();
+    }
     if (desktopScrolling.matches) showViewerControls(event.pointerType === 'mouse');
   }, { capture: true, passive: true });
 }
@@ -1439,7 +1453,10 @@ viewer.addEventListener('focusin', event => {
   if (event.target.matches(':focus-visible')) showViewerControls(true);
 });
 
-frame.addEventListener('keydown', () => showViewerControls(true), { capture: true });
+frame.addEventListener('keydown', () => {
+  clearViewerTap();
+  showViewerControls(true);
+}, { capture: true });
 
 viewer.addEventListener('keydown', event => {
   if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
@@ -1474,6 +1491,17 @@ function zoomViewerAt(scale, anchor, point, from = viewerZoom) {
 
 function pointFor(event) {
   return { x: event.clientX, y: event.clientY };
+}
+
+function isViewerTapSurface(target) {
+  return stage.contains(target) && !target.closest(
+    'button, a, input, select, textarea, [role="button"], [contenteditable], .comparison-indicator, .gallery-map-region'
+  );
+}
+
+function clearViewerTap() {
+  lastViewerTap = undefined;
+  if (viewerGesture) viewerGesture.tapStarted = undefined;
 }
 
 function clampViewerScale(scale) {
@@ -1579,6 +1607,7 @@ function pinchGeometry() {
 }
 
 function startViewerPinch() {
+  clearViewerTap();
   viewerGesture = { mode: 'pinch', ...pinchGeometry(), zoom: { ...viewerZoom } };
   suppressViewerClick = true;
 }
@@ -1596,7 +1625,10 @@ function moveViewerTouch(event) {
     return;
   }
   const { start, mode } = viewerGesture;
-  if (Math.hypot(point.x - start.x, point.y - start.y) >= 10) suppressViewerClick = true;
+  if (Math.hypot(point.x - start.x, point.y - start.y) >= 10) {
+    clearViewerTap();
+    suppressViewerClick = true;
+  }
   if (mode === 'pan' && suppressViewerClick) {
     setViewerZoom(viewerZoom.scale, viewerZoom.x + point.x - previous.x, viewerZoom.y + point.y - previous.y);
   }
@@ -1605,7 +1637,8 @@ function moveViewerTouch(event) {
 function endViewerTouch(event) {
   if (!viewerTouches.has(event.pointerId)) return;
   if (event.type === 'pointerup') moveViewerTouch(event);
-  const { mode, start } = viewerGesture;
+  else clearViewerTap();
+  const { mode, start, tapStarted } = viewerGesture;
   viewerTouches.delete(event.pointerId);
   if (viewerTouches.size >= 2) {
     startViewerPinch();
@@ -1613,6 +1646,22 @@ function endViewerTouch(event) {
     viewerGesture = { mode: viewerZoom.scale > 1 ? 'pan' : 'hold', start: viewerTouches.values().next().value };
   } else {
     viewerGesture = undefined;
+    if (event.type === 'pointerup' && tapStarted !== undefined &&
+        event.timeStamp - tapStarted <= 250 && !suppressViewerClick && isViewerTapSurface(event.target)) {
+      const point = pointFor(event);
+      const previous = lastViewerTap;
+      if (previous?.request === viewerRequest && event.timeStamp - previous.time <= 350 &&
+          Math.hypot(point.x - previous.point.x, point.y - previous.point.y) <= 32) {
+        clearViewerTap();
+        suppressViewerClick = true;
+        // Restore the original fullscreen fit without changing the image or its comparison.
+        easeViewerZoomTo(1);
+        return;
+      }
+      lastViewerTap = { point, time: event.timeStamp, request: viewerRequest };
+    } else {
+      clearViewerTap();
+    }
     if (mode !== 'swipe' || event.type !== 'pointerup') return;
     const dx = event.clientX - start.x;
     const dy = event.clientY - start.y;
@@ -1673,7 +1722,10 @@ stage.addEventListener('pointerdown', event => {
     const point = pointFor(event);
     if (!viewerTouches.size) {
       suppressViewerClick = false;
-      viewerGesture = { mode: viewerZoom.scale > 1 ? 'pan' : 'swipe', start: point };
+      viewerGesture = {
+        mode: viewerZoom.scale > 1 ? 'pan' : 'swipe', start: point,
+        tapStarted: isViewerTapSurface(event.target) ? event.timeStamp : undefined
+      };
     }
     viewerTouches.set(event.pointerId, point);
     if (viewerTouches.size === 2) startViewerPinch();
@@ -1722,11 +1774,7 @@ for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
 
 frame.addEventListener('pointermove', compareAtPointer);
 frame.addEventListener('pointerleave', event => {
-  if (viewerZoom.scale > 1 || !canCompare(event)) return;
-  openingPointer = null;
-  viewerHover = null;
-  comparisonIndex = selectedComparison;
-  updateComparison();
+  if (canCompare(event)) openingPointer = null;
 });
 
 frame.addEventListener('wheel', event => {
@@ -1879,11 +1927,11 @@ viewer.addEventListener('close', async () => {
   requestAnimationFrame(restore);
 });
 
-function openViewer(index, variant = 0, source = shots[index].link, event) {
+function openViewer(index, { variant, source, event } = {}) {
   if (typeof viewer.showModal !== 'function') return false;
   if (!viewer.open) {
     viewerOrigin = {
-      index, link: source, pointerOpened: event?.detail > 0,
+      index, link: source || shots[index].link, pointerOpened: event?.detail > 0,
       width: window.innerWidth, height: window.innerHeight
     };
     openingPointer = event ? { x: event.screenX, y: event.screenY } : null;
@@ -1911,7 +1959,7 @@ window.GalleryViewer = {
   ready: loadGallery(),
   openImage(filename, { opener: source, event } = {}) {
     const found = findGalleryImage(filename);
-    return found ? openViewer(found.index, found.variant, source || found.shot.link, event) : false;
+    return found ? openViewer(found.index, { variant: found.variant, source, event }) : false;
   },
   selectImage(filename) {
     const found = findGalleryImage(filename);

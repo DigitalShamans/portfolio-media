@@ -53,6 +53,8 @@ jobs:
       - name: Validate portfolio
         if: steps.media.outputs.publish == 'true'
         uses: ./.github/actions/validate-portfolio
+        with:
+          keep-published-galleries: 'true'
       - uses: actions/upload-pages-artifact@v4
         if: steps.media.outputs.publish == 'true'
 

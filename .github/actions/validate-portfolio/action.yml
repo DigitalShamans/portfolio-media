@@ -1,11 +1,19 @@
 name: Validate portfolio
 description: Check portfolio source, run offline regressions and validate the Jekyll build.
+inputs:
+  keep-published-galleries:
+    description: Use the last published manifest for an existing gallery with an invalid draft.
+    default: 'false'
 runs:
   using: composite
   steps:
     - uses: actions/setup-node@v4
       with:
         node-version: '22'
+    - name: Prepare gallery manifests for publication
+      if: inputs.keep-published-galleries == 'true'
+      shell: bash
+      run: node .github/scripts/validate-public-galleries.cjs --keep-published-galleries
     - name: Check source, regressions and gallery manifests
       shell: bash
       run: python3 .github/scripts/check-portfolio.py

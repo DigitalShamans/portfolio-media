@@ -16,6 +16,7 @@ assert.ok(['chromium', 'webkit'].includes(browserEngine), 'Unsupported gallery t
 const root = resolve(__dirname, '../..');
 const read = path => readFileSync(resolve(root, path), 'utf8');
 const galleryLayout = read('_layouts/gallery.html');
+const responsiveFallback = galleryLayout.match(/<a class="shot" data-gallery-fallback[^>]*>\s*<picture>[\s\S]*?<\/a>/)[0];
 const lockedLayout = read('_layouts/locked-gallery.html');
 const mapLayout = read('_layouts/gallery-map.html');
 const backToTop = read('_includes/gallery-back-to-top.html');
@@ -106,7 +107,7 @@ function pageHtml(path, { embeds, assetVersions = {}, map = false, diagnostics =
       .replace('{{ site.data.gallery_delivery.service_origin | jsonify }}', JSON.stringify(media))
     : `<div class="gallery-content"><header class="intro"><h1>Hard Bullet - Egypt</h1></header>
         <p id="gallery-status" hidden></p>
-        <section class="gallery" data-grouped-image-scroll${embeds ? ' data-gallery-embeds="gallery-embeds.json"' : ''}>${galleryLayout.match(/<a class="shot" data-gallery-fallback[\s\S]*?<\/a>/)[0]
+        <section class="gallery" data-grouped-image-scroll${embeds ? ' data-gallery-embeds="gallery-embeds.json"' : ''}>${responsiveFallback
           .replace('{{ gallery_original_url | escape }}', `${gallery}First.jpg?v=test`)
           .replaceAll('{{ reduced_image_url }}', preview('First').replace('&', '&amp;'))
           .replace('{{ site.gallery_4k_media | escape }}', desktopQuery)
@@ -641,6 +642,8 @@ test('fullscreen hover acknowledges a slow comparison and clears it after a chan
   assert.equal(await status.isHidden(), true);
 
   await checker.hover();
+  assert.equal(await checker.getAttribute('aria-busy'), 'true');
+  await page.mouse.move(1, 1);
   assert.equal(await checker.getAttribute('aria-busy'), 'true');
   releaseChecker.release();
   await displayed(page, '#original', preview('First_Checker'));
@@ -1366,13 +1369,16 @@ test('the first desktop wheel step animates the opening image into place', async
 test('fullscreen touch swipes navigate on both axes while pinch and pan stay on the image', async t => {
   const { page, errors } = await openPage(t, { width: 412, hasTouch: true });
   const session = await page.context().newCDPSession(page);
+  const tileSegments = page.locator('.shot-entry .comparison-indicator').first().locator('button');
+  await tileSegments.nth(2).tap();
+  await displayed(page, '.shot-comparison.is-visible', preview('First_Wireframe'));
   await page.locator('.shot').first().tap();
-  await displayed(page, '#original', preview('First'));
+  await displayed(page, '#original', preview('First_Wireframe'));
   await assertViewerControlStyles(page, { touch: true });
   await page.locator('#next-side').tap();
   await displayed(page, '#original', preview('Second'));
   await page.locator('#previous-side').tap();
-  await displayed(page, '#original', preview('First'));
+  await displayed(page, '#original', preview('First_Wireframe'));
 
   await segment(page, 1).tap();
   await displayed(page, '#original', preview('First_Checker'));
@@ -1383,9 +1389,9 @@ test('fullscreen touch swipes navigate on both axes while pinch and pan stay on 
   const y = stage.y + stage.height / 2;
   for (const [start, end, image] of [
     [[x, y + 50], [x, y - 55], 'Second'],
-    [[x - 70, y], [x + 70, y], 'First'],
+    [[x - 70, y], [x + 70, y], 'First_Checker'],
     [[x + 70, y], [x - 70, y], 'Second'],
-    [[x, y - 55], [x, y + 50], 'First'],
+    [[x, y - 55], [x, y + 50], 'First_Checker'],
   ]) {
     await swipeInViewer(session, start, end);
     await displayed(page, '#original', preview(image));
@@ -1407,6 +1413,10 @@ test('fullscreen touch swipes navigate on both axes while pinch and pan stay on 
   await page.locator('#stage.zoomed').waitFor({ state: 'detached' });
   assert.equal((await viewerTransform(page)).scale, 1);
   assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+  await page.locator('#fullscreen').tap();
+  await page.locator('#viewer').waitFor({ state: 'hidden' });
+  await displayed(page, '.shot-comparison.is-visible', preview('First_Checker'));
+  assert.equal(await tileSegments.nth(1).getAttribute('aria-pressed'), 'true');
   assert.deepEqual(errors, []);
 });
 
@@ -1440,7 +1450,7 @@ test('a touch tap exits fullscreen after a swipe even when Chrome omits the clic
   assert.deepEqual(errors, []);
 });
 
-test('desktop fullscreen controls fade when idle and return on mouse movement or keyboard use', async t => {
+test('desktop fullscreen controls fade when idle and a stationary click still advances', async t => {
   const { page, errors } = await openPage(t, { width: 1440 });
   const first = page.locator('.shot').first();
   await first.click();
@@ -1463,27 +1473,50 @@ test('desktop fullscreen controls fade when idle and return on mouse movement or
       Number(getComputedStyle(document.querySelector(selector)).opacity) === value);
   }, opacity);
   await controlsOpacity(1);
+  await page.locator('#next-side').hover();
   await controlsOpacity(0);
-  const targets = page.locator('#previous-side, #next-side, #fullscreen, #counter');
+  const targets = page.locator('#previous-side, #next-side, #fullscreen');
   assert.deepEqual(await targets.evaluateAll(elements => elements.map(element => getComputedStyle(element).pointerEvents)),
-    ['none', 'none', 'none', 'none']);
+    ['auto', 'auto', 'auto']);
+  assert.equal(await page.locator('#counter').evaluate(element => getComputedStyle(element).pointerEvents), 'none');
+
+  await page.mouse.down();
+  await page.mouse.up();
+  await displayed(page, '#original', preview('Second'));
+  assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
 
   await page.mouse.move(40, 100);
   await controlsOpacity(1);
-  assert.deepEqual(await targets.evaluateAll(elements => elements.map(element => getComputedStyle(element).pointerEvents)),
-    ['auto', 'auto', 'auto', 'auto']);
 
   await controlsOpacity(0);
   await page.keyboard.press('Shift+Tab');
   await controlsOpacity(1);
   assert.equal(await page.evaluate(() => document.querySelector('#viewer').contains(document.activeElement)), true);
   await page.keyboard.press('ArrowRight');
-  await displayed(page, '#original', preview('Second'));
+  await displayed(page, '#original', preview('Third'));
   await page.locator('#fullscreen').click();
   await page.locator('#viewer').waitFor({ state: 'hidden' });
   await page.waitForFunction(() => document.fullscreenElement === null);
   await first.click();
   await controlsOpacity(1);
+  assert.deepEqual(errors, []);
+});
+
+test('desktop fullscreen arrow buttons and glyphs grow by 50% at the 4K breakpoint', async t => {
+  const { page, errors } = await openPage(t, { width: 2559 });
+  await page.locator('.shot').first().click();
+  await displayed(page, '#original', preview('First'));
+  const sizes = () => page.locator('.viewer-arrows button').evaluateAll(buttons => buttons.map(button => {
+    const style = getComputedStyle(button);
+    return [style.width, style.height, style.fontSize];
+  }));
+  assert.deepEqual(await sizes(), [
+    ['48px', '48px', '22.4px'], ['48px', '48px', '22.4px'],
+  ]);
+  await page.setViewportSize({ width: 2560, height: 900 });
+  assert.deepEqual(await sizes(), [
+    ['72px', '72px', '33.6px'], ['72px', '72px', '33.6px'],
+  ]);
   assert.deepEqual(errors, []);
 });
 
@@ -2209,17 +2242,18 @@ test('the visible comparison mark follows the foreground palette in the gallery 
   assert.equal(await fill(strip.locator('button').first()), 'rgb(59, 59, 59)');
 
   await page.locator('.shot').first().click();
-  await activeSegment(page, 0);
-  const fullscreenStrip = page.locator('#viewer .comparison-indicator');
-  assert.equal(await fill(chosen(fullscreenStrip)), themedForeground);
-  await segment(page, 2).hover();
   await displayed(page, '#original', preview('First_Wireframe'));
   await activeSegment(page, 2);
+  const fullscreenStrip = page.locator('#viewer .comparison-indicator');
+  assert.equal(await fill(chosen(fullscreenStrip)), themedForeground);
+  await segment(page, 0).hover();
+  await displayed(page, '#original', preview('First'));
+  await activeSegment(page, 0);
   assert.equal(await fill(chosen(fullscreenStrip)), themedForeground);
   assert.deepEqual(errors, []);
 });
 
-test('comparison hover is limited to the bottom 6% on gallery tiles and fullscreen images', async t => {
+test('comparison hover selects only in the bottom 6% and keeps the variant after the pointer leaves', async t => {
   await t.test('gallery tile', async t => {
     const { page, errors } = await openPage(t, { width: 1440 });
     const entry = page.locator('.shot-entry').first();
@@ -2239,15 +2273,17 @@ test('comparison hover is limited to the bottom 6% on gallery tiles and fullscre
     await moveToChecker(0.95);
     assert.equal(await chosen(), 'Show variant 2 of 3');
     await moveToChecker(0.93);
-    assert.equal(await chosen(), 'Show variant 1 of 3');
+    assert.equal(await chosen(), 'Show variant 2 of 3');
+    await page.mouse.move(1, 1);
+    assert.equal(await chosen(), 'Show variant 2 of 3');
 
     await buttons.nth(2).hover();
     await buttons.nth(2).and(entry.locator('[aria-pressed="true"]')).waitFor();
     await moveToChecker(0.93);
-    assert.equal(await chosen(), 'Show variant 1 of 3');
-    await buttons.nth(2).click();
-    await moveToChecker(0.93);
     assert.equal(await chosen(), 'Show variant 3 of 3');
+    await buttons.nth(0).hover();
+    await moveToChecker(0.93);
+    assert.equal(await chosen(), 'Show variant 1 of 3');
     assert.deepEqual(errors, []);
   });
 
@@ -2275,16 +2311,18 @@ test('comparison hover is limited to the bottom 6% on gallery tiles and fullscre
     await moveToChecker(0.95);
     await displayed(page, '#original', preview('First_Checker'));
     await moveToChecker(0.93);
-    await displayed(page, '#original', preview('First'));
+    await activeSegment(page, 1);
+    await page.mouse.move(1, 1);
+    assert.equal(await image.getAttribute('src'), preview('First_Checker'));
 
     await segment(page, 2).hover();
     await displayed(page, '#original', preview('First_Wireframe'));
     await moveToChecker(0.93);
+    await activeSegment(page, 2);
+    await segment(page, 0).hover();
     await displayed(page, '#original', preview('First'));
-    await segment(page, 2).click();
-    await displayed(page, '#original', preview('First_Wireframe'));
     await moveToChecker(0.93);
-    assert.equal(await image.getAttribute('src'), preview('First_Wireframe'));
+    await activeSegment(page, 0);
     assert.deepEqual(errors, []);
   });
 });
@@ -2878,6 +2916,151 @@ test('outside-image touch rule preserves desktop mouse dismissal', async t => {
   await page.locator('.shot').first().click();
   await displayed(page, '#original', preview('First'));
   await page.locator('#stage').click({ position: await outsideViewerImagePosition(page) });
+  await page.locator('#viewer').waitFor({ state: 'hidden' });
+  assert.deepEqual(errors, []);
+});
+
+for (const [name, options] of [
+  ['studio', { route: gallery }],
+  ['personal', { route: '/artur' + gallery }],
+  ['Atrium', { map: true }],
+  ['reduced motion', { reducedMotion: 'reduce' }],
+]) {
+  test(`touch double tap restores centered fullscreen fit: ${name}`, async t => {
+    const { page, errors } = await openPage(t, { ...options, width: 412, height: 900, hasTouch: true });
+    const session = await portableTouchSession(page);
+    await page.locator(options.map ? '#map-fullscreen' : '.shot').first().tap();
+    await displayed(page, '#original', preview('First'));
+    if (options.map) await page.locator('#fullscreen-map').waitFor({ state: 'visible' });
+    else {
+      await segment(page, 1).tap();
+      await displayed(page, '#original', preview('First_Checker'));
+    }
+    const expectedImage = preview(options.map ? 'First' : 'First_Checker');
+    const stage = await page.locator('#stage').boundingBox();
+    const x = stage.x + stage.width / 2, y = stage.y + stage.height / 2;
+    const tap = () => page.touchscreen.tap(x, y);
+    await tap();
+    await tap();
+    await settleControlActivation(page);
+    assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 }, 'double tapping at fit does not zoom in');
+    assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), true);
+
+    await pinchInViewer(session, x, y, 30, 90);
+    await waitForViewerScale(page, 3);
+    await swipeInViewer(session, [x - 45, y], [x + 45, y]);
+    const panned = await viewerTransform(page);
+    assert.equal(panned.scale, 3);
+    assert.ok(Math.abs(panned.x) > 10, 'the reset must undo a real pan as well as zoom');
+    if (options.map) {
+      const thumbnail = page.locator('#fullscreen-map .gallery-map-region').first();
+      await thumbnail.tap();
+      await thumbnail.tap();
+      await settleControlActivation(page);
+      assert.deepEqual(await viewerTransform(page), panned, 'map thumbnail taps do not reset image zoom');
+      assert.equal(await thumbnail.getAttribute('aria-expanded'), 'false', 'pinch still locks thumbnail expansion');
+    }
+    await tap();
+    await settleControlActivation(page);
+    assert.deepEqual(await viewerTransform(page), panned, 'a single tap leaves zoom and pan unchanged');
+    if (options.reducedMotion === 'reduce') {
+      await page.evaluate(() => {
+        document.querySelector('#stage').addEventListener('pointerup', () => {
+          const transform = document.querySelector('#viewer-canvas').style.transform;
+          const matrix = new DOMMatrixReadOnly(transform || undefined);
+          window.galleryScaleAtResetRelease = { scale: matrix.a, x: matrix.e, y: matrix.f };
+        }, { once: true });
+      });
+    }
+    await tap();
+    if (options.reducedMotion === 'reduce') {
+      assert.deepEqual(await page.evaluate(() => window.galleryScaleAtResetRelease), { scale: 1, x: 0, y: 0 },
+        'reduced motion resets immediately at the second release');
+    }
+    await waitForViewerScale(page, 1);
+    assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
+    assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), true);
+    assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+    await displayed(page, '#original', expectedImage);
+    if (options.map) assert.equal(await page.locator('#fullscreen-map').isVisible(), true);
+    else await activeSegment(page, 1);
+    await page.locator('#fullscreen').tap();
+    await page.locator('#viewer').waitFor({ state: 'hidden' });
+    assert.deepEqual(errors, []);
+  });
+}
+
+test('touch double tap pairs are interrupted by pinch, out-and-back drag, or cancellation', async t => {
+  const { page, errors } = await openPage(t, { width: 412, hasTouch: true, reducedMotion: 'reduce' });
+  const session = await portableTouchSession(page);
+  await page.locator('.shot').first().tap();
+  await displayed(page, '#original', preview('First'));
+  const stage = await page.locator('#stage').boundingBox();
+  const x = stage.x + stage.width / 2, y = stage.y + stage.height / 2;
+  const tap = () => page.touchscreen.tap(x, y);
+  const point = (offset = 0) => [{ x: x + offset, y, id: 1 }];
+  await pinchInViewer(session, x, y, 30, 90);
+  await waitForViewerScale(page, 3);
+  for (const interruption of ['pinch', 'out-and-back drag', 'cancellation']) {
+    // Isolate this pair from the preceding assertion's tap, beyond the 350 ms window.
+    await page.waitForTimeout(370);
+    await tap();
+    if (interruption === 'pinch') await pinchInViewer(session, x, y, 30, 40);
+    else {
+      await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: point() });
+      if (interruption === 'out-and-back drag') {
+        await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: point(24) });
+        await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: point() });
+      }
+      await session.send('Input.dispatchTouchEvent', {
+        type: interruption === 'cancellation' ? 'touchCancel' : 'touchEnd', touchPoints: [],
+      });
+    }
+    const beforeTap = await viewerTransform(page);
+    assert.ok(beforeTap.scale > 1);
+    await tap();
+    await settleControlActivation(page);
+    assert.deepEqual(await viewerTransform(page), beforeTap, `${interruption} breaks the pending tap pair`);
+    assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+    assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), true);
+  }
+  // The recognizer remains usable after the cancelled contact.
+  await tap();
+  await waitForViewerScale(page, 1);
+  assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
+  assert.deepEqual(errors, []);
+});
+
+test('touch double tap leaves comparison and arrow controls usable', async t => {
+  const { page, errors } = await openPage(t, { width: 412, hasTouch: true, reducedMotion: 'reduce' });
+  const session = await portableTouchSession(page);
+  await page.locator('.shot').first().tap();
+  await displayed(page, '#original', preview('First'));
+  const stage = await page.locator('#stage').boundingBox();
+  const x = stage.x + stage.width / 2, y = stage.y + stage.height / 2;
+  const tap = () => page.touchscreen.tap(x, y);
+  await pinchInViewer(session, x, y, 30, 60);
+  await waitForViewerScale(page, 2);
+  const zoomed = await viewerTransform(page);
+  await tap();
+  await segment(page, 1).tap();
+  await segment(page, 1).tap();
+  await displayed(page, '#original', preview('First_Checker'));
+  assert.deepEqual(await viewerTransform(page), zoomed, 'comparison button taps select a variant without resetting zoom');
+  await tap();
+  await segment(page, 2).press('Enter');
+  await displayed(page, '#original', preview('First_Wireframe'));
+  await tap();
+  await settleControlActivation(page);
+  assert.deepEqual(await viewerTransform(page), zoomed, 'keyboard comparison activation also breaks an image tap pair');
+  await activeSegment(page, 2);
+  const next = await page.locator('#next-side').boundingBox();
+  await page.touchscreen.tap(next.x + next.width / 2, next.y + next.height / 2);
+  await page.touchscreen.tap(next.x + next.width / 2, next.y + next.height / 2);
+  await displayed(page, '#original', preview('Third'));
+  await settleControlActivation(page);
+  assert.equal(await page.locator('#counter').textContent(), '3 / 3', 'two arrow taps still navigate twice');
+  await page.locator('#fullscreen').tap();
   await page.locator('#viewer').waitFor({ state: 'hidden' });
   assert.deepEqual(errors, []);
 });

@@ -93,6 +93,22 @@ class PublicationCleanupTests(unittest.TestCase):
         self.assertIn('Public markup still points to migrated original', result.stderr)
         self.assertTrue((self.gallery / 'Omitted.jpg').exists())
 
+    def test_local_gallery_keeps_the_manifest_images_with_remote_delivery_enabled(self):
+        self.media_config.write_text(json.dumps({
+            'revision': 'a' * 40,
+            'local_galleries': {'example': 'branding'},
+        }), encoding='utf-8')
+        self.entries = [{'image': 'Logo.png', 'compare': 'Mark.png'}]
+        self.write_manifest()
+        logo = self.image('Logo.png')
+        mark = self.image('Mark.png')
+        preview = self.image('1440p/Logo.webp')
+        result = self.run_cleanup()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(logo.is_file())
+        self.assertTrue(mark.is_file())
+        self.assertFalse(preview.exists())
+
     def test_obsolete_double_extension_previews_are_removed(self):
         old = self.image('1440p/Final.jpg.webp')
         result = self.run_cleanup()

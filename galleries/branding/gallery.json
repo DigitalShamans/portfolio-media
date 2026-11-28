@@ -1,0 +1,183 @@
+[
+  {
+    "image": "DS_Logo_Page14b.png",
+    "label": "Digital Shamans logo overview",
+    "width": 3840,
+    "height": 2160
+  },
+  {
+    "image": "DS_Logo_Black_Transparent_With_Tagline_1200.co.uk.png",
+    "label": "Black wordmark with tagline and website",
+    "width": 1200,
+    "height": 320,
+    "heading": "Wordmarks with transparent backgrounds"
+  },
+  {
+    "image": "DS_Logo_Black_Transparent_With_Tagline_1200.png",
+    "label": "Black wordmark with tagline",
+    "width": 1200,
+    "height": 320
+  },
+  {
+    "image": "DS_Logo_Black_Transparent_Without_Tagline_1200.co.uk.png",
+    "label": "Black wordmark without tagline · with website",
+    "width": 1200,
+    "height": 320
+  },
+  {
+    "image": "DS_Logo_Black_Transparent_Without_Tagline_1200.png",
+    "label": "Black wordmark without tagline",
+    "width": 1200,
+    "height": 320
+  },
+  {
+    "image": "DS_Logo_White_Transparent_With_Tagline_1200.co.uk.png",
+    "label": "White wordmark with tagline and website",
+    "width": 1200,
+    "height": 320
+  },
+  {
+    "image": "DS_Logo_White_Transparent_With_Tagline_1200.png",
+    "label": "White wordmark with tagline",
+    "width": 1200,
+    "height": 320
+  },
+  {
+    "image": "DS_Logo_White_Transparent_Without_Tagline_1200.co.uk.png",
+    "label": "White wordmark without tagline · with website",
+    "width": 1200,
+    "height": 320
+  },
+  {
+    "image": "DS_Logo_White_Transparent_Without_Tagline_1200.png",
+    "label": "White wordmark without tagline",
+    "width": 1200,
+    "height": 320
+  },
+  {
+    "image": "DS_Logo_Black_on_White_With_Tagline_1200.png",
+    "label": "Black wordmark on white with tagline",
+    "width": 1200,
+    "height": 320,
+    "heading": "Wordmarks with solid backgrounds"
+  },
+  {
+    "image": "DS_Logo_Black_on_White_Without_Tagline_1200.png",
+    "label": "Black wordmark on white without tagline",
+    "width": 1200,
+    "height": 320
+  },
+  {
+    "image": "DS_Logo_White_on_Black_With_Tagline_1200.png",
+    "label": "White wordmark on black with tagline",
+    "width": 1200,
+    "height": 320
+  },
+  {
+    "image": "DS_Logo_White_on_Black_Without_Tagline_1200.png",
+    "label": "White wordmark on black without tagline",
+    "width": 1200,
+    "height": 320
+  },
+  {
+    "image": "DS_Monogram_Logo_White_Transparent_With_Tagline.png",
+    "label": "White monogram with tagline",
+    "width": 800,
+    "height": 800,
+    "heading": "Monograms with transparent backgrounds"
+  },
+  {
+    "image": "DS_Monogram_Logo_White_Transparent_Without_Tagline.png",
+    "label": "White monogram without tagline",
+    "width": 800,
+    "height": 800
+  },
+  {
+    "image": "DS_Monogram_Logo_Black_Transparent_With_Tagline.png",
+    "label": "Black monogram with tagline",
+    "width": 800,
+    "height": 800
+  },
+  {
+    "image": "DS_Monogram_Logo_Black_Transparent_Without_Tagline.png",
+    "label": "Black monogram without tagline",
+    "width": 800,
+    "height": 800
+  },
+  {
+    "image": "DS_Monogram_Logo_White_on_Black_With_Tagline.png",
+    "label": "White monogram on black with tagline",
+    "width": 800,
+    "height": 800,
+    "heading": "Monograms with solid backgrounds"
+  },
+  {
+    "image": "DS_Monogram_Logo_White_on_Black_Without_Tagline.png",
+    "label": "White monogram on black without tagline",
+    "width": 800,
+    "height": 800
+  },
+  {
+    "image": "DS_Monogram_Logo_Black_on_White_With_Tagline.png",
+    "label": "Black monogram on white with tagline",
+    "width": 800,
+    "height": 800
+  },
+  {
+    "image": "DS_Monogram_Logo_Black_on_White_Without_Tagline.png",
+    "label": "Black monogram on white without tagline",
+    "width": 800,
+    "height": 800
+  },
+  {
+    "image": "DS_DigitalShamans_Logo_Update_Symbol_Colour_downsized500_transp.png",
+    "label": "Colour mark with a transparent background",
+    "width": 500,
+    "height": 500,
+    "heading": "Colour logo with a transparent background"
+  },
+  {
+    "image": "DS_DigitalShamans_Logo_Update_Symbol_Colour_25-03-21_Plan_de_travail_2_downsized500.png",
+    "label": "Portrait colour mark",
+    "width": 250,
+    "height": 500,
+    "heading": "Colour logos with solid backgrounds"
+  },
+  {
+    "image": "DS_DigitalShamans_Logo_Update_Symbol_Colour_downsized500_artstation.png",
+    "label": "ArtStation colour mark",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "image": "DS_DigitalShamans_Logo_Update_Symbol_Colour_downsized500_black.png",
+    "label": "Colour mark on black",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "image": "DS_DigitalShamans_Logo_Update_Symbol_Colour_downsized500_simple.png",
+    "label": "Simplified colour mark",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "image": "artstation-favicon-transp.png",
+    "label": "ArtStation favicon",
+    "width": 180,
+    "height": 180,
+    "heading": "Favicons"
+  },
+  {
+    "image": "artstation-favicon-transp-mascot.png",
+    "label": "Mascot favicon",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "image": "tumblr_ni9z9feMoK1rnvjjco1_1280.jpg",
+    "label": "Favicon reference image",
+    "width": 1280,
+    "height": 1412
+  }
+]

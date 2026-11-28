@@ -35,6 +35,21 @@ test('primary, wireframe and checker names become clean WebP URLs on both portfo
   }
 });
 
+test('local galleries keep original images and version keys at both viewport sizes', async () => {
+  const base = 'https://digitalshamans.co.uk/galleries/branding/';
+  for (const wide of [false, true]) {
+    let requests = 0;
+    const mapper = resolution(base, wide, {
+      galleryLocalImages: 'true', galleryOriginalsOrigin: serviceOrigin, galleryOriginalsRevision: commit,
+    }, () => { requests++; });
+    for (const name of ['Logo.png', 'Reference.jpg']) {
+      assert.equal(mapper.publicImageUrl(name + '?v=asset-hash', mapper.current()), base + name + '?v=asset-hash');
+    }
+    assert.equal(await mapper.refreshPublicUpdates(base), false);
+    assert.equal(requests, 0);
+  }
+});
+
 test('published replacements revalidate both sizes without changing unrelated image URLs', async () => {
   const base = 'https://digitalshamans.co.uk/galleries/stylised-artworks/';
   const initial = 'd'.repeat(40);
