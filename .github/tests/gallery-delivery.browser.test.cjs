@@ -6,7 +6,12 @@ const { readFileSync } = require('node:fs');
 const { createServer } = require('node:http');
 const { resolve } = require('node:path');
 const { after, before, test } = require('node:test');
-const { chromium } = require('playwright');
+const { chromium, webkit } = require('playwright');
+
+// WebKit runs the portable navigation regressions with --test-name-pattern.
+// The other tests retain Chromium-specific CDP input and network assertions.
+const browserEngine = process.env.GALLERY_TEST_BROWSER || 'chromium';
+assert.ok(['chromium', 'webkit'].includes(browserEngine), 'Unsupported gallery test browser');
 
 const root = resolve(__dirname, '../..');
 const read = path => readFileSync(resolve(root, path), 'utf8');
@@ -50,9 +55,9 @@ const { portfolio, originals, preview } = routedUrls;
 
 let browser;
 before(async () => {
-  browser = await chromium.launch({
-    executablePath: process.env.CHROMIUM_PATH,
-    args: ['--enable-blink-features=MiddleClickAutoscroll'],
+  browser = await ({ chromium, webkit })[browserEngine].launch({
+    executablePath: browserEngine === 'webkit' ? process.env.WEBKIT_PATH : process.env.CHROMIUM_PATH,
+    args: browserEngine === 'chromium' ? ['--enable-blink-features=MiddleClickAutoscroll'] : [],
   });
 });
 after(() => browser?.close());
@@ -162,11 +167,14 @@ async function startFixtureServer(t, serve, errors) {
 }
 
 async function openPage(t, {
-  route = gallery, width = 2800, hasTouch = false, intercept, embeds, assetVersions,
+  route = gallery, width = 2800, height = 900, hasTouch = false, intercept, embeds, assetVersions,
   map = false, diagnostics = false, reducedMotion, cacheImages = false, galleryEntries = manifest,
 } = {}) {
   if (map) route = mapRoute;
-  const page = await browser.newPage({ hasTouch, viewport: { width, height: 900 } });
+  // hasTouch alone also represents a desktop with a touchscreen. WebKit needs
+  // mobile mode separately for its viewport/input model; these touch fixtures
+  // exercise phones in portrait and landscape, without mocking capabilities.
+  const page = await browser.newPage({ hasTouch, isMobile: hasTouch, viewport: { width, height } });
   t.after(() => page.close());
   page.setDefaultTimeout(5000);
   if (reducedMotion) await page.emulateMedia({ reducedMotion });
@@ -205,6 +213,22 @@ async function openPage(t, {
     await page.route('**/*', request => serve(request, new URL(request.request().url())));
   }
   await page.goto(urls.portfolio + route + (diagnostics ? '?diagnostics=1' : ''), { waitUntil: 'domcontentloaded' });
+  if (hasTouch) {
+    const input = await page.evaluate(() => ({
+      coarse: matchMedia('(pointer: coarse)').matches,
+      fine: matchMedia('(pointer: fine)').matches,
+      hover: matchMedia('(hover: hover)').matches,
+      maxTouchPoints: navigator.maxTouchPoints,
+      touchEvents: 'ontouchstart' in window,
+      width: innerWidth,
+    }));
+    // Linux WebKit reports zero maxTouchPoints even in its mobile touch context.
+    // Keep that real value; verify coarse input/touch events in both engines and
+    // the positive hardware-contact count where Chromium's emulation exposes it.
+    assert.ok(input.coarse && !input.fine && !input.hover && input.touchEvents &&
+      (browserEngine !== 'chromium' || input.maxTouchPoints > 0),
+      `Expected a mobile touch context in ${browserEngine}; observed ${JSON.stringify(input)}`);
+  }
   return { page, requests, errors, urls };
 }
 
@@ -215,7 +239,7 @@ async function displayed(page, selector, source) {
   }, { selector, source });
 }
 
-async function assertViewerControlStyles(page, { touch = false } = {}) {
+async function assertViewerControlStyles(page) {
   const { surface, arrows, bar } = await page.evaluate(() => {
     const read = selector => {
       const style = getComputedStyle(document.querySelector(selector));
@@ -233,17 +257,12 @@ async function assertViewerControlStyles(page, { touch = false } = {}) {
   });
   assert.equal(surface.background, 'rgb(24, 24, 24)');
   assert.equal(surface.image, 'none');
-  const blackSurface = { ...surface, background: 'rgb(0, 0, 0)' };
-  assert.deepEqual(bar, [blackSurface, blackSurface]);
-  if (touch) {
-    for (const arrow of arrows) {
-      assert.equal(arrow.background, 'rgba(0, 0, 0, 0)');
-      assert.equal(arrow.image, 'none');
-      assert.equal(arrow.borderWidth, '0px');
-      assert.equal(arrow.shadow, 'none');
-    }
-  } else {
-    assert.deepEqual(arrows, [surface, surface]);
+  for (const control of [...arrows, ...bar]) {
+    assert.equal(control.background, 'rgba(0, 0, 0, 0)');
+    assert.equal(control.image, 'none');
+    assert.equal(control.borderWidth, '0px');
+    assert.equal(control.shadow, 'none');
+    assert.equal(control.color, surface.color);
   }
 }
 
@@ -734,6 +753,74 @@ async function pinchInViewer(session, x, y, startingRadius, endingRadius) {
   await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: points(startingRadius) });
   await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: points(endingRadius) });
   await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+}
+
+async function portableTouchSession(page) {
+  if (browserEngine === 'chromium') return page.context().newCDPSession(page);
+  // Playwright's WebKit API has no multi-touch transport. Exercise the same
+  // pointer/geometry path with synthetic pointers, without claiming native iOS
+  // gesture or pointer-capture verification. Normal WebKit taps stay native.
+  await page.evaluate(() => {
+    const state = window.galleryFixtureTouches = { pointers: new Map(), captures: new Map() };
+    const capture = Element.prototype.setPointerCapture;
+    const release = Element.prototype.releasePointerCapture;
+    const hasCapture = Element.prototype.hasPointerCapture;
+    Element.prototype.setPointerCapture = function(id) {
+      if (state.pointers.has(id)) state.captures.set(id, this);
+      else return capture.call(this, id);
+    };
+    Element.prototype.releasePointerCapture = function(id) {
+      if (state.pointers.has(id)) state.captures.delete(id);
+      else return release.call(this, id);
+    };
+    Element.prototype.hasPointerCapture = function(id) {
+      return state.pointers.has(id) ? state.captures.get(id) === this : hasCapture.call(this, id);
+    };
+  });
+  return {
+    async send(method, { type, touchPoints }) {
+      assert.equal(method, 'Input.dispatchTouchEvent');
+      await page.evaluate(({ type, points }) => {
+        const state = window.galleryFixtureTouches;
+        const dispatch = (name, point) => {
+          const target = state.captures.get(point.id) || point.target;
+          target.dispatchEvent(new PointerEvent(name, {
+            bubbles: true, composed: true, cancelable: true, pointerType: 'touch',
+            pointerId: point.id, isPrimary: point.primary,
+            clientX: point.x, clientY: point.y, button: 0,
+            buttons: name === 'pointerup' || name === 'pointercancel' ? 0 : 1,
+          }));
+        };
+        for (const point of points) {
+          const id = 100000 + point.id;
+          const previous = state.pointers.get(id);
+          const next = { ...previous, ...point, id };
+          if (!previous) {
+            next.target = document.elementFromPoint(point.x, point.y);
+            next.primary = state.pointers.size === 0;
+          }
+          state.pointers.set(id, next);
+          if (!previous) dispatch('pointerdown', next);
+          else if (type === 'touchMove') dispatch('pointermove', next);
+        }
+        if (type === 'touchEnd' || type === 'touchCancel') {
+          // Match Chromium's CDP transport: a nonempty touchEnd lists the
+          // released contacts; an empty list releases every remaining contact.
+          const released = new Set(points.map(point => 100000 + point.id));
+          for (const point of state.pointers.values()) {
+            if (type === 'touchEnd' && released.size && !released.has(point.id)) continue;
+            dispatch(type === 'touchEnd' ? 'pointerup' : 'pointercancel', point);
+            const captured = state.captures.get(point.id);
+            state.captures.delete(point.id);
+            state.pointers.delete(point.id);
+            captured?.dispatchEvent(new PointerEvent('lostpointercapture', {
+              bubbles: true, pointerType: 'touch', pointerId: point.id,
+            }));
+          }
+        }
+      }, { type, points: touchPoints });
+    },
+  };
 }
 
 async function viewerTransform(page) {
@@ -1410,7 +1497,7 @@ test('fullscreen desktop left click toggles zoom, middle and right drag pan, and
   await assertViewerControlStyles(page);
   const exit = page.locator('#fullscreen');
   await exit.hover();
-  assert.equal(await exit.evaluate(button => getComputedStyle(button).backgroundColor), 'rgb(0, 0, 0)');
+  assert.equal(await exit.evaluate(button => getComputedStyle(button).backgroundColor), 'rgba(0, 0, 0, 0)');
   const image = await page.locator('#original').boundingBox();
   const x = image.x + image.width / 2;
   const y = image.y + image.height / 2;
@@ -2691,10 +2778,11 @@ async function viewerGeometry(page) {
   });
 }
 
-function assertAnchored(before, after) {
+function assertAnchored(before, after, selectors = before.controls.map(control => control.selector)) {
   const scale = after.image.width / before.image.width;
   for (let i = 0; i < before.controls.length; i++) {
     const a = before.controls[i], b = after.controls[i];
+    if (!selectors.includes(a.selector)) continue;
     for (const [actual, expected, label] of [
       [b.width, a.width * scale, 'width'], [b.height, a.height * scale, 'height'],
       [b.x - after.image.x, (a.x - before.image.x) * scale, 'horizontal anchor'],
@@ -2703,45 +2791,161 @@ function assertAnchored(before, after) {
   }
 }
 
-test('pinch and pan keep arrows and comparison strip attached to the image without focus scrolling', async t => {
+function assertFixedArrows(before, after) {
+  for (const selector of ['#previous-side', '#next-side']) {
+    const initial = before.controls.find(control => control.selector === selector);
+    const current = after.controls.find(control => control.selector === selector);
+    for (const property of ['x', 'y', 'width', 'height']) {
+      assert.ok(Math.abs(initial[property] - current[property]) < 1.5,
+        `${selector} ${property} stays on screen: ${initial[property]} versus ${current[property]}`);
+    }
+    assert.equal(current.width, 48);
+    assert.equal(current.height, 48);
+  }
+}
+
+async function settleControlActivation(page) {
+  await page.evaluate(() => new Promise(resolve => {
+    requestAnimationFrame(() => requestAnimationFrame(resolve));
+  }));
+}
+
+for (const route of [gallery, '/artur' + gallery]) {
+  test(`transparent fullscreen navigation controls on desktop: ${route}`, async t => {
+    const { page, errors } = await openPage(t, { route, width: 1440 });
+    await page.locator('.shot').first().click();
+    await displayed(page, '#original', preview('First'));
+    await assertViewerControlStyles(page);
+    for (const selector of ['#previous-side', '#next-side', '#fullscreen']) {
+      await page.locator(selector).hover();
+      assert.equal(await page.locator(selector).evaluate(button => getComputedStyle(button).backgroundColor),
+        'rgba(0, 0, 0, 0)');
+    }
+    assert.deepEqual(errors, []);
+  });
+
+  for (const [width, height] of [[412, 900], [900, 412]]) {
+    test(`mobile navigation arrows stay fixed through pinch and pan: ${route} ${width}x${height}`, async t => {
+      const { page, errors } = await openPage(t, { route, width, height, hasTouch: true });
+      const session = await portableTouchSession(page);
+      await page.locator('.shot').first().tap();
+      await displayed(page, '#original', preview('First'));
+      await assertViewerControlStyles(page);
+      await segment(page, 0).waitFor({ state: 'visible' });
+      const initial = await viewerGeometry(page);
+      const stage = await page.locator('#stage').boundingBox();
+      const x = stage.x + stage.width / 2, y = stage.y + stage.height / 2;
+      await pinchInViewer(session, x, y, 30, 90);
+      await page.locator('#stage.zoomed').waitFor();
+      const zoomed = await viewerGeometry(page);
+      assert.ok(zoomed.image.width > initial.image.width * 1.5);
+      assertFixedArrows(initial, zoomed);
+      assertAnchored(initial, zoomed, ['#viewer .comparison-indicator']);
+      await swipeInViewer(session, [x - 45, y], [x + 45, y]);
+      const panned = await viewerGeometry(page);
+      assert.ok(Math.abs(panned.image.x - zoomed.image.x) > 10);
+      assertFixedArrows(initial, panned);
+      assertAnchored(zoomed, panned, ['#viewer .comparison-indicator']);
+      assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+
+      const offsets = () => page.evaluate(() => Object.fromEntries(['#stage', '#viewer-canvas', '#viewer-frame', '#viewer'].map(selector => {
+        const element = document.querySelector(selector);
+        return [selector, { x: element.scrollLeft, y: element.scrollTop }];
+      })));
+      const expectedOffsets = await offsets();
+      assert.deepEqual(expectedOffsets['#stage'], { x: 0, y: 0 });
+      const transform = await viewerTransform(page);
+      // Focus can reach the still-scaled comparison strip without adding a
+      // browser scroll offset to the image pan, or moving the fixed arrows.
+      if (browserEngine === 'webkit') {
+        // Mobile WebKit's Tab policy need not include buttons. Use ordinary
+        // focus(), without preventScroll, to retain the focus-scroll check.
+        const controls = page.locator('#previous-side, #next-side, #viewer .comparison-indicator > button');
+        for (const control of await controls.all()) {
+          await control.evaluate(button => button.focus());
+          assert.equal(await control.evaluate(button => document.activeElement === button), true);
+          assert.deepEqual(await offsets(), expectedOffsets);
+          assert.deepEqual(await viewerTransform(page), transform);
+        }
+      } else {
+        const focusTargets = new Set();
+        for (let i = 0; i < 7; i++) {
+          await page.keyboard.press('Tab');
+          focusTargets.add(await page.evaluate(() => document.activeElement.id || document.activeElement.getAttribute('aria-label')));
+          assert.deepEqual(await offsets(), expectedOffsets);
+          assert.deepEqual(await viewerTransform(page), transform);
+        }
+        assert.ok(focusTargets.has('next-side'), 'Tab reaches the next-image arrow');
+        assert.ok([...focusTargets].some(label => /^Show variant/.test(label || '')), 'Tab reaches the comparison strip');
+      }
+      const next = initial.controls.find(control => control.selector === '#next-side');
+      await page.touchscreen.tap(next.x + next.width / 2, next.y + next.height / 2);
+      await displayed(page, '#original', preview('Second'));
+      await settleControlActivation(page);
+      assert.equal(await page.locator('#counter').textContent(), '2 / 3', 'one tap advances exactly once');
+      assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
+      const previous = initial.controls.find(control => control.selector === '#previous-side');
+      await page.touchscreen.tap(previous.x + previous.width / 2, previous.y + previous.height / 2);
+      await displayed(page, '#original', preview('First'));
+      await settleControlActivation(page);
+      assert.equal(await page.locator('#counter').textContent(), '1 / 3', 'one tap returns exactly once');
+      assert.deepEqual(errors, []);
+    });
+  }
+}
+
+test('mobile navigation taps survive a missing click and cancel stale image gestures', async t => {
   const { page, errors } = await openPage(t, { width: 412, hasTouch: true });
-  const session = await page.context().newCDPSession(page);
+  const session = await portableTouchSession(page);
   await page.locator('.shot').first().tap();
   await displayed(page, '#original', preview('First'));
-  await segment(page, 0).waitFor({ state: 'visible' });
-  const initial = await viewerGeometry(page);
-  for (const control of initial.controls) assert.ok(control.width > 0 && control.height > 0, control.selector);
   const stage = await page.locator('#stage').boundingBox();
   const x = stage.x + stage.width / 2, y = stage.y + stage.height / 2;
   await pinchInViewer(session, x, y, 30, 90);
   await page.locator('#stage.zoomed').waitFor();
-  const zoomed = await viewerGeometry(page);
-  assert.ok(zoomed.image.width > initial.image.width * 1.5);
-  assertAnchored(initial, zoomed);
-  await swipeInViewer(session, [x - 45, y], [x + 45, y]);
-  const panned = await viewerGeometry(page);
-  assert.ok(Math.abs(panned.image.x - zoomed.image.x) > 10);
-  assertAnchored(zoomed, panned);
-  assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+  const next = page.locator('#next-side');
+  await next.evaluate(button => button.addEventListener('click', event => {
+    event.stopImmediatePropagation();
+  }, { capture: true, once: true }));
+  await next.tap();
+  await displayed(page, '#original', preview('Second'));
+  await settleControlActivation(page);
+  assert.equal(await page.locator('#counter').textContent(), '2 / 3', 'pointerup works when Chrome omits its compatibility click');
+  assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
 
-  const offsets = () => page.evaluate(() => Object.fromEntries(['#stage', '#viewer-canvas', '#viewer-frame', '#viewer'].map(selector => {
-    const element = document.querySelector(selector);
-    return [selector, { x: element.scrollLeft, y: element.scrollTop }];
-  })));
-  const expectedOffsets = await offsets();
-  assert.deepEqual(expectedOffsets['#stage'], { x: 0, y: 0 });
-  const transform = await viewerTransform(page);
-  // Visit every enabled dialog control once, including a zoomed-offscreen arrow
-  // and comparison segments. Focus must not introduce a second pan mechanism.
-  const focusTargets = new Set();
-  for (let i = 0; i < 7; i++) {
-    await page.keyboard.press('Tab');
-    focusTargets.add(await page.evaluate(() => document.activeElement.id || document.activeElement.getAttribute('aria-label')));
-    assert.deepEqual(await offsets(), expectedOffsets);
-    assert.deepEqual(await viewerTransform(page), transform);
-  }
-  assert.ok(focusTargets.has('next-side'), 'Tab reaches the next-image arrow');
-  assert.ok([...focusTargets].some(label => /^Show variant/.test(label || '')), 'Tab reaches the comparison strip');
+  const box = await next.boundingBox();
+  const midY = box.y + box.height / 2;
+  await swipeInViewer(session, [box.x + 4, midY], [box.x + box.width - 4, midY]);
+  await settleControlActivation(page);
+  assert.equal(await page.locator('#counter').textContent(), '2 / 3', 'dragging across an arrow does not activate it');
+
+  await session.send('Input.dispatchTouchEvent', {
+    type: 'touchStart', touchPoints: [{ x: box.x + box.width / 2, y: midY, id: 1 }],
+  });
+  await session.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] });
+  await settleControlActivation(page);
+  assert.equal(await page.locator('#counter').textContent(), '2 / 3', 'a cancelled arrow touch does not activate it');
+
+  await page.evaluate(() => {
+    window.galleryHeldImagePointerReleased = false;
+    document.querySelector('#stage').addEventListener('pointerup', () => {
+      window.galleryHeldImagePointerReleased = true;
+    }, { once: true });
+  });
+  const held = { x, y, id: 1 };
+  const arrowFinger = { x: box.x + box.width / 2, y: midY, id: 2 };
+  await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [held] });
+  await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [held, arrowFinger] });
+  await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [arrowFinger] });
+  await displayed(page, '#original', preview('Third'));
+  assert.equal(await page.evaluate(() => window.galleryHeldImagePointerReleased), false,
+    'a second finger activates the arrow while the image finger remains down');
+  await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x - 80, y, id: 1 }] });
+  await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await settleControlActivation(page);
+  assert.equal(await page.locator('#counter').textContent(), '3 / 3', 'the held pointer cannot swipe the newly selected image');
+  assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
+  assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), true, 'the old gesture cannot close the viewer');
   assert.deepEqual(errors, []);
 });
 
@@ -2785,5 +2989,6 @@ test('RZ Start stays behind password and bearer-token delivery', async t => {
   assert.ok(!requests.some(url => url.includes('/public-media/') || url.includes('/1440p/')));
   assert.deepEqual(errors, []);
 });
+
 
 

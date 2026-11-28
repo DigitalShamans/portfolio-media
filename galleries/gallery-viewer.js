@@ -11,6 +11,7 @@ const galleryAssetVersions = JSON.parse(document.body.dataset.galleryAssetVersio
 const title = document.querySelector('.intro h1, #map-title').textContent;
 
 const finePointer = window.matchMedia('(pointer: fine)');
+const coarsePointer = window.matchMedia('(pointer: coarse)');
 const desktopScrolling = window.matchMedia('(any-hover: hover) and (any-pointer: fine)');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 let displaySize = `${screen.width}x${screen.height}`;
@@ -64,7 +65,7 @@ const galleryStatus = document.querySelector('#gallery-status');
 const shots = [];
 const viewer = document.querySelector('#viewer');
 // This optional enhancement must never block gallery loading or desktop scrolling.
-const primaryTouch = window.matchMedia('(pointer: coarse)').matches && navigator.maxTouchPoints > 0;
+const primaryTouch = coarsePointer.matches && navigator.maxTouchPoints > 0;
 galleryDiagnostics?.state('gallery-touch', 'Native touch scrolling', primaryTouch
   ? 'Waiting for the mobile scroll controller.' : 'GSAP touch normalization needs a coarse primary pointer and touch support.');
 if (primaryTouch) {
@@ -87,6 +88,14 @@ const frame = document.querySelector('#viewer-frame');
 const stage = document.querySelector('#stage');
 const canvas = document.querySelector('#viewer-canvas');
 const viewerArrows = document.querySelector('.viewer-arrows');
+// Touch navigation stays within reach while only the image canvas zooms and pans.
+// Its placement must not depend on touch-count support for the scroll controller.
+function anchorViewerArrows() {
+  if (viewerArrows.parentElement !== frame) {
+    frame.insertBefore(viewerArrows, frame.querySelector('.viewer-bar'));
+  }
+}
+if (coarsePointer.matches) anchorViewerArrows();
 const original = document.querySelector('#original');
 original.fetchPriority = 'high';
 const previousSide = document.querySelector('#previous-side');
@@ -817,6 +826,11 @@ function showImage(index, initialVariant = 0) {
   const { image, sources } = shot;
   const primary = prioritizeShot(shot);
   const request = ++viewerRequest;
+  // An arrow can change images before the remaining pinch fingers are lifted.
+  suppressViewerClick ||= viewerTouches.size > 0 || Boolean(mouseGesture);
+  viewerTouches.clear();
+  viewerGesture = mouseGesture = undefined;
+  stage.classList.remove('dragging');
   viewerOriginalRequest = undefined;
   current = index;
   comparisonsInitialized = false;
@@ -1012,7 +1026,8 @@ function viewerImageBounds(rect = original.getBoundingClientRect()) {
 
 function positionViewerControls() {
   if (!viewerAspect) return;
-  // Lay out image controls before zooming; the canvas carries them with the image.
+  // Use fitted image bounds so touch arrows remain stationary in the frame.
+  // The comparison strip stays in the canvas and follows the image transform.
   const viewport = stage.getBoundingClientRect();
   const { left, top, width, height } = viewerImageBounds(viewport);
   viewerArrows.style.left = (left - viewport.left + width / 2) + 'px';
@@ -1398,8 +1413,8 @@ function step(amount) {
   showImage((current + amount + shots.length) % shots.length);
 }
 
-previousSide.addEventListener('click', () => step(-1));
-nextSide.addEventListener('click', () => step(1));
+setupViewerControlTap(previousSide, () => step(-1));
+setupViewerControlTap(nextSide, () => step(1));
 
 function showViewerControls(hideWhenIdle = false) {
   clearTimeout(viewerControlsIdleTimer);
@@ -1414,6 +1429,8 @@ function showViewerControls(hideWhenIdle = false) {
 
 for (const type of ['pointermove', 'pointerdown']) {
   frame.addEventListener(type, event => {
+    // Mixed-input devices can report a mouse until the first real touch.
+    if (event.pointerType === 'touch') anchorViewerArrows();
     if (desktopScrolling.matches) showViewerControls(event.pointerType === 'mouse');
   }, { capture: true, passive: true });
 }
@@ -1645,6 +1662,7 @@ stage.addEventListener('contextmenu', event => {
 });
 
 stage.addEventListener('pointerdown', event => {
+  if (event.target.closest('.viewer-arrows')) return;
   lastViewerPointer = event.pointerType;
   if (event.pointerType !== 'mouse' || event.button !== 0) {
     viewerZoomClickCount = 0;
@@ -1744,38 +1762,69 @@ async function setFullscreen(enabled) {
   }
 }
 
-// Chrome can suppress the click from a valid touch tap just after a swipe.
-let fullscreenTap;
-function isFullscreenTap(event) {
-  return fullscreenTap?.id === event.pointerId &&
-    Math.hypot(event.clientX - fullscreenTap.x, event.clientY - fullscreenTap.y) < 10;
+// A browser can omit the click after a pinch or swipe. Activate a completed tap
+// on the next frame, and consume a delayed native click instead of stepping twice.
+function setupViewerControlTap(button, activate) {
+  let touch;
+  let pendingFrame;
+  let ignorePointerClick = false;
+  function withinTap(event) {
+    return Math.hypot(event.clientX - touch.x, event.clientY - touch.y) < 10;
+  }
+  function reset() {
+    cancelAnimationFrame(pendingFrame);
+    pendingFrame = undefined;
+    touch = undefined;
+    ignorePointerClick = false;
+  }
+  button.addEventListener('pointerdown', event => {
+    reset();
+    if (event.pointerType === 'touch' && !button.disabled) {
+      touch = { id: event.pointerId, ...pointFor(event) };
+    }
+  });
+  button.addEventListener('pointermove', event => {
+    if (touch?.id === event.pointerId && !withinTap(event)) {
+      touch = undefined;
+      ignorePointerClick = true;
+    }
+  });
+  button.addEventListener('pointerup', event => {
+    if (touch?.id !== event.pointerId) return;
+    const tapped = withinTap(event) && button.contains(document.elementFromPoint(event.clientX, event.clientY));
+    touch = undefined;
+    ignorePointerClick = !tapped;
+    if (!tapped) return;
+    const origin = viewerOrigin;
+    const request = viewerRequest;
+    pendingFrame = requestAnimationFrame(() => {
+      pendingFrame = undefined;
+      if (!viewer.open || button.disabled || viewerOrigin !== origin || viewerRequest !== request) return;
+      ignorePointerClick = true;
+      activate();
+    });
+  });
+  for (const type of ['pointercancel', 'lostpointercapture']) {
+    button.addEventListener(type, event => {
+      if (touch?.id !== event.pointerId) return;
+      touch = undefined;
+      ignorePointerClick = true;
+    });
+  }
+  button.addEventListener('click', event => {
+    if (event.detail !== 0 && ignorePointerClick) {
+      event.preventDefault();
+      return;
+    }
+    cancelAnimationFrame(pendingFrame);
+    pendingFrame = undefined;
+    touch = undefined;
+    if (viewer.open && !button.disabled) activate();
+  });
+  viewer.addEventListener('close', reset);
 }
 
-fullscreen.addEventListener('pointerdown', event => {
-  fullscreenTap = event.pointerType === 'touch' && event.isPrimary
-    ? { id: event.pointerId, ...pointFor(event) }
-    : undefined;
-});
-fullscreen.addEventListener('pointermove', event => {
-  if (fullscreenTap?.id === event.pointerId && !isFullscreenTap(event)) fullscreenTap = undefined;
-});
-fullscreen.addEventListener('pointerup', event => {
-  if (fullscreenTap?.id !== event.pointerId) return;
-  const tapped = isFullscreenTap(event) && fullscreen.contains(document.elementFromPoint(event.clientX, event.clientY));
-  fullscreenTap = undefined;
-  if (!tapped) return;
-  // Keep the dialog in place until the touch sequence and any native click finish.
-  const origin = viewerOrigin;
-  requestAnimationFrame(() => {
-    if (viewer.open && viewerOrigin === origin) viewer.close();
-  });
-});
-for (const type of ['pointercancel', 'lostpointercapture']) {
-  fullscreen.addEventListener(type, event => {
-    if (fullscreenTap?.id === event.pointerId) fullscreenTap = undefined;
-  });
-}
-fullscreen.addEventListener('click', () => viewer.close());
+setupViewerControlTap(fullscreen, () => viewer.close());
 document.addEventListener('fullscreenchange', () => {
   const isFullscreen = document.fullscreenElement === frame;
   fullscreen.textContent = isFullscreen ? 'Exit fullscreen' : 'Back to gallery';
@@ -1792,7 +1841,6 @@ viewer.addEventListener('close', async () => {
   const fullscreenExit = document.fullscreenElement === frame ? setFullscreen(false) : undefined;
   const request = ++viewerRequest;
   viewerTouches.clear();
-  fullscreenTap = undefined;
   viewerGesture = viewerWheel = mouseGesture = undefined;
   lastViewerPointer = undefined;
   viewerAspect = 0;
@@ -1872,3 +1920,4 @@ window.GalleryViewer = {
   },
   close() { viewer.close(); }
 };
+
