@@ -1654,8 +1654,14 @@ function endViewerTouch(event) {
           Math.hypot(point.x - previous.point.x, point.y - previous.point.y) <= 32) {
         clearViewerTap();
         suppressViewerClick = true;
-        // Restore the original fullscreen fit without changing the image or its comparison.
-        easeViewerZoomTo(1);
+        // Display at native pixel density: one source pixel per physical screen pixel.
+        // This uses the loaded source (1440p on typical mobile devices), not an
+        // assumed 4K resolution. Keep fullscreen open and anchor at the tap point.
+        const bounds = viewerImageBounds(stage.getBoundingClientRect());
+        const density = window.devicePixelRatio || 1;
+        if (original.naturalWidth && bounds.width > 0) {
+          easeViewerZoomTo(original.naturalWidth / (bounds.width * density), point);
+        }
         return;
       }
       lastViewerTap = { point, time: event.timeStamp, request: viewerRequest };
