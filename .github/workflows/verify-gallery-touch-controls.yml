@@ -1,0 +1,48 @@
+name: Verify gallery touch controls
+
+on:
+  push:
+    branches: [qa/gallery-touch-controls-2026-11-28]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Validate portfolio and build
+        uses: ./.github/actions/validate-portfolio
+
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, webkit]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install test browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps ${{ matrix.engine }}
+      - name: Verify fullscreen controls and touch navigation
+        env:
+          GALLERY_TEST_BROWSER: ${{ matrix.engine }}
+        run: |
+          if [[ "$GALLERY_TEST_BROWSER" == webkit ]]; then
+            node --test --test-name-pattern='mobile navigation|transparent fullscreen' .github/tests/gallery-delivery.browser.test.cjs
+          else
+            node --test --test-name-pattern='mobile navigation|transparent fullscreen|fullscreen touch swipes|a touch tap exits fullscreen|fullscreen desktop left click|desktop fullscreen controls fade|Atrium touch taps|RZ Start stays behind' .github/tests/gallery-delivery.browser.test.cjs
+          fi
