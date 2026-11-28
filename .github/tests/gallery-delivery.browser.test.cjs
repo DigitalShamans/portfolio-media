@@ -2810,6 +2810,78 @@ async function settleControlActivation(page) {
   }));
 }
 
+async function outsideViewerImagePosition(page) {
+  const margin = await page.evaluate(() => {
+    const stage = document.querySelector('#stage'), frame = stage.getBoundingClientRect();
+    const image = document.querySelector('#fullscreen-map:not([hidden]) .gallery-map-base img') ||
+      document.querySelector('#original');
+    const bounds = image.getBoundingClientRect(), ratio = image.naturalWidth / image.naturalHeight;
+    const width = Math.min(bounds.width, bounds.height * ratio), height = width / ratio;
+    const imageBottom = bounds.top + (bounds.height + height) / 2;
+    const x = frame.left + frame.width / 2, y = (imageBottom + frame.bottom) / 2;
+    const target = document.elementFromPoint(x, y);
+    return {
+      x: x - frame.left, y: y - frame.top,
+      blankHeight: frame.bottom - imageBottom,
+      targetsStage: stage.contains(target),
+      targetsControl: Boolean(target?.closest('button, a, .comparison-indicator')),
+    };
+  });
+  assert.ok(margin.blankHeight > 16, 'the viewport has a real blank margin below the rendered artwork');
+  assert.equal(margin.targetsStage, true, 'the blank-area tap reaches the image viewing stage');
+  assert.equal(margin.targetsControl, false, 'the blank-area tap does not hit a control');
+  return { x: margin.x, y: margin.y };
+}
+
+for (const [name, options] of [
+  ['studio', { route: gallery }],
+  ['personal', { route: '/artur' + gallery }],
+  ['Atrium', { map: true }],
+]) {
+  test(`outside-image touch taps keep fullscreen open at fit and after pinch: ${name}`, async t => {
+    const { page, errors } = await openPage(t, { ...options, width: 412, height: 900, hasTouch: true });
+    const session = await portableTouchSession(page);
+    await page.locator(options.map ? '#map-fullscreen' : '.shot').first().tap();
+    await displayed(page, '#original', preview('First'));
+    if (options.map) {
+      await page.locator('#fullscreen-map').waitFor({ state: 'visible' });
+      await page.waitForFunction(() => {
+        const image = document.querySelector('#fullscreen-map .gallery-map-base img');
+        return image?.complete && image.naturalWidth > 0;
+      });
+    }
+    const viewer = page.locator('#viewer'), stage = page.locator('#stage');
+    assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+    for (const scale of [1, 2]) {
+      if (scale === 2) {
+        const bounds = await stage.boundingBox();
+        await pinchInViewer(session, bounds.x + bounds.width / 2, bounds.y + bounds.height / 2, 30, 60);
+        await waitForViewerScale(page, 2);
+      }
+      const transform = await viewerTransform(page);
+      await stage.tap({ position: await outsideViewerImagePosition(page) });
+      await settleControlActivation(page);
+      assert.equal(await viewer.evaluate(viewer => viewer.open), true, `a blank-area touch at ${scale}x keeps fullscreen open`);
+      assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+      assert.deepEqual(await viewerTransform(page), transform, 'a blank-area touch leaves image zoom unchanged');
+      await displayed(page, '#original', preview('First'));
+      if (options.map) assert.equal(await page.locator('#fullscreen-map').isVisible(), true);
+    }
+    await page.locator('#fullscreen').tap();
+    await viewer.waitFor({ state: 'hidden' });
+    assert.deepEqual(errors, []);
+  });
+}
+
+test('outside-image touch rule preserves desktop mouse dismissal', async t => {
+  const { page, errors } = await openPage(t, { width: 1440 });
+  await page.locator('.shot').first().click();
+  await displayed(page, '#original', preview('First'));
+  await page.locator('#stage').click({ position: await outsideViewerImagePosition(page) });
+  await page.locator('#viewer').waitFor({ state: 'hidden' });
+  assert.deepEqual(errors, []);
+});
+
 for (const route of [gallery, '/artur' + gallery]) {
   test(`transparent fullscreen navigation controls on desktop: ${route}`, async t => {
     const { page, errors } = await openPage(t, { route, width: 1440 });
