@@ -643,6 +643,8 @@ test('fullscreen hover acknowledges a slow comparison and clears it after a chan
 
   await checker.hover();
   assert.equal(await checker.getAttribute('aria-busy'), 'true');
+  await page.mouse.move(1, 1);
+  assert.equal(await checker.getAttribute('aria-busy'), 'true');
   releaseChecker.release();
   await displayed(page, '#original', preview('First_Checker'));
   await activeSegment(page, 1);
@@ -1367,13 +1369,16 @@ test('the first desktop wheel step animates the opening image into place', async
 test('fullscreen touch swipes navigate on both axes while pinch and pan stay on the image', async t => {
   const { page, errors } = await openPage(t, { width: 412, hasTouch: true });
   const session = await page.context().newCDPSession(page);
+  const tileSegments = page.locator('.shot-entry .comparison-indicator').first().locator('button');
+  await tileSegments.nth(2).tap();
+  await displayed(page, '.shot-comparison.is-visible', preview('First_Wireframe'));
   await page.locator('.shot').first().tap();
-  await displayed(page, '#original', preview('First'));
+  await displayed(page, '#original', preview('First_Wireframe'));
   await assertViewerControlStyles(page, { touch: true });
   await page.locator('#next-side').tap();
   await displayed(page, '#original', preview('Second'));
   await page.locator('#previous-side').tap();
-  await displayed(page, '#original', preview('First'));
+  await displayed(page, '#original', preview('First_Wireframe'));
 
   await segment(page, 1).tap();
   await displayed(page, '#original', preview('First_Checker'));
@@ -1384,9 +1389,9 @@ test('fullscreen touch swipes navigate on both axes while pinch and pan stay on 
   const y = stage.y + stage.height / 2;
   for (const [start, end, image] of [
     [[x, y + 50], [x, y - 55], 'Second'],
-    [[x - 70, y], [x + 70, y], 'First'],
+    [[x - 70, y], [x + 70, y], 'First_Checker'],
     [[x + 70, y], [x - 70, y], 'Second'],
-    [[x, y - 55], [x, y + 50], 'First'],
+    [[x, y - 55], [x, y + 50], 'First_Checker'],
   ]) {
     await swipeInViewer(session, start, end);
     await displayed(page, '#original', preview(image));
@@ -1408,6 +1413,10 @@ test('fullscreen touch swipes navigate on both axes while pinch and pan stay on 
   await page.locator('#stage.zoomed').waitFor({ state: 'detached' });
   assert.equal((await viewerTransform(page)).scale, 1);
   assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+  await page.locator('#fullscreen').tap();
+  await page.locator('#viewer').waitFor({ state: 'hidden' });
+  await displayed(page, '.shot-comparison.is-visible', preview('First_Checker'));
+  assert.equal(await tileSegments.nth(1).getAttribute('aria-pressed'), 'true');
   assert.deepEqual(errors, []);
 });
 
@@ -2233,17 +2242,18 @@ test('the visible comparison mark follows the foreground palette in the gallery 
   assert.equal(await fill(strip.locator('button').first()), 'rgb(59, 59, 59)');
 
   await page.locator('.shot').first().click();
-  await activeSegment(page, 0);
-  const fullscreenStrip = page.locator('#viewer .comparison-indicator');
-  assert.equal(await fill(chosen(fullscreenStrip)), themedForeground);
-  await segment(page, 2).hover();
   await displayed(page, '#original', preview('First_Wireframe'));
   await activeSegment(page, 2);
+  const fullscreenStrip = page.locator('#viewer .comparison-indicator');
+  assert.equal(await fill(chosen(fullscreenStrip)), themedForeground);
+  await segment(page, 0).hover();
+  await displayed(page, '#original', preview('First'));
+  await activeSegment(page, 0);
   assert.equal(await fill(chosen(fullscreenStrip)), themedForeground);
   assert.deepEqual(errors, []);
 });
 
-test('comparison hover is limited to the bottom 6% on gallery tiles and fullscreen images', async t => {
+test('comparison hover selects only in the bottom 6% and keeps the variant after the pointer leaves', async t => {
   await t.test('gallery tile', async t => {
     const { page, errors } = await openPage(t, { width: 1440 });
     const entry = page.locator('.shot-entry').first();
@@ -2263,15 +2273,17 @@ test('comparison hover is limited to the bottom 6% on gallery tiles and fullscre
     await moveToChecker(0.95);
     assert.equal(await chosen(), 'Show variant 2 of 3');
     await moveToChecker(0.93);
-    assert.equal(await chosen(), 'Show variant 1 of 3');
+    assert.equal(await chosen(), 'Show variant 2 of 3');
+    await page.mouse.move(1, 1);
+    assert.equal(await chosen(), 'Show variant 2 of 3');
 
     await buttons.nth(2).hover();
     await buttons.nth(2).and(entry.locator('[aria-pressed="true"]')).waitFor();
     await moveToChecker(0.93);
-    assert.equal(await chosen(), 'Show variant 1 of 3');
-    await buttons.nth(2).click();
-    await moveToChecker(0.93);
     assert.equal(await chosen(), 'Show variant 3 of 3');
+    await buttons.nth(0).hover();
+    await moveToChecker(0.93);
+    assert.equal(await chosen(), 'Show variant 1 of 3');
     assert.deepEqual(errors, []);
   });
 
@@ -2299,16 +2311,18 @@ test('comparison hover is limited to the bottom 6% on gallery tiles and fullscre
     await moveToChecker(0.95);
     await displayed(page, '#original', preview('First_Checker'));
     await moveToChecker(0.93);
-    await displayed(page, '#original', preview('First'));
+    await activeSegment(page, 1);
+    await page.mouse.move(1, 1);
+    assert.equal(await image.getAttribute('src'), preview('First_Checker'));
 
     await segment(page, 2).hover();
     await displayed(page, '#original', preview('First_Wireframe'));
     await moveToChecker(0.93);
+    await activeSegment(page, 2);
+    await segment(page, 0).hover();
     await displayed(page, '#original', preview('First'));
-    await segment(page, 2).click();
-    await displayed(page, '#original', preview('First_Wireframe'));
     await moveToChecker(0.93);
-    assert.equal(await image.getAttribute('src'), preview('First_Wireframe'));
+    await activeSegment(page, 0);
     assert.deepEqual(errors, []);
   });
 });
