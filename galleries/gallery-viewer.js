@@ -1642,7 +1642,8 @@ stage.addEventListener('click', event => {
     return;
   }
   if (!viewerHitImage(event)) {
-    viewer.close();
+    // Tapping the empty space around an image must not dismiss the touch viewer.
+    if (mouseClick) viewer.close();
     return;
   }
   if (!mouseClick) return;

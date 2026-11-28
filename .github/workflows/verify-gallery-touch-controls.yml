@@ -42,7 +42,7 @@ jobs:
           GALLERY_TEST_BROWSER: ${{ matrix.engine }}
         run: |
           if [[ "$GALLERY_TEST_BROWSER" == webkit ]]; then
-            node --test --test-name-pattern='mobile navigation|transparent fullscreen' .github/tests/gallery-delivery.browser.test.cjs
+            node --test --test-name-pattern='outside-image touch|mobile navigation|transparent fullscreen' .github/tests/gallery-delivery.browser.test.cjs
           else
-            node --test --test-name-pattern='mobile navigation|transparent fullscreen|fullscreen touch swipes|a touch tap exits fullscreen|fullscreen desktop left click|desktop fullscreen controls fade|Atrium touch taps|RZ Start stays behind' .github/tests/gallery-delivery.browser.test.cjs
+            node --test --test-name-pattern='outside-image touch|mobile navigation|transparent fullscreen|fullscreen touch swipes|a touch tap exits fullscreen|fullscreen desktop left click|desktop fullscreen controls fade|Atrium touch taps|RZ Start stays behind' .github/tests/gallery-delivery.browser.test.cjs
           fi
