@@ -1,15 +1,28 @@
 [
   {
+    "image": "Couch_Heroes_Enviro_01.jpg"
+  },
+  {
+    "image": "Couch_Heroes_Enviro_02.jpg"
+  },
+  {
+    "image": "Couch_Heroes_Enviro_03.jpg"
+  },
+  {
+    "image": "Couch_Heroes_Enviro_04.jpg"
+  },
+  {
     "image": "the-digital-shaman-presentation-front-ue5-top.jpg"
   },
   {
     "image": "the-digital-shaman-presentation-front-ue5-bottom.jpg"
   },
   {
-    "image": "the-digital-shaman-presentation-3-4-wireframe-02.jpg"
+    "image": "the-digital-shaman-presentation-3-4-wireframe-02.jpg",
+    "compare": "the-digital-shaman-presentation-3-4-wireframe-01.jpg"
   },
   {
-    "image": "the-digital-shaman-presentation-3-4-wireframe-01.jpg"
+    "image": "Presentation-SP-Front.jpg"
   },
   {
     "image": "the-digital-shaman-battlezone.jpg"
@@ -43,5 +56,12 @@
   },
   {
     "image": "the-digital-shaman-artur-perzyna-mech-daisy2.jpg"
+  },
+  {
+    "image": "castle-gear-01-4k.jpg",
+    "compare": "castle-gear-02-4k.jpg"
+  },
+  {
+    "image": "Lockpicking_mockup01g.jpg"
   }
 ]
