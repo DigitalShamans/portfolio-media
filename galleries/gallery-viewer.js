@@ -11,6 +11,7 @@ const galleryAssetVersions = JSON.parse(document.body.dataset.galleryAssetVersio
 const title = document.querySelector('.intro h1, #map-title').textContent;
 
 const finePointer = window.matchMedia('(pointer: fine)');
+const coarsePointer = window.matchMedia('(pointer: coarse)');
 const desktopScrolling = window.matchMedia('(any-hover: hover) and (any-pointer: fine)');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 let displaySize = `${screen.width}x${screen.height}`;
@@ -64,7 +65,7 @@ const galleryStatus = document.querySelector('#gallery-status');
 const shots = [];
 const viewer = document.querySelector('#viewer');
 // This optional enhancement must never block gallery loading or desktop scrolling.
-const primaryTouch = window.matchMedia('(pointer: coarse)').matches && navigator.maxTouchPoints > 0;
+const primaryTouch = coarsePointer.matches && navigator.maxTouchPoints > 0;
 galleryDiagnostics?.state('gallery-touch', 'Native touch scrolling', primaryTouch
   ? 'Waiting for the mobile scroll controller.' : 'GSAP touch normalization needs a coarse primary pointer and touch support.');
 if (primaryTouch) {
@@ -88,7 +89,13 @@ const stage = document.querySelector('#stage');
 const canvas = document.querySelector('#viewer-canvas');
 const viewerArrows = document.querySelector('.viewer-arrows');
 // Touch navigation stays within reach while only the image canvas zooms and pans.
-if (primaryTouch) frame.insertBefore(viewerArrows, frame.querySelector('.viewer-bar'));
+// Its placement must not depend on touch-count support for the scroll controller.
+function anchorViewerArrows() {
+  if (viewerArrows.parentElement !== frame) {
+    frame.insertBefore(viewerArrows, frame.querySelector('.viewer-bar'));
+  }
+}
+if (coarsePointer.matches) anchorViewerArrows();
 const original = document.querySelector('#original');
 original.fetchPriority = 'high';
 const previousSide = document.querySelector('#previous-side');
@@ -1422,6 +1429,8 @@ function showViewerControls(hideWhenIdle = false) {
 
 for (const type of ['pointermove', 'pointerdown']) {
   frame.addEventListener(type, event => {
+    // Mixed-input devices can report a mouse until the first real touch.
+    if (event.pointerType === 'touch') anchorViewerArrows();
     if (desktopScrolling.matches) showViewerControls(event.pointerType === 'mouse');
   }, { capture: true, passive: true });
 }
@@ -1653,6 +1662,7 @@ stage.addEventListener('contextmenu', event => {
 });
 
 stage.addEventListener('pointerdown', event => {
+  if (event.target.closest('.viewer-arrows')) return;
   lastViewerPointer = event.pointerType;
   if (event.pointerType !== 'mouse' || event.button !== 0) {
     viewerZoomClickCount = 0;

@@ -222,7 +222,11 @@ async function openPage(t, {
       touchEvents: 'ontouchstart' in window,
       width: innerWidth,
     }));
-    assert.ok(input.coarse && !input.fine && !input.hover && input.maxTouchPoints > 0 && input.touchEvents,
+    // Linux WebKit reports zero maxTouchPoints even in its mobile touch context.
+    // Keep that real value; verify coarse input/touch events in both engines and
+    // the positive hardware-contact count where Chromium's emulation exposes it.
+    assert.ok(input.coarse && !input.fine && !input.hover && input.touchEvents &&
+      (browserEngine !== 'chromium' || input.maxTouchPoints > 0),
       `Expected a mobile touch context in ${browserEngine}; observed ${JSON.stringify(input)}`);
   }
   return { page, requests, errors, urls };
@@ -800,7 +804,9 @@ async function portableTouchSession(page) {
           else if (type === 'touchMove') dispatch('pointermove', next);
         }
         if (type === 'touchEnd' || type === 'touchCancel') {
+          const remaining = new Set(points.map(point => 100000 + point.id));
           for (const point of state.pointers.values()) {
+            if (type === 'touchEnd' && remaining.has(point.id)) continue;
             dispatch(type === 'touchEnd' ? 'pointerup' : 'pointercancel', point);
             const captured = state.captures.get(point.id);
             state.captures.delete(point.id);
@@ -2906,9 +2912,20 @@ test('mobile navigation taps survive a missing click and cancel stale image gest
   await settleControlActivation(page);
   assert.equal(await page.locator('#counter').textContent(), '2 / 3', 'a cancelled arrow touch does not activate it');
 
-  await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y, id: 1 }] });
-  await next.press('Enter');
+  await page.evaluate(() => {
+    window.galleryHeldImagePointerReleased = false;
+    document.querySelector('#stage').addEventListener('pointerup', () => {
+      window.galleryHeldImagePointerReleased = true;
+    }, { once: true });
+  });
+  const held = { x, y, id: 1 };
+  const arrowFinger = { x: box.x + box.width / 2, y: midY, id: 2 };
+  await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [held] });
+  await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [held, arrowFinger] });
+  await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [held] });
   await displayed(page, '#original', preview('Third'));
+  assert.equal(await page.evaluate(() => window.galleryHeldImagePointerReleased), false,
+    'a second finger activates the arrow while the image finger remains down');
   await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x - 80, y, id: 1 }] });
   await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   await settleControlActivation(page);
