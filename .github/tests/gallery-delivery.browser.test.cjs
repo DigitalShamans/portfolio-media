@@ -2920,6 +2920,151 @@ test('outside-image touch rule preserves desktop mouse dismissal', async t => {
   assert.deepEqual(errors, []);
 });
 
+for (const [name, options] of [
+  ['studio', { route: gallery }],
+  ['personal', { route: '/artur' + gallery }],
+  ['Atrium', { map: true }],
+  ['reduced motion', { reducedMotion: 'reduce' }],
+]) {
+  test(`touch double tap restores centered fullscreen fit: ${name}`, async t => {
+    const { page, errors } = await openPage(t, { ...options, width: 412, height: 900, hasTouch: true });
+    const session = await portableTouchSession(page);
+    await page.locator(options.map ? '#map-fullscreen' : '.shot').first().tap();
+    await displayed(page, '#original', preview('First'));
+    if (options.map) await page.locator('#fullscreen-map').waitFor({ state: 'visible' });
+    else {
+      await segment(page, 1).tap();
+      await displayed(page, '#original', preview('First_Checker'));
+    }
+    const expectedImage = preview(options.map ? 'First' : 'First_Checker');
+    const stage = await page.locator('#stage').boundingBox();
+    const x = stage.x + stage.width / 2, y = stage.y + stage.height / 2;
+    const tap = () => page.touchscreen.tap(x, y);
+    await tap();
+    await tap();
+    await settleControlActivation(page);
+    assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 }, 'double tapping at fit does not zoom in');
+    assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), true);
+
+    await pinchInViewer(session, x, y, 30, 90);
+    await waitForViewerScale(page, 3);
+    await swipeInViewer(session, [x - 45, y], [x + 45, y]);
+    const panned = await viewerTransform(page);
+    assert.equal(panned.scale, 3);
+    assert.ok(Math.abs(panned.x) > 10, 'the reset must undo a real pan as well as zoom');
+    if (options.map) {
+      const thumbnail = page.locator('#fullscreen-map .gallery-map-region').first();
+      await thumbnail.tap();
+      await thumbnail.tap();
+      await settleControlActivation(page);
+      assert.deepEqual(await viewerTransform(page), panned, 'map thumbnail taps do not reset image zoom');
+      assert.equal(await thumbnail.getAttribute('aria-expanded'), 'false', 'pinch still locks thumbnail expansion');
+    }
+    await tap();
+    await settleControlActivation(page);
+    assert.deepEqual(await viewerTransform(page), panned, 'a single tap leaves zoom and pan unchanged');
+    if (options.reducedMotion === 'reduce') {
+      await page.evaluate(() => {
+        document.querySelector('#stage').addEventListener('pointerup', () => {
+          const transform = document.querySelector('#viewer-canvas').style.transform;
+          const matrix = new DOMMatrixReadOnly(transform || undefined);
+          window.galleryScaleAtResetRelease = { scale: matrix.a, x: matrix.e, y: matrix.f };
+        }, { once: true });
+      });
+    }
+    await tap();
+    if (options.reducedMotion === 'reduce') {
+      assert.deepEqual(await page.evaluate(() => window.galleryScaleAtResetRelease), { scale: 1, x: 0, y: 0 },
+        'reduced motion resets immediately at the second release');
+    }
+    await waitForViewerScale(page, 1);
+    assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
+    assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), true);
+    assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+    await displayed(page, '#original', expectedImage);
+    if (options.map) assert.equal(await page.locator('#fullscreen-map').isVisible(), true);
+    else await activeSegment(page, 1);
+    await page.locator('#fullscreen').tap();
+    await page.locator('#viewer').waitFor({ state: 'hidden' });
+    assert.deepEqual(errors, []);
+  });
+}
+
+test('touch double tap pairs are interrupted by pinch, out-and-back drag, or cancellation', async t => {
+  const { page, errors } = await openPage(t, { width: 412, hasTouch: true, reducedMotion: 'reduce' });
+  const session = await portableTouchSession(page);
+  await page.locator('.shot').first().tap();
+  await displayed(page, '#original', preview('First'));
+  const stage = await page.locator('#stage').boundingBox();
+  const x = stage.x + stage.width / 2, y = stage.y + stage.height / 2;
+  const tap = () => page.touchscreen.tap(x, y);
+  const point = (offset = 0) => [{ x: x + offset, y, id: 1 }];
+  await pinchInViewer(session, x, y, 30, 90);
+  await waitForViewerScale(page, 3);
+  for (const interruption of ['pinch', 'out-and-back drag', 'cancellation']) {
+    // Isolate this pair from the preceding assertion's tap, beyond the 350 ms window.
+    await page.waitForTimeout(370);
+    await tap();
+    if (interruption === 'pinch') await pinchInViewer(session, x, y, 30, 40);
+    else {
+      await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: point() });
+      if (interruption === 'out-and-back drag') {
+        await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: point(24) });
+        await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: point() });
+      }
+      await session.send('Input.dispatchTouchEvent', {
+        type: interruption === 'cancellation' ? 'touchCancel' : 'touchEnd', touchPoints: [],
+      });
+    }
+    const beforeTap = await viewerTransform(page);
+    assert.ok(beforeTap.scale > 1);
+    await tap();
+    await settleControlActivation(page);
+    assert.deepEqual(await viewerTransform(page), beforeTap, `${interruption} breaks the pending tap pair`);
+    assert.equal(await page.locator('#counter').textContent(), '1 / 3');
+    assert.equal(await page.locator('#viewer').evaluate(viewer => viewer.open), true);
+  }
+  // The recognizer remains usable after the cancelled contact.
+  await tap();
+  await waitForViewerScale(page, 1);
+  assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
+  assert.deepEqual(errors, []);
+});
+
+test('touch double tap leaves comparison and arrow controls usable', async t => {
+  const { page, errors } = await openPage(t, { width: 412, hasTouch: true, reducedMotion: 'reduce' });
+  const session = await portableTouchSession(page);
+  await page.locator('.shot').first().tap();
+  await displayed(page, '#original', preview('First'));
+  const stage = await page.locator('#stage').boundingBox();
+  const x = stage.x + stage.width / 2, y = stage.y + stage.height / 2;
+  const tap = () => page.touchscreen.tap(x, y);
+  await pinchInViewer(session, x, y, 30, 60);
+  await waitForViewerScale(page, 2);
+  const zoomed = await viewerTransform(page);
+  await tap();
+  await segment(page, 1).tap();
+  await segment(page, 1).tap();
+  await displayed(page, '#original', preview('First_Checker'));
+  assert.deepEqual(await viewerTransform(page), zoomed, 'comparison button taps select a variant without resetting zoom');
+  await tap();
+  await segment(page, 2).press('Enter');
+  await displayed(page, '#original', preview('First_Wireframe'));
+  await tap();
+  await settleControlActivation(page);
+  assert.deepEqual(await viewerTransform(page), zoomed, 'keyboard comparison activation also breaks an image tap pair');
+  await activeSegment(page, 2);
+  const next = await page.locator('#next-side').boundingBox();
+  await page.touchscreen.tap(next.x + next.width / 2, next.y + next.height / 2);
+  await page.touchscreen.tap(next.x + next.width / 2, next.y + next.height / 2);
+  await displayed(page, '#original', preview('Third'));
+  await settleControlActivation(page);
+  assert.equal(await page.locator('#counter').textContent(), '3 / 3', 'two arrow taps still navigate twice');
+  await page.locator('#fullscreen').tap();
+  await page.locator('#viewer').waitFor({ state: 'hidden' });
+  assert.deepEqual(errors, []);
+});
+
 for (const route of [gallery, '/artur' + gallery]) {
   test(`transparent fullscreen navigation controls on desktop: ${route}`, async t => {
     const { page, errors } = await openPage(t, { route, width: 1440 });

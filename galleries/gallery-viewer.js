@@ -115,6 +115,7 @@ let viewerZoomAnimation;
 let mouseGesture;
 let suppressViewerClick = false;
 let lastViewerPointer;
+let lastViewerTap;
 let viewerZoomClickCount = 0;
 let viewerAspect = 0;
 let viewerRequest = 0;
@@ -696,6 +697,7 @@ setupClassicGalleryScroll();
 
 function fitImage() {
   viewerZoomClickCount = 0;
+  clearViewerTap();
   cancelViewerZoomAnimation();
   setViewerZoom(1, 0, 0);
   positionViewerControls();
@@ -1440,6 +1442,9 @@ for (const type of ['pointermove', 'pointerdown']) {
   frame.addEventListener(type, event => {
     // Mixed-input devices can report a mouse until the first real touch.
     if (event.pointerType === 'touch') anchorViewerArrows();
+    if (type === 'pointerdown' && (event.pointerType !== 'touch' || !isViewerTapSurface(event.target))) {
+      clearViewerTap();
+    }
     if (desktopScrolling.matches) showViewerControls(event.pointerType === 'mouse');
   }, { capture: true, passive: true });
 }
@@ -1448,7 +1453,10 @@ viewer.addEventListener('focusin', event => {
   if (event.target.matches(':focus-visible')) showViewerControls(true);
 });
 
-frame.addEventListener('keydown', () => showViewerControls(true), { capture: true });
+frame.addEventListener('keydown', () => {
+  clearViewerTap();
+  showViewerControls(true);
+}, { capture: true });
 
 viewer.addEventListener('keydown', event => {
   if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
@@ -1483,6 +1491,17 @@ function zoomViewerAt(scale, anchor, point, from = viewerZoom) {
 
 function pointFor(event) {
   return { x: event.clientX, y: event.clientY };
+}
+
+function isViewerTapSurface(target) {
+  return stage.contains(target) && !target.closest(
+    'button, a, input, select, textarea, [role="button"], [contenteditable], .comparison-indicator, .gallery-map-region'
+  );
+}
+
+function clearViewerTap() {
+  lastViewerTap = undefined;
+  if (viewerGesture) viewerGesture.tapStarted = undefined;
 }
 
 function clampViewerScale(scale) {
@@ -1588,6 +1607,7 @@ function pinchGeometry() {
 }
 
 function startViewerPinch() {
+  clearViewerTap();
   viewerGesture = { mode: 'pinch', ...pinchGeometry(), zoom: { ...viewerZoom } };
   suppressViewerClick = true;
 }
@@ -1605,7 +1625,10 @@ function moveViewerTouch(event) {
     return;
   }
   const { start, mode } = viewerGesture;
-  if (Math.hypot(point.x - start.x, point.y - start.y) >= 10) suppressViewerClick = true;
+  if (Math.hypot(point.x - start.x, point.y - start.y) >= 10) {
+    clearViewerTap();
+    suppressViewerClick = true;
+  }
   if (mode === 'pan' && suppressViewerClick) {
     setViewerZoom(viewerZoom.scale, viewerZoom.x + point.x - previous.x, viewerZoom.y + point.y - previous.y);
   }
@@ -1614,7 +1637,8 @@ function moveViewerTouch(event) {
 function endViewerTouch(event) {
   if (!viewerTouches.has(event.pointerId)) return;
   if (event.type === 'pointerup') moveViewerTouch(event);
-  const { mode, start } = viewerGesture;
+  else clearViewerTap();
+  const { mode, start, tapStarted } = viewerGesture;
   viewerTouches.delete(event.pointerId);
   if (viewerTouches.size >= 2) {
     startViewerPinch();
@@ -1622,6 +1646,22 @@ function endViewerTouch(event) {
     viewerGesture = { mode: viewerZoom.scale > 1 ? 'pan' : 'hold', start: viewerTouches.values().next().value };
   } else {
     viewerGesture = undefined;
+    if (event.type === 'pointerup' && tapStarted !== undefined &&
+        event.timeStamp - tapStarted <= 250 && !suppressViewerClick && isViewerTapSurface(event.target)) {
+      const point = pointFor(event);
+      const previous = lastViewerTap;
+      if (previous?.request === viewerRequest && event.timeStamp - previous.time <= 350 &&
+          Math.hypot(point.x - previous.point.x, point.y - previous.point.y) <= 32) {
+        clearViewerTap();
+        suppressViewerClick = true;
+        // Restore the original fullscreen fit without changing the image or its comparison.
+        easeViewerZoomTo(1);
+        return;
+      }
+      lastViewerTap = { point, time: event.timeStamp, request: viewerRequest };
+    } else {
+      clearViewerTap();
+    }
     if (mode !== 'swipe' || event.type !== 'pointerup') return;
     const dx = event.clientX - start.x;
     const dy = event.clientY - start.y;
@@ -1682,7 +1722,10 @@ stage.addEventListener('pointerdown', event => {
     const point = pointFor(event);
     if (!viewerTouches.size) {
       suppressViewerClick = false;
-      viewerGesture = { mode: viewerZoom.scale > 1 ? 'pan' : 'swipe', start: point };
+      viewerGesture = {
+        mode: viewerZoom.scale > 1 ? 'pan' : 'swipe', start: point,
+        tapStarted: isViewerTapSurface(event.target) ? event.timeStamp : undefined
+      };
     }
     viewerTouches.set(event.pointerId, point);
     if (viewerTouches.size === 2) startViewerPinch();
