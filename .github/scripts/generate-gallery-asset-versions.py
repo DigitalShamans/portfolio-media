@@ -3,6 +3,7 @@
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
+from shutil import copyfile
 import subprocess
 from urllib.parse import quote
 
@@ -19,8 +20,8 @@ def tracked_versions(directory):
         if not entry:
             continue
         metadata, _, path = entry.partition(b'\t')
-        _, kind, digest = metadata.split()
-        if kind == b'blob':
+        mode, kind, digest = metadata.split()
+        if kind == b'blob' and mode in (b'100644', b'100755'):
             yield PurePosixPath(path.decode('utf-8')), digest.decode('ascii')
 
 
@@ -33,6 +34,7 @@ def gallery_webp_versions(tracked, release):
 
 def gallery_versions(tracked, webps):
     delivery = json.loads((ROOT / '_data/gallery_delivery.json').read_text(encoding='utf-8'))
+    local_galleries = delivery.get('local_galleries', {})
     versions = {}
     for path in tracked:
         if len(path.parts) != 3 or path.name != 'gallery.json':
@@ -50,9 +52,23 @@ def gallery_versions(tracked, webps):
                 if embed['type'] == 'video':
                     files[embed['file']] = tracked[path.parent / embed['file']]
         entries = json.loads(payload.decode('utf-8-sig'))
+        source_directory = local_galleries.get(path.parent.name)
+        local_assets = {}
+        if source_directory:
+            for asset, digest in tracked_versions(source_directory):
+                if asset.suffix.lower() in IMAGE_SUFFIXES:
+                    local_assets.setdefault(asset.name.lower(), []).append((asset, digest))
         for entry in entries:
             for name in (entry['image'], entry.get('compare'), *(entry.get('additionalImages') or [])):
                 if name is None:
+                    continue
+                if source_directory:
+                    matches = local_assets.get(name.lower(), [])
+                    if len(matches) != 1 or matches[0][0].name != name:
+                        raise ValueError(f'{path}: Expected one exact source for {name} in {source_directory}.')
+                    source, files[name] = matches[0]
+                    destination = ROOT / path.parent / name
+                    copyfile(ROOT / source, destination)
                     continue
                 preview = path.parent / '1440p' / PurePosixPath(name).with_suffix('.webp').name
                 asset = preview if delivery['revision'] else path.parent / name

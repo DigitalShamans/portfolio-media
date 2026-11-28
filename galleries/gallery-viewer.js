@@ -8,6 +8,7 @@ const galleryRevision = document.body.dataset.galleryRevision;
 const galleryAccess = window.galleryAccess;
 const imageResolution = galleryAccess?.resolution ?? GalleryResolution.current();
 const galleryAssetVersions = JSON.parse(document.body.dataset.galleryAssetVersions || '{}');
+const localImages = document.documentElement.dataset.galleryLocalImages === 'true';
 const title = document.querySelector('.intro h1, #map-title').textContent;
 
 const finePointer = window.matchMedia('(pointer: fine)');
@@ -1299,7 +1300,7 @@ function loadVisibleShotsFirst(updatePosition) {
 }
 
 function createShot(entry, index, firstImage) {
-  const label = title + ' screenshot ' + (index + 1);
+  const label = (localImages && entry.label) || title + ' screenshot ' + (index + 1);
   const filenames = GalleryData.images(entry);
   const sources = filenames.map(filename => galleryAccess
     ? { url: filename }
@@ -1320,6 +1321,15 @@ function createShot(entry, index, firstImage) {
     image.draggable = false;
     link.append(image);
   }
+  if (localImages) {
+    image.alt = label;
+    if (Number.isInteger(entry.width) && entry.width > 0 &&
+        Number.isInteger(entry.height) && entry.height > 0) {
+      image.width = entry.width;
+      image.height = entry.height;
+      image.style.aspectRatio = `auto ${entry.width} / ${entry.height}`;
+    }
+  }
   let element = link;
   let comparison;
   if (sources.length > 1) {
@@ -1334,6 +1344,29 @@ function createShot(entry, index, firstImage) {
       event.preventDefault();
       openViewer(index, comparison?.finishPreview() ?? 0, link, event);
     });
+  }
+  if (localImages) {
+    const asset = document.createElement('div');
+    asset.className = 'gallery-asset';
+    asset.style.setProperty('--asset-width', image.width + 'px');
+    if (entry.heading) {
+      const heading = document.createElement('h2');
+      heading.className = 'gallery-asset-heading';
+      heading.textContent = entry.heading;
+      asset.append(heading);
+    }
+    const details = document.createElement('div');
+    details.className = 'gallery-asset-details';
+    const caption = document.createElement('span');
+    caption.textContent = label;
+    const download = document.createElement('a');
+    download.href = sources[0].url;
+    download.download = filenames[0];
+    download.textContent = 'Download ' + filenames[0].split('.').pop().toUpperCase();
+    download.setAttribute('aria-label', download.textContent + ' — ' + label);
+    details.append(caption, download);
+    asset.append(element, details);
+    element = asset;
   }
   return { element, image, link, filenames, sources, comparison, initialLoad: existing?.load };
 }
@@ -1350,7 +1383,7 @@ async function loadGallery() {
       const source = GalleryResolution.publicImageSource(fallback.dataset.galleryOriginal, imageResolution);
       firstImage = { image, link: fallback, source, load: loadImage(image, source, { link: fallback, pictureSource }) };
     }
-    const publicBase = !galleryAccess && (gallery.dataset.galleryRoot || document.baseURI);
+    const publicBase = !galleryAccess && !localImages && (gallery.dataset.galleryRoot || document.baseURI);
     const [response] = await Promise.all([
       galleryAccess ? galleryAccess.manifest() : fetch(galleryAssetUrl(gallery.dataset.galleryManifest || 'gallery.json')),
       publicBase && GalleryResolution.refreshPublicUpdates?.(publicBase)

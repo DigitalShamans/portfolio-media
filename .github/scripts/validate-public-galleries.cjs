@@ -34,6 +34,29 @@ const publicFolders = JSON.parse(execFileSync('ruby', [resolve(__dirname, 'publi
   input: pagePaths.join('\0'),
   encoding: 'utf8',
 }));
+const localGalleries = delivery.local_galleries ?? {};
+if (typeof localGalleries !== 'object' || Array.isArray(localGalleries) ||
+    Object.entries(localGalleries).some(([folder, directory]) =>
+      !publicFolders.includes(folder) || typeof directory !== 'string' ||
+      !/^[a-z0-9_-]+(?:\/[a-z0-9_-]+)*$/i.test(directory))) {
+  throw new Error('Local gallery sources must name a public gallery and a repository directory.');
+}
+const localImages = new Map();
+for (const [folder, directory] of Object.entries(localGalleries)) {
+  const names = new Set();
+  const normalized = new Set();
+  const ambiguous = new Set();
+  for (const file of trackedPaths) {
+    if (!file.startsWith(directory + '/')) continue;
+    const name = file.split('/').pop();
+    if (!GalleryData.isImageName(name)) continue;
+    const key = name.toLowerCase();
+    if (normalized.has(key)) ambiguous.add(key);
+    normalized.add(key);
+    names.add(name);
+  }
+  localImages.set(folder, { names, ambiguous });
+}
 if (delivery.gallery_revisions !== undefined) {
   const revisions = delivery.gallery_revisions;
   if (!revisions || typeof revisions !== 'object' || Array.isArray(revisions) ||
@@ -84,6 +107,13 @@ function describeFailure(text, files, message) {
 }
 
 function validateManifest(folder, files, text) {
+  const local = localImages.get(folder);
+  if (local) {
+    const entries = GalleryData.parse(text, local.names);
+    const conflict = entries.flatMap(GalleryData.images).find(name => local.ambiguous.has(name.toLowerCase()));
+    if (conflict) throw new Error(`Ambiguous image filename in ${localGalleries[folder]}: ${conflict}.`);
+    return entries;
+  }
   const entries = GalleryData.parse(text, remoteOriginals ? undefined : files);
   const filenames = entries.flatMap(GalleryData.images);
   // Approval describes the available inventory while the manifest selects what to show.
@@ -158,7 +188,7 @@ async function main() {
       const entries = validateManifest(folder, files, text);
       console.log(`Validated ${manifest} (${entries.length} entries).`);
     } catch (error) {
-      const reason = describeFailure(text, files, error.message);
+      const reason = describeFailure(text, localImages.get(folder)?.names || files, error.message);
       if (keepPublished) {
         try {
           const { payload, version } = await publishedManifest(folder);

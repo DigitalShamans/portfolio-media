@@ -64,6 +64,7 @@ def main():
         raise ValueError('No built homepage found; refusing to prune.')
     delivery = json.loads(options.media_config.read_text(encoding='utf-8'))
     remote_originals = delivery['revision'] is not None
+    local_galleries = delivery.get('local_galleries', {})
     required = set()
     migrated = set()
     manifests = sorted((site / 'galleries').glob('*/gallery.json'))
@@ -75,6 +76,7 @@ def main():
                                    path.suffix.lower() in IMAGE_SUFFIXES):
                 raise ValueError(f'Protected media found in public output: {path}')
     for manifest in manifests:
+        local_images = manifest.parent.name in local_galleries
         entries = json.loads(manifest.read_text(encoding='utf-8-sig'))
         if not isinstance(entries, list) or not entries:
             raise ValueError(f'Invalid gallery manifest: {manifest}')
@@ -91,9 +93,14 @@ def main():
                     raise ValueError(f'Unsupported image filename: {name!r}')
                 original = manifest.parent / name
                 preview = manifest.parent / '1440p' / Path(name).with_suffix('.webp')
-                if remote_originals:
+                if local_images:
+                    paths = (original,)
+                elif remote_originals:
                     migrated.add(original.resolve())
-                for path in (preview,) if remote_originals else (original, preview):
+                    paths = (preview,)
+                else:
+                    paths = (original, preview)
+                for path in paths:
                     path = path.resolve(strict=True)
                     if not path.is_relative_to(site) or not path.is_file():
                         raise ValueError(f'Invalid public image: {path}')

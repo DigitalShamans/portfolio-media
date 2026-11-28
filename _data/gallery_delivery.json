@@ -20,6 +20,9 @@
     "vehicles-aircrafts": "c73ad195a17c4e7f253e371450181aa3bf0a1a53",
     "hex": "8a0b17d54f860d34e0ca4a03ff53b0c3ff3c0225"
   },
+  "local_galleries": {
+    "branding": "branding"
+  },
   "revision": "a8cc936397f5faff0fc4a66584821cdd2a146da9",
   "service_origin": "https://digital-shamans-rz-start-media.bonnydolphin3.chatgpt.site"
 }
