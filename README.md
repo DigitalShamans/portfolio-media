@@ -7,7 +7,8 @@ Website media and shared Digital Shamans branding and marketing assets. This rep
 | `galleries/` | Published gallery pages, `gallery.json` manifests, and web image exports |
 | `projects/` | Published project media |
 | [`galleries_PNG/` (private)](https://github.com/DigitalShamans/portfolio-media-private/tree/main/galleries_PNG) | Original PNG archive, organised by gallery folder and matching base filename |
-| `branding/` | Logos, brand guidelines, and approved editable brand assets |
+| `branding/` | Logos, color palettes, and ArtStation thumbnails |
+| [`branding/` (private)](https://github.com/DigitalShamans/portfolio-media-private/tree/main/branding) | Internal branding source files |
 | `marketing/` | Approved press, campaign, and promotional materials |
 
 Original PNG sources are maintained in the private media repository. GitHub Pages excludes branding and marketing folders and Photoshop masters from the site. Put public gallery WebPs in `galleries/<gallery>/1440p/` and public cards and banners in `projects/` as regular Git files.
