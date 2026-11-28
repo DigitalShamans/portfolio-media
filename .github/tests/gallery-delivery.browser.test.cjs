@@ -804,9 +804,11 @@ async function portableTouchSession(page) {
           else if (type === 'touchMove') dispatch('pointermove', next);
         }
         if (type === 'touchEnd' || type === 'touchCancel') {
-          const remaining = new Set(points.map(point => 100000 + point.id));
+          // Match Chromium's CDP transport: a nonempty touchEnd lists the
+          // released contacts; an empty list releases every remaining contact.
+          const released = new Set(points.map(point => 100000 + point.id));
           for (const point of state.pointers.values()) {
-            if (type === 'touchEnd' && remaining.has(point.id)) continue;
+            if (type === 'touchEnd' && released.size && !released.has(point.id)) continue;
             dispatch(type === 'touchEnd' ? 'pointerup' : 'pointercancel', point);
             const captured = state.captures.get(point.id);
             state.captures.delete(point.id);
@@ -2855,15 +2857,27 @@ for (const route of [gallery, '/artur' + gallery]) {
       const transform = await viewerTransform(page);
       // Focus can reach the still-scaled comparison strip without adding a
       // browser scroll offset to the image pan, or moving the fixed arrows.
-      const focusTargets = new Set();
-      for (let i = 0; i < 7; i++) {
-        await page.keyboard.press('Tab');
-        focusTargets.add(await page.evaluate(() => document.activeElement.id || document.activeElement.getAttribute('aria-label')));
-        assert.deepEqual(await offsets(), expectedOffsets);
-        assert.deepEqual(await viewerTransform(page), transform);
+      if (browserEngine === 'webkit') {
+        // Mobile WebKit's Tab policy need not include buttons. Use ordinary
+        // focus(), without preventScroll, to retain the focus-scroll check.
+        const controls = page.locator('#previous-side, #next-side, #viewer .comparison-indicator > button');
+        for (const control of await controls.all()) {
+          await control.evaluate(button => button.focus());
+          assert.equal(await control.evaluate(button => document.activeElement === button), true);
+          assert.deepEqual(await offsets(), expectedOffsets);
+          assert.deepEqual(await viewerTransform(page), transform);
+        }
+      } else {
+        const focusTargets = new Set();
+        for (let i = 0; i < 7; i++) {
+          await page.keyboard.press('Tab');
+          focusTargets.add(await page.evaluate(() => document.activeElement.id || document.activeElement.getAttribute('aria-label')));
+          assert.deepEqual(await offsets(), expectedOffsets);
+          assert.deepEqual(await viewerTransform(page), transform);
+        }
+        assert.ok(focusTargets.has('next-side'), 'Tab reaches the next-image arrow');
+        assert.ok([...focusTargets].some(label => /^Show variant/.test(label || '')), 'Tab reaches the comparison strip');
       }
-      assert.ok(focusTargets.has('next-side'), 'Tab reaches the next-image arrow');
-      assert.ok([...focusTargets].some(label => /^Show variant/.test(label || '')), 'Tab reaches the comparison strip');
       const next = initial.controls.find(control => control.selector === '#next-side');
       await page.touchscreen.tap(next.x + next.width / 2, next.y + next.height / 2);
       await displayed(page, '#original', preview('Second'));
@@ -2922,7 +2936,7 @@ test('mobile navigation taps survive a missing click and cancel stale image gest
   const arrowFinger = { x: box.x + box.width / 2, y: midY, id: 2 };
   await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [held] });
   await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [held, arrowFinger] });
-  await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [held] });
+  await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [arrowFinger] });
   await displayed(page, '#original', preview('Third'));
   assert.equal(await page.evaluate(() => window.galleryHeldImagePointerReleased), false,
     'a second finger activates the arrow while the image finger remains down');
