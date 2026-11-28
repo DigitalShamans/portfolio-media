@@ -16,6 +16,7 @@ assert.ok(['chromium', 'webkit'].includes(browserEngine), 'Unsupported gallery t
 const root = resolve(__dirname, '../..');
 const read = path => readFileSync(resolve(root, path), 'utf8');
 const galleryLayout = read('_layouts/gallery.html');
+const responsiveFallback = galleryLayout.match(/<a class="shot" data-gallery-fallback[^>]*>\s*<picture>[\s\S]*?<\/a>/)[0];
 const lockedLayout = read('_layouts/locked-gallery.html');
 const mapLayout = read('_layouts/gallery-map.html');
 const backToTop = read('_includes/gallery-back-to-top.html');
@@ -106,7 +107,7 @@ function pageHtml(path, { embeds, assetVersions = {}, map = false, diagnostics =
       .replace('{{ site.data.gallery_delivery.service_origin | jsonify }}', JSON.stringify(media))
     : `<div class="gallery-content"><header class="intro"><h1>Hard Bullet - Egypt</h1></header>
         <p id="gallery-status" hidden></p>
-        <section class="gallery" data-grouped-image-scroll${embeds ? ' data-gallery-embeds="gallery-embeds.json"' : ''}>${galleryLayout.match(/<a class="shot" data-gallery-fallback[\s\S]*?<\/a>/)[0]
+        <section class="gallery" data-grouped-image-scroll${embeds ? ' data-gallery-embeds="gallery-embeds.json"' : ''}>${responsiveFallback
           .replace('{{ gallery_original_url | escape }}', `${gallery}First.jpg?v=test`)
           .replaceAll('{{ reduced_image_url }}', preview('First').replace('&', '&amp;'))
           .replace('{{ site.gallery_4k_media | escape }}', desktopQuery)
@@ -1440,7 +1441,7 @@ test('a touch tap exits fullscreen after a swipe even when Chrome omits the clic
   assert.deepEqual(errors, []);
 });
 
-test('desktop fullscreen controls fade when idle and return on mouse movement or keyboard use', async t => {
+test('desktop fullscreen controls fade when idle and a stationary click still advances', async t => {
   const { page, errors } = await openPage(t, { width: 1440 });
   const first = page.locator('.shot').first();
   await first.click();
@@ -1463,27 +1464,50 @@ test('desktop fullscreen controls fade when idle and return on mouse movement or
       Number(getComputedStyle(document.querySelector(selector)).opacity) === value);
   }, opacity);
   await controlsOpacity(1);
+  await page.locator('#next-side').hover();
   await controlsOpacity(0);
-  const targets = page.locator('#previous-side, #next-side, #fullscreen, #counter');
+  const targets = page.locator('#previous-side, #next-side, #fullscreen');
   assert.deepEqual(await targets.evaluateAll(elements => elements.map(element => getComputedStyle(element).pointerEvents)),
-    ['none', 'none', 'none', 'none']);
+    ['auto', 'auto', 'auto']);
+  assert.equal(await page.locator('#counter').evaluate(element => getComputedStyle(element).pointerEvents), 'none');
+
+  await page.mouse.down();
+  await page.mouse.up();
+  await displayed(page, '#original', preview('Second'));
+  assert.deepEqual(await viewerTransform(page), { scale: 1, x: 0, y: 0 });
 
   await page.mouse.move(40, 100);
   await controlsOpacity(1);
-  assert.deepEqual(await targets.evaluateAll(elements => elements.map(element => getComputedStyle(element).pointerEvents)),
-    ['auto', 'auto', 'auto', 'auto']);
 
   await controlsOpacity(0);
   await page.keyboard.press('Shift+Tab');
   await controlsOpacity(1);
   assert.equal(await page.evaluate(() => document.querySelector('#viewer').contains(document.activeElement)), true);
   await page.keyboard.press('ArrowRight');
-  await displayed(page, '#original', preview('Second'));
+  await displayed(page, '#original', preview('Third'));
   await page.locator('#fullscreen').click();
   await page.locator('#viewer').waitFor({ state: 'hidden' });
   await page.waitForFunction(() => document.fullscreenElement === null);
   await first.click();
   await controlsOpacity(1);
+  assert.deepEqual(errors, []);
+});
+
+test('desktop fullscreen arrow buttons and glyphs grow by 50% at the 4K breakpoint', async t => {
+  const { page, errors } = await openPage(t, { width: 2559 });
+  await page.locator('.shot').first().click();
+  await displayed(page, '#original', preview('First'));
+  const sizes = () => page.locator('.viewer-arrows button').evaluateAll(buttons => buttons.map(button => {
+    const style = getComputedStyle(button);
+    return [style.width, style.height, style.fontSize];
+  }));
+  assert.deepEqual(await sizes(), [
+    ['48px', '48px', '22.4px'], ['48px', '48px', '22.4px'],
+  ]);
+  await page.setViewportSize({ width: 2560, height: 900 });
+  assert.deepEqual(await sizes(), [
+    ['72px', '72px', '33.6px'], ['72px', '72px', '33.6px'],
+  ]);
   assert.deepEqual(errors, []);
 });
 

@@ -266,9 +266,12 @@ dialog {
 .viewer-bar button, .viewer-arrows button { min-width: 42px; cursor: pointer; }
 .viewer-bar button:disabled, .viewer-arrows button:disabled { opacity: .45; cursor: default; }
 .viewer-arrows button { width: 48px; height: 48px; padding: 0 0 4px; font-size: 1.4rem; }
+@media (min-width: 2560px) and (hover: hover) and (pointer: fine) {
+  .viewer-arrows button { width: 72px; height: 72px; padding-bottom: 6px; font-size: 2.1rem; }
+}
 .counter { display: inline-flex; align-items: center; font-variant-numeric: tabular-nums; }
 .viewer-controls-idle :is(.viewer-arrows, .viewer-bar) { opacity: 0; }
-.viewer-controls-idle :is(.viewer-arrows button, .viewer-group > *) { pointer-events: none; }
+.viewer-controls-idle .counter { pointer-events: none; }
 @media (prefers-reduced-motion: no-preference) {
   .viewer-arrows, .viewer-bar { transition: opacity 180ms ease-out; }
 }
