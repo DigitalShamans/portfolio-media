@@ -171,7 +171,10 @@ async function openPage(t, {
   map = false, diagnostics = false, reducedMotion, cacheImages = false, galleryEntries = manifest,
 } = {}) {
   if (map) route = mapRoute;
-  const page = await browser.newPage({ hasTouch, viewport: { width, height } });
+  // hasTouch alone also represents a desktop with a touchscreen. WebKit needs
+  // mobile mode separately for its viewport/input model; these touch fixtures
+  // exercise phones in portrait and landscape, without mocking capabilities.
+  const page = await browser.newPage({ hasTouch, isMobile: hasTouch, viewport: { width, height } });
   t.after(() => page.close());
   page.setDefaultTimeout(5000);
   if (reducedMotion) await page.emulateMedia({ reducedMotion });
@@ -210,6 +213,18 @@ async function openPage(t, {
     await page.route('**/*', request => serve(request, new URL(request.request().url())));
   }
   await page.goto(urls.portfolio + route + (diagnostics ? '?diagnostics=1' : ''), { waitUntil: 'domcontentloaded' });
+  if (hasTouch) {
+    const input = await page.evaluate(() => ({
+      coarse: matchMedia('(pointer: coarse)').matches,
+      fine: matchMedia('(pointer: fine)').matches,
+      hover: matchMedia('(hover: hover)').matches,
+      maxTouchPoints: navigator.maxTouchPoints,
+      touchEvents: 'ontouchstart' in window,
+      width: innerWidth,
+    }));
+    assert.ok(input.coarse && !input.fine && !input.hover && input.maxTouchPoints > 0 && input.touchEvents,
+      `Expected a mobile touch context in ${browserEngine}; observed ${JSON.stringify(input)}`);
+  }
   return { page, requests, errors, urls };
 }
 

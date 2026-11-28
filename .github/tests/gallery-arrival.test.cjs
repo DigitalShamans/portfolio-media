@@ -230,7 +230,7 @@ test('bounded failure escape removes the arrival cover and original header state
 
 test('both gallery layouts construct the arriving panel before the real header and wait for header parsing', () => {
   for (const layout of layouts) {
-    assert.match(layout, /gallery\.css\?v=46/);
+    assert.match(layout, /gallery\.css\?v=47/);
     assert.match(layout, /<link rel="expect" href="#gallery-edge-ready" blocking="render">/);
     assert.match(layout, /<div id="gallery-edge-arrival"><script src="\.\.\/gallery-arrival\.js\?v=4"><\/script><\/div>/);
     assert.match(layout, /gallery-edge-arrival[\s\S]*include site-header\.html[\s\S]*gallery-edge-ready/);
@@ -499,3 +499,4 @@ test('personal Vegetation excludes its final two images without changing the stu
   assert.deepEqual(JSON.parse(await run({ galleryExclude: JSON.stringify(excluded) })), original.slice(0, -2));
   assert.deepEqual(JSON.parse(await run({})), original);
 });
+
