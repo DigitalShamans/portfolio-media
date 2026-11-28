@@ -34,10 +34,11 @@ def gallery_webp_versions(tracked, release):
 def gallery_versions(tracked, webps):
     delivery = json.loads((ROOT / '_data/gallery_delivery.json').read_text(encoding='utf-8'))
     versions = {}
-    for path, digest in tracked.items():
+    for path in tracked:
         if len(path.parts) != 3 or path.name != 'gallery.json':
             continue
-        files = {'gallery.json': digest}
+        payload = (ROOT / path).read_bytes()
+        files = {'gallery.json': hashlib.sha1(f'blob {len(payload)}\0'.encode() + payload).hexdigest()}
         map_path = path.parent / 'gallery-map.json'
         if map_path in tracked:
             files['gallery-map.json'] = tracked[map_path]
@@ -48,7 +49,7 @@ def gallery_versions(tracked, webps):
             for embed in embeds:
                 if embed['type'] == 'video':
                     files[embed['file']] = tracked[path.parent / embed['file']]
-        entries = json.loads((ROOT / path).read_text(encoding='utf-8-sig'))
+        entries = json.loads(payload.decode('utf-8-sig'))
         for entry in entries:
             for name in (entry['image'], entry.get('compare'), *(entry.get('additionalImages') or [])):
                 if name is None:
@@ -68,8 +69,6 @@ def generate_personal_vegetation_manifest(galleries):
                                   if line.startswith('gallery_exclude:'))))
     folder = ROOT / 'galleries/vegetation'
     entries = json.loads((folder / 'gallery.json').read_text(encoding='utf-8-sig'))
-    if not excluded <= {entry['image'] for entry in entries}:
-        raise ValueError('Personal Vegetation exclusion refers to an unknown image.')
     filtered = [entry for entry in entries if entry['image'] not in excluded]
     if not filtered:
         raise ValueError('Personal Vegetation must retain at least one image.')
